@@ -1,321 +1,390 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { CheckCircle, Clock, Lock, Play, Calendar, Award, Video, FileText, Headphones, PenTool } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWellnessData } from '@/hooks/use-local-storage';
-import { coachingModules } from '@/lib/coaching-data';
-import { ModuleComponent } from '@/types/wellness';
+import { coachingModules, getModuleProgress } from '@/lib/coaching-data';
+import { Clock, CheckCircle, Lock, BookOpen, FileText, Headphones, Brain, Video, Target, Heart, Lightbulb, Shield, Star } from 'lucide-react';
 
 export default function Coaching() {
   const { data, updateCoachingProgress } = useWellnessData();
-  const [selectedModule, setSelectedModule] = useState(null);
+  const [selectedComponent, setSelectedComponent] = useState<any>(null);
 
-  const getModuleStatus = (weekNumber: number) => {
-    if (weekNumber < data.userProfile.currentWeek) return 'completed';
-    if (weekNumber === data.userProfile.currentWeek) return 'current';
-    return 'locked';
+  const handleComponentComplete = (moduleId: string, componentId: string) => {
+    const completedComponents = data.coachingProgress.completedComponents || [];
+    if (!completedComponents.includes(componentId)) {
+      updateCoachingProgress({
+        completedComponents: [...completedComponents, componentId],
+        currentWeek: data.userProfile.currentWeek
+      });
+    }
   };
 
-  const getModuleProgress = (weekNumber: number) => {
-    const progress = data.coachingProgress.find(p => p.weekNumber === weekNumber);
-    return progress?.progress || 0;
-  };
-
-  const getComponentIcon = (type: ModuleComponent['type']) => {
+  const getComponentIcon = (type: string) => {
     switch (type) {
-      case 'video': return Video;
-      case 'audio': return Headphones;
-      case 'worksheet': return FileText;
-      case 'exercise': return PenTool;
-      case 'reflection': return PenTool;
-      default: return FileText;
+      case 'video': return <Video className="w-4 h-4" />;
+      case 'audio': return <Headphones className="w-4 h-4" />;
+      case 'exercise': return <Brain className="w-4 h-4" />;
+      case 'worksheet': return <FileText className="w-4 h-4" />;
+      case 'reflection': return <BookOpen className="w-4 h-4" />;
+      default: return <BookOpen className="w-4 h-4" />;
     }
   };
 
-  const handleContinueWeek = (weekNumber: number) => {
-    // Update current week if advancing
-    if (weekNumber > data.userProfile.currentWeek) {
-      // Logic to advance week would go here
+  const getModuleIcon = (weekNumber: number) => {
+    switch (weekNumber) {
+      case 1: return <Heart className="w-6 h-6" />;
+      case 2: return <Brain className="w-6 h-6" />;
+      case 3: return <Shield className="w-6 h-6" />;
+      case 4: return <Target className="w-6 h-6" />;
+      case 5: return <Lightbulb className="w-6 h-6" />;
+      case 6: return <Star className="w-6 h-6" />;
+      default: return <BookOpen className="w-6 h-6" />;
     }
-    
-    // For demo purposes, just update progress
-    const currentProgress = getModuleProgress(weekNumber);
-    updateCoachingProgress(weekNumber, Math.min(100, currentProgress + 25));
   };
 
-  const currentWeek = data.userProfile.currentWeek;
-  const overallProgress = (currentWeek - 1) / 6 * 100;
+  const isModuleUnlocked = (weekNumber: number) => {
+    return weekNumber <= data.userProfile.currentWeek || weekNumber <= 3; // Unlock first 3 weeks for demo
+  };
+
+  const getComponentContent = (component: any) => {
+    const contentMap: { [key: string]: any } = {
+      // Week 1 - Hormones and Headspace
+      'w1-video': {
+        content: "In this foundational video, you'll learn about the profound changes happening in your brain during perimenopause and midlife. We'll explore how fluctuating hormones affect neurotransmitters, memory, mood, and cognitive function. Understanding these changes helps normalize your experience and provides a scientific foundation for the strategies we'll implement throughout the program.",
+        keyPoints: ["Hormonal impact on brain function", "Neurotransmitter changes during perimenopause", "Why brain fog occurs", "The connection between stress hormones and cognition"],
+        actionSteps: ["Complete the hormone symptom tracker", "Begin daily mood observations", "Notice patterns in your energy levels"]
+      },
+      'w1-journal': {
+        content: "This reflective exercise helps you identify the mental and emotional load you've been carrying, often unconsciously. Many midlife women are surprised by how much they've been managing without acknowledgment or support.",
+        keyPoints: ["Mental load vs. physical tasks", "Invisible emotional labor", "Impact on cognitive resources", "Recognition as the first step to change"],
+        actionSteps: ["List all responsibilities you manage", "Identify which ones drain your energy most", "Consider what you're ready to release or delegate"]
+      },
+      'w1-tracking': {
+        content: "Begin tracking your daily mood, energy levels, and physical symptoms to identify patterns. This data will help you understand your unique hormonal patterns and responses.",
+        keyPoints: ["Mood tracking basics", "Energy pattern recognition", "Symptom correlation", "Building self-awareness"],
+        actionSteps: ["Track mood 3x daily", "Note energy levels", "Record physical symptoms", "Look for weekly patterns"]
+      },
+      'w1-awareness': {
+        content: "Develop awareness of your automatic thoughts throughout the day. This foundational skill is essential for all the cognitive work we'll do in coming weeks.",
+        keyPoints: ["Automatic vs. intentional thoughts", "Thought observation without judgment", "The power of awareness", "Building mindfulness habits"],
+        actionSteps: ["Set 3 daily awareness reminders", "Notice thoughts without changing them", "Record patterns you observe"]
+      },
+
+      // Week 2 - Rewiring Thoughts  
+      'w2-cbt': {
+        content: "Learn evidence-based cognitive behavioral therapy techniques to identify and challenge negative thought patterns. You'll master the ABCDE model and thought record process.",
+        keyPoints: ["CBT fundamentals", "The ABCDE model", "Thought challenging techniques", "Evidence-based reframing"],
+        actionSteps: ["Practice daily thought records", "Use the ABCDE model", "Challenge negative predictions", "Develop balanced thinking"]
+      },
+      'w2-mirror': {
+        content: "Transform your self-talk through mirror work and personalized affirmation practice. This powerful technique helps rewire neural pathways for self-compassion.",
+        keyPoints: ["Mirror work benefits", "Affirmation science", "Self-compassion development", "Neural pathway rewiring"],
+        actionSteps: ["Daily mirror affirmations", "Write personal affirmations", "Practice self-compassionate language", "Track self-talk changes"]
+      },
+      'w2-audit': {
+        content: "Systematically identify and replace self-critical thoughts with balanced, supportive inner dialogue. This worksheet provides a structured approach to thought transformation.",
+        keyPoints: ["Self-critical pattern identification", "Thought replacement strategies", "Inner critic vs. wise mentor", "Sustainable thought change"],
+        actionSteps: ["Complete daily thought audits", "Identify top 3 critical patterns", "Create replacement thoughts", "Practice new thought patterns"]
+      },
+      'w2-nlp': {
+        content: "Apply neuro-linguistic programming techniques to rapidly shift limiting beliefs and create empowering mental representations.",
+        keyPoints: ["NLP reframing techniques", "Belief change processes", "Mental representation shifts", "Anchoring positive states"],
+        actionSteps: ["Practice belief change exercise", "Create positive mental anchors", "Use reframing in challenging situations", "Build new empowering beliefs"]
+      },
+
+      // Week 3 - Emotional Regulation & Boundaries
+      'w3-patterns': {
+        content: "Identify your unique overwhelm triggers and emotional patterns. Understanding these patterns is the first step to developing targeted regulation strategies.",
+        keyPoints: ["Personal overwhelm triggers", "Emotional pattern recognition", "Physiological stress signals", "Early warning systems"],
+        actionSteps: ["Map personal triggers", "Track emotional intensity", "Identify early warning signs", "Create intervention strategies"]
+      },
+      'w3-technique': {
+        content: "Master the three-step Pause-Label-Shift technique for real-time emotional regulation. This evidence-based approach helps you respond rather than react.",
+        keyPoints: ["The pause response", "Emotional labeling benefits", "Conscious shifting techniques", "Building emotional intelligence"],
+        actionSteps: ["Practice in low-stakes situations", "Use technique during stress", "Track effectiveness", "Refine personal approach"]
+      },
+      'w3-boundaries': {
+        content: "Learn to establish healthy boundaries in relationships and commitments without guilt or conflict. Develop scripts and strategies for boundary communication.",
+        keyPoints: ["Healthy boundary types", "Boundary communication scripts", "Managing guilt and pushback", "Maintaining boundaries consistently"],
+        actionSteps: ["Assess current boundaries", "Identify needed boundaries", "Practice boundary conversations", "Implement gradually"]
+      },
+      'w3-mood-map': {
+        content: "Create a visual representation of your emotional landscape to better understand patterns and plan regulation strategies.",
+        keyPoints: ["Emotional pattern visualization", "Trigger mapping", "Resource identification", "Pattern interruption strategies"],
+        actionSteps: ["Map weekly emotional patterns", "Identify peak challenge times", "Plan support strategies", "Track pattern changes"]
+      },
+
+      // Week 4 - Nervous System Reset
+      'w4-grounding': {
+        content: "Learn powerful somatic grounding practices that help regulate your nervous system through body awareness and movement.",
+        keyPoints: ["Body awareness techniques", "Grounding through movement", "Somatic regulation", "Physical safety signals"],
+        actionSteps: ["Practice daily grounding", "Use during stress", "Build body awareness", "Create safety rituals"]
+      },
+      'w4-breathwork': {
+        content: "Master breathing techniques and vagus nerve exercises that activate your parasympathetic nervous system for deep calm and restoration.",
+        keyPoints: ["Vagus nerve function", "Parasympathetic activation", "Breathing patterns", "Nervous system reset"],
+        actionSteps: ["Practice box breathing", "Use cold water technique", "Humming exercises", "Daily vagus nerve toning"]
+      },
+      'w4-calm-corner': {
+        content: "Design a dedicated physical space that supports nervous system regulation and serves as your sanctuary for self-care and restoration.",
+        keyPoints: ["Environment and nervous system", "Sensory calming elements", "Sacred space creation", "Accessibility planning"],
+        actionSteps: ["Choose your space", "Add calming elements", "Create ritual objects", "Use space daily"]
+      },
+      'w4-meditation': {
+        content: "Guided meditation specifically designed to calm and restore your nervous system through visualization and body awareness techniques.",
+        keyPoints: ["Meditation for nervous system", "Visualization techniques", "Body scan practice", "Restoration imagery"],
+        actionSteps: ["Daily meditation practice", "Try different techniques", "Track nervous system changes", "Build consistency"]
+      },
+
+      // Week 5 - Clarity & Cognitive Flow
+      'w5-rituals': {
+        content: "Develop daily practices and rituals that enhance cognitive function, memory, and mental clarity through intentional habit design.",
+        keyPoints: ["Cognitive enhancement rituals", "Memory support practices", "Focus optimization", "Brain health habits"],
+        actionSteps: ["Create morning cognitive ritual", "Design focus practices", "Build memory techniques", "Track cognitive improvements"]
+      },
+      'w5-nutrition': {
+        content: "Learn about foods, supplements, and lifestyle factors that support optimal brain health and cognitive function during midlife.",
+        keyPoints: ["Brain-healthy foods", "Supplement strategies", "Hydration and cognition", "Lifestyle factors"],
+        actionSteps: ["Plan brain-healthy meals", "Consider supplements", "Optimize hydration", "Track cognitive energy"]
+      },
+      'w5-planner': {
+        content: "Create a personalized weekly planning system that works with your cognitive strengths and energy patterns for maximum effectiveness.",
+        keyPoints: ["Energy-based planning", "Cognitive load management", "Priority systems", "Time optimization"],
+        actionSteps: ["Map energy patterns", "Design weekly template", "Practice planning", "Refine system"]
+      },
+      'w5-mind-dump': {
+        content: "Learn techniques to clear mental clutter and overwhelm so you can focus on what truly matters most in your life and goals.",
+        keyPoints: ["Mental decluttering", "Priority clarification", "Cognitive space", "Focus enhancement"],
+        actionSteps: ["Daily mind dumps", "Priority ranking", "Energy allocation", "Focus sessions"]
+      },
+
+      // Week 6 - Future Self & Goal Mapping
+      'w6-vision': {
+        content: "Create a compelling digital vision board that represents your ideal future self and serves as daily inspiration for your growth journey.",
+        keyPoints: ["Vision board creation", "Future self visualization", "Goal imagery", "Inspiration tools"],
+        actionSteps: ["Collect inspiring images", "Create digital board", "Write vision statements", "Daily visualization"]
+      },
+      'w6-goals': {
+        content: "Learn to set SMART goals that are aligned with your values and create a strategic plan for achieving your most important objectives.",
+        keyPoints: ["SMART goal framework", "Values alignment", "Strategic planning", "Milestone creation"],
+        actionSteps: ["Define core values", "Set SMART goals", "Create action plans", "Set milestones"]
+      },
+      'w6-reverse': {
+        content: "Master the reverse engineering method to work backwards from your goals and create a clear, actionable roadmap to success.",
+        keyPoints: ["Reverse engineering process", "Milestone mapping", "Action step planning", "Timeline creation"],
+        actionSteps: ["Start with end goal", "Map backwards", "Define milestones", "Create timeline"]
+      },
+      'w6-habits': {
+        content: "Design sustainable habit loops that support your long-term goals and create lasting positive change in your daily life.",
+        keyPoints: ["Habit loop design", "Sustainability strategies", "Behavior change", "Long-term success"],
+        actionSteps: ["Identify keystone habits", "Design habit loops", "Create tracking system", "Build consistency"]
+      }
+    };
+
+    return contentMap[component.id] || {
+      content: "Detailed content for this component will guide you through specific exercises and learning objectives tailored for midlife women's wellness journey.",
+      keyPoints: ["Key learning objective", "Important concept", "Practical application"],
+      actionSteps: ["Complete the exercise", "Reflect on insights", "Apply in daily life"]
+    };
+  };
 
   return (
-    <div className="space-y-12">
-      {/* Program Header */}
-      <section className="text-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-coral-600 to-sage-600 bg-clip-text text-transparent">
           The Mind Reset Method
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-          A 6-week interactive coaching journey designed specifically for midlife women navigating transitions with grace and confidence.
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          A 6-week transformational journey designed specifically for women navigating midlife transitions
         </p>
-        
-        <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">Week {currentWeek}</div>
-            <div>of 6</div>
-          </div>
-          <div className="w-32 bg-gray-200 rounded-full h-2">
-            <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: `${overallProgress}%` }}></div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-sage-600">{Math.round(overallProgress)}%</div>
-            <div>Complete</div>
+        <div className="flex items-center justify-center gap-4 flex-wrap">
+          <Badge variant="secondary">Week {data.userProfile.currentWeek} of 6</Badge>
+          <Progress value={(data.userProfile.currentWeek / 6) * 100} className="w-32" />
+          <div className="text-sm text-muted-foreground">
+            {data.coachingProgress.completedComponents?.length || 0} components completed
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Program Overview */}
-      <section className="gradient-primary rounded-2xl p-8 text-white">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-8 h-8" />
+      <Card className="bg-gradient-to-r from-coral-50 to-sage-50 border-coral-200">
+        <CardHeader>
+          <CardTitle className="text-xl">Program Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="font-semibold mb-2">What You'll Achieve:</h3>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>• Understand and manage hormonal brain changes</li>
+                <li>• Transform negative thought patterns</li>
+                <li>• Master emotional regulation techniques</li>
+                <li>• Reset and strengthen your nervous system</li>
+                <li>• Enhance cognitive clarity and focus</li>
+                <li>• Create a compelling vision for your future</li>
+              </ul>
             </div>
-            <h3 className="font-semibold mb-2">6 Weeks</h3>
-            <p className="text-purple-100">Structured program with weekly milestones</p>
-          </div>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Video className="w-8 h-8" />
+            <div>
+              <h3 className="font-semibold mb-2">Program Features:</h3>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>• Video lessons with expert guidance</li>
+                <li>• Interactive worksheets and exercises</li>
+                <li>• Guided audio meditations</li>
+                <li>• Daily reflection prompts</li>
+                <li>• Progress tracking tools</li>
+                <li>• Lifetime access to materials</li>
+              </ul>
             </div>
-            <h3 className="font-semibold mb-2">Expert Content</h3>
-            <p className="text-purple-100">Video lessons, audio meditations, and worksheets</p>
           </div>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Award className="w-8 h-8" />
-            </div>
-            <h3 className="font-semibold mb-2">Progress Tracking</h3>
-            <p className="text-purple-100">Monitor your transformation journey</p>
-          </div>
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
-      {/* Current Week Highlight */}
-      <section>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="wellness-card border-2 border-primary">
-            <CardHeader className="bg-primary/5">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                    {currentWeek}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      {coachingModules[currentWeek - 1]?.title}
-                    </h3>
-                    <Badge className="bg-primary text-white">Current Week</Badge>
-                  </div>
-                </div>
-                <Play className="w-8 h-8 text-primary" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <p className="text-gray-600 mb-6">
-                {coachingModules[currentWeek - 1]?.description}
-              </p>
-
-              <div className="space-y-4 mb-6">
-                {coachingModules[currentWeek - 1]?.components.map((component, index) => {
-                  const Icon = getComponentIcon(component.type);
-                  const isCompleted = index < 2; // Demo: first 2 components completed
-                  
-                  return (
-                    <div key={component.id} className="flex items-center space-x-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                        isCompleted ? 'bg-green-500' : index === 2 ? 'bg-primary' : 'border-2 border-gray-300'
-                      }`}>
-                        {isCompleted ? (
-                          <CheckCircle className="w-4 h-4 text-white" />
-                        ) : index === 2 ? (
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        ) : null}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <Icon className="w-4 h-4 text-gray-500" />
-                          <span className={`text-sm ${isCompleted ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
-                            {component.title}
-                          </span>
-                        </div>
-                        {component.duration && (
-                          <span className="text-xs text-gray-500">{component.duration} min</span>
-                        )}
-                      </div>
+      {/* Modules */}
+      <div className="grid gap-6">
+        {coachingModules.map((module) => {
+          const progress = getModuleProgress(module.id, data.coachingProgress.completedComponents || []);
+          const isUnlocked = isModuleUnlocked(module.weekNumber);
+          
+          return (
+            <Card key={module.id} className={`transition-all duration-200 ${isUnlocked ? 'hover:shadow-lg' : 'opacity-60'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-lg ${isUnlocked ? 'bg-coral-100 text-coral-600' : 'bg-muted text-muted-foreground'}`}>
+                      {getModuleIcon(module.weekNumber)}
                     </div>
-                  );
-                })}
-              </div>
-
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">Week Progress</span>
-                  <span className="text-sm text-primary font-medium">50%</span>
-                </div>
-                <Progress value={50} className="h-2" />
-              </div>
-
-              <Button 
-                onClick={() => handleContinueWeek(currentWeek)}
-                className="w-full btn-primary"
-              >
-                Continue Week {currentWeek}
-                <Play className="w-4 h-4 ml-2" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Progress Overview */}
-          <Card className="wellness-card">
-            <CardHeader>
-              <CardTitle>Your Journey</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {coachingModules.slice(0, 3).map((module) => {
-                  const status = getModuleStatus(module.weekNumber);
-                  const progress = getModuleProgress(module.weekNumber);
-                  
-                  return (
-                    <div key={module.id} className={`flex items-center space-x-4 p-4 rounded-xl border ${
-                      status === 'completed' ? 'bg-green-50 border-green-200' :
-                      status === 'current' ? 'bg-primary/5 border-primary/20' :
-                      'bg-gray-50 border-gray-200 opacity-60'
-                    }`}>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                        status === 'completed' ? 'bg-green-500 text-white' :
-                        status === 'current' ? 'bg-primary text-white' :
-                        'bg-gray-300 text-gray-600'
-                      }`}>
-                        {status === 'completed' ? <CheckCircle className="w-5 h-5" /> : module.weekNumber}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-800">{module.title}</h4>
-                        <p className="text-sm text-gray-500">
-                          {status === 'completed' ? 'Completed' :
-                           status === 'current' ? `${progress}% complete` :
-                           `Unlocks after Week ${module.weekNumber - 1}`}
-                        </p>
-                      </div>
-                      {status === 'current' && (
-                        <div className="w-8 bg-gray-200 rounded-full h-2">
-                          <div className="bg-primary h-2 rounded-full" style={{ width: `${progress}%` }}></div>
-                        </div>
+                    <div>
+                      <CardTitle className="text-xl">{module.title}</CardTitle>
+                      <p className="text-sm text-muted-foreground">Week {module.weekNumber} • {module.components.length} components</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-2 mb-1">
+                      {isUnlocked ? (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <Lock className="w-4 h-4 text-muted-foreground" />
                       )}
-                      {status === 'locked' && <Lock className="w-4 h-4 text-gray-400" />}
+                      <span className="text-sm font-medium">{progress}%</span>
                     </div>
-                  );
-                })}
-                
-                {/* Upcoming weeks */}
-                <div className="text-center py-4">
-                  <div className="text-sm text-gray-500 mb-2">+ 3 more weeks to unlock</div>
-                  <div className="flex justify-center space-x-2">
-                    {[4, 5, 6].map((week) => (
-                      <div key={week} className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm text-gray-500">
-                        {week}
-                      </div>
-                    ))}
+                    <Progress value={progress} className="w-24" />
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* All Modules Overview */}
-      <section>
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">Complete Program Overview</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {coachingModules.map((module) => {
-            const status = getModuleStatus(module.weekNumber);
-            const progress = getModuleProgress(module.weekNumber);
-            
-            return (
-              <Card key={module.id} className={`wellness-card ${
-                status === 'current' ? 'border-primary border-2' : ''
-              }`}>
-                <CardHeader className={`${
-                  status === 'completed' ? 'bg-green-50' :
-                  status === 'current' ? 'bg-primary/5' :
-                  'bg-gray-50'
-                }`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                      status === 'completed' ? 'bg-green-500 text-white' :
-                      status === 'current' ? 'bg-primary text-white' :
-                      'bg-gray-300 text-gray-600'
-                    }`}>
-                      {status === 'completed' ? <CheckCircle className="w-5 h-5" /> : module.weekNumber}
-                    </div>
-                    {status === 'locked' && <Lock className="w-5 h-5 text-gray-400" />}
-                    {status === 'current' && <Clock className="w-5 h-5 text-primary" />}
-                    {status === 'completed' && <Award className="w-5 h-5 text-green-500" />}
-                  </div>
-                  <CardTitle className="text-lg">{module.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <p className="text-sm text-gray-600 mb-4">{module.description}</p>
-                  
-                  <div className="space-y-2 text-xs text-gray-500 mb-4">
-                    {module.components.slice(0, 2).map((component) => {
-                      const Icon = getComponentIcon(component.type);
+                <p className="text-muted-foreground">{module.description}</p>
+              </CardHeader>
+              
+              {isUnlocked && (
+                <CardContent>
+                  <div className="grid gap-3">
+                    {module.components.map((component) => {
+                      const isCompleted = data.coachingProgress.completedComponents?.includes(component.id) || false;
+                      const componentContent = getComponentContent(component);
+                      
                       return (
-                        <div key={component.id} className="flex items-center space-x-2">
-                          <Icon className="w-3 h-3 text-gray-400" />
-                          <span>{component.title}</span>
+                        <div key={component.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className={`p-2 rounded ${isCompleted ? 'bg-green-100 text-green-600' : 'bg-sage-100 text-sage-600'}`}>
+                              {getComponentIcon(component.type)}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium">{component.title}</h4>
+                              <p className="text-sm text-muted-foreground">{component.description}</p>
+                              {component.duration && (
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                  <Clock className="w-3 h-3" />
+                                  {component.duration} minutes
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" onClick={() => setSelectedComponent(component)}>
+                                  View
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    {getComponentIcon(component.type)}
+                                    {component.title}
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    {component.description}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <Tabs defaultValue="content" className="mt-4">
+                                  <TabsList>
+                                    <TabsTrigger value="content">Content</TabsTrigger>
+                                    <TabsTrigger value="keypoints">Key Points</TabsTrigger>
+                                    <TabsTrigger value="actions">Action Steps</TabsTrigger>
+                                  </TabsList>
+                                  <TabsContent value="content" className="space-y-4">
+                                    <p className="text-sm leading-relaxed">{componentContent.content}</p>
+                                  </TabsContent>
+                                  <TabsContent value="keypoints" className="space-y-2">
+                                    <ul className="space-y-2">
+                                      {componentContent.keyPoints.map((point: string, index: number) => (
+                                        <li key={index} className="text-sm flex items-start gap-2">
+                                          <div className="w-1.5 h-1.5 bg-coral-500 rounded-full mt-2 flex-shrink-0" />
+                                          {point}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </TabsContent>
+                                  <TabsContent value="actions" className="space-y-2">
+                                    <ul className="space-y-3">
+                                      {componentContent.actionSteps.map((step: string, index: number) => (
+                                        <li key={index} className="text-sm flex items-start gap-3">
+                                          <div className="w-6 h-6 bg-sage-100 text-sage-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                            {index + 1}
+                                          </div>
+                                          {step}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </TabsContent>
+                                </Tabs>
+                              </DialogContent>
+                            </Dialog>
+                            <Button
+                              size="sm"
+                              variant={isCompleted ? "secondary" : "default"}
+                              onClick={() => handleComponentComplete(module.id, component.id)}
+                              disabled={isCompleted}
+                            >
+                              {isCompleted ? "✓ Done" : "Start"}
+                            </Button>
+                          </div>
                         </div>
                       );
                     })}
-                    {module.components.length > 2 && (
-                      <div className="text-gray-400">+ {module.components.length - 2} more activities</div>
-                    )}
                   </div>
-
-                  {status === 'current' && (
-                    <>
-                      <Progress value={progress} className="mb-4" />
-                      <Button 
-                        onClick={() => handleContinueWeek(module.weekNumber)}
-                        className="w-full btn-primary"
-                        size="sm"
-                      >
-                        Continue
-                      </Button>
-                    </>
-                  )}
-                  
-                  {status === 'completed' && (
-                    <Button variant="outline" className="w-full" size="sm">
-                      Review Content
-                    </Button>
-                  )}
-                  
-                  {status === 'locked' && (
-                    <Button variant="outline" className="w-full opacity-50" size="sm" disabled>
-                      Locked
-                    </Button>
-                  )}
                 </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Help Section */}
+      <Card className="bg-sage-50 border-sage-200">
+        <CardHeader>
+          <CardTitle className="text-lg">How to Use This Program</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <p><strong>Weekly Structure:</strong> Each week builds on the previous, so complete modules in order for best results.</p>
+          <p><strong>Time Commitment:</strong> Plan 30-45 minutes per day for optimal progress through the materials.</p>
+          <p><strong>Component Types:</strong> Videos provide teaching, worksheets offer structure, exercises are hands-on practice, and reflections deepen integration.</p>
+          <p><strong>Progress Tracking:</strong> Mark components complete as you finish them to track your journey and unlock new content.</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
