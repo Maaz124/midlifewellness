@@ -9848,6 +9848,640 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 3 - Overwhelm Pattern Analysis
+    if (component.id === 'w3-patterns') {
+      const analysisPhase = responses.analysisPhase || 'introduction';
+      const overwhelmTriggers = responses.overwhelmTriggers || [];
+      const patternInsights = responses.patternInsights || {};
+
+      const overwhelmPatterns = [
+        {
+          id: 'perfectionism-paralysis',
+          name: 'Perfectionism Paralysis',
+          description: 'Fear of not doing things perfectly prevents you from starting or finishing tasks',
+          icon: '🎯',
+          color: 'red',
+          category: 'Performance',
+          triggers: [
+            'Big projects or deadlines',
+            'New responsibilities at work',
+            'Social events or presentations',
+            'Organizing or decluttering spaces',
+            'Making important decisions'
+          ],
+          physicalSigns: ['Procrastination', 'Muscle tension', 'Shallow breathing', 'Analysis paralysis'],
+          emotionalSigns: ['Anxiety', 'Self-criticism', 'Fear of judgment', 'Feeling inadequate'],
+          midlifeContext: 'Increased self-awareness can make perfectionism more intense as you evaluate life choices',
+          intervention: 'Progress over perfection - set "good enough" standards and celebrate completion',
+          practices: [
+            'Set 80% completion as your goal instead of 100%',
+            'Use the "2-minute rule" - if it takes less than 2 minutes, do it now',
+            'Practice self-compassion when things aren\'t perfect',
+            'Break large tasks into tiny, manageable steps'
+          ]
+        },
+        {
+          id: 'boundary-overwhelm',
+          name: 'Boundary Overwhelm',
+          description: 'Taking on too much because you struggle to say no or set limits',
+          icon: '🚪',
+          color: 'orange',
+          category: 'Boundaries',
+          triggers: [
+            'Requests for help from family/friends',
+            'Extra responsibilities at work',
+            'Social obligations and commitments',
+            'Caregiving for aging parents',
+            'Children\'s activities and needs'
+          ],
+          physicalSigns: ['Exhaustion', 'Tension headaches', 'Sleep disruption', 'Digestive issues'],
+          emotionalSigns: ['Resentment', 'Guilt', 'Feeling taken advantage of', 'Emotional depletion'],
+          midlifeContext: 'Sandwich generation pressures - caring for aging parents while supporting children',
+          intervention: 'Practice saying no as self-care, not selfishness',
+          practices: [
+            'Use the 24-hour rule before saying yes to new commitments',
+            'Practice phrases: "Let me check my calendar and get back to you"',
+            'Identify your non-negotiable personal time',
+            'Set clear boundaries with family about your availability'
+          ]
+        },
+        {
+          id: 'transition-turbulence',
+          name: 'Transition Turbulence',
+          description: 'Feeling overwhelmed by multiple life changes happening simultaneously',
+          icon: '🌪️',
+          color: 'purple',
+          category: 'Change',
+          triggers: [
+            'Career transitions or job changes',
+            'Children leaving home (empty nest)',
+            'Relationship changes or divorce',
+            'Physical health changes',
+            'Financial shifts or concerns'
+          ],
+          physicalSigns: ['Restlessness', 'Sleep problems', 'Appetite changes', 'Low energy'],
+          emotionalSigns: ['Uncertainty', 'Grief', 'Identity confusion', 'Feeling untethered'],
+          midlifeContext: 'Multiple transitions often cluster in midlife, creating compounded stress',
+          intervention: 'Focus on what you can control and embrace the growth within change',
+          practices: [
+            'Identify one small constant you can maintain during transitions',
+            'Journal about who you\'re becoming, not just who you\'re losing',
+            'Seek support from others who\'ve navigated similar transitions',
+            'Create new routines that reflect your evolving identity'
+          ]
+        },
+        {
+          id: 'comparison-overload',
+          name: 'Comparison Overload',
+          description: 'Constantly measuring yourself against others, leading to feelings of inadequacy',
+          icon: '👥',
+          color: 'blue',
+          category: 'Social',
+          triggers: [
+            'Social media browsing',
+            'Reunions or social gatherings',
+            'Career advancement discussions',
+            'Appearance-focused situations',
+            'Achievement or success stories of others'
+          ],
+          physicalSigns: ['Restless energy', 'Facial tension', 'Rapid heartbeat', 'Scrolling behaviors'],
+          emotionalSigns: ['Inadequacy', 'Envy', 'Self-doubt', 'Competitive anxiety'],
+          midlifeContext: 'Peer comparisons become more intense as life diverges and achievements become visible',
+          intervention: 'Shift focus from external comparison to internal growth and values alignment',
+          practices: [
+            'Practice gratitude for your unique journey and circumstances',
+            'Limit social media to specific times and purposes',
+            'Celebrate others\' success as inspiration, not competition',
+            'Define success based on your values, not society\'s expectations'
+          ]
+        },
+        {
+          id: 'hormonal-hypersensitivity',
+          name: 'Hormonal Hypersensitivity',
+          description: 'Heightened emotional reactivity due to hormonal fluctuations',
+          icon: '🌊',
+          color: 'pink',
+          category: 'Biological',
+          triggers: [
+            'Certain days of your cycle',
+            'Lack of sleep or poor nutrition',
+            'High-stress situations',
+            'Interpersonal conflicts',
+            'Sensory overload (noise, crowds)'
+          ],
+          physicalSigns: ['Hot flashes', 'Mood swings', 'Tearfulness', 'Irritability'],
+          emotionalSigns: ['Emotional volatility', 'Feeling "crazy"', 'Difficulty regulating responses', 'Shame about reactions'],
+          midlifeContext: 'Perimenopause creates unpredictable emotional intensity that can feel overwhelming',
+          intervention: 'Track patterns and create responsive (not reactive) coping strategies',
+          practices: [
+            'Track your cycle and emotional patterns for 2-3 months',
+            'Plan lighter schedules during your most sensitive times',
+            'Use breathing techniques when you feel emotional intensity rising',
+            'Practice self-compassion - your reactions are biology, not character flaws'
+          ]
+        },
+        {
+          id: 'mental-load-fatigue',
+          name: 'Mental Load Fatigue',
+          description: 'Exhaustion from managing countless details and decisions for yourself and others',
+          icon: '🧠',
+          color: 'green',
+          category: 'Cognitive',
+          triggers: [
+            'Managing family schedules and logistics',
+            'Household management and maintenance',
+            'Work deadlines and responsibilities',
+            'Financial planning and decisions',
+            'Health appointments and medications'
+          ],
+          physicalSigns: ['Brain fog', 'Forgetfulness', 'Mental exhaustion', 'Decision fatigue'],
+          emotionalSigns: ['Feeling invisible', 'Resentment', 'Overwhelm', 'Cognitive overload'],
+          midlifeContext: 'Peak responsibility years - managing aging parents, teens, career, and personal health',
+          intervention: 'Delegate, systemize, and reduce decision fatigue through automation',
+          practices: [
+            'Make a list of all the mental tasks you manage - make the invisible visible',
+            'Delegate age-appropriate responsibilities to family members',
+            'Automate recurring decisions (meal planning, bill paying)',
+            'Use brain dump sessions to clear mental clutter regularly'
+          ]
+        }
+      ];
+
+      const assessmentQuestions = [
+        {
+          id: 'frequency',
+          question: 'How often do you experience this pattern?',
+          type: 'scale',
+          scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Almost Always']
+        },
+        {
+          id: 'intensity',
+          question: 'When this pattern occurs, how intense is the overwhelm? (1-10)',
+          type: 'number'
+        },
+        {
+          id: 'triggers',
+          question: 'Which specific triggers affect you most?',
+          type: 'checklist'
+        },
+        {
+          id: 'impact',
+          question: 'How does this pattern impact your daily life?',
+          type: 'textarea',
+          placeholder: 'Describe how this affects your relationships, work, health, or wellbeing...'
+        },
+        {
+          id: 'current-coping',
+          question: 'What do you currently do to cope with this pattern?',
+          type: 'textarea',
+          placeholder: 'List any strategies you use, even if they don\'t work well...'
+        }
+      ];
+
+      const renderPatternAssessment = (pattern: any) => {
+        const patternResponses = responses.patternResponses?.[pattern.id] || {};
+        
+        return (
+          <div className="space-y-6">
+            <div className={`bg-${pattern.color}-50 p-4 rounded-lg border border-${pattern.color}-200`}>
+              <h5 className={`font-semibold text-${pattern.color}-800 mb-2 flex items-center gap-2`}>
+                <span className="text-lg">{pattern.icon}</span>
+                {pattern.name} Assessment
+              </h5>
+              <p className={`text-sm text-${pattern.color}-700 mb-3`}>{pattern.description}</p>
+              
+              <div className="bg-white p-3 rounded border">
+                <h6 className="font-medium text-gray-800 mb-2">Midlife Context</h6>
+                <p className="text-sm text-gray-600">{pattern.midlifeContext}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border rounded-lg p-4">
+              <h6 className="font-semibold text-gray-800 mb-4">Pattern Assessment Questions</h6>
+              <div className="space-y-6">
+                {assessmentQuestions.map((question, index) => (
+                  <div key={question.id}>
+                    <Label className="text-sm font-medium">{question.question}</Label>
+                    
+                    {question.type === 'scale' && (
+                      <div className="mt-2">
+                        <div className="grid grid-cols-5 gap-2">
+                          {question.scale.map((option, optionIndex) => (
+                            <button
+                              key={optionIndex}
+                              onClick={() => setResponses({
+                                ...responses,
+                                patternResponses: {
+                                  ...responses.patternResponses,
+                                  [pattern.id]: {
+                                    ...patternResponses,
+                                    [question.id]: optionIndex + 1
+                                  }
+                                }
+                              })}
+                              className={`p-2 text-xs rounded border transition-all ${
+                                patternResponses[question.id] === optionIndex + 1
+                                  ? `bg-${pattern.color}-500 text-white border-${pattern.color}-600`
+                                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {question.type === 'number' && (
+                      <div className="mt-2">
+                        <div className="grid grid-cols-10 gap-1">
+                          {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                            <button
+                              key={num}
+                              onClick={() => setResponses({
+                                ...responses,
+                                patternResponses: {
+                                  ...responses.patternResponses,
+                                  [pattern.id]: {
+                                    ...patternResponses,
+                                    [question.id]: num
+                                  }
+                                }
+                              })}
+                              className={`h-8 text-xs rounded transition-all ${
+                                patternResponses[question.id] === num
+                                  ? `bg-${pattern.color}-500 text-white`
+                                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                              }`}
+                            >
+                              {num}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500 mt-1">
+                          <span>Mild</span>
+                          <span>Intense</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {question.type === 'checklist' && (
+                      <div className="mt-2 space-y-2">
+                        {pattern.triggers.map((trigger: string, triggerIndex: number) => (
+                          <div key={triggerIndex} className="flex items-center gap-2">
+                            <Checkbox
+                              checked={patternResponses[question.id]?.includes(trigger) || false}
+                              onCheckedChange={(checked) => {
+                                const currentTriggers = patternResponses[question.id] || [];
+                                const newTriggers = checked
+                                  ? [...currentTriggers, trigger]
+                                  : currentTriggers.filter((t: string) => t !== trigger);
+                                
+                                setResponses({
+                                  ...responses,
+                                  patternResponses: {
+                                    ...responses.patternResponses,
+                                    [pattern.id]: {
+                                      ...patternResponses,
+                                      [question.id]: newTriggers
+                                    }
+                                  }
+                                });
+                              }}
+                            />
+                            <span className="text-sm">{trigger}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {question.type === 'textarea' && (
+                      <Textarea
+                        placeholder={question.placeholder}
+                        value={patternResponses[question.id] || ''}
+                        onChange={(e) => setResponses({
+                          ...responses,
+                          patternResponses: {
+                            ...responses.patternResponses,
+                            [pattern.id]: {
+                              ...patternResponses,
+                              [question.id]: e.target.value
+                            }
+                          }
+                        })}
+                        className="mt-2"
+                        rows={3}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className={`bg-gradient-to-r from-${pattern.color}-100 to-${pattern.color}-50 p-4 rounded-lg`}>
+              <h6 className="font-semibold text-gray-800 mb-2">Recommended Practices for This Pattern</h6>
+              <ul className="space-y-2">
+                {pattern.practices.map((practice: string, index: number) => (
+                  <li key={index} className="flex items-start gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>{practice}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-purple-500" />
+              Overwhelm Pattern Analysis - Understand Your Triggers
+            </CardTitle>
+            <p className="text-sm text-gray-600">Identify your personal overwhelm patterns and develop targeted strategies for managing emotional intensity during midlife transitions.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind Pattern Recognition */}
+            <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+              <h5 className="font-semibold text-purple-800 mb-2">The Science Behind Pattern Recognition</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-purple-700">
+                <div>
+                  <strong>Stress Response Patterns:</strong> Your nervous system develops predictable responses to specific triggers
+                </div>
+                <div>
+                  <strong>Neuroplasticity:</strong> Recognizing patterns is the first step to rewiring your brain's automatic responses
+                </div>
+                <div>
+                  <strong>Emotional Regulation:</strong> Understanding your triggers helps you respond rather than react
+                </div>
+                <div>
+                  <strong>Midlife Neurobiology:</strong> Hormonal changes affect stress sensitivity and emotional processing
+                </div>
+              </div>
+            </div>
+
+            {/* Introduction Phase */}
+            {analysisPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Understanding Your Overwhelm Patterns</h4>
+                  
+                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-2">🧠 Why Pattern Analysis Matters</h5>
+                    <p className="text-sm text-gray-700">
+                      Overwhelm isn't random - it follows predictable patterns unique to your biology, history, and current life phase. 
+                      By understanding these patterns, you can anticipate challenges and develop proactive coping strategies instead of 
+                      feeling constantly reactive and out of control.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {[
+                      {
+                        icon: '🎯',
+                        title: 'Identify Triggers',
+                        description: 'Recognize specific situations that consistently lead to overwhelm',
+                        color: 'blue'
+                      },
+                      {
+                        icon: '🌊',
+                        title: 'Understand Responses',
+                        description: 'Map your physical, emotional, and behavioral reactions',
+                        color: 'green'
+                      },
+                      {
+                        icon: '⚡',
+                        title: 'Develop Interventions',
+                        description: 'Create targeted strategies for your specific patterns',
+                        color: 'purple'
+                      },
+                      {
+                        icon: '📈',
+                        title: 'Track Progress',
+                        description: 'Monitor changes and refine your approach over time',
+                        color: 'orange'
+                      }
+                    ].map((benefit, index) => (
+                      <div key={index} className={`p-4 rounded-lg border-l-4 border-${benefit.color}-400 bg-${benefit.color}-50`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{benefit.icon}</span>
+                          <h5 className={`font-semibold text-${benefit.color}-800`}>{benefit.title}</h5>
+                        </div>
+                        <p className={`text-sm text-${benefit.color}-700`}>{benefit.description}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h5 className="font-semibold text-yellow-800 mb-2">🌟 Midlife-Specific Overwhelm</h5>
+                    <p className="text-sm text-yellow-700">
+                      Midlife brings unique overwhelm challenges: hormonal fluctuations, multiple life transitions, 
+                      peak responsibility years, and increased self-awareness. This analysis helps you navigate these 
+                      challenges with wisdom rather than worry.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+                    <Button 
+                      onClick={() => setResponses({...responses, analysisPhase: 'pattern-selection'})}
+                      className="flex-1"
+                    >
+                      Start Pattern Analysis
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Pattern Selection Phase */}
+            {analysisPhase === 'pattern-selection' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Choose Your Primary Overwhelm Pattern</h4>
+                  <p className="text-sm text-gray-600 mb-6">Select the pattern that feels most relevant to your current experience. You can assess multiple patterns, but start with the one that resonates most strongly.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {overwhelmPatterns.map((pattern) => (
+                      <div 
+                        key={pattern.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          responses.selectedPattern === pattern.id
+                            ? `border-${pattern.color}-400 bg-${pattern.color}-50`
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setResponses({...responses, selectedPattern: pattern.id})}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{pattern.icon}</span>
+                          <h5 className="font-semibold text-gray-800">{pattern.name}</h5>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{pattern.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <Badge variant="outline" className="text-xs">{pattern.category}</Badge>
+                          </div>
+                          
+                          <div className="text-xs text-gray-600">
+                            <strong>Common triggers:</strong> {pattern.triggers.slice(0, 2).join(', ')}...
+                          </div>
+                          
+                          <div className="text-xs text-gray-600">
+                            <strong>Key intervention:</strong> {pattern.intervention}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {responses.selectedPattern && (
+                    <div className="mt-6 flex gap-3">
+                      <Button 
+                        onClick={() => setResponses({...responses, analysisPhase: 'assessment'})}
+                        className="flex-1"
+                      >
+                        Assess This Pattern
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Assessment Phase */}
+            {analysisPhase === 'assessment' && responses.selectedPattern && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Pattern Assessment</h4>
+                  
+                  {(() => {
+                    const pattern = overwhelmPatterns.find(p => p.id === responses.selectedPattern);
+                    return renderPatternAssessment(pattern);
+                  })()}
+
+                  <div className="mt-8 flex gap-3">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setResponses({...responses, analysisPhase: 'pattern-selection'})}
+                    >
+                      Choose Different Pattern
+                    </Button>
+                    <Button 
+                      onClick={() => setResponses({...responses, analysisPhase: 'insights'})}
+                      className="flex-1"
+                      disabled={!responses.patternResponses?.[responses.selectedPattern]?.frequency}
+                    >
+                      View Pattern Insights
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Insights Phase */}
+            {analysisPhase === 'insights' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Your Overwhelm Pattern Insights</h4>
+                
+                <div className="space-y-6">
+                  {/* Pattern Summary */}
+                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
+                    <h5 className="font-semibold text-gray-800 mb-3">🔍 Your Primary Pattern Analysis</h5>
+                    
+                    {(() => {
+                      const pattern = overwhelmPatterns.find(p => p.id === responses.selectedPattern);
+                      const patternResponses = responses.patternResponses?.[responses.selectedPattern] || {};
+                      
+                      return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <strong>Pattern:</strong> {pattern?.name}
+                          </div>
+                          <div>
+                            <strong>Frequency:</strong> {assessmentQuestions[0].scale[patternResponses.frequency - 1] || 'Not assessed'}
+                          </div>
+                          <div>
+                            <strong>Intensity:</strong> {patternResponses.intensity || 'Not rated'}/10
+                          </div>
+                          <div>
+                            <strong>Triggers Identified:</strong> {patternResponses.triggers?.length || 0}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Personalized Action Plan */}
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h5 className="font-semibold text-green-800 mb-3">Your Personalized Action Plan</h5>
+                    
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">1.</span>
+                        <p>
+                          <strong>Immediate Response Plan:</strong> When you notice your pattern starting, pause and take 3 deep breaths. 
+                          Remind yourself: "This is my {overwhelmPatterns.find(p => p.id === responses.selectedPattern)?.name.toLowerCase()} pattern. I can respond differently."
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">2.</span>
+                        <p>
+                          <strong>Weekly Prevention:</strong> Review your triggers each Sunday and plan strategies for high-risk situations in the coming week.
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">3.</span>
+                        <p>
+                          <strong>Monthly Review:</strong> Track your pattern frequency and intensity to see progress over time. Celebrate small improvements.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Integration Commitment */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Personal commitment for managing this pattern</Label>
+                      <Textarea
+                        placeholder="Write a commitment statement about how you'll use these insights to manage your overwhelm pattern..."
+                        value={responses.patternCommitment || ''}
+                        onChange={(e) => setResponses({...responses, patternCommitment: e.target.value})}
+                        className="mt-2"
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h5 className="font-semibold text-blue-800 mb-2">🚀 Pattern Interruption Tip</h5>
+                      <p className="text-sm text-blue-700">
+                        The moment you recognize your pattern is the moment you have power over it. Even noticing without changing 
+                        anything is progress. Be patient with yourself as you develop new responses.
+                      </p>
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        setResponses({...responses, patternsCompleted: true});
+                        onComplete(component.id, responses);
+                      }}
+                      className="w-full"
+                      disabled={!responses.patternCommitment}
+                    >
+                      Complete Overwhelm Pattern Analysis
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Default fallback for other components
     return (
       <Card>
