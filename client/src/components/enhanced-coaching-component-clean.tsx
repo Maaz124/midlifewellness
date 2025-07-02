@@ -10382,61 +10382,459 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
 
             {/* Insights Phase */}
             {analysisPhase === 'insights' && (
-              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
-                <h4 className="text-lg font-semibold mb-4">Your Overwhelm Pattern Insights</h4>
-                
-                <div className="space-y-6">
-                  {/* Pattern Summary */}
-                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
-                    <h5 className="font-semibold text-gray-800 mb-3">🔍 Your Primary Pattern Analysis</h5>
-                    
-                    {(() => {
-                      const pattern = overwhelmPatterns.find(p => p.id === responses.selectedPattern);
-                      const patternResponses = responses.patternResponses?.[responses.selectedPattern] || {};
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Your Overwhelm Pattern Insights</h4>
+                  
+                  <div className="space-y-6">
+                    {/* Pattern Summary */}
+                    <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
+                      <h5 className="font-semibold text-gray-800 mb-3">🔍 Your Primary Pattern Analysis</h5>
                       
-                      return (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <strong>Pattern:</strong> {pattern?.name}
+                      {(() => {
+                        const pattern = overwhelmPatterns.find(p => p.id === responses.selectedPattern);
+                        const patternResponses = responses.patternResponses?.[responses.selectedPattern] || {};
+                        
+                        return (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <strong>Pattern:</strong> {pattern?.name}
+                            </div>
+                            <div>
+                              <strong>Frequency:</strong> {assessmentQuestions[0].scale[patternResponses.frequency - 1] || 'Not assessed'}
+                            </div>
+                            <div>
+                              <strong>Intensity:</strong> {patternResponses.intensity || 'Not rated'}/10
+                            </div>
+                            <div>
+                              <strong>Triggers Identified:</strong> {patternResponses.triggers?.length || 0}
+                            </div>
                           </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={() => setResponses({...responses, analysisPhase: 'exercises'})}
+                        className="flex-1"
+                      >
+                        Start Interactive Exercises
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Interactive Exercises Phase */}
+            {analysisPhase === 'exercises' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Interactive Overwhelm Management Exercises</h4>
+                  
+                  <div className="space-y-8">
+                    {/* Exercise 1: Real-Time Pattern Recognition */}
+                    <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                      <h5 className="font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                        <span>🎯</span>
+                        Exercise 1: Real-Time Pattern Recognition
+                      </h5>
+                      
+                      <p className="text-sm text-blue-700 mb-4">
+                        Practice identifying your overwhelm pattern in real-time. This builds awareness before the pattern fully takes hold.
+                      </p>
+
+                      <div className="bg-white p-4 rounded border mb-4">
+                        <h6 className="font-medium mb-3">Current Overwhelm Assessment</h6>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Rate your current overwhelm level and identify any active triggers:
+                        </p>
+
+                        <div className="space-y-4">
                           <div>
-                            <strong>Frequency:</strong> {assessmentQuestions[0].scale[patternResponses.frequency - 1] || 'Not assessed'}
+                            <Label className="text-sm font-medium">Current overwhelm level (1-10)</Label>
+                            <div className="flex items-center gap-2 mt-2">
+                              <div className="grid grid-cols-10 gap-1 flex-1">
+                                {[1,2,3,4,5,6,7,8,9,10].map((level) => (
+                                  <button
+                                    key={level}
+                                    onClick={() => setResponses({...responses, currentOverwhelmLevel: level})}
+                                    className={`h-8 text-xs rounded transition-all ${
+                                      responses.currentOverwhelmLevel === level
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                    }`}
+                                  >
+                                    {level}
+                                  </button>
+                                ))}
+                              </div>
+                              <span className="text-sm font-bold text-blue-600 min-w-[30px]">
+                                {responses.currentOverwhelmLevel || '?'}/10
+                              </span>
+                            </div>
                           </div>
+
                           <div>
-                            <strong>Intensity:</strong> {patternResponses.intensity || 'Not rated'}/10
+                            <Label className="text-sm font-medium">What's happening right now that might be triggering overwhelm?</Label>
+                            <Textarea
+                              placeholder="Describe your current situation, thoughts, or feelings that might be contributing to overwhelm..."
+                              value={responses.currentTriggerDescription || ''}
+                              onChange={(e) => setResponses({...responses, currentTriggerDescription: e.target.value})}
+                              className="mt-2"
+                              rows={3}
+                            />
                           </div>
+
                           <div>
-                            <strong>Triggers Identified:</strong> {patternResponses.triggers?.length || 0}
+                            <Label className="text-sm font-medium">Physical sensations you're noticing</Label>
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                              {[
+                                'Tension in shoulders/neck',
+                                'Shallow breathing',
+                                'Racing heart',
+                                'Tight chest',
+                                'Clenched jaw',
+                                'Restless energy',
+                                'Fatigue',
+                                'Stomach tightness'
+                              ].map((sensation) => (
+                                <div key={sensation} className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={responses.physicalSensations?.includes(sensation) || false}
+                                    onCheckedChange={(checked) => {
+                                      const current = responses.physicalSensations || [];
+                                      const updated = checked
+                                        ? [...current, sensation]
+                                        : current.filter(s => s !== sensation);
+                                      setResponses({...responses, physicalSensations: updated});
+                                    }}
+                                  />
+                                  <span className="text-sm">{sensation}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      );
-                    })()}
-                  </div>
+                      </div>
 
-                  {/* Personalized Action Plan */}
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <h5 className="font-semibold text-green-800 mb-3">Your Personalized Action Plan</h5>
+                      {responses.currentOverwhelmLevel && responses.currentOverwhelmLevel > 3 && (
+                        <div className="bg-orange-50 p-4 rounded border border-orange-200">
+                          <h6 className="font-medium text-orange-800 mb-2">Pattern Recognition Alert!</h6>
+                          <p className="text-sm text-orange-700 mb-3">
+                            You're experiencing moderate to high overwhelm. Let's use your pattern awareness to respond differently.
+                          </p>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                checked={responses.patternRecognitionSteps?.includes('pause') || false}
+                                onCheckedChange={(checked) => {
+                                  const current = responses.patternRecognitionSteps || [];
+                                  const updated = checked
+                                    ? [...current, 'pause']
+                                    : current.filter(s => s !== 'pause');
+                                  setResponses({...responses, patternRecognitionSteps: updated});
+                                }}
+                              />
+                              <span className="text-sm">Take 3 deep breaths right now</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                checked={responses.patternRecognitionSteps?.includes('identify') || false}
+                                onCheckedChange={(checked) => {
+                                  const current = responses.patternRecognitionSteps || [];
+                                  const updated = checked
+                                    ? [...current, 'identify']
+                                    : current.filter(s => s !== 'identify');
+                                  setResponses({...responses, patternRecognitionSteps: updated});
+                                }}
+                              />
+                              <span className="text-sm">Say: "This is my overwhelm pattern activating"</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                checked={responses.patternRecognitionSteps?.includes('choose') || false}
+                                onCheckedChange={(checked) => {
+                                  const current = responses.patternRecognitionSteps || [];
+                                  const updated = checked
+                                    ? [...current, 'choose']
+                                    : current.filter(s => s !== 'choose');
+                                  setResponses({...responses, patternRecognitionSteps: updated});
+                                }}
+                              />
+                              <span className="text-sm">Choose one small action to take instead of reacting</span>
+                            </div>
+                          </div>
+
+                          {responses.patternRecognitionSteps?.length === 3 && (
+                            <div className="mt-4 p-3 bg-green-50 rounded border border-green-200">
+                              <p className="text-sm text-green-700 font-medium">
+                                ✓ Excellent! You've successfully interrupted your overwhelm pattern. Notice how taking conscious action feels different from reacting automatically.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Exercise 2: Trigger Transformation */}
+                    <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+                      <h5 className="font-semibold text-green-800 mb-4 flex items-center gap-2">
+                        <span>🔄</span>
+                        Exercise 2: Trigger Transformation Technique
+                      </h5>
+                      
+                      <p className="text-sm text-green-700 mb-4">
+                        Transform a current trigger from threat to opportunity by reframing your perspective.
+                      </p>
+
+                      <div className="bg-white p-4 rounded border mb-4">
+                        <h6 className="font-medium mb-3">Step-by-Step Transformation</h6>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <Label className="text-sm font-medium">1. Choose a specific trigger that's currently affecting you</Label>
+                            <Textarea
+                              placeholder="Describe a specific situation, person, or circumstance that typically triggers your overwhelm..."
+                              value={responses.specificTrigger || ''}
+                              onChange={(e) => setResponses({...responses, specificTrigger: e.target.value})}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-sm font-medium">2. What story are you telling yourself about this trigger?</Label>
+                            <Textarea
+                              placeholder="What thoughts, assumptions, or beliefs come up when you encounter this trigger?"
+                              value={responses.triggerStory || ''}
+                              onChange={(e) => setResponses({...responses, triggerStory: e.target.value})}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-sm font-medium">3. What's one potential growth opportunity within this trigger?</Label>
+                            <Textarea
+                              placeholder="How might this trigger be helping you develop resilience, boundaries, skills, or self-awareness?"
+                              value={responses.triggerOpportunity || ''}
+                              onChange={(e) => setResponses({...responses, triggerOpportunity: e.target.value})}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-sm font-medium">4. Create a new empowering statement about this trigger</Label>
+                            <Textarea
+                              placeholder="Rewrite your trigger story in a way that acknowledges the challenge but focuses on your capability to handle it..."
+                              value={responses.empoweringStatement || ''}
+                              onChange={(e) => setResponses({...responses, empoweringStatement: e.target.value})}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+
+                        {responses.specificTrigger && responses.empoweringStatement && (
+                          <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200">
+                            <h6 className="font-medium text-blue-800 mb-2">Your Trigger Transformation</h6>
+                            <div className="space-y-2 text-sm">
+                              <div>
+                                <strong>Old Response:</strong> <span className="text-gray-600">{responses.triggerStory || 'Automatic overwhelm reaction'}</span>
+                              </div>
+                              <div>
+                                <strong>New Response:</strong> <span className="text-blue-700">{responses.empoweringStatement}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Exercise 3: Emergency Reset Protocol */}
+                    <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+                      <h5 className="font-semibold text-red-800 mb-4 flex items-center gap-2">
+                        <span>🚨</span>
+                        Exercise 3: Emergency Reset Protocol
+                      </h5>
+                      
+                      <p className="text-sm text-red-700 mb-4">
+                        Create your personalized emergency protocol for when overwhelm hits hard and you need immediate relief.
+                      </p>
+
+                      <div className="bg-white p-4 rounded border mb-4">
+                        <h6 className="font-medium mb-3">Design Your Emergency Kit</h6>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <Label className="text-sm font-medium">Physical Reset (choose 2-3 techniques)</Label>
+                            <div className="grid grid-cols-1 gap-2 mt-2">
+                              {[
+                                'Box breathing (4-4-4-4 pattern)',
+                                'Cold water on wrists and face',
+                                'Progressive muscle relaxation',
+                                '5-4-3-2-1 grounding technique',
+                                'Quick walk outside',
+                                'Gentle neck and shoulder stretches'
+                              ].map((technique) => (
+                                <div key={technique} className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={responses.physicalResetTechniques?.includes(technique) || false}
+                                    onCheckedChange={(checked) => {
+                                      const current = responses.physicalResetTechniques || [];
+                                      const updated = checked
+                                        ? [...current, technique]
+                                        : current.filter(t => t !== technique);
+                                      setResponses({...responses, physicalResetTechniques: updated});
+                                    }}
+                                  />
+                                  <span className="text-sm">{technique}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label className="text-sm font-medium">Mental Reset Phrases (choose 1-2 that resonate)</Label>
+                            <div className="grid grid-cols-1 gap-2 mt-2">
+                              {[
+                                'This feeling is temporary and will pass',
+                                'I can handle this one step at a time',
+                                'My overwhelm is information, not instruction',
+                                'I am capable and this moment will not define me',
+                                'I choose calm over chaos',
+                                'What would I advise my best friend right now?'
+                              ].map((phrase) => (
+                                <div key={phrase} className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={responses.mentalResetPhrases?.includes(phrase) || false}
+                                    onCheckedChange={(checked) => {
+                                      const current = responses.mentalResetPhrases || [];
+                                      const updated = checked
+                                        ? [...current, phrase]
+                                        : current.filter(p => p !== phrase);
+                                      setResponses({...responses, mentalResetPhrases: updated});
+                                    }}
+                                  />
+                                  <span className="text-sm">{phrase}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label className="text-sm font-medium">Immediate Action Steps (when you can't think clearly)</Label>
+                            <div className="grid grid-cols-1 gap-2 mt-2">
+                              {[
+                                'Write down everything in my head for 2 minutes',
+                                'Call or text one trusted person',
+                                'Drink a full glass of water slowly',
+                                'Set a 10-minute timer and do nothing but breathe',
+                                'Go to my designated calm space',
+                                'Listen to my emergency playlist'
+                              ].map((action) => (
+                                <div key={action} className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={responses.immediateActions?.includes(action) || false}
+                                    onCheckedChange={(checked) => {
+                                      const current = responses.immediateActions || [];
+                                      const updated = checked
+                                        ? [...current, action]
+                                        : current.filter(a => a !== action);
+                                      setResponses({...responses, immediateActions: updated});
+                                    }}
+                                  />
+                                  <span className="text-sm">{action}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {(responses.physicalResetTechniques?.length > 0 || responses.mentalResetPhrases?.length > 0 || responses.immediateActions?.length > 0) && (
+                          <div className="mt-4 p-4 bg-green-50 rounded border border-green-200">
+                            <h6 className="font-medium text-green-800 mb-2">Your Personal Emergency Protocol</h6>
+                            <div className="space-y-2 text-sm text-green-700">
+                              {responses.physicalResetTechniques?.length > 0 && (
+                                <div>
+                                  <strong>Physical Reset:</strong> {responses.physicalResetTechniques.join(', ')}
+                                </div>
+                              )}
+                              {responses.mentalResetPhrases?.length > 0 && (
+                                <div>
+                                  <strong>Mental Reset:</strong> "{responses.mentalResetPhrases[0]}"
+                                </div>
+                              )}
+                              {responses.immediateActions?.length > 0 && (
+                                <div>
+                                  <strong>First Action:</strong> {responses.immediateActions[0]}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Progress to Integration */}
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => setResponses({...responses, analysisPhase: 'insights'})}
+                      >
+                        Back to Insights
+                      </Button>
+                      <Button 
+                        onClick={() => setResponses({...responses, analysisPhase: 'integration'})}
+                        className="flex-1"
+                        disabled={!responses.physicalResetTechniques || !responses.mentalResetPhrases}
+                      >
+                        Complete Integration
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Integration Phase */}
+            {analysisPhase === 'integration' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Integration & Commitment</h4>
+                
+                <div className="space-y-6">
+                  {/* Personal Action Plan */}
+                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
+                    <h5 className="font-semibold text-gray-800 mb-3">Your Personalized Overwhelm Management Plan</h5>
                     
                     <div className="space-y-3 text-sm">
                       <div className="flex items-start gap-2">
-                        <span className="text-green-600 font-semibold">1.</span>
+                        <span className="text-purple-600 font-semibold">1.</span>
                         <p>
-                          <strong>Immediate Response Plan:</strong> When you notice your pattern starting, pause and take 3 deep breaths. 
-                          Remind yourself: "This is my {overwhelmPatterns.find(p => p.id === responses.selectedPattern)?.name.toLowerCase()} pattern. I can respond differently."
+                          <strong>Daily Prevention:</strong> Check in with your overwhelm level each morning and evening. 
+                          Use your physical reset techniques when you notice early warning signs.
                         </p>
                       </div>
                       
                       <div className="flex items-start gap-2">
-                        <span className="text-green-600 font-semibold">2.</span>
+                        <span className="text-purple-600 font-semibold">2.</span>
                         <p>
-                          <strong>Weekly Prevention:</strong> Review your triggers each Sunday and plan strategies for high-risk situations in the coming week.
+                          <strong>Pattern Interruption:</strong> When you recognize your pattern starting, immediately use your 
+                          mental reset phrase: "{responses.mentalResetPhrases?.[0] || 'This feeling is temporary and will pass'}"
                         </p>
                       </div>
                       
                       <div className="flex items-start gap-2">
-                        <span className="text-green-600 font-semibold">3.</span>
+                        <span className="text-purple-600 font-semibold">3.</span>
                         <p>
-                          <strong>Monthly Review:</strong> Track your pattern frequency and intensity to see progress over time. Celebrate small improvements.
+                          <strong>Emergency Protocol:</strong> In crisis moments, start with your chosen physical reset, 
+                          then take your immediate action: {responses.immediateActions?.[0] || 'Write down everything in your head'}.
                         </p>
                       </div>
                     </div>
@@ -10445,21 +10843,33 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                   {/* Integration Commitment */}
                   <div className="space-y-4">
                     <div>
-                      <Label>Personal commitment for managing this pattern</Label>
+                      <Label>Write your commitment for managing overwhelm moving forward</Label>
                       <Textarea
-                        placeholder="Write a commitment statement about how you'll use these insights to manage your overwhelm pattern..."
+                        placeholder="Based on your pattern analysis and exercises, write a personal commitment statement about how you'll use these tools in your daily life..."
                         value={responses.patternCommitment || ''}
                         onChange={(e) => setResponses({...responses, patternCommitment: e.target.value})}
                         className="mt-2"
-                        rows={3}
+                        rows={4}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>What's one specific situation where you'll practice these techniques this week?</Label>
+                      <Textarea
+                        placeholder="Identify a specific upcoming situation where you can practice your new overwhelm management skills..."
+                        value={responses.practiceCommitment || ''}
+                        onChange={(e) => setResponses({...responses, practiceCommitment: e.target.value})}
+                        className="mt-2"
+                        rows={2}
                       />
                     </div>
 
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-blue-800 mb-2">🚀 Pattern Interruption Tip</h5>
+                      <h5 className="font-semibold text-blue-800 mb-2">🌟 Remember: Progress, Not Perfection</h5>
                       <p className="text-sm text-blue-700">
-                        The moment you recognize your pattern is the moment you have power over it. Even noticing without changing 
-                        anything is progress. Be patient with yourself as you develop new responses.
+                        Managing overwhelm is a skill that develops over time. Be patient with yourself as you practice these techniques. 
+                        Even recognizing your pattern without changing it is significant progress. Each time you use these tools, 
+                        you're rewiring your brain's response to stress.
                       </p>
                     </div>
 
@@ -10469,7 +10879,7 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                         onComplete(component.id, responses);
                       }}
                       className="w-full"
-                      disabled={!responses.patternCommitment}
+                      disabled={!responses.patternCommitment || !responses.practiceCommitment}
                     >
                       Complete Overwhelm Pattern Analysis
                     </Button>
