@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CoachingComponent } from '@/components/coaching-component';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules, getModuleProgress } from '@/lib/coaching-data';
 import { Clock, CheckCircle, Lock, BookOpen, FileText, Headphones, Brain, Video, Target, Heart, Lightbulb, Shield, Star } from 'lucide-react';
@@ -12,15 +13,25 @@ import { Clock, CheckCircle, Lock, BookOpen, FileText, Headphones, Brain, Video,
 export default function Coaching() {
   const { data, updateCoachingProgress } = useWellnessData();
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
+  const [activeComponent, setActiveComponent] = useState<any>(null);
+  const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
 
-  const handleComponentComplete = (moduleId: string, componentId: string) => {
-    const completedComponents = data.coachingProgress.completedComponents || [];
+  const handleComponentComplete = (componentId: string, responseData?: any) => {
+    const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
     if (!completedComponents.includes(componentId)) {
       updateCoachingProgress({
         completedComponents: [...completedComponents, componentId],
-        currentWeek: data.userProfile.currentWeek
+        currentWeek: data.userProfile.currentWeek,
+        responseData: responseData || {}
       });
     }
+    setActiveComponent(null);
+    setActiveModuleId(null);
+  };
+
+  const handleStartComponent = (component: any, moduleId: string) => {
+    setActiveComponent(component);
+    setActiveModuleId(moduleId);
   };
 
   const getComponentIcon = (type: string) => {
@@ -192,6 +203,21 @@ export default function Coaching() {
     };
   };
 
+  // Show active component if one is selected
+  if (activeComponent && activeModuleId) {
+    return (
+      <CoachingComponent
+        component={activeComponent}
+        moduleId={activeModuleId}
+        onComplete={handleComponentComplete}
+        onClose={() => {
+          setActiveComponent(null);
+          setActiveModuleId(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -356,7 +382,7 @@ export default function Coaching() {
                             <Button
                               size="sm"
                               variant={isCompleted ? "secondary" : "default"}
-                              onClick={() => handleComponentComplete(module.id, component.id)}
+                              onClick={() => handleStartComponent(component, module.id)}
                               disabled={isCompleted}
                             >
                               {isCompleted ? "✓ Done" : "Start"}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
-  // Get from local storage then parse stored json or return initialValue
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
@@ -12,10 +11,8 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     }
   });
 
-  // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue = (value: T | ((val: T) => T)) => {
     try {
-      // Allow value to be a function so we have the same API as useState
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
@@ -27,25 +24,59 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   return [storedValue, setValue] as const;
 }
 
+interface WellnessData {
+  userProfile: {
+    name: string;
+    email: string;
+    startDate: string;
+    currentWeek: number;
+  };
+  healthScores: {
+    mental: number;
+    physical: number;
+    cognitive: number;
+    overall: number;
+  };
+  journalEntries: any[];
+  moodTracking: any[];
+  goals: any[];
+  habits: any[];
+  coachingProgress: {
+    completedComponents: string[];
+    currentWeek: number;
+    responseData: any;
+  };
+  progressData: {
+    healthScores: any[];
+    moodDistribution: any;
+    weeklyActivity: any[];
+    achievements: any[];
+  };
+}
+
 export function useWellnessData() {
-  const [data, setData] = useLocalStorage('thriveMidlifeData', {
+  const [data, setData] = useLocalStorage<WellnessData>('wellness-data', {
     userProfile: {
-      name: '',
-      email: '',
-      startDate: new Date().toISOString(),
+      name: 'Sarah',
+      email: 'sarah@example.com',
+      startDate: new Date().toISOString().split('T')[0],
       currentWeek: 1
     },
     healthScores: {
-      mental: 0,
-      physical: 0,
-      cognitive: 0,
-      overall: 0
+      mental: 65,
+      physical: 72,
+      cognitive: 58,
+      overall: 65
     },
     journalEntries: [],
     moodTracking: [],
     goals: [],
     habits: [],
-    coachingProgress: [],
+    coachingProgress: {
+      completedComponents: [],
+      currentWeek: 1,
+      responseData: {}
+    },
     progressData: {
       healthScores: [],
       moodDistribution: {},
@@ -73,7 +104,7 @@ export function useWellnessData() {
     setData(prev => ({
       ...prev,
       moodTracking: [
-        ...prev.moodTracking.filter(entry => entry.date !== today),
+        ...prev.moodTracking.filter((entry: any) => entry.date !== today),
         { date: today, mood, notes, timestamp: new Date().toISOString() }
       ]
     }));
@@ -82,7 +113,7 @@ export function useWellnessData() {
   const updateGoal = (goalId: number, updates: any) => {
     setData(prev => ({
       ...prev,
-      goals: prev.goals.map(goal => 
+      goals: prev.goals.map((goal: any) => 
         goal.id === goalId ? { ...goal, ...updates } : goal
       )
     }));
@@ -98,7 +129,7 @@ export function useWellnessData() {
   const updateHabit = (habitId: number, updates: any) => {
     setData(prev => ({
       ...prev,
-      habits: prev.habits.map(habit => 
+      habits: prev.habits.map((habit: any) => 
         habit.id === habitId ? { ...habit, ...updates } : habit
       )
     }));
@@ -111,12 +142,13 @@ export function useWellnessData() {
     }));
   };
 
-  const updateCoachingProgress = (weekNumber: number, progress: number) => {
+  const updateCoachingProgress = (progressData: any) => {
     setData(prev => ({
       ...prev,
-      coachingProgress: prev.coachingProgress.map(cp => 
-        cp.weekNumber === weekNumber ? { ...cp, progress } : cp
-      )
+      coachingProgress: {
+        ...prev.coachingProgress,
+        ...progressData
+      }
     }));
   };
 
