@@ -1349,14 +1349,111 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
         )}
 
         {/* Always show interactive practice sections for Week 1 */}
-        {moduleId === 'week-1' && renderEnhancedContent({
-          type: 'interactive-practice',
-          content: {
-            title: component.title,
-            description: component.description,
-            practiceType: component.type
-          }
-        })}
+        {moduleId === 'week-1' && (
+          <Tabs defaultValue="hormonal-tracker" className="w-full mt-8">
+            <TabsList className="grid w-full grid-cols-7">
+              <TabsTrigger value="hormonal-tracker">Hormonal Tracker</TabsTrigger>
+              <TabsTrigger value="morning-sunlight">Morning Sunlight</TabsTrigger>
+              <TabsTrigger value="evening-wind-down">Evening Wind-Down</TabsTrigger>
+              <TabsTrigger value="brain-fog-clearing">Brain Fog Clearing</TabsTrigger>
+              <TabsTrigger value="energy-mapping">Energy Mapping</TabsTrigger>
+              <TabsTrigger value="thought-awareness">Thought Awareness</TabsTrigger>
+              <TabsTrigger value="nutrition-planning">Nutrition Planning</TabsTrigger>
+            </TabsList>
+            
+            {/* Include all the practice sections here */}
+            <TabsContent value="hormonal-tracker">
+              {/* Hormonal Symptom Tracker Content */}
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Activity className="w-5 h-5 text-rose-500" />
+                      Hormonal Symptom Tracker
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">Track your daily symptoms to identify patterns and triggers during your hormone journey.</p>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="bg-rose-50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-3">Today's Symptoms</h4>
+                      <div className="space-y-4">
+                        {[
+                          { category: 'Physical', symptoms: ['Hot flashes', 'Night sweats', 'Fatigue', 'Joint aches', 'Headaches', 'Sleep issues'], color: 'bg-red-100 text-red-800' },
+                          { category: 'Emotional', symptoms: ['Mood swings', 'Irritability', 'Anxiety', 'Depression', 'Feeling overwhelmed'], color: 'bg-orange-100 text-orange-800' },
+                          { category: 'Cognitive', symptoms: ['Brain fog', 'Memory issues', 'Difficulty concentrating', 'Word finding problems'], color: 'bg-yellow-100 text-yellow-800' },
+                          { category: 'Sleep', symptoms: ['Trouble falling asleep', 'Waking up frequently', 'Early morning waking', 'Unrefreshing sleep'], color: 'bg-blue-100 text-blue-800' }
+                        ].map((group) => (
+                          <div key={group.category} className="space-y-2">
+                            <Label className="font-medium">{group.category} Symptoms</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {group.symptoms.map((symptom) => (
+                                <div key={symptom} className="flex items-center justify-between p-2 border rounded">
+                                  <span className="text-sm">{symptom}</span>
+                                  <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map((level) => (
+                                      <button
+                                        key={level}
+                                        onClick={() => setResponses({...responses, [symptom]: level})}
+                                        className={`w-6 h-6 rounded-full text-xs font-medium ${
+                                          responses[symptom] === level 
+                                            ? group.color 
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        }`}
+                                      >
+                                        {level}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            {/* Other tab contents would go here */}
+            <TabsContent value="morning-sunlight">
+              <div className="text-center py-8">
+                <p className="text-gray-600">Morning Sunlight Practice section coming up...</p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="evening-wind-down">
+              <div className="text-center py-8">
+                <p className="text-gray-600">Evening Wind-Down section coming up...</p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="brain-fog-clearing">
+              <div className="text-center py-8">
+                <p className="text-gray-600">Brain Fog Clearing section coming up...</p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="energy-mapping">
+              <div className="text-center py-8">
+                <p className="text-gray-600">Energy Mapping section coming up...</p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="thought-awareness">
+              <div className="text-center py-8">
+                <p className="text-gray-600">Thought Awareness section coming up...</p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="nutrition-planning">
+              <div className="text-center py-8">
+                <p className="text-gray-600">Nutrition Planning section coming up...</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        )}
 
         {/* Completion Section */}
         <div className="mt-8 p-6 bg-white rounded-lg border">
