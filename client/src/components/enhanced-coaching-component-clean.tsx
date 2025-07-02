@@ -5868,6 +5868,769 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Evening Wind-Down - Evening Wind-Down Routine Creation
+    if (component.id === 'evening-wind-down') {
+      const windDownPhase = responses.windDownPhase || 'assessment';
+      const sleepChallenges = responses.sleepChallenges || [];
+      const bedtimeGoal = responses.bedtimeGoal || '10:00 PM';
+      const routineDuration = responses.routineDuration || 60;
+      const selectedActivities = responses.selectedActivities || [];
+      const currentWindDownTime = responses.currentWindDownTime || 30;
+
+      const sleepChallengeOptions = [
+        {
+          id: 'falling-asleep',
+          name: 'Difficulty Falling Asleep',
+          icon: '😴',
+          description: 'Takes more than 30 minutes to fall asleep',
+          commonCauses: ['Racing thoughts', 'Stress', 'Hormone fluctuations', 'Screen time'],
+          solutions: ['Meditation', 'Journaling', 'Reading', 'Progressive relaxation']
+        },
+        {
+          id: 'staying-asleep',
+          name: 'Frequent Night Wakings',
+          icon: '🌙',
+          description: 'Waking up multiple times during the night',
+          commonCauses: ['Hot flashes', 'Anxiety', 'Bladder issues', 'Light sensitivity'],
+          solutions: ['Cool environment', 'Blackout curtains', 'White noise', 'Herbal tea']
+        },
+        {
+          id: 'early-waking',
+          name: 'Early Morning Awakening',
+          icon: '🌅',
+          description: 'Waking up too early and unable to return to sleep',
+          commonCauses: ['Cortisol spikes', 'Depression', 'Age-related changes', 'Light exposure'],
+          solutions: ['Sleep mask', 'Relaxation techniques', 'Temperature control', 'Consistent schedule']
+        },
+        {
+          id: 'restless-sleep',
+          name: 'Restless or Unrefreshing Sleep',
+          icon: '😵‍💫',
+          description: 'Feeling tired even after a full night\'s sleep',
+          commonCauses: ['Sleep apnea', 'Hormone imbalance', 'Stress', 'Poor sleep hygiene'],
+          solutions: ['Exercise earlier', 'Magnesium supplement', 'Sleep study', 'Stress management']
+        },
+        {
+          id: 'racing-thoughts',
+          name: 'Racing Thoughts at Bedtime',
+          icon: '🧠',
+          description: 'Mind won\'t quiet down when trying to sleep',
+          commonCauses: ['Anxiety', 'Unfinished tasks', 'Worry', 'Overstimulation'],
+          solutions: ['Brain dump journaling', 'Meditation', 'Breathing exercises', 'Worry time']
+        },
+        {
+          id: 'hot-flashes',
+          name: 'Night Sweats & Hot Flashes',
+          icon: '🔥',
+          description: 'Temperature regulation issues disrupting sleep',
+          commonCauses: ['Hormone changes', 'Stress', 'Diet', 'Room temperature'],
+          solutions: ['Cooling sheets', 'Fan', 'Moisture-wicking sleepwear', 'Temperature control']
+        }
+      ];
+
+      const windDownActivities = [
+        {
+          id: 'gentle-stretching',
+          name: 'Gentle Stretching',
+          icon: '🧘‍♀️',
+          duration: '10-15 min',
+          category: 'Physical',
+          description: 'Light yoga poses and stretches to release physical tension',
+          benefits: ['Muscle relaxation', 'Improved circulation', 'Stress relief'],
+          instructions: [
+            'Child\'s pose for 2 minutes',
+            'Gentle spinal twists (1 min each side)',
+            'Legs up the wall pose (5 minutes)',
+            'Shoulder rolls and neck stretches'
+          ]
+        },
+        {
+          id: 'reading',
+          name: 'Reading (Physical Book)',
+          icon: '📚',
+          duration: '15-30 min',
+          category: 'Mental',
+          description: 'Read fiction or calming non-fiction to quiet the mind',
+          benefits: ['Mental escape', 'Eye strain reduction', 'Routine building'],
+          instructions: [
+            'Choose fiction or light non-fiction',
+            'Use warm, dim lighting',
+            'Avoid stimulating content',
+            'Stop if feeling drowsy'
+          ]
+        },
+        {
+          id: 'journaling',
+          name: 'Gratitude & Worry Journaling',
+          icon: '✍️',
+          duration: '10-15 min',
+          category: 'Mental',
+          description: 'Process the day and clear mental clutter',
+          benefits: ['Thought processing', 'Gratitude practice', 'Worry release'],
+          instructions: [
+            'Write 3 things you\'re grateful for',
+            'List any worries or concerns',
+            'Set intentions for tomorrow',
+            'End with positive affirmation'
+          ]
+        },
+        {
+          id: 'herbal-tea',
+          name: 'Herbal Tea Ritual',
+          icon: '🫖',
+          duration: '10-20 min',
+          category: 'Sensory',
+          description: 'Mindful tea preparation and consumption',
+          benefits: ['Hydration', 'Warmth', 'Ritual mindfulness'],
+          instructions: [
+            'Choose chamomile, passionflower, or valerian',
+            'Prepare mindfully - focus on process',
+            'Sip slowly and breathe deeply',
+            'Finish 1 hour before bed'
+          ]
+        },
+        {
+          id: 'meditation',
+          name: 'Guided Sleep Meditation',
+          icon: '🧘',
+          duration: '10-20 min',
+          category: 'Mental',
+          description: 'Calming meditation focused on sleep preparation',
+          benefits: ['Mental quieting', 'Stress reduction', 'Body awareness'],
+          instructions: [
+            'Find comfortable position in bed',
+            'Follow guided body scan',
+            'Focus on breath awareness',
+            'Allow natural drift toward sleep'
+          ]
+        },
+        {
+          id: 'breathing-exercises',
+          name: '4-7-8 Breathing',
+          icon: '💨',
+          duration: '5-10 min',
+          category: 'Physical',
+          description: 'Structured breathing to activate relaxation response',
+          benefits: ['Nervous system calming', 'Quick relaxation', 'Oxygen regulation'],
+          instructions: [
+            'Inhale for 4 counts',
+            'Hold breath for 7 counts',
+            'Exhale for 8 counts',
+            'Repeat 4-8 cycles'
+          ]
+        },
+        {
+          id: 'aromatherapy',
+          name: 'Aromatherapy & Essential Oils',
+          icon: '🌸',
+          duration: '5-15 min',
+          category: 'Sensory',
+          description: 'Use calming scents to signal bedtime',
+          benefits: ['Scent association', 'Stress reduction', 'Atmosphere creation'],
+          instructions: [
+            'Use lavender, bergamot, or ylang-ylang',
+            'Apply to pulse points or diffuse',
+            'Practice deep breathing with scent',
+            'Create consistent scent routine'
+          ]
+        },
+        {
+          id: 'bath-shower',
+          name: 'Warm Bath or Shower',
+          icon: '🛁',
+          duration: '15-25 min',
+          category: 'Physical',
+          description: 'Temperature therapy for relaxation',
+          benefits: ['Muscle relaxation', 'Temperature regulation', 'Transition ritual'],
+          instructions: [
+            'Keep water warm, not hot',
+            'Add Epsom salts or essential oils',
+            'Focus on the sensory experience',
+            'End 1-2 hours before bed'
+          ]
+        }
+      ];
+
+      const timeSlots = [
+        { time: '8:00 PM', label: '8:00 PM - Early start' },
+        { time: '8:30 PM', label: '8:30 PM' },
+        { time: '9:00 PM', label: '9:00 PM - Common time' },
+        { time: '9:30 PM', label: '9:30 PM' },
+        { time: '10:00 PM', label: '10:00 PM - Optimal for most' },
+        { time: '10:30 PM', label: '10:30 PM' },
+        { time: '11:00 PM', label: '11:00 PM - Later bedtime' }
+      ];
+
+      const generatePersonalizedRoutine = () => {
+        const challengeBasedActivities = sleepChallenges.flatMap(challengeId => {
+          const challenge = sleepChallengeOptions.find(c => c.id === challengeId);
+          return challenge ? challenge.solutions : [];
+        });
+        
+        const matchingActivities = windDownActivities.filter(activity =>
+          challengeBasedActivities.some(solution => 
+            activity.name.toLowerCase().includes(solution.toLowerCase()) ||
+            activity.description.toLowerCase().includes(solution.toLowerCase())
+          )
+        );
+
+        return matchingActivities.length > 0 ? matchingActivities : windDownActivities.slice(0, 4);
+      };
+
+      const getRoutineTimeline = () => {
+        const totalMinutes = routineDuration;
+        const bedtime = new Date(`2024-01-01 ${bedtimeGoal}`);
+        const startTime = new Date(bedtime.getTime() - totalMinutes * 60000);
+        
+        return {
+          startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          bedtime: bedtime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          totalMinutes
+        };
+      };
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Moon className="w-5 h-5 text-indigo-500" />
+              Evening Wind-Down Routine Creation
+            </CardTitle>
+            <p className="text-sm text-gray-600">Design a personalized evening routine that prepares your body and mind for restorative sleep, addressing your specific sleep challenges.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Sleep Science */}
+            <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-400">
+              <h5 className="font-semibold text-indigo-800 mb-2">The Science of Evening Wind-Down</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-indigo-700">
+                <div>
+                  <strong>Circadian Rhythm:</strong> Consistent evening routines help regulate your natural sleep-wake cycle
+                </div>
+                <div>
+                  <strong>Cortisol Reduction:</strong> Calming activities lower stress hormones that interfere with sleep
+                </div>
+                <div>
+                  <strong>Melatonin Production:</strong> Reduced light and relaxation activities support natural melatonin release
+                </div>
+                <div>
+                  <strong>Body Temperature:</strong> Gradual cooling signals to your brain that it's time for sleep
+                </div>
+              </div>
+            </div>
+
+            {/* Sleep Challenge Assessment */}
+            {windDownPhase === 'assessment' && (
+              <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Sleep Challenge Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Select all sleep challenges you're currently experiencing to get targeted routine recommendations:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Current sleep challenges (select all that apply):</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                      {sleepChallengeOptions.map((challenge) => (
+                        <div 
+                          key={challenge.id}
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            sleepChallenges.includes(challenge.id)
+                              ? 'border-indigo-400 bg-indigo-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const newChallenges = sleepChallenges.includes(challenge.id)
+                              ? sleepChallenges.filter((id: string) => id !== challenge.id)
+                              : [...sleepChallenges, challenge.id];
+                            setResponses({...responses, sleepChallenges: newChallenges});
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="text-2xl">{challenge.icon}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Checkbox
+                                  checked={sleepChallenges.includes(challenge.id)}
+                                  onChange={() => {}}
+                                />
+                                <h6 className="font-semibold text-sm">{challenge.name}</h6>
+                              </div>
+                              <p className="text-xs text-gray-600 mb-2">{challenge.description}</p>
+                              <div className="text-xs">
+                                <strong className="text-indigo-600">Common causes:</strong>
+                                <span className="text-gray-600"> {challenge.commonCauses.join(', ')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">What time do you want to be in bed?</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                      {timeSlots.map((slot) => (
+                        <div 
+                          key={slot.time}
+                          className={`p-3 rounded-lg border-2 cursor-pointer text-center transition-all ${
+                            bedtimeGoal === slot.time
+                              ? 'border-indigo-400 bg-indigo-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setResponses({...responses, bedtimeGoal: slot.time})}
+                        >
+                          <div className="text-sm font-medium">{slot.time}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How much time can you dedicate to your wind-down routine?</Label>
+                    <div className="flex items-center gap-4 mt-3">
+                      <span className="text-xs text-gray-500">15 min</span>
+                      <Slider
+                        value={[routineDuration]}
+                        onValueChange={(value) => setResponses({...responses, routineDuration: value[0]})}
+                        max={120}
+                        min={15}
+                        step={15}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">2 hours</span>
+                      <span className="text-lg font-bold text-indigo-600 min-w-[60px]">{routineDuration} min</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">Recommended: 45-90 minutes for optimal benefits</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Current wind-down habits (what do you do now?):</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Watch TV', 'Use phone/tablet', 'Scroll social media', 'Work/emails',
+                        'Read books', 'Take bath/shower', 'Listen to music', 'Meditate',
+                        'Journal', 'Stretch/yoga', 'Drink tea', 'Nothing specific'
+                      ].map((habit) => (
+                        <div key={habit} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`current-habit-${habit}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`current-habit-${habit}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{habit}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, windDownPhase: 'routine-builder'})}
+                    className="w-full"
+                    disabled={sleepChallenges.length === 0}
+                  >
+                    Create My Personalized Wind-Down Routine
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Routine Builder */}
+            {windDownPhase === 'routine-builder' && (
+              <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Your Personalized Wind-Down Activities</h4>
+                
+                {/* Timeline Overview */}
+                <div className="bg-indigo-50 p-4 rounded-lg mb-6">
+                  <h5 className="font-semibold text-indigo-800 mb-2">Routine Timeline</h5>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="text-indigo-700">
+                      <strong>Start:</strong> {getRoutineTimeline().startTime}
+                    </div>
+                    <div className="text-indigo-600">
+                      <strong>Duration:</strong> {routineDuration} minutes
+                    </div>
+                    <div className="text-indigo-700">
+                      <strong>Bedtime:</strong> {getRoutineTimeline().bedtime}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Recommended activities based on your sleep challenges:</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                      {generatePersonalizedRoutine().map((activity) => (
+                        <div 
+                          key={activity.id}
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            selectedActivities.includes(activity.id)
+                              ? 'border-indigo-400 bg-indigo-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const newActivities = selectedActivities.includes(activity.id)
+                              ? selectedActivities.filter((id: string) => id !== activity.id)
+                              : [...selectedActivities, activity.id];
+                            setResponses({...responses, selectedActivities: newActivities});
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="text-2xl">{activity.icon}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={selectedActivities.includes(activity.id)}
+                                    onChange={() => {}}
+                                  />
+                                  <h6 className="font-semibold text-sm">{activity.name}</h6>
+                                </div>
+                                <Badge variant="outline" className="text-xs">{activity.duration}</Badge>
+                              </div>
+                              <p className="text-xs text-gray-600 mb-2">{activity.description}</p>
+                              
+                              <div className="space-y-1 text-xs">
+                                <div>
+                                  <strong className="text-green-600">Benefits:</strong>
+                                  <span className="text-gray-600"> {activity.benefits.join(', ')}</span>
+                                </div>
+                                
+                                {selectedActivities.includes(activity.id) && (
+                                  <div className="mt-2 p-2 bg-gray-50 rounded">
+                                    <strong className="text-indigo-600">How to do it:</strong>
+                                    <ul className="text-gray-600 mt-1 ml-3">
+                                      {activity.instructions.map((instruction, index) => (
+                                        <li key={index} className="list-disc text-xs">{instruction}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Additional activities to consider:</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                      {windDownActivities
+                        .filter(activity => !generatePersonalizedRoutine().find(rec => rec.id === activity.id))
+                        .map((activity) => (
+                          <div 
+                            key={activity.id}
+                            className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                              selectedActivities.includes(activity.id)
+                                ? 'border-indigo-300 bg-indigo-25' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() => {
+                              const newActivities = selectedActivities.includes(activity.id)
+                                ? selectedActivities.filter((id: string) => id !== activity.id)
+                                : [...selectedActivities, activity.id];
+                              setResponses({...responses, selectedActivities: newActivities});
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="text-lg">{activity.icon}</div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={selectedActivities.includes(activity.id)}
+                                    onChange={() => {}}
+                                  />
+                                  <span className="text-sm font-medium">{activity.name}</span>
+                                  <Badge variant="secondary" className="text-xs">{activity.duration}</Badge>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, windDownPhase: 'schedule'})}
+                    className="w-full"
+                    disabled={selectedActivities.length === 0}
+                  >
+                    Create My Evening Schedule
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Schedule Creation */}
+            {windDownPhase === 'schedule' && (
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-lg border">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-3">🌙</div>
+                  <h4 className="text-xl font-semibold mb-2">Your Personalized Evening Wind-Down Schedule</h4>
+                  <p className="text-sm text-gray-600">Optimized for {bedtimeGoal} bedtime with {routineDuration}-minute routine</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Routine Schedule */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Tonight's Schedule</h5>
+                    <div className="space-y-3">
+                      {selectedActivities.map((activityId, index) => {
+                        const activity = windDownActivities.find(a => a.id === activityId);
+                        if (!activity) return null;
+
+                        const durationMinutes = parseInt(activity.duration.split('-')[0]) || 15;
+                        const totalPreviousMinutes = selectedActivities
+                          .slice(0, index)
+                          .reduce((total, prevId) => {
+                            const prevActivity = windDownActivities.find(a => a.id === prevId);
+                            return total + (parseInt(prevActivity?.duration.split('-')[0] || '15'));
+                          }, 0);
+
+                        const bedtime = new Date(`2024-01-01 ${bedtimeGoal}`);
+                        const activityStartTime = new Date(bedtime.getTime() - (routineDuration - totalPreviousMinutes) * 60000);
+                        const activityEndTime = new Date(activityStartTime.getTime() + durationMinutes * 60000);
+
+                        return (
+                          <div key={activityId} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                            <div className="text-2xl">{activity.icon}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <h6 className="font-medium">{activity.name}</h6>
+                                <span className="text-sm font-medium text-indigo-600">
+                                  {activityStartTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                  {activityEndTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-600">{activity.description}</p>
+                            </div>
+                            <Checkbox
+                              checked={responses[`completed-${activityId}`] || false}
+                              onCheckedChange={(checked) => setResponses({
+                                ...responses,
+                                [`completed-${activityId}`]: checked
+                              })}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Environment Setup */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Optimize Your Sleep Environment</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <h6 className="font-medium text-indigo-700 mb-2">Lighting</h6>
+                        <ul className="space-y-1 text-gray-600">
+                          <li>• Dim lights 2 hours before bedtime</li>
+                          <li>• Use warm, amber lighting</li>
+                          <li>• Avoid blue light from screens</li>
+                          <li>• Consider blackout curtains</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h6 className="font-medium text-indigo-700 mb-2">Temperature</h6>
+                        <ul className="space-y-1 text-gray-600">
+                          <li>• Keep room between 60-67°F (15-19°C)</li>
+                          <li>• Use breathable bedding</li>
+                          <li>• Consider a fan for air circulation</li>
+                          <li>• Cooling mattress pad if needed</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h6 className="font-medium text-indigo-700 mb-2">Sound</h6>
+                        <ul className="space-y-1 text-gray-600">
+                          <li>• Use white noise or earplugs</li>
+                          <li>• Try nature sounds or soft music</li>
+                          <li>• Minimize sudden noises</li>
+                          <li>• Consider sound-dampening materials</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h6 className="font-medium text-indigo-700 mb-2">Comfort</h6>
+                        <ul className="space-y-1 text-gray-600">
+                          <li>• Comfortable, supportive mattress</li>
+                          <li>• Appropriate pillow height</li>
+                          <li>• Clean, fresh bedding</li>
+                          <li>• Remove electronic devices</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Digital Sunset */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Your "Digital Sunset" Plan</h5>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                        <div>
+                          <strong className="text-orange-700">2 hours before bed</strong>
+                          <p className="text-sm text-orange-600">No work emails or stressful content</p>
+                        </div>
+                        <span className="text-lg">📧❌</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                        <div>
+                          <strong className="text-yellow-700">1 hour before bed</strong>
+                          <p className="text-sm text-yellow-600">All screens off (TV, phone, tablet)</p>
+                        </div>
+                        <span className="text-lg">📱❌</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div>
+                          <strong className="text-green-700">30 minutes before bed</strong>
+                          <p className="text-sm text-green-600">In bed with relaxing activities only</p>
+                        </div>
+                        <span className="text-lg">🛏️✅</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, windDownPhase: 'tracking'})}
+                    className="w-full"
+                  >
+                    Start Tracking My Sleep Quality
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Sleep Quality Tracking */}
+            {windDownPhase === 'tracking' && (
+              <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">📊</div>
+                  <h4 className="text-xl font-semibold">Track Your Sleep Progress</h4>
+                  <p className="text-sm text-gray-600">Monitor how your new routine affects your sleep quality</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">How well did you sleep last night? (1-10)</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Poor</span>
+                      <Slider
+                        value={[responses.sleepQuality || 5]}
+                        onValueChange={(value) => setResponses({...responses, sleepQuality: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Excellent</span>
+                      <span className="text-lg font-bold text-indigo-600 min-w-[30px]">{responses.sleepQuality || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How long did it take you to fall asleep?</Label>
+                    <div className="grid grid-cols-4 gap-2 mt-2">
+                      {[
+                        { value: '0-15 min', label: '0-15 min' },
+                        { value: '15-30 min', label: '15-30 min' },
+                        { value: '30-60 min', label: '30-60 min' },
+                        { value: '60+ min', label: '60+ min' }
+                      ].map((option) => (
+                        <div 
+                          key={option.value}
+                          className={`p-3 rounded-lg border-2 cursor-pointer text-center transition-all ${
+                            responses.fallAsleepTime === option.value
+                              ? 'border-indigo-400 bg-indigo-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setResponses({...responses, fallAsleepTime: option.value})}
+                        >
+                          <div className="text-sm font-medium">{option.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Which parts of your routine were most helpful?</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {selectedActivities.map((activityId) => {
+                        const activity = windDownActivities.find(a => a.id === activityId);
+                        if (!activity) return null;
+                        
+                        return (
+                          <div key={activityId} className="flex items-center space-x-2">
+                            <Checkbox
+                              checked={responses[`helpful-${activityId}`] || false}
+                              onCheckedChange={(checked) => setResponses({
+                                ...responses,
+                                [`helpful-${activityId}`]: checked
+                              })}
+                            />
+                            <span className="text-lg">{activity.icon}</span>
+                            <Label className="text-sm">{activity.name}</Label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Notes about your sleep experience:</Label>
+                    <Textarea
+                      placeholder="How did you feel during your wind-down routine? Any challenges or successes? What would you change?"
+                      value={responses.sleepNotes || ''}
+                      onChange={(e) => setResponses({...responses, sleepNotes: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Energy level this morning (1-10):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Exhausted</span>
+                      <Slider
+                        value={[responses.morningEnergy || 5]}
+                        onValueChange={(value) => setResponses({...responses, morningEnergy: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.morningEnergy || 5}</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, windDownPhase: 'assessment'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Adjust My Wind-Down Routine
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Tips */}
+            <div className="bg-indigo-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-indigo-800 mb-2">🌙 Evening Wind-Down Success Tips</h5>
+              <ul className="text-sm text-indigo-700 space-y-1">
+                <li>• Start your routine at the same time each night</li>
+                <li>• Dim lights gradually throughout your routine</li>
+                <li>• Keep your bedroom cool (60-67°F) for optimal sleep</li>
+                <li>• Put away all electronic devices 1 hour before bed</li>
+                <li>• If you can't sleep within 20 minutes, get up and do a quiet activity</li>
+                <li>• Be patient - it takes 2-3 weeks to establish new sleep habits</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
