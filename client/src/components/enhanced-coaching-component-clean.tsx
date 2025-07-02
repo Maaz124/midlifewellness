@@ -6633,6 +6633,700 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 2 - Mirror Work & Affirmations
+    if (component.id === 'w2-mirror') {
+      const mirrorPhase = responses.mirrorPhase || 'introduction';
+      const selectedAffirmationType = responses.selectedAffirmationType || null;
+      const personalAffirmations = responses.personalAffirmations || [];
+      const mirrorPracticeData = responses.mirrorPracticeData || {};
+
+      const affirmationTypes = [
+        {
+          id: 'self-worth',
+          title: 'Self-Worth & Value',
+          description: 'Affirmations that reinforce your inherent worth and value as a person',
+          icon: '💎',
+          color: 'purple',
+          science: 'Research shows self-worth affirmations activate the medial prefrontal cortex, strengthening self-concept',
+          examples: [
+            'I am worthy of love and respect exactly as I am',
+            'My value doesn\'t decrease based on others\' opinions',
+            'I deserve good things in my life',
+            'I am enough, just as I am right now'
+          ]
+        },
+        {
+          id: 'body-acceptance',
+          title: 'Body Acceptance & Changes',
+          description: 'Loving affirmations for your changing body during midlife transitions',
+          icon: '🌸',
+          color: 'pink',
+          science: 'Body-positive affirmations reduce cortisol and increase body satisfaction scores by 23%',
+          examples: [
+            'My body is wise and knows how to heal and adapt',
+            'I honor my body for all it has carried me through',
+            'Each change in my body tells a story of my strength',
+            'I treat my body with kindness and compassion'
+          ]
+        },
+        {
+          id: 'capability-strength',
+          title: 'Capability & Inner Strength',
+          description: 'Affirmations that remind you of your competence and resilience',
+          icon: '💪',
+          color: 'blue',
+          science: 'Capability affirmations increase task performance by 15% and reduce anxiety before challenges',
+          examples: [
+            'I have overcome challenges before and I can do it again',
+            'I trust my ability to figure things out',
+            'I am capable of learning and growing at any age',
+            'My experience and wisdom are valuable assets'
+          ]
+        },
+        {
+          id: 'future-possibility',
+          title: 'Future & Possibilities',
+          description: 'Forward-looking affirmations for embracing new opportunities',
+          icon: '🌅',
+          color: 'orange',
+          science: 'Future-focused affirmations enhance neuroplasticity and goal-directed behavior',
+          examples: [
+            'Exciting opportunities are coming into my life',
+            'I am open to new experiences and adventures',
+            'My best chapters are still being written',
+            'I create positive change in my life every day'
+          ]
+        },
+        {
+          id: 'wisdom-growth',
+          title: 'Wisdom & Personal Growth',
+          description: 'Affirmations celebrating your accumulated wisdom and ongoing development',
+          icon: '🌳',
+          color: 'green',
+          science: 'Wisdom-based affirmations increase emotional regulation and decision-making confidence',
+          examples: [
+            'I trust the wisdom I\'ve gained through my experiences',
+            'I am constantly evolving and becoming more myself',
+            'My perspective and insights matter and have value',
+            'I embrace both my strengths and areas for growth'
+          ]
+        },
+        {
+          id: 'relationships-connection',
+          title: 'Relationships & Connection',
+          description: 'Affirmations for healthy relationships and authentic connections',
+          icon: '💕',
+          color: 'red',
+          science: 'Relationship affirmations improve oxytocin production and social bonding behaviors',
+          examples: [
+            'I attract healthy, supportive relationships into my life',
+            'I communicate my needs clearly and kindly',
+            'I deserve to be heard and understood',
+            'I offer and receive love freely and authentically'
+          ]
+        }
+      ];
+
+      const mirrorTechniques = [
+        {
+          id: 'gentle-gaze',
+          title: 'Gentle Gaze Technique',
+          description: 'Start with soft, loving eye contact to build comfort',
+          steps: [
+            'Look into your eyes with the same gentleness you\'d show a dear friend',
+            'Notice any impulse to look away and gently guide your attention back',
+            'Soften your facial expression and let your shoulders relax',
+            'Take three deep breaths while maintaining gentle eye contact'
+          ],
+          duration: '2-3 minutes',
+          benefits: ['Builds self-compassion', 'Reduces self-criticism', 'Increases emotional safety']
+        },
+        {
+          id: 'appreciation-practice',
+          title: 'Appreciation Practice',
+          description: 'Focus on aspects of yourself you genuinely appreciate',
+          steps: [
+            'Look at yourself and find three things you appreciate (eyes, smile, strength)',
+            'Speak these appreciations out loud with warmth in your voice',
+            'Notice what it feels like to receive genuine appreciation',
+            'End with "Thank you for being you"'
+          ],
+          duration: '3-5 minutes',
+          benefits: ['Increases self-acceptance', 'Builds positive self-regard', 'Improves mood']
+        },
+        {
+          id: 'affirmation-practice',
+          title: 'Affirmation Speaking Practice',
+          description: 'Speak your chosen affirmations while looking into your eyes',
+          steps: [
+            'Choose 3-5 affirmations that resonate most strongly today',
+            'Speak each affirmation slowly and with intention',
+            'Notice your emotional response - both resistance and acceptance',
+            'Repeat any affirmation that feels particularly challenging until it softens'
+          ],
+          duration: '5-8 minutes',
+          benefits: ['Rewires neural pathways', 'Increases belief in affirmations', 'Builds confidence']
+        },
+        {
+          id: 'conversation-practice',
+          title: 'Inner Friend Conversation',
+          description: 'Have a supportive conversation with yourself as you would with a best friend',
+          steps: [
+            'Ask yourself "How are you really doing today?"',
+            'Listen with compassion to whatever comes up',
+            'Offer yourself encouragement for challenges you\'re facing',
+            'End with words of support and love'
+          ],
+          duration: '5-10 minutes',
+          benefits: ['Develops self-compassion', 'Improves emotional awareness', 'Builds inner support system']
+        }
+      ];
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-pink-500" />
+              Mirror Work & Affirmations - Rewiring Self-Talk
+            </CardTitle>
+            <p className="text-sm text-gray-600">Transform your relationship with yourself through the powerful practice of mirror work and personalized affirmations designed for midlife transitions.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind Mirror Work */}
+            <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+              <h5 className="font-semibold text-pink-800 mb-2">The Science Behind Mirror Work</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-pink-700">
+                <div>
+                  <strong>Neural Mirroring:</strong> Looking at yourself activates mirror neurons, enhancing self-awareness
+                </div>
+                <div>
+                  <strong>Vagus Nerve Activation:</strong> Eye contact with yourself stimulates the calming nervous system
+                </div>
+                <div>
+                  <strong>Neuroplasticity:</strong> Repeated positive self-statements create new neural pathways
+                </div>
+                <div>
+                  <strong>Self-Compassion Research:</strong> Mirror work increases self-kindness by 34% in studies
+                </div>
+              </div>
+            </div>
+
+            {/* Introduction Phase */}
+            {mirrorPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Understanding Mirror Work Benefits</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {[
+                      {
+                        icon: '🧠',
+                        title: 'Rewires Neural Patterns',
+                        description: 'Changes automatic self-critical thoughts to supportive ones',
+                        color: 'purple'
+                      },
+                      {
+                        icon: '💕',
+                        title: 'Builds Self-Compassion',
+                        description: 'Develops the same kindness toward yourself as you show others',
+                        color: 'pink'
+                      },
+                      {
+                        icon: '🌟',
+                        title: 'Increases Confidence',
+                        description: 'Strengthens positive self-regard and inner validation',
+                        color: 'yellow'
+                      },
+                      {
+                        icon: '🕯️',
+                        title: 'Enhances Emotional Safety',
+                        description: 'Creates a secure internal relationship with yourself',
+                        color: 'blue'
+                      }
+                    ].map((benefit, index) => (
+                      <div key={index} className={`p-4 rounded-lg border-l-4 border-${benefit.color}-400 bg-${benefit.color}-50`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{benefit.icon}</span>
+                          <h5 className={`font-semibold text-${benefit.color}-800`}>{benefit.title}</h5>
+                        </div>
+                        <p className={`text-sm text-${benefit.color}-700`}>{benefit.description}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-4 rounded-lg">
+                    <h5 className="font-semibold text-gray-800 mb-2">🌸 Perfect for Midlife Women</h5>
+                    <p className="text-sm text-gray-700">
+                      Mirror work is especially powerful during midlife transitions because it helps you:
+                      reconnect with your authentic self, process changes with compassion, and build a loving 
+                      relationship with who you're becoming.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+                    <Button 
+                      onClick={() => setResponses({...responses, mirrorPhase: 'technique-selection'})}
+                      className="flex-1"
+                    >
+                      Choose Your Mirror Technique
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Technique Selection Phase */}
+            {mirrorPhase === 'technique-selection' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Choose Your Mirror Work Technique</h4>
+                  <p className="text-sm text-gray-600 mb-6">Select the technique that feels most approachable for you today. You can try different techniques as you become more comfortable.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {mirrorTechniques.map((technique) => (
+                      <div 
+                        key={technique.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          responses.selectedMirrorTechnique === technique.id
+                            ? 'border-pink-400 bg-pink-50'
+                            : 'border-gray-200 hover:border-pink-300 hover:bg-pink-25'
+                        }`}
+                        onClick={() => setResponses({...responses, selectedMirrorTechnique: technique.id})}
+                      >
+                        <h5 className="font-semibold text-gray-800 mb-2">{technique.title}</h5>
+                        <p className="text-sm text-gray-600 mb-3">{technique.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" />
+                            <span>{technique.duration}</span>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-1">
+                            {technique.benefits.map((benefit, index) => (
+                              <span key={index} className="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded">
+                                {benefit}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {responses.selectedMirrorTechnique && (
+                    <div className="mt-6 flex gap-3">
+                      <Button 
+                        onClick={() => setResponses({...responses, mirrorPhase: 'affirmation-selection'})}
+                        className="flex-1"
+                      >
+                        Choose Your Affirmations
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Affirmation Selection Phase */}
+            {mirrorPhase === 'affirmation-selection' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Select Your Affirmation Focus Areas</h4>
+                  <p className="text-sm text-gray-600 mb-6">Choose 2-3 affirmation types that resonate most with what you need today. Quality over quantity works best.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {affirmationTypes.map((type) => (
+                      <div 
+                        key={type.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          (responses.selectedAffirmationTypes || []).includes(type.id)
+                            ? `border-${type.color}-400 bg-${type.color}-50`
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => {
+                          const selected = responses.selectedAffirmationTypes || [];
+                          const newSelected = selected.includes(type.id)
+                            ? selected.filter(id => id !== type.id)
+                            : [...selected, type.id];
+                          setResponses({...responses, selectedAffirmationTypes: newSelected});
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{type.icon}</span>
+                          <h5 className="font-semibold text-gray-800">{type.title}</h5>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{type.description}</p>
+                        
+                        <div className="bg-gray-50 p-2 rounded text-xs text-gray-600 mb-2">
+                          <strong>Research:</strong> {type.science}
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-gray-500">Example affirmations:</p>
+                          {type.examples.slice(0, 2).map((example, index) => (
+                            <p key={index} className="text-xs text-gray-600 italic">• {example}</p>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {(responses.selectedAffirmationTypes || []).length > 0 && (
+                    <div className="mt-6 flex gap-3">
+                      <Button 
+                        onClick={() => setResponses({...responses, mirrorPhase: 'practice'})}
+                        className="flex-1"
+                      >
+                        Start Mirror Practice ({(responses.selectedAffirmationTypes || []).length} {(responses.selectedAffirmationTypes || []).length === 1 ? 'type' : 'types'} selected)
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {mirrorPhase === 'practice' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Mirror Work Practice Session</h4>
+                  
+                  {/* Selected Technique Guide */}
+                  {responses.selectedMirrorTechnique && (
+                    <div className="mb-6">
+                      {(() => {
+                        const technique = mirrorTechniques.find(t => t.id === responses.selectedMirrorTechnique);
+                        return (
+                          <div className="bg-pink-50 p-4 rounded-lg">
+                            <h5 className="font-semibold text-pink-800 mb-2">{technique?.title} Guide</h5>
+                            <div className="space-y-2">
+                              {technique?.steps.map((step, index) => (
+                                <div key={index} className="flex gap-3">
+                                  <span className="flex-shrink-0 w-6 h-6 bg-pink-200 text-pink-800 rounded-full flex items-center justify-center text-sm font-medium">
+                                    {index + 1}
+                                  </span>
+                                  <p className="text-sm text-pink-700">{step}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Selected Affirmations */}
+                  <div className="mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-3">Your Selected Affirmations</h5>
+                    {(responses.selectedAffirmationTypes || []).map((typeId) => {
+                      const type = affirmationTypes.find(t => t.id === typeId);
+                      return (
+                        <div key={typeId} className="mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span>{type?.icon}</span>
+                            <h6 className="font-medium text-gray-700">{type?.title}</h6>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {type?.examples.map((affirmation, index) => (
+                              <div 
+                                key={index}
+                                className={`p-3 rounded border-2 cursor-pointer transition-all ${
+                                  (responses.selectedAffirmations || []).includes(affirmation)
+                                    ? 'border-pink-400 bg-pink-50'
+                                    : 'border-gray-200 hover:border-pink-300'
+                                }`}
+                                onClick={() => {
+                                  const selected = responses.selectedAffirmations || [];
+                                  const newSelected = selected.includes(affirmation)
+                                    ? selected.filter(a => a !== affirmation)
+                                    : [...selected, affirmation];
+                                  setResponses({...responses, selectedAffirmations: newSelected});
+                                }}
+                              >
+                                <p className="text-sm text-gray-700">{affirmation}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Practice Timer */}
+                  <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-2">🕯️ Practice Session</h5>
+                    <p className="text-sm text-gray-700 mb-3">
+                      Find a comfortable space with a mirror. Take your time - this is a practice of self-compassion, not performance.
+                    </p>
+                    
+                    <div className="flex items-center gap-4">
+                      <Button
+                        onClick={() => setResponses({...responses, practiceStarted: !responses.practiceStarted})}
+                        variant={responses.practiceStarted ? "secondary" : "default"}
+                        size="sm"
+                      >
+                        {responses.practiceStarted ? 'Pause Practice' : 'Start Practice'}
+                      </Button>
+                      
+                      {responses.practiceStarted && (
+                        <span className="text-sm text-gray-600">
+                          Practice in progress... take your time
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {responses.practiceStarted && (
+                    <div className="space-y-4">
+                      <div>
+                        <Label>How did the mirror work feel for you today?</Label>
+                        <Textarea
+                          placeholder="Describe your experience... Was it comfortable? Challenging? What did you notice about your thoughts or feelings?"
+                          value={responses.practiceReflection || ''}
+                          onChange={(e) => setResponses({...responses, practiceReflection: e.target.value})}
+                          className="mt-2"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Self-Compassion Level (1-10)</Label>
+                        <p className="text-sm text-gray-600 mb-2">How kind and understanding were you toward yourself during this practice?</p>
+                        <div className="grid grid-cols-10 gap-1 mb-2">
+                          {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                            <div key={num} className="text-center">
+                              <button
+                                onClick={() => setResponses({...responses, compassionLevel: num})}
+                                className={`w-full h-8 rounded text-xs font-medium transition-all ${
+                                  num <= (responses.compassionLevel || 0)
+                                    ? 'bg-pink-500 text-white' 
+                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                }`}
+                              >
+                                {num}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Very Critical</span>
+                          <span>Very Compassionate</span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <Button 
+                          onClick={() => setResponses({...responses, mirrorPhase: 'personalization'})}
+                          className="flex-1"
+                          disabled={!responses.practiceReflection || !responses.compassionLevel}
+                        >
+                          Create Personal Affirmations
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Personalization Phase */}
+            {mirrorPhase === 'personalization' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Create Your Personal Affirmations</h4>
+                  <p className="text-sm text-gray-600 mb-6">
+                    The most powerful affirmations are those that speak directly to your heart. Create 3-5 personal affirmations 
+                    that address your specific needs and aspirations.
+                  </p>
+
+                  {/* Affirmation Creation Guide */}
+                  <div className="bg-purple-50 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-purple-800 mb-2">💜 Creating Effective Affirmations</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-purple-700">
+                      <div><strong>Use "I am" statements:</strong> Present tense creates immediate belief</div>
+                      <div><strong>Be specific:</strong> Target your exact needs and situations</div>
+                      <div><strong>Feel believable:</strong> Should stretch you but not feel impossible</div>
+                      <div><strong>Include emotion:</strong> Add feelings of gratitude, love, or excitement</div>
+                    </div>
+                  </div>
+
+                  {/* Personal Affirmation Builder */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label>What area of your life needs the most support right now?</Label>
+                      <Select 
+                        value={responses.supportArea || ''} 
+                        onValueChange={(value) => setResponses({...responses, supportArea: value})}
+                      >
+                        <SelectTrigger className="mt-2">
+                          <SelectValue placeholder="Choose the area that feels most important..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="self-confidence">Self-confidence and self-worth</SelectItem>
+                          <SelectItem value="body-acceptance">Body acceptance and changes</SelectItem>
+                          <SelectItem value="relationships">Relationships and connections</SelectItem>
+                          <SelectItem value="career-purpose">Career transitions and purpose</SelectItem>
+                          <SelectItem value="health-vitality">Health and vitality</SelectItem>
+                          <SelectItem value="emotional-balance">Emotional balance and resilience</SelectItem>
+                          <SelectItem value="future-excitement">Future possibilities and excitement</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {responses.supportArea && (
+                      <div>
+                        <Label>Create your personal affirmations (3-5 statements)</Label>
+                        <p className="text-sm text-gray-600 mb-2">Write affirmations that speak directly to your {responses.supportArea?.replace('-', ' ')} needs:</p>
+                        
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <div key={index} className="mt-2">
+                            <Input
+                              placeholder={`Personal affirmation ${index + 1}${index >= 3 ? ' (optional)' : ''}`}
+                              value={(responses.personalAffirmationsList || [])[index] || ''}
+                              onChange={(e) => {
+                                const list = responses.personalAffirmationsList || [];
+                                list[index] = e.target.value;
+                                setResponses({...responses, personalAffirmationsList: list});
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {(responses.personalAffirmationsList || []).filter(a => a?.trim()).length >= 3 && (
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Daily practice commitment</Label>
+                          <Select 
+                            value={responses.practiceCommitment || ''} 
+                            onValueChange={(value) => setResponses({...responses, practiceCommitment: value})}
+                          >
+                            <SelectTrigger className="mt-2">
+                              <SelectValue placeholder="How often will you practice mirror work?" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="daily-morning">Daily in the morning (3-5 minutes)</SelectItem>
+                              <SelectItem value="daily-evening">Daily in the evening (3-5 minutes)</SelectItem>
+                              <SelectItem value="twice-daily">Twice daily - morning and evening</SelectItem>
+                              <SelectItem value="every-other-day">Every other day (5-10 minutes)</SelectItem>
+                              <SelectItem value="weekly-longer">Weekly longer sessions (10-15 minutes)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <Button 
+                            onClick={() => setResponses({...responses, mirrorPhase: 'daily-integration'})}
+                            className="flex-1"
+                            disabled={!responses.practiceCommitment}
+                          >
+                            Set Up Daily Practice
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Daily Integration Phase */}
+            {mirrorPhase === 'daily-integration' && (
+              <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Your Personal Mirror Work Practice Plan</h4>
+                
+                <div className="space-y-6">
+                  {/* Practice Summary */}
+                  <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-4 rounded-lg">
+                    <h5 className="font-semibold text-gray-800 mb-3">🌸 Your Practice Summary</h5>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <strong>Technique:</strong> {mirrorTechniques.find(t => t.id === responses.selectedMirrorTechnique)?.title}
+                      </div>
+                      <div>
+                        <strong>Frequency:</strong> {responses.practiceCommitment?.replace('-', ' ')}
+                      </div>
+                      <div>
+                        <strong>Focus Areas:</strong> {(responses.selectedAffirmationTypes || []).length} types selected
+                      </div>
+                      <div>
+                        <strong>Personal Affirmations:</strong> {(responses.personalAffirmationsList || []).filter(a => a?.trim()).length} created
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Personal Affirmations Card */}
+                  <div className="bg-white border border-pink-200 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-3">Your Personal Affirmations</h5>
+                    <div className="space-y-2">
+                      {(responses.personalAffirmationsList || []).filter(a => a?.trim()).map((affirmation, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-pink-50 rounded-lg">
+                          <span className="flex-shrink-0 w-6 h-6 bg-pink-200 text-pink-800 rounded-full flex items-center justify-center text-sm font-medium">
+                            {index + 1}
+                          </span>
+                          <p className="text-sm text-gray-700 font-medium">{affirmation}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Practice Tips */}
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h5 className="font-semibold text-yellow-800 mb-2">💡 Practice Tips for Success</h5>
+                    <div className="space-y-2 text-sm text-yellow-700">
+                      <p>• <strong>Start small:</strong> Even 30 seconds of gentle eye contact builds the habit</p>
+                      <p>• <strong>Be patient:</strong> Mirror work can feel awkward initially - this is completely normal</p>
+                      <p>• <strong>Notice resistance:</strong> When an affirmation feels "fake," it's working on deep patterns</p>
+                      <p>• <strong>Track changes:</strong> Notice shifts in your self-talk and confidence over time</p>
+                      <p>• <strong>Adjust as needed:</strong> Modify affirmations as you grow and change</p>
+                    </div>
+                  </div>
+
+                  {/* Integration Reflection */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Commitment to yourself</Label>
+                      <Textarea
+                        placeholder="Write a short commitment statement to yourself about this practice. What do you hope to gain? How will you stay consistent?"
+                        value={responses.practiceCommitment || ''}
+                        onChange={(e) => setResponses({...responses, practiceCommitmentStatement: e.target.value})}
+                        className="mt-2"
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h5 className="font-semibold text-green-800 mb-2">🌱 Building Your New Neural Pathways</h5>
+                      <p className="text-sm text-green-700">
+                        Remember: Every time you speak kindly to yourself in the mirror, you're literally rewiring your brain 
+                        for self-compassion. Research shows that neuroplasticity peaks when we combine visual (mirror), 
+                        auditory (speaking), and emotional (self-compassion) elements together.
+                      </p>
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        setResponses({...responses, mirrorWorkCompleted: true});
+                        onComplete(component.id, responses);
+                      }}
+                      className="w-full"
+                      disabled={!responses.practiceCommitmentStatement}
+                    >
+                      Complete Mirror Work & Affirmations Practice
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Week 2 - CBT Reframing Techniques (ABCD Model)
     console.log('Checking CBT condition:', component.id, component.id === 'w2-cbt');
     if (component.id === 'w2-cbt') {
