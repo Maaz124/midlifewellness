@@ -5147,6 +5147,726 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Nutrition Planning - Hormone-Supporting Meal Planning
+    if (component.id === 'nutrition-planning') {
+      const nutritionPhase = responses.nutritionPhase || 'assessment';
+      const currentSymptoms = responses.currentSymptoms || [];
+      const mealPreferences = responses.mealPreferences || 'balanced';
+      const cookingTime = responses.cookingTime || 'moderate';
+      const dietaryRestrictions = responses.dietaryRestrictions || [];
+      const selectedMealPlan = responses.selectedMealPlan || 'hormone-balance';
+
+      const hormoneSymptoms = [
+        {
+          id: 'hot-flashes',
+          name: 'Hot Flashes & Night Sweats',
+          icon: '🔥',
+          description: 'Sudden heat episodes and temperature regulation issues',
+          supportiveNutrients: ['Phytoestrogens', 'Magnesium', 'Vitamin E', 'Omega-3s'],
+          avoidFoods: ['Spicy foods', 'Caffeine', 'Alcohol', 'Sugar spikes'],
+          helpfulFoods: ['Flax seeds', 'Soy products', 'Leafy greens', 'Cold-water fish']
+        },
+        {
+          id: 'mood-swings',
+          name: 'Mood Swings & Irritability',
+          icon: '🎭',
+          description: 'Emotional fluctuations and increased sensitivity',
+          supportiveNutrients: ['B-Complex', 'Magnesium', 'Tryptophan', 'Complex carbs'],
+          avoidFoods: ['Refined sugar', 'Processed foods', 'Excessive caffeine'],
+          helpfulFoods: ['Turkey', 'Quinoa', 'Dark chocolate', 'Bananas', 'Oats']
+        },
+        {
+          id: 'sleep-issues',
+          name: 'Sleep Disruption & Insomnia',
+          icon: '😴',
+          description: 'Difficulty falling asleep or staying asleep',
+          supportiveNutrients: ['Melatonin precursors', 'Magnesium', 'Calcium', 'Tryptophan'],
+          avoidFoods: ['Late caffeine', 'Heavy meals', 'Alcohol before bed'],
+          helpfulFoods: ['Cherries', 'Almonds', 'Chamomile tea', 'Turkey', 'Kiwi']
+        },
+        {
+          id: 'weight-gain',
+          name: 'Weight Gain & Metabolism',
+          icon: '⚖️',
+          description: 'Slowed metabolism and difficulty maintaining weight',
+          supportiveNutrients: ['Protein', 'Fiber', 'Green tea compounds', 'Chromium'],
+          avoidFoods: ['Refined carbs', 'Trans fats', 'High sodium'],
+          helpfulFoods: ['Lean protein', 'Green tea', 'Fiber-rich vegetables', 'Berries']
+        },
+        {
+          id: 'brain-fog',
+          name: 'Brain Fog & Memory Issues',
+          icon: '🧠',
+          description: 'Difficulty concentrating and memory lapses',
+          supportiveNutrients: ['Omega-3s', 'Antioxidants', 'B-vitamins', 'Choline'],
+          avoidFoods: ['High sugar', 'Processed foods', 'Trans fats'],
+          helpfulFoods: ['Blueberries', 'Fatty fish', 'Eggs', 'Nuts', 'Avocado']
+        },
+        {
+          id: 'fatigue',
+          name: 'Energy Fatigue & Low Stamina',
+          icon: '🔋',
+          description: 'Persistent tiredness and reduced energy levels',
+          supportiveNutrients: ['Iron', 'B-Complex', 'CoQ10', 'Magnesium'],
+          avoidFoods: ['Sugar crashes', 'Refined carbs', 'Excess caffeine'],
+          helpfulFoods: ['Spinach', 'Lean meats', 'Legumes', 'Dark leafy greens']
+        }
+      ];
+
+      const mealPlanTypes = [
+        {
+          id: 'hormone-balance',
+          name: 'Hormone Balance Focus',
+          icon: '⚖️',
+          description: 'Emphasizes phytoestrogens and hormone-regulating nutrients',
+          keyFeatures: ['Soy products', 'Flax seeds', 'Cruciferous vegetables', 'Healthy fats'],
+          bestFor: ['Hot flashes', 'Mood swings', 'General hormone support'],
+          sampleDay: {
+            breakfast: 'Flax seed smoothie with berries',
+            lunch: 'Quinoa salad with edamame',
+            dinner: 'Salmon with broccoli',
+            snacks: ['Almonds', 'Greek yogurt with seeds']
+          }
+        },
+        {
+          id: 'metabolism-boost',
+          name: 'Metabolism Boost',
+          icon: '🔥',
+          description: 'Supports healthy weight management and metabolic function',
+          keyFeatures: ['High protein', 'Green tea', 'Fiber-rich foods', 'Portion control'],
+          bestFor: ['Weight gain', 'Slow metabolism', 'Energy fatigue'],
+          sampleDay: {
+            breakfast: 'Protein-rich egg scramble',
+            lunch: 'Grilled chicken salad',
+            dinner: 'Lean beef with vegetables',
+            snacks: ['Green tea', 'Berries with nuts']
+          }
+        },
+        {
+          id: 'brain-support',
+          name: 'Brain & Cognitive Support',
+          icon: '🧠',
+          description: 'Optimizes cognitive function and mental clarity',
+          keyFeatures: ['Omega-3 rich foods', 'Antioxidants', 'B-vitamins', 'Low glycemic'],
+          bestFor: ['Brain fog', 'Memory issues', 'Concentration problems'],
+          sampleDay: {
+            breakfast: 'Blueberry walnut oatmeal',
+            lunch: 'Sardine avocado toast',
+            dinner: 'Herb-crusted cod with quinoa',
+            snacks: ['Dark chocolate', 'Mixed nuts']
+          }
+        },
+        {
+          id: 'mood-stability',
+          name: 'Mood Stability',
+          icon: '🌅',
+          description: 'Supports emotional balance and stress management',
+          keyFeatures: ['Complex carbs', 'Magnesium-rich foods', 'Anti-inflammatory', 'Regular timing'],
+          bestFor: ['Mood swings', 'Irritability', 'Stress eating'],
+          sampleDay: {
+            breakfast: 'Overnight oats with banana',
+            lunch: 'Lentil soup with whole grain bread',
+            dinner: 'Turkey with sweet potato',
+            snacks: ['Dark chocolate', 'Herbal tea']
+          }
+        }
+      ];
+
+      const weeklyMealStructure = {
+        monday: { focus: 'Energy Boost', theme: 'Start strong with protein' },
+        tuesday: { focus: 'Hormone Support', theme: 'Phytoestrogen-rich foods' },
+        wednesday: { focus: 'Brain Power', theme: 'Omega-3 and antioxidants' },
+        thursday: { focus: 'Inflammation Control', theme: 'Anti-inflammatory foods' },
+        friday: { focus: 'Mood Balance', theme: 'Comfort foods done healthy' },
+        saturday: { focus: 'Prep Day', theme: 'Batch cooking and meal prep' },
+        sunday: { focus: 'Rest & Restore', theme: 'Easy, nourishing meals' }
+      };
+
+      const getCurrentMealPlan = () => {
+        return mealPlanTypes.find(plan => plan.id === selectedMealPlan) || mealPlanTypes[0];
+      };
+
+      const getSymptomNutrients = () => {
+        const selectedSymptoms = hormoneSymptoms.filter(symptom => 
+          currentSymptoms.includes(symptom.id)
+        );
+        const allNutrients = selectedSymptoms.flatMap(symptom => symptom.supportiveNutrients);
+        const uniqueNutrients = [...new Set(allNutrients)];
+        return uniqueNutrients;
+      };
+
+      const getAvoidFoods = () => {
+        const selectedSymptoms = hormoneSymptoms.filter(symptom => 
+          currentSymptoms.includes(symptom.id)
+        );
+        const allAvoidFoods = selectedSymptoms.flatMap(symptom => symptom.avoidFoods);
+        const uniqueAvoidFoods = [...new Set(allAvoidFoods)];
+        return uniqueAvoidFoods;
+      };
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Utensils className="w-5 h-5 text-green-500" />
+              Hormone-Supporting Meal Planning
+            </CardTitle>
+            <p className="text-sm text-gray-600">Create personalized meal plans that support hormonal balance, reduce symptoms, and optimize nutrition during perimenopause.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Nutrition Science */}
+            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+              <h5 className="font-semibold text-green-800 mb-2">How Food Supports Hormonal Health</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-green-700">
+                <div>
+                  <strong>Phytoestrogens:</strong> Plant compounds that can help balance declining estrogen naturally
+                </div>
+                <div>
+                  <strong>Omega-3 Fatty Acids:</strong> Reduce inflammation and support brain health during transitions
+                </div>
+                <div>
+                  <strong>Magnesium:</strong> Calms the nervous system and supports better sleep quality
+                </div>
+                <div>
+                  <strong>Fiber:</strong> Helps metabolize hormones and supports healthy weight management
+                </div>
+              </div>
+            </div>
+
+            {/* Symptom Assessment */}
+            {nutritionPhase === 'assessment' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Hormonal Symptoms Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Select the symptoms you're currently experiencing to get personalized nutrition recommendations:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Which symptoms are you experiencing? (Select all that apply)</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                      {hormoneSymptoms.map((symptom) => (
+                        <div 
+                          key={symptom.id}
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            currentSymptoms.includes(symptom.id)
+                              ? 'border-green-400 bg-green-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const newSymptoms = currentSymptoms.includes(symptom.id)
+                              ? currentSymptoms.filter(id => id !== symptom.id)
+                              : [...currentSymptoms, symptom.id];
+                            setResponses({...responses, currentSymptoms: newSymptoms});
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="text-2xl">{symptom.icon}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Checkbox
+                                  checked={currentSymptoms.includes(symptom.id)}
+                                  onChange={() => {}}
+                                />
+                                <h6 className="font-semibold text-sm">{symptom.name}</h6>
+                              </div>
+                              <p className="text-xs text-gray-600">{symptom.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How much time do you typically have for meal preparation?</Label>
+                    <div className="grid grid-cols-3 gap-3 mt-2">
+                      {[
+                        { id: 'minimal', name: 'Minimal (15 min)', icon: '⏱️' },
+                        { id: 'moderate', name: 'Moderate (30 min)', icon: '⏰' },
+                        { id: 'generous', name: 'Generous (45+ min)', icon: '🕐' }
+                      ].map((option) => (
+                        <div 
+                          key={option.id}
+                          className={`p-3 rounded-lg border-2 cursor-pointer text-center transition-all ${
+                            cookingTime === option.id
+                              ? 'border-green-400 bg-green-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setResponses({...responses, cookingTime: option.id})}
+                        >
+                          <div className="text-2xl mb-1">{option.icon}</div>
+                          <div className="text-sm font-medium">{option.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Dietary preferences and restrictions:</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Vegetarian', 'Vegan', 'Gluten-free', 'Dairy-free',
+                        'Low-carb', 'Mediterranean', 'No restrictions', 'Other'
+                      ].map((restriction) => (
+                        <div key={restriction} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={dietaryRestrictions.includes(restriction)}
+                            onCheckedChange={(checked) => {
+                              const newRestrictions = checked
+                                ? [...dietaryRestrictions, restriction]
+                                : dietaryRestrictions.filter(r => r !== restriction);
+                              setResponses({...responses, dietaryRestrictions: newRestrictions});
+                            }}
+                          />
+                          <Label className="text-sm">{restriction}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">What's your main nutrition goal right now?</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Reduce hot flashes and night sweats',
+                        'Support stable energy levels',
+                        'Improve mood and reduce irritability',
+                        'Better sleep quality',
+                        'Maintain healthy weight',
+                        'Increase mental clarity and focus'
+                      ].map((goal) => (
+                        <div key={goal} className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="nutrition-goal"
+                            checked={responses.nutritionGoal === goal}
+                            onChange={() => setResponses({...responses, nutritionGoal: goal})}
+                            className="text-green-600"
+                          />
+                          <Label className="text-sm">{goal}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, nutritionPhase: 'plan-selection'})}
+                    className="w-full"
+                    disabled={currentSymptoms.length === 0}
+                  >
+                    Get My Personalized Meal Plan
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Plan Selection */}
+            {nutritionPhase === 'plan-selection' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Recommended Meal Plan Types</h4>
+                <p className="text-sm text-gray-600 mb-4">Based on your symptoms, here are meal plans designed to support your specific needs:</p>
+                
+                {/* Personalized Recommendations */}
+                {currentSymptoms.length > 0 && (
+                  <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-blue-800 mb-3">Your Personalized Nutrition Priorities</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <strong className="text-blue-700">Focus on these nutrients:</strong>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {getSymptomNutrients().map((nutrient) => (
+                            <Badge key={nutrient} variant="outline" className="text-xs">
+                              {nutrient}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <strong className="text-red-700">Consider limiting:</strong>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {getAvoidFoods().map((food) => (
+                            <Badge key={food} variant="destructive" className="text-xs">
+                              {food}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  {mealPlanTypes.map((plan) => (
+                    <div 
+                      key={plan.id}
+                      className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                        selectedMealPlan === plan.id 
+                          ? 'border-green-400 bg-green-50' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setResponses({...responses, selectedMealPlan: plan.id})}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="text-3xl">{plan.icon}</div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              selectedMealPlan === plan.id 
+                                ? 'border-green-500 bg-green-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {selectedMealPlan === plan.id && (
+                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                              )}
+                            </div>
+                            <h5 className="font-semibold">{plan.name}</h5>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3">{plan.description}</p>
+                          
+                          <div className="space-y-3 text-sm">
+                            <div>
+                              <strong className="text-green-700">Key Features:</strong>
+                              <span className="text-gray-600"> {plan.keyFeatures.join(', ')}</span>
+                            </div>
+                            <div>
+                              <strong className="text-purple-700">Best For:</strong>
+                              <span className="text-gray-600"> {plan.bestFor.join(', ')}</span>
+                            </div>
+                            
+                            <div className="bg-gray-50 p-3 rounded">
+                              <h6 className="font-medium mb-2">Sample Day:</h6>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div><strong>Breakfast:</strong> {plan.sampleDay.breakfast}</div>
+                                <div><strong>Lunch:</strong> {plan.sampleDay.lunch}</div>
+                                <div><strong>Dinner:</strong> {plan.sampleDay.dinner}</div>
+                                <div><strong>Snacks:</strong> {plan.sampleDay.snacks.join(', ')}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Button 
+                  onClick={() => setResponses({...responses, nutritionPhase: 'weekly-plan'})}
+                  className="w-full mt-6"
+                >
+                  Create My 7-Day {getCurrentMealPlan().name} Plan
+                </Button>
+              </div>
+            )}
+
+            {/* Weekly Meal Plan */}
+            {nutritionPhase === 'weekly-plan' && (
+              <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg border">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-3">{getCurrentMealPlan().icon}</div>
+                  <h4 className="text-xl font-semibold mb-2">Your 7-Day {getCurrentMealPlan().name} Plan</h4>
+                  <p className="text-sm text-gray-600">{getCurrentMealPlan().description}</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Weekly Overview */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Weekly Meal Structure</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {Object.entries(weeklyMealStructure).map(([day, details]) => (
+                        <div key={day} className="p-3 bg-gray-50 rounded-lg">
+                          <div className="font-medium text-green-700 capitalize">{day}</div>
+                          <div className="text-sm font-medium text-gray-800">{details.focus}</div>
+                          <div className="text-xs text-gray-600">{details.theme}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Daily Meal Plans */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Detailed Daily Meal Plans</h5>
+                    <div className="space-y-4">
+                      {Object.entries(weeklyMealStructure).map(([day, details]) => (
+                        <div key={day} className="border rounded-lg p-4">
+                          <div className="flex justify-between items-center mb-3">
+                            <h6 className="font-medium capitalize text-lg">{day}</h6>
+                            <Badge variant="outline">{details.focus}</Badge>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div className="space-y-2">
+                              <strong className="text-orange-600">Breakfast</strong>
+                              <div className="p-2 bg-orange-50 rounded">
+                                {getCurrentMealPlan().sampleDay.breakfast}
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <strong className="text-blue-600">Lunch</strong>
+                              <div className="p-2 bg-blue-50 rounded">
+                                {getCurrentMealPlan().sampleDay.lunch}
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <strong className="text-purple-600">Dinner</strong>
+                              <div className="p-2 bg-purple-50 rounded">
+                                {getCurrentMealPlan().sampleDay.dinner}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 pt-3 border-t">
+                            <strong className="text-green-600 text-sm">Snacks & Beverages:</strong>
+                            <div className="text-sm text-gray-600 mt-1">
+                              {getCurrentMealPlan().sampleDay.snacks.join(' • ')}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Shopping List */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Smart Shopping List</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <h6 className="font-medium text-green-700 mb-2">🥬 Vegetables & Fruits</h6>
+                        <div className="space-y-1 text-sm">
+                          {[
+                            'Leafy greens (spinach, kale)',
+                            'Broccoli & cauliflower',
+                            'Berries (blueberries, strawberries)',
+                            'Avocados',
+                            'Sweet potatoes'
+                          ].map((item, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`shopping-${item}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`shopping-${item}`]: checked
+                                })}
+                              />
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h6 className="font-medium text-blue-700 mb-2">🐟 Proteins</h6>
+                        <div className="space-y-1 text-sm">
+                          {[
+                            'Wild-caught salmon',
+                            'Organic chicken breast',
+                            'Eggs (pasture-raised)',
+                            'Greek yogurt',
+                            'Lentils & beans'
+                          ].map((item, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`shopping-${item}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`shopping-${item}`]: checked
+                                })}
+                              />
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h6 className="font-medium text-purple-700 mb-2">🌾 Grains & Others</h6>
+                        <div className="space-y-1 text-sm">
+                          {[
+                            'Quinoa',
+                            'Oats (steel-cut)',
+                            'Flax seeds',
+                            'Almonds & walnuts',
+                            'Olive oil (extra virgin)'
+                          ].map((item, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`shopping-${item}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`shopping-${item}`]: checked
+                                })}
+                              />
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Meal Prep Tips */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Meal Prep Success Tips</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <h6 className="font-medium text-green-700 mb-2">Weekend Prep (2-3 hours)</h6>
+                        <ul className="space-y-1 text-gray-600">
+                          <li>• Cook grains in bulk (quinoa, brown rice)</li>
+                          <li>• Wash and chop vegetables</li>
+                          <li>• Prepare protein portions</li>
+                          <li>• Make overnight oats</li>
+                          <li>• Portion snacks into containers</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h6 className="font-medium text-blue-700 mb-2">Daily Quick Assembly</h6>
+                        <ul className="space-y-1 text-gray-600">
+                          <li>• Mix prepared ingredients</li>
+                          <li>• Add fresh herbs and seasonings</li>
+                          <li>• Heat and serve</li>
+                          <li>• Track how you feel after meals</li>
+                          <li>• Adjust portions as needed</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, nutritionPhase: 'tracking'})}
+                    className="w-full"
+                  >
+                    Start Symptom & Energy Tracking
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Symptom Tracking */}
+            {nutritionPhase === 'tracking' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">📊</div>
+                  <h4 className="text-xl font-semibold">Track Your Progress</h4>
+                  <p className="text-sm text-gray-600">Monitor how your nutrition changes affect your symptoms</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">How are you feeling after 3 days on this meal plan?</Label>
+                    <div className="grid grid-cols-1 gap-3 mt-3">
+                      {currentSymptoms.map((symptomId) => {
+                        const symptom = hormoneSymptoms.find(s => s.id === symptomId);
+                        if (!symptom) return null;
+                        
+                        return (
+                          <div key={symptom.id} className="p-4 bg-gray-50 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-sm">{symptom.name}</span>
+                              <span className="text-lg">{symptom.icon}</span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <span className="text-xs text-gray-500">Much Worse</span>
+                              <Slider
+                                value={[responses[`symptom-${symptom.id}`] || 5]}
+                                onValueChange={(value) => setResponses({
+                                  ...responses,
+                                  [`symptom-${symptom.id}`]: value[0]
+                                })}
+                                max={10}
+                                min={1}
+                                step={1}
+                                className="flex-1"
+                              />
+                              <span className="text-xs text-gray-500">Much Better</span>
+                              <span className="text-lg font-bold text-green-600 min-w-[30px]">
+                                {responses[`symptom-${symptom.id}`] || 5}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Overall energy level this week:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Very Low</span>
+                      <Slider
+                        value={[responses.weeklyEnergyLevel || 5]}
+                        onValueChange={(value) => setResponses({...responses, weeklyEnergyLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Excellent</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.weeklyEnergyLevel || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Notes about meals and how they made you feel:</Label>
+                    <Textarea
+                      placeholder="Which meals gave you the most energy? Any foods that didn't agree with you? How was your sleep after eating this way?"
+                      value={responses.mealNotes || ''}
+                      onChange={(e) => setResponses({...responses, mealNotes: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Which meals were easiest to prepare and enjoy?</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Breakfast options',
+                        'Lunch recipes',
+                        'Dinner meals',
+                        'Healthy snacks',
+                        'Prep-ahead meals',
+                        'Quick assembly meals'
+                      ].map((meal) => (
+                        <div key={meal} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`easy-meal-${meal}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`easy-meal-${meal}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{meal}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, nutritionPhase: 'assessment'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Adjust My Meal Plan
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Tips */}
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-green-800 mb-2">🍃 Hormone-Supporting Nutrition Tips</h5>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• Eat protein with every meal to stabilize blood sugar</li>
+                <li>• Include phytoestrogen-rich foods daily (flax, soy, legumes)</li>
+                <li>• Stay hydrated - aim for half your body weight in ounces</li>
+                <li>• Time your largest meals earlier in the day</li>
+                <li>• Focus on anti-inflammatory foods to reduce symptoms</li>
+                <li>• Listen to your body and adjust portions based on hunger</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
