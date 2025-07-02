@@ -1347,7 +1347,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     );
   }
 
-  // Week 5: Cognitive Clarity Assessment
+  // Week 5: Enhanced Cognitive Clarity Assessment - UPDATED
   if (component.id === 'w5-assessment') {
     const [currentSection, setCurrentSection] = useState(responses.currentSection || 'memory');
     const [memoryAssessment, setMemoryAssessment] = useState(responses.memoryAssessment || {});
@@ -1574,13 +1574,13 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
         </button>
 
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-purple-800 mb-4">🧠 Enhanced Cognitive Clarity Assessment</h2>
+          <h2 className="text-3xl font-bold text-purple-800 mb-4">🧠 Enhanced Cognitive Clarity Assessment v2.0</h2>
           <p className="text-lg text-gray-600">
             Comprehensive evaluation of your cognitive function with real-time insights and personalized tips
           </p>
-          <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded-lg">
-            <p className="text-sm text-green-800 font-medium">
-              ✨ NEW: Each question now includes educational context and instant tips to help you understand and improve your cognitive health!
+          <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg animate-pulse">
+            <p className="text-sm text-blue-800 font-medium">
+              🎯 ENHANCED VERSION ACTIVE: Now featuring 18 detailed questions with educational context and instant tips!
             </p>
           </div>
         </div>
