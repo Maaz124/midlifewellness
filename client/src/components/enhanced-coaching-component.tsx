@@ -1348,6 +1348,16 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           </div>
         )}
 
+        {/* Always show interactive practice sections for Week 1 */}
+        {moduleId === 'week-1' && renderEnhancedContent({
+          type: 'interactive-practice',
+          content: {
+            title: component.title,
+            description: component.description,
+            practiceType: component.type
+          }
+        })}
+
         {/* Completion Section */}
         <div className="mt-8 p-6 bg-white rounded-lg border">
           <div className="flex items-center justify-between">
