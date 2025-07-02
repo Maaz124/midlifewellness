@@ -206,21 +206,93 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
     </Card>
   );
 
+  // Calculate hormonal symptom score
+  const calculateHormonalScore = () => {
+    const symptoms = [
+      'Hot flashes', 'Night sweats', 'Fatigue', 'Joint aches',
+      'Mood swings', 'Irritability', 'Anxiety', 'Overwhelm',
+      'Brain fog', 'Memory issues', 'Concentration problems'
+    ];
+    
+    let totalScore = 0;
+    let ratedSymptoms = 0;
+    
+    symptoms.forEach(symptom => {
+      if (responses[symptom]) {
+        totalScore += responses[symptom];
+        ratedSymptoms++;
+      }
+    });
+    
+    if (ratedSymptoms === 0) return 0;
+    
+    // Calculate average score (1-5) and convert to percentage
+    const averageScore = totalScore / ratedSymptoms;
+    return Math.round((averageScore / 5) * 100);
+  };
+
+  const getScoreInterpretation = (score: number) => {
+    if (score === 0) return { level: 'Not Rated', message: 'Please rate your symptoms to see your score', color: 'text-gray-500' };
+    if (score <= 20) return { level: 'Minimal', message: 'Your symptoms are minimal. Keep monitoring for any changes.', color: 'text-green-600' };
+    if (score <= 40) return { level: 'Mild', message: 'You have mild symptoms. Consider gentle lifestyle adjustments.', color: 'text-yellow-600' };
+    if (score <= 60) return { level: 'Moderate', message: 'Your symptoms are moderate. Focus on stress management and self-care.', color: 'text-orange-600' };
+    if (score <= 80) return { level: 'Significant', message: 'You have significant symptoms. Consider professional support alongside these practices.', color: 'text-red-600' };
+    return { level: 'Severe', message: 'Your symptoms are severe. Please discuss with a healthcare provider while using these tools.', color: 'text-red-700' };
+  };
+
+  const getPersonalizedRecommendations = (score: number) => {
+    if (score <= 20) return [
+      'Continue current wellness practices',
+      'Maintain regular sleep schedule',
+      'Stay hydrated and eat nourishing foods'
+    ];
+    if (score <= 40) return [
+      'Add gentle movement like walking or yoga',
+      'Practice daily stress reduction techniques',
+      'Consider herbal teas for relaxation'
+    ];
+    if (score <= 60) return [
+      'Prioritize 7-9 hours of quality sleep',
+      'Implement daily meditation or breathing exercises',
+      'Focus on anti-inflammatory foods',
+      'Consider magnesium supplementation (consult healthcare provider)'
+    ];
+    if (score <= 80) return [
+      'Create a structured daily routine',
+      'Seek support from friends, family, or support groups',
+      'Consider professional counseling for emotional symptoms',
+      'Track symptoms daily to identify patterns'
+    ];
+    return [
+      'Consult with a healthcare provider or hormone specialist',
+      'Consider comprehensive hormone testing',
+      'Explore both conventional and integrative treatment options',
+      'Build a strong support network',
+      'Use these tools as complementary support'
+    ];
+  };
+
   const renderComponentSpecificContent = () => {
-    // Hormone Video - Symptom Tracker
+    // Hormone Video - Enhanced Symptom Tracker with Scoring
     if (component.id === 'hormone-video') {
+      const currentScore = calculateHormonalScore();
+      const interpretation = getScoreInterpretation(currentScore);
+      const recommendations = getPersonalizedRecommendations(currentScore);
+
       return (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5 text-rose-500" />
-              Hormonal Symptom Tracker
+              Understanding Your Hormonal Symphony
             </CardTitle>
-            <p className="text-sm text-gray-600">Track your daily symptoms to identify patterns.</p>
+            <p className="text-sm text-gray-600">Track your daily symptoms and get personalized insights about your hormonal health.</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="bg-rose-50 p-4 rounded-lg">
-              <h4 className="font-semibold mb-3">Today's Symptoms</h4>
+              <h4 className="font-semibold mb-3">Today's Symptom Assessment</h4>
+              <p className="text-sm text-gray-600 mb-4">Rate each symptom from 1 (barely noticeable) to 5 (very severe)</p>
+              
               <div className="space-y-4">
                 {[
                   { category: 'Physical', symptoms: ['Hot flashes', 'Night sweats', 'Fatigue', 'Joint aches'], color: 'bg-red-100 text-red-800' },
@@ -229,19 +301,19 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                 ].map((group) => (
                   <div key={group.category} className="space-y-2">
                     <Label className="font-medium">{group.category} Symptoms</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2">
                       {group.symptoms.map((symptom) => (
-                        <div key={symptom} className="flex items-center justify-between p-2 border rounded">
-                          <span className="text-sm">{symptom}</span>
+                        <div key={symptom} className="flex items-center justify-between p-3 border rounded-lg bg-white">
+                          <span className="text-sm font-medium">{symptom}</span>
                           <div className="flex gap-1">
                             {[1, 2, 3, 4, 5].map((level) => (
                               <button
                                 key={level}
                                 onClick={() => setResponses({...responses, [symptom]: level})}
-                                className={`w-6 h-6 rounded-full text-xs font-medium ${
+                                className={`w-8 h-8 rounded-full text-xs font-bold border-2 transition-all ${
                                   responses[symptom] === level 
-                                    ? group.color 
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? `${group.color} border-gray-400 shadow-sm` 
+                                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
                                 }`}
                               >
                                 {level}
@@ -254,6 +326,59 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Score Display and Interpretation */}
+            <div className="bg-white border-2 border-rose-200 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold">Your Hormonal Health Score</h4>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-rose-600">{currentScore}</div>
+                  <div className="text-sm text-gray-500">out of 100</div>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Symptom Severity Level</span>
+                  <span className={`text-sm font-semibold ${interpretation.color}`}>
+                    {interpretation.level}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-green-400 via-yellow-400 via-orange-400 to-red-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${currentScore}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <p className={`text-sm ${interpretation.color} mb-4`}>
+                {interpretation.message}
+              </p>
+
+              {currentScore > 0 && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h5 className="font-semibold mb-2">Personalized Recommendations:</h5>
+                  <ul className="space-y-1">
+                    {recommendations.map((rec, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Tracking Note */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-blue-800 mb-2">💡 Tracking Tip</h5>
+              <p className="text-sm text-blue-700">
+                Track your symptoms daily for 2-4 weeks to identify patterns. Your hormonal symphony changes throughout the month, 
+                and understanding these patterns helps you anticipate and manage symptoms more effectively.
+              </p>
             </div>
           </CardContent>
         </Card>
