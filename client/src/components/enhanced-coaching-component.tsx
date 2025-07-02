@@ -137,6 +137,10 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
 
   const detailedContent = getDetailedContent();
 
+  // Debug: Log what we're getting
+  console.log('Enhanced Component - Component ID:', component.id, 'Module ID:', moduleId);
+  console.log('Detailed Content:', detailedContent);
+
   const handleComplete = () => {
     setIsCompleted(true);
     onComplete(component.id, responses);
