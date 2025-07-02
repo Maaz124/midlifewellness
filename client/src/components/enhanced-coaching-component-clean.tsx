@@ -13051,8 +13051,30 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
             'Smell and name 2 scents you can detect',
             'Taste 1 thing in your mouth'
           ],
+          guidedPractice: {
+            steps: [
+              { sense: 'Sight', count: 5, prompt: 'Look around you right now. Name 5 things you can see. Be specific - colors, shapes, textures.', examples: ['A blue coffee mug', 'Sunlight through the window', 'The grain in the wooden table'] },
+              { sense: 'Hearing', count: 4, prompt: 'Now listen carefully. What 4 sounds can you hear right now?', examples: ['Air conditioning humming', 'Birds outside', 'Your own breathing', 'Traffic in the distance'] },
+              { sense: 'Touch', count: 3, prompt: 'Feel 3 different textures around you. Use your hands or notice what your body is touching.', examples: ['Smooth phone screen', 'Soft fabric of your shirt', 'Cool surface of the table'] },
+              { sense: 'Smell', count: 2, prompt: 'Take a deep breath. What 2 scents can you detect?', examples: ['Coffee brewing', 'Fresh air', 'Cleaning products', 'Your own perfume'] },
+              { sense: 'Taste', count: 1, prompt: 'Notice 1 taste in your mouth right now. Even if subtle.', examples: ['Lingering coffee', 'Toothpaste', 'Just the taste of your mouth'] }
+            ]
+          },
+          practicePrompts: [
+            'How is your breathing right now compared to when you started?',
+            'What do you notice about your shoulders and jaw?',
+            'Rate your anxiety level from 1-10 now vs. when you began',
+            'Which sense was most grounding for you?'
+          ],
           scienceExplanation: 'This technique activates your prefrontal cortex and pulls you out of the fight-or-flight response by engaging your conscious attention.',
-          midlifeContext: 'Particularly helpful during hot flashes, anxiety spikes, or overwhelming moments when hormones create intense sensations.'
+          midlifeContext: 'Particularly helpful during hot flashes, anxiety spikes, or overwhelming moments when hormones create intense sensations.',
+          midlifeScenarios: [
+            'During a work meeting when you feel overwhelmed',
+            'In the middle of a hot flash to stay centered',
+            'Before a difficult conversation with family',
+            'When anxiety spikes about aging parents',
+            'While dealing with teenage children drama'
+          ]
         },
         {
           id: 'body-scan',
@@ -13070,8 +13092,39 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
             'Imagine warmth and relaxation flowing through your body',
             'End by noticing your whole body as one connected system'
           ],
+          guidedPractice: {
+            bodyParts: [
+              { area: 'Head & Face', focus: 'Forehead, eyes, jaw, scalp', questions: ['Is your forehead wrinkled?', 'Are your eyes squeezed tight?', 'Is your jaw clenched?'], release: 'Let your face soften like melting butter' },
+              { area: 'Neck & Shoulders', focus: 'Base of skull, neck, shoulder blades', questions: ['Are your shoulders up by your ears?', 'Is your neck tight?', 'Where do you feel the most tension?'], release: 'Imagine warm honey flowing down your neck and shoulders' },
+              { area: 'Arms & Hands', focus: 'Upper arms, forearms, hands, fingers', questions: ['Are your hands in fists?', 'Are your arms rigid?', 'How do your palms feel?'], release: 'Let your arms become heavy like they\'re sinking into the surface' },
+              { area: 'Chest & Heart', focus: 'Ribcage, heart area, breathing', questions: ['Is your chest tight or open?', 'How is your breathing?', 'What emotions do you notice here?'], release: 'Breathe space and softness into your chest' },
+              { area: 'Abdomen & Core', focus: 'Belly, lower ribs, digestive area', questions: ['Is your stomach clenched?', 'Are you holding your breath?', 'What does your gut feel like?'], release: 'Let your belly be soft and round, like a sleeping baby' },
+              { area: 'Hips & Pelvis', focus: 'Hip bones, pelvis, lower back', questions: ['Are your hips tight?', 'Is your lower back arched?', 'How does your pelvis feel?'], release: 'Imagine your hips melting into the ground' },
+              { area: 'Legs & Feet', focus: 'Thighs, calves, feet, toes', questions: ['Are your legs tense?', 'How do your feet feel?', 'Are you gripping with your toes?'], release: 'Let your legs be completely heavy and relaxed' }
+            ]
+          },
+          tensionPatterns: [
+            { location: 'Shoulders', emotion: 'Carrying too much responsibility', midlifeContext: 'Weight of caring for aging parents and children' },
+            { location: 'Jaw', emotion: 'Holding back words', midlifeContext: 'Not expressing needs in relationships' },
+            { location: 'Chest', emotion: 'Grief or sadness', midlifeContext: 'Mourning younger self or lost dreams' },
+            { location: 'Stomach', emotion: 'Anxiety or worry', midlifeContext: 'Concerns about health, finances, future' },
+            { location: 'Hips', emotion: 'Control or rigidity', midlifeContext: 'Resistance to life changes' }
+          ],
+          practicePrompts: [
+            'Which body area held the most tension?',
+            'Did any emotions come up during the scan?',
+            'Where did you feel the most relief?',
+            'What patterns do you notice in your body?'
+          ],
           scienceExplanation: 'Body scanning activates the vagus nerve and shifts you into parasympathetic (rest and digest) mode.',
-          midlifeContext: 'Helps you reconnect with your changing body and identify areas holding stress from daily caregiving demands.'
+          midlifeContext: 'Helps you reconnect with your changing body and identify areas holding stress from daily caregiving demands.',
+          midlifeScenarios: [
+            'Before bed to release the day\'s stress',
+            'When physical symptoms feel overwhelming',
+            'To check in with your changing body',
+            'After difficult family conversations',
+            'When you feel disconnected from yourself'
+          ]
         },
         {
           id: 'earth-connection',
@@ -13315,6 +13368,76 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                           <h5 className="font-semibold text-pink-800 mb-2">Why This Matters in Midlife:</h5>
                           <p className="text-sm text-pink-700">{technique.midlifeContext}</p>
                         </div>
+
+                        {/* Interactive Guided Practice */}
+                        {technique.guidedPractice && (
+                          <div className="bg-white border-2 border-blue-300 rounded-lg p-6 mt-4">
+                            <h5 className="font-semibold text-blue-800 mb-4">🎯 Try It Now - Guided Practice</h5>
+                            
+                            {technique.id === 'five-senses' && (
+                              <div className="space-y-6">
+                                {technique.guidedPractice.steps.map((step: any, i: number) => (
+                                  <div key={i} className="bg-blue-50 p-4 rounded-lg">
+                                    <h6 className="font-bold text-blue-900 mb-2">
+                                      Step {i + 1}: {step.sense} - Find {step.count}
+                                    </h6>
+                                    <p className="text-sm text-blue-800 mb-3">{step.prompt}</p>
+                                    <div className="mb-3">
+                                      <p className="text-xs text-blue-600 mb-1">Examples:</p>
+                                      <div className="flex flex-wrap gap-1">
+                                        {step.examples.map((example: string, j: number) => (
+                                          <Badge key={j} variant="outline" className="text-xs">{example}</Badge>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <Textarea
+                                      placeholder={`List ${step.count} things you can ${step.sense.toLowerCase()}...`}
+                                      className="mt-2"
+                                      rows={2}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {technique.id === 'body-scan' && (
+                              <div className="space-y-4">
+                                {technique.guidedPractice.bodyParts.map((part: any, i: number) => (
+                                  <div key={i} className="bg-blue-50 p-4 rounded-lg">
+                                    <h6 className="font-bold text-blue-900 mb-2">{part.area}</h6>
+                                    <p className="text-sm text-blue-700 mb-2">Focus on: {part.focus}</p>
+                                    <div className="mb-3">
+                                      <p className="text-xs text-blue-600 mb-1">Ask yourself:</p>
+                                      {part.questions.map((question: string, j: number) => (
+                                        <p key={j} className="text-xs text-blue-600">• {question}</p>
+                                      ))}
+                                    </div>
+                                    <p className="text-sm font-medium text-blue-800 mb-2">Release technique: {part.release}</p>
+                                    <div className="grid grid-cols-3 gap-2 text-xs">
+                                      <Button variant="outline" size="sm" className="h-8">Tight</Button>
+                                      <Button variant="outline" size="sm" className="h-8">Neutral</Button>
+                                      <Button variant="outline" size="sm" className="h-8">Relaxed</Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {technique.midlifeScenarios && (
+                              <div className="mt-6 bg-purple-50 p-4 rounded-lg">
+                                <h6 className="font-semibold text-purple-800 mb-2">Perfect for These Midlife Moments:</h6>
+                                <div className="grid md:grid-cols-2 gap-1 text-sm">
+                                  {technique.midlifeScenarios.map((scenario: string, i: number) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                      <span className="text-purple-600">•</span>
+                                      <span className="text-purple-700">{scenario}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex gap-3">
