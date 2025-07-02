@@ -7936,7 +7936,7 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                             currentEntry: {}
                           });
                         }}
-                        disabled={!responses.currentEntry?.trigger || !responses.currentEntry?.exactThought}
+                        disabled={!responses.currentEntry?.trigger && !responses.currentEntry?.['exact-thought']}
                         className="w-full"
                       >
                         Save Thought Entry
@@ -7964,9 +7964,9 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                     <Button 
                       onClick={() => setResponses({...responses, auditPhase: 'insights'})}
                       className="flex-1"
-                      disabled={thoughtEntries.length < 3}
+                      disabled={thoughtEntries.length < 1}
                     >
-                      View Insights & Patterns ({thoughtEntries.length}/3 entries minimum)
+                      View Insights & Patterns ({thoughtEntries.length}/1 entries minimum)
                     </Button>
                   </div>
                 </div>
