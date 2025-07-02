@@ -3345,6 +3345,583 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Brain Fog Exercise - Mental Clarity Power Practice
+    if (component.id === 'brain-fog-exercise') {
+      const practicePhase = responses.brainFogPhase || 'assessment';
+      const cognitiveLoad = responses.cognitiveLoad || 5;
+      const mentalFatigue = responses.mentalFatigue || 5;
+      const processingSpeed = responses.processingSpeed || 5;
+      const selectedExercise = responses.selectedExercise || 'cognitive-declutter';
+      const exerciseRounds = responses.exerciseRounds || 0;
+
+      const brainFogExercises = [
+        {
+          id: 'cognitive-declutter',
+          name: 'Cognitive Declutter Session',
+          duration: '8 min',
+          difficulty: 'Beginner',
+          description: 'Clear mental clutter through structured brain dumping and prioritization',
+          icon: '🧹',
+          steps: [
+            'Set timer for 3 minutes - write down EVERYTHING on your mind',
+            'No editing, organizing, or judging - just dump it all out',
+            'Circle the 3 most urgent/important items',
+            'Cross out things completely outside your control',
+            'Choose ONE item to focus on right now',
+            'Notice how your mind feels after this clearing'
+          ],
+          benefits: ['Reduces cognitive overload', 'Improves mental clarity', 'Decreases anxiety']
+        },
+        {
+          id: 'attention-reset',
+          name: 'Attention Reset Protocol',
+          duration: '6 min',
+          difficulty: 'Beginner',
+          description: 'Restore focus through targeted attention exercises',
+          icon: '🎯',
+          steps: [
+            'Count your breaths from 1 to 10, then start over',
+            'When you lose count, gently return to 1',
+            'Focus on the sensation of breathing',
+            'Notice thoughts without following them',
+            'Complete 3 full cycles of 1-10',
+            'Rate your focus improvement'
+          ],
+          benefits: ['Sharpens attention', 'Calms racing thoughts', 'Builds concentration']
+        },
+        {
+          id: 'memory-boost',
+          name: 'Memory Boost Challenge',
+          duration: '10 min',
+          difficulty: 'Intermediate',
+          description: 'Strengthen working memory with progressive exercises',
+          icon: '🧠',
+          steps: [
+            'Start with 3 random words, repeat them back',
+            'Add a 4th word, repeat all 4',
+            'Continue adding words until you reach your limit',
+            'Try the same with numbers',
+            'Create a story linking all the words together',
+            'Test recall after 2-minute break'
+          ],
+          benefits: ['Improves working memory', 'Enhances recall ability', 'Builds mental capacity']
+        },
+        {
+          id: 'processing-speed',
+          name: 'Mental Processing Accelerator',
+          duration: '7 min',
+          difficulty: 'Intermediate',
+          description: 'Speed up mental processing through timed challenges',
+          icon: '⚡',
+          steps: [
+            'Name 20 animals as fast as possible (time yourself)',
+            'Count backwards from 100 by 7s',
+            'List words that start with each letter A-Z',
+            'Alternate between naming colors and shapes',
+            'Complete simple math: 15+27, 84-39, 6×9',
+            'Compare your times across rounds'
+          ],
+          benefits: ['Increases processing speed', 'Improves mental agility', 'Reduces brain fog']
+        },
+        {
+          id: 'executive-function',
+          name: 'Executive Function Trainer',
+          duration: '12 min',
+          difficulty: 'Advanced',
+          description: 'Exercise planning, decision-making, and mental flexibility',
+          icon: '🎮',
+          steps: [
+            'Plan your ideal day in 10 steps',
+            'Switch between tasks: odd numbers, even numbers, repeat',
+            'Make 5 quick decisions: breakfast choice, outfit, route to work',
+            'Reorganize a mental list by priority, then by time',
+            'Practice inhibition: name colors, ignore the words',
+            'Reflect on which tasks felt most challenging'
+          ],
+          benefits: ['Strengthens decision-making', 'Improves planning skills', 'Enhances mental flexibility']
+        }
+      ];
+
+      const getCurrentExercise = () => {
+        return brainFogExercises.find(ex => ex.id === selectedExercise) || brainFogExercises[0];
+      };
+
+      const getCognitiveInterpretation = (score: number) => {
+        if (score <= 3) return { level: 'Sharp', color: 'text-green-700', message: 'Mental clarity is excellent' };
+        if (score <= 5) return { level: 'Clear', color: 'text-green-600', message: 'Good cognitive function with minor fog' };
+        if (score <= 7) return { level: 'Foggy', color: 'text-yellow-600', message: 'Noticeable brain fog affecting thinking' };
+        if (score <= 9) return { level: 'Very Foggy', color: 'text-orange-600', message: 'Significant cognitive cloudiness' };
+        return { level: 'Severely Foggy', color: 'text-red-600', message: 'Thinking feels very clouded and slow' };
+      };
+
+      const overallCognitiveScore = (cognitiveLoad + mentalFatigue + (10 - processingSpeed)) / 3;
+      const interpretation = getCognitiveInterpretation(overallCognitiveScore);
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-indigo-500" />
+              Mental Clarity Power Practice
+            </CardTitle>
+            <p className="text-sm text-gray-600">Targeted exercises to cut through brain fog and restore mental sharpness during hormonal changes.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Brain Fog Science */}
+            <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-400">
+              <h5 className="font-semibold text-indigo-800 mb-2">Understanding Perimenopause Brain Fog</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-indigo-700">
+                <div>
+                  <strong>Hormonal Impact:</strong> Estrogen decline affects neurotransmitters and cognitive function
+                </div>
+                <div>
+                  <strong>Working Memory:</strong> Reduced capacity to hold and manipulate information
+                </div>
+                <div>
+                  <strong>Processing Speed:</strong> Slower mental processing and response times
+                </div>
+                <div>
+                  <strong>Attention Control:</strong> Difficulty filtering distractions and maintaining focus
+                </div>
+              </div>
+            </div>
+
+            {/* Cognitive Assessment */}
+            {practicePhase === 'assessment' && (
+              <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Brain Fog Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Rate your current cognitive state to customize your practice:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Mental Overload Level</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Clear Mind</span>
+                      <Slider
+                        value={[cognitiveLoad]}
+                        onValueChange={(value) => setResponses({...responses, cognitiveLoad: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Overwhelmed</span>
+                      <span className="text-lg font-bold text-indigo-600 min-w-[30px]">{cognitiveLoad}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">How cluttered does your mind feel right now?</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Mental Fatigue</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <Slider
+                        value={[mentalFatigue]}
+                        onValueChange={(value) => setResponses({...responses, mentalFatigue: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Exhausted</span>
+                      <span className="text-lg font-bold text-indigo-600 min-w-[30px]">{mentalFatigue}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">How mentally tired do you feel?</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Processing Speed</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Fast & Sharp</span>
+                      <Slider
+                        value={[processingSpeed]}
+                        onValueChange={(value) => setResponses({...responses, processingSpeed: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Slow & Sluggish</span>
+                      <span className="text-lg font-bold text-indigo-600 min-w-[30px]">{processingSpeed}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">How quickly is your mind working today?</p>
+                  </div>
+
+                  {/* Overall Assessment */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <h5 className="font-semibold">Overall Brain Fog Level</h5>
+                      <span className={`text-lg font-bold ${interpretation.color}`}>
+                        {interpretation.level}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className={`h-3 rounded-full transition-all ${
+                          overallCognitiveScore <= 4 ? 'bg-green-500' : 
+                          overallCognitiveScore <= 7 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}
+                        style={{ width: `${(overallCognitiveScore / 10) * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-600 mt-1">
+                      <span>0 (Crystal Clear)</span>
+                      <span>{overallCognitiveScore.toFixed(1)}/10</span>
+                      <span>10 (Severe Fog)</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">{interpretation.message}</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Current brain fog symptoms (check all that apply):</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Forgetfulness', 'Difficulty concentrating', 'Word-finding problems', 'Mental fatigue',
+                        'Confused thinking', 'Slow processing', 'Memory lapses', 'Decision difficulty'
+                      ].map((symptom) => (
+                        <div key={symptom} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`fog-symptom-${symptom}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`fog-symptom-${symptom}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{symptom}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, brainFogPhase: 'selection'})}
+                    className="w-full"
+                  >
+                    Choose Your Clarity Exercise
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Exercise Selection */}
+            {practicePhase === 'selection' && (
+              <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Select Your Power Practice</h4>
+                <p className="text-sm text-gray-600 mb-4">Based on your fog level of {overallCognitiveScore.toFixed(1)}/10, here are recommended exercises:</p>
+                
+                <div className="space-y-4">
+                  {brainFogExercises.map((exercise) => {
+                    const isRecommended = 
+                      (overallCognitiveScore <= 4 && exercise.difficulty === 'Advanced') ||
+                      (overallCognitiveScore > 4 && overallCognitiveScore <= 7 && exercise.difficulty === 'Intermediate') ||
+                      (overallCognitiveScore > 7 && exercise.difficulty === 'Beginner');
+
+                    return (
+                      <div 
+                        key={exercise.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          selectedExercise === exercise.id 
+                            ? 'border-indigo-400 bg-indigo-50' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        } ${isRecommended ? 'ring-2 ring-green-200' : ''}`}
+                        onClick={() => setResponses({...responses, selectedExercise: exercise.id})}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="text-2xl">{exercise.icon}</div>
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                selectedExercise === exercise.id 
+                                  ? 'border-indigo-500 bg-indigo-500' 
+                                  : 'border-gray-300'
+                              }`}>
+                                {selectedExercise === exercise.id && (
+                                  <div className="w-2 h-2 rounded-full bg-white"></div>
+                                )}
+                              </div>
+                              <h5 className="font-semibold">{exercise.name}</h5>
+                              {isRecommended && (
+                                <Badge variant="default" className="bg-green-500">Best Match</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-3">{exercise.description}</p>
+                            <div className="flex gap-3 text-xs mb-2">
+                              <Badge variant="outline">{exercise.duration}</Badge>
+                              <Badge variant="outline">{exercise.difficulty}</Badge>
+                            </div>
+                            <div className="text-sm text-green-600">
+                              <strong>Benefits:</strong> {exercise.benefits.join(', ')}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <Button 
+                  onClick={() => setResponses({...responses, brainFogPhase: 'practice'})}
+                  className="w-full mt-6"
+                >
+                  Start {getCurrentExercise().name}
+                </Button>
+              </div>
+            )}
+
+            {/* Practice Session */}
+            {practicePhase === 'practice' && (
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-lg border">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-3">{getCurrentExercise().icon}</div>
+                  <h4 className="text-xl font-semibold mb-2">{getCurrentExercise().name}</h4>
+                  <p className="text-sm text-gray-600 mb-2">{getCurrentExercise().description}</p>
+                  <div className="flex justify-center gap-4">
+                    <Badge variant="secondary">{getCurrentExercise().duration}</Badge>
+                    <Badge variant="secondary">{getCurrentExercise().difficulty}</Badge>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg mb-6">
+                  <h5 className="font-semibold mb-4">Exercise Instructions</h5>
+                  <div className="space-y-4">
+                    {getCurrentExercise().steps.map((step, index) => (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          {index + 1}
+                        </div>
+                        <div className="flex items-center gap-3 flex-1">
+                          <Checkbox
+                            checked={responses[`practice-step-${index}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`practice-step-${index}`]: checked
+                            })}
+                          />
+                          <span className="text-sm flex-1">{step}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Practice Tracker */}
+                <div className="bg-white p-4 rounded-lg mb-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <Label className="font-medium">Practice Rounds Completed:</Label>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setResponses({...responses, exerciseRounds: Math.max(0, exerciseRounds - 1)})}
+                      >
+                        -
+                      </Button>
+                      <span className="text-2xl font-bold text-indigo-600 min-w-[40px] text-center">{exerciseRounds}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setResponses({...responses, exerciseRounds: exerciseRounds + 1})}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {[1,2,3].map((round) => (
+                      <div key={round} className={`h-10 rounded flex items-center justify-center text-sm font-medium ${
+                        round <= exerciseRounds 
+                          ? 'bg-indigo-500 text-white' 
+                          : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        Round {round}
+                      </div>
+                    ))}
+                  </div>
+
+                  {exerciseRounds >= 2 && (
+                    <p className="text-sm text-green-600 mt-3 text-center">
+                      Great progress! You should start feeling mental clarity improvements.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">How challenging was this exercise?</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Too Easy</span>
+                      <Slider
+                        value={[responses.exerciseChallenge || 5]}
+                        onValueChange={(value) => setResponses({...responses, exerciseChallenge: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Very Hard</span>
+                      <span className="text-lg font-bold text-indigo-600 min-w-[30px]">{responses.exerciseChallenge || 5}</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, brainFogPhase: 'results'})}
+                    className="w-full"
+                    disabled={exerciseRounds < 1}
+                  >
+                    Complete Practice & Check Results
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Results Assessment */}
+            {practicePhase === 'results' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">🌟</div>
+                  <h4 className="text-xl font-semibold">Mental Clarity Restored!</h4>
+                  <p className="text-sm text-gray-600">How does your mind feel after the {getCurrentExercise().name}?</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Mental overload now (compare with starting {cognitiveLoad}/10):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Clear Mind</span>
+                      <Slider
+                        value={[responses.postCognitiveLoad || 3]}
+                        onValueChange={(value) => setResponses({...responses, postCognitiveLoad: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Overwhelmed</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postCognitiveLoad || 3}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Mental fatigue now:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <Slider
+                        value={[responses.postMentalFatigue || 3]}
+                        onValueChange={(value) => setResponses({...responses, postMentalFatigue: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Exhausted</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postMentalFatigue || 3}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Processing speed now:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Fast & Sharp</span>
+                      <Slider
+                        value={[responses.postProcessingSpeed || 7]}
+                        onValueChange={(value) => setResponses({...responses, postProcessingSpeed: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Slow & Sluggish</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postProcessingSpeed || 7}</span>
+                    </div>
+                  </div>
+
+                  {/* Improvement Summary */}
+                  {responses.postCognitiveLoad && responses.postMentalFatigue && responses.postProcessingSpeed && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-3">Your Brain Fog Improvements</h5>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Mental Overload Reduction:</span>
+                          <span className={`font-bold ${
+                            cognitiveLoad - responses.postCognitiveLoad > 0 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            -{cognitiveLoad - responses.postCognitiveLoad} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Mental Fatigue Reduction:</span>
+                          <span className={`font-bold ${
+                            mentalFatigue - responses.postMentalFatigue > 0 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            -{mentalFatigue - responses.postMentalFatigue} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Processing Speed Improvement:</span>
+                          <span className={`font-bold ${
+                            responses.postProcessingSpeed - processingSpeed > 0 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            +{responses.postProcessingSpeed - processingSpeed} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Exercise Completed:</span>
+                          <span className="font-medium">{getCurrentExercise().name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Rounds Completed:</span>
+                          <span className="font-medium">{exerciseRounds}/3</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label>Describe your mental state now:</Label>
+                    <Textarea
+                      placeholder="How does your thinking feel? Any improvements in clarity, focus, or mental energy?"
+                      value={responses.clarityReflection || ''}
+                      onChange={(e) => setResponses({...responses, clarityReflection: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, brainFogPhase: 'selection'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Try Another Exercise
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Practice Tips */}
+            <div className="bg-indigo-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-indigo-800 mb-2">Brain Fog Combat Tips</h5>
+              <ul className="text-sm text-indigo-700 space-y-1">
+                <li>• Practice these exercises when brain fog is mild for best results</li>
+                <li>• Start with easier exercises and gradually increase difficulty</li>
+                <li>• Consistency matters more than duration - even 5 minutes helps</li>
+                <li>• Track which exercises work best for your specific fog patterns</li>
+                <li>• Combine with good sleep, hydration, and stress management</li>
+                <li>• Use these as "mental breaks" during demanding cognitive tasks</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
