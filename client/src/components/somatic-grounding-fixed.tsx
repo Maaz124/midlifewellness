@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 interface SomaticGroundingFixedProps {
   onComplete: (componentId: string, data?: any) => void;
@@ -25,6 +26,17 @@ export function SomaticGroundingFixed({ onComplete, onClose }: SomaticGroundingF
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center mb-6">
+        <Button
+          onClick={onClose}
+          variant="ghost"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
+        >
+          <ArrowLeft size={20} />
+          Back to Week 4
+        </Button>
+      </div>
+      
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-sage-800 mb-4">🌱 Somatic Grounding Practices</h2>
         <p className="text-lg text-gray-600 mb-6">
