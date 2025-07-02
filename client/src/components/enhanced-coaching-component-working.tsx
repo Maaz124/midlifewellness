@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SomaticGroundingFixed } from './somatic-grounding-fixed';
+import { Week4SomaticGrounding } from './week4-somatic-grounding';
 import { BreathworkVagus } from './breathwork-vagus';
 import { CalmCorner } from './calm-corner';
 import { GuidedMeditation } from './guided-meditation';
@@ -79,7 +79,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   // Week 4: Somatic Grounding Practices
   if (moduleId === 'week-4' && component.id === 'w4-grounding') {
-    return <SomaticGroundingFixed onComplete={onComplete} onClose={onClose} />;
+    return <Week4SomaticGrounding onComplete={onComplete} onClose={onClose} />;
   }
 
   // Week 4: Breathwork & Vagus Nerve Reset
