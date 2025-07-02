@@ -7328,6 +7328,789 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 2 - Thought Audit Tracker
+    if (component.id === 'w2-audit') {
+      const auditPhase = responses.auditPhase || 'introduction';
+      const currentDay = responses.currentDay || 1;
+      const thoughtEntries = responses.thoughtEntries || [];
+      const patterns = responses.identifiedPatterns || [];
+
+      const thoughtPatterns = [
+        {
+          id: 'all-or-nothing',
+          name: 'All-or-Nothing Thinking',
+          description: 'Seeing things in black and white, with no middle ground',
+          examples: [
+            'I\'m either perfect or a complete failure',
+            'If I can\'t do it perfectly, why bother trying?',
+            'Everyone else has it figured out except me'
+          ],
+          midlifeContext: 'Common during career transitions, body changes, or relationship shifts',
+          reframe: 'Life exists in shades of gray. Progress, not perfection, is the goal.',
+          icon: '⚖️',
+          color: 'red'
+        },
+        {
+          id: 'catastrophizing',
+          name: 'Catastrophizing',
+          description: 'Expecting the worst possible outcome in any situation',
+          examples: [
+            'This health symptom must be something serious',
+            'If I make a mistake at work, I\'ll be fired',
+            'My children will never recover from my parenting mistakes'
+          ],
+          midlifeContext: 'Amplified by hormone changes affecting anxiety and worry patterns',
+          reframe: 'Most feared outcomes don\'t happen. Focus on what\'s likely, not what\'s possible.',
+          icon: '🌪️',
+          color: 'orange'
+        },
+        {
+          id: 'mind-reading',
+          name: 'Mind Reading',
+          description: 'Assuming you know what others are thinking without evidence',
+          examples: [
+            'They think I\'m too old for this job',
+            'My partner is disappointed in how I\'ve changed',
+            'People are judging my appearance'
+          ],
+          midlifeContext: 'Self-consciousness about aging and changes amplifies this pattern',
+          reframe: 'I can\'t read minds. I\'ll focus on what people actually say and do.',
+          icon: '🔮',
+          color: 'purple'
+        },
+        {
+          id: 'should-statements',
+          name: 'Should Statements',
+          description: 'Rigid rules about how you or others "should" behave',
+          examples: [
+            'I should have accomplished more by this age',
+            'I should be handling this transition better',
+            'My body should work the way it used to'
+          ],
+          midlifeContext: 'Especially harsh during life transitions and physical changes',
+          reframe: 'Replace "should" with "could" or "would like to" for gentler self-talk.',
+          icon: '📏',
+          color: 'blue'
+        },
+        {
+          id: 'emotional-reasoning',
+          name: 'Emotional Reasoning',
+          description: 'Believing that feelings are facts about reality',
+          examples: [
+            'I feel like a failure, so I must be one',
+            'I feel old and invisible, so that\'s how I am',
+            'I feel anxious, so something bad will happen'
+          ],
+          midlifeContext: 'Hormonal fluctuations can intensify emotions, making this pattern stronger',
+          reframe: 'Feelings are temporary visitors, not permanent truths about me.',
+          icon: '💭',
+          color: 'pink'
+        },
+        {
+          id: 'comparison-trap',
+          name: 'Comparison Trap',
+          description: 'Constantly measuring yourself against others, usually unfavorably',
+          examples: [
+            'Other women my age look so much better',
+            'Everyone else seems to have their life together',
+            'I\'m behind where I should be compared to my peers'
+          ],
+          midlifeContext: 'Social media and societal expectations intensify midlife comparisons',
+          reframe: 'My journey is unique. I\'ll compare myself only to who I was yesterday.',
+          icon: '🏆',
+          color: 'green'
+        },
+        {
+          id: 'time-urgency',
+          name: 'Time Urgency',
+          description: 'Feeling like it\'s "too late" to change, grow, or pursue dreams',
+          examples: [
+            'I\'m too old to start something new',
+            'I\'ve missed my chance for happiness',
+            'There\'s no time left to make meaningful changes'
+          ],
+          midlifeContext: 'Awareness of aging can create false urgency and limit beliefs',
+          reframe: 'I have decades ahead. Every day is a new opportunity to grow and change.',
+          icon: '⏰',
+          color: 'yellow'
+        }
+      ];
+
+      const auditQuestions = [
+        {
+          id: 'trigger',
+          question: 'What triggered this thought?',
+          placeholder: 'Situation, event, or feeling that started this thought...',
+          type: 'textarea'
+        },
+        {
+          id: 'exact-thought',
+          question: 'What was the exact thought?',
+          placeholder: 'Write the thought exactly as it appeared in your mind...',
+          type: 'textarea'
+        },
+        {
+          id: 'emotion',
+          question: 'What emotion did this create?',
+          placeholder: 'Anger, sadness, anxiety, shame, etc.',
+          type: 'text'
+        },
+        {
+          id: 'intensity',
+          question: 'How intense was the emotion? (1-10)',
+          type: 'scale'
+        },
+        {
+          id: 'pattern',
+          question: 'Which thought pattern does this match?',
+          type: 'pattern-select'
+        },
+        {
+          id: 'evidence-for',
+          question: 'What evidence supports this thought?',
+          placeholder: 'Facts and specific examples that support this thought...',
+          type: 'textarea'
+        },
+        {
+          id: 'evidence-against',
+          question: 'What evidence contradicts this thought?',
+          placeholder: 'Facts and examples that challenge this thought...',
+          type: 'textarea'
+        },
+        {
+          id: 'balanced-thought',
+          question: 'What would be a more balanced thought?',
+          placeholder: 'A more realistic, compassionate way to think about this...',
+          type: 'textarea'
+        },
+        {
+          id: 'new-emotion',
+          question: 'How do you feel with the balanced thought? (1-10)',
+          type: 'scale'
+        }
+      ];
+
+      const weeklyGoals = [
+        {
+          day: 1,
+          focus: 'Awareness Building',
+          goal: 'Notice and record 2-3 automatic thoughts without judgment',
+          tip: 'Start with thoughts that create mild discomfort - easier to observe'
+        },
+        {
+          day: 2,
+          focus: 'Pattern Recognition',
+          goal: 'Identify which thought patterns show up most frequently',
+          tip: 'Look for your "signature" patterns - we all have 2-3 favorites'
+        },
+        {
+          day: 3,
+          focus: 'Evidence Gathering',
+          goal: 'Practice examining evidence for and against your thoughts',
+          tip: 'Be a detective, not a judge. What would you tell a friend?'
+        },
+        {
+          day: 4,
+          focus: 'Balanced Reframing',
+          goal: 'Create 2-3 balanced alternative thoughts',
+          tip: 'Aim for realistic, not just positive. Balance includes acknowledging challenges'
+        },
+        {
+          day: 5,
+          focus: 'Emotional Tracking',
+          goal: 'Notice how emotions shift with balanced thinking',
+          tip: 'Even small decreases in intensity (8 to 6) represent meaningful progress'
+        },
+        {
+          day: 6,
+          focus: 'Self-Compassion Integration',
+          goal: 'Practice self-compassion when catching critical thoughts',
+          tip: 'Celebrate noticing thoughts rather than criticizing yourself for having them'
+        },
+        {
+          day: 7,
+          focus: 'Pattern Interruption',
+          goal: 'Catch and redirect 1-2 thoughts in real-time',
+          tip: 'Success is in the pause between thought and reaction'
+        }
+      ];
+
+      const renderThoughtEntry = (entry: any, index: number) => (
+        <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h5 className="font-semibold text-gray-800">Thought Entry #{index + 1}</h5>
+            <Badge variant="outline" className={`${
+              entry.pattern ? thoughtPatterns.find(p => p.id === entry.pattern)?.color === 'red' ? 'border-red-200 text-red-700' :
+              thoughtPatterns.find(p => p.id === entry.pattern)?.color === 'orange' ? 'border-orange-200 text-orange-700' :
+              thoughtPatterns.find(p => p.id === entry.pattern)?.color === 'purple' ? 'border-purple-200 text-purple-700' :
+              thoughtPatterns.find(p => p.id === entry.pattern)?.color === 'blue' ? 'border-blue-200 text-blue-700' :
+              thoughtPatterns.find(p => p.id === entry.pattern)?.color === 'pink' ? 'border-pink-200 text-pink-700' :
+              thoughtPatterns.find(p => p.id === entry.pattern)?.color === 'green' ? 'border-green-200 text-green-700' :
+              'border-yellow-200 text-yellow-700' : 'border-gray-200 text-gray-700'
+            }`}>
+              {entry.pattern ? thoughtPatterns.find((p: any) => p.id === entry.pattern)?.name : 'No pattern identified'}
+            </Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div>
+              <strong>Trigger:</strong> {entry.trigger || 'Not specified'}
+            </div>
+            <div>
+              <strong>Emotion:</strong> {entry.emotion || 'Not specified'} ({entry.intensity || 0}/10)
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <div>
+              <strong className="text-sm">Original Thought:</strong>
+              <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded italic">
+                "{entry.exactThought || 'No thought recorded'}"
+              </p>
+            </div>
+            
+            {entry.balancedThought && (
+              <div>
+                <strong className="text-sm text-green-700">Balanced Thought:</strong>
+                <p className="text-sm text-green-600 bg-green-50 p-2 rounded">
+                  "{entry.balancedThought}"
+                </p>
+              </div>
+            )}
+          </div>
+          
+          {entry.intensity && entry.newEmotion && (
+            <div className="flex items-center gap-2 text-sm">
+              <span>Emotional Intensity:</span>
+              <span className="text-red-600 font-medium">{entry.intensity}/10</span>
+              <span>→</span>
+              <span className="text-green-600 font-medium">{entry.newEmotion}/10</span>
+              {entry.newEmotion < entry.intensity && (
+                <Badge variant="secondary" className="bg-green-100 text-green-700">
+                  -{entry.intensity - entry.newEmotion} point improvement
+                </Badge>
+              )}
+            </div>
+          )}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const updated = thoughtEntries.filter((_: any, i: number) => i !== index);
+              setResponses({...responses, thoughtEntries: updated});
+            }}
+            className="text-red-600 hover:text-red-700"
+          >
+            Remove Entry
+          </Button>
+        </div>
+      );
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-blue-500" />
+              Thought Audit Tracker - Transform Your Inner Dialogue
+            </CardTitle>
+            <p className="text-sm text-gray-600">Systematically identify and replace self-critical thought patterns with balanced, supportive inner dialogue through structured daily tracking.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind Thought Auditing */}
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+              <h5 className="font-semibold text-blue-800 mb-2">The Science Behind Thought Auditing</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
+                <div>
+                  <strong>Metacognition:</strong> Thinking about thinking increases self-awareness by 40%
+                </div>
+                <div>
+                  <strong>Pattern Recognition:</strong> Identifying thought patterns is the first step to changing them
+                </div>
+                <div>
+                  <strong>Cognitive Flexibility:</strong> Regular auditing creates multiple perspectives on situations
+                </div>
+                <div>
+                  <strong>Emotional Regulation:</strong> Balanced thoughts reduce emotional reactivity by 25%
+                </div>
+              </div>
+            </div>
+
+            {/* Introduction Phase */}
+            {auditPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Understanding Thought Auditing</h4>
+                  
+                  <div className="space-y-4 mb-6">
+                    <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-lg">
+                      <h5 className="font-semibold text-gray-800 mb-2">🧠 What is a Thought Audit?</h5>
+                      <p className="text-sm text-gray-700">
+                        A thought audit is like a financial audit for your mind. Instead of tracking money, 
+                        you track your thoughts to see which ones are "profitable" (helpful) and which ones 
+                        are "costly" (harmful). This systematic approach helps you become the CEO of your own thinking.
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        {
+                          icon: '🔍',
+                          title: 'Identify Patterns',
+                          description: 'Recognize your most common unhelpful thought patterns',
+                          color: 'blue'
+                        },
+                        {
+                          icon: '⚖️',
+                          title: 'Examine Evidence',
+                          description: 'Look at facts supporting and contradicting your thoughts',
+                          color: 'green'
+                        },
+                        {
+                          icon: '🔄',
+                          title: 'Reframe Balanced',
+                          description: 'Create realistic, compassionate alternative thoughts',
+                          color: 'purple'
+                        },
+                        {
+                          icon: '📈',
+                          title: 'Track Progress',
+                          description: 'Monitor emotional shifts and pattern changes over time',
+                          color: 'orange'
+                        }
+                      ].map((step, index) => (
+                        <div key={index} className={`p-4 rounded-lg border-l-4 border-${step.color}-400 bg-${step.color}-50`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-lg">{step.icon}</span>
+                            <h5 className={`font-semibold text-${step.color}-800`}>{step.title}</h5>
+                          </div>
+                          <p className={`text-sm text-${step.color}-700`}>{step.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 mb-6">
+                    <h5 className="font-semibold text-yellow-800 mb-2">🌻 Perfect for Midlife Transitions</h5>
+                    <p className="text-sm text-yellow-700">
+                      Midlife brings unique thought challenges: "Am I too old?", "Have I wasted time?", 
+                      "What if my best years are behind me?" Thought auditing helps you question these 
+                      assumptions and build a more supportive inner narrative for this powerful life phase.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button 
+                      onClick={() => setResponses({...responses, auditPhase: 'pattern-learning'})}
+                      className="flex-1"
+                    >
+                      Learn About Thought Patterns
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Pattern Learning Phase */}
+            {auditPhase === 'pattern-learning' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Common Thought Patterns in Midlife</h4>
+                  <p className="text-sm text-gray-600 mb-6">Learn to recognize these patterns that are especially common during midlife transitions. Click on each pattern to explore it.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {thoughtPatterns.map((pattern) => (
+                      <div 
+                        key={pattern.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          responses.selectedPattern === pattern.id
+                            ? `border-${pattern.color}-400 bg-${pattern.color}-50`
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setResponses({
+                          ...responses, 
+                          selectedPattern: responses.selectedPattern === pattern.id ? null : pattern.id
+                        })}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{pattern.icon}</span>
+                          <h5 className="font-semibold text-gray-800">{pattern.name}</h5>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{pattern.description}</p>
+                        
+                        {responses.selectedPattern === pattern.id && (
+                          <div className={`mt-4 space-y-3 p-3 rounded bg-${pattern.color}-25 border border-${pattern.color}-200`}>
+                            <div>
+                              <h6 className="font-medium text-gray-700 mb-1">Common Examples:</h6>
+                              <ul className="text-sm text-gray-600 space-y-1">
+                                {pattern.examples.map((example, idx) => (
+                                  <li key={idx} className="italic">• "{example}"</li>
+                                ))}
+                              </ul>
+                            </div>
+                            
+                            <div>
+                              <h6 className="font-medium text-gray-700 mb-1">Midlife Context:</h6>
+                              <p className="text-sm text-gray-600">{pattern.midlifeContext}</p>
+                            </div>
+                            
+                            <div className={`p-2 rounded bg-${pattern.color}-100`}>
+                              <h6 className="font-medium text-gray-700 mb-1">Reframe Strategy:</h6>
+                              <p className={`text-sm text-${pattern.color}-700 font-medium`}>{pattern.reframe}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-8 flex gap-3">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setResponses({...responses, auditPhase: 'introduction'})}
+                    >
+                      Back to Overview
+                    </Button>
+                    <Button 
+                      onClick={() => setResponses({...responses, auditPhase: 'daily-tracking'})}
+                      className="flex-1"
+                    >
+                      Start 7-Day Tracking Practice
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Daily Tracking Phase */}
+            {auditPhase === 'daily-tracking' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold">7-Day Thought Tracking Practice</h4>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">Day</span>
+                      <Select 
+                        value={currentDay.toString()} 
+                        onValueChange={(value) => setResponses({...responses, currentDay: parseInt(value)})}
+                      >
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1,2,3,4,5,6,7].map(day => (
+                            <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Daily Goal */}
+                  <div className="mb-6">
+                    {(() => {
+                      const dayGoal = weeklyGoals.find(g => g.day === currentDay);
+                      return (
+                        <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-lg">
+                          <h5 className="font-semibold text-gray-800 mb-2">
+                            📅 Day {currentDay}: {dayGoal?.focus}
+                          </h5>
+                          <p className="text-sm text-gray-700 mb-2">
+                            <strong>Goal:</strong> {dayGoal?.goal}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <strong>Tip:</strong> {dayGoal?.tip}
+                          </p>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* New Thought Entry Form */}
+                  <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-3">Record a New Thought</h5>
+                    
+                    <div className="space-y-4">
+                      {auditQuestions.map((q, index) => (
+                        <div key={q.id}>
+                          <Label className="text-sm font-medium">{q.question}</Label>
+                          
+                          {q.type === 'textarea' && (
+                            <Textarea
+                              placeholder={q.placeholder}
+                              value={responses.currentEntry?.[q.id] || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                currentEntry: {
+                                  ...responses.currentEntry,
+                                  [q.id]: e.target.value
+                                }
+                              })}
+                              className="mt-1"
+                              rows={2}
+                            />
+                          )}
+                          
+                          {q.type === 'text' && (
+                            <Input
+                              placeholder={q.placeholder}
+                              value={responses.currentEntry?.[q.id] || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                currentEntry: {
+                                  ...responses.currentEntry,
+                                  [q.id]: e.target.value
+                                }
+                              })}
+                              className="mt-1"
+                            />
+                          )}
+                          
+                          {q.type === 'scale' && (
+                            <div className="mt-2">
+                              <div className="grid grid-cols-10 gap-1 mb-2">
+                                {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                                  <div key={num} className="text-center">
+                                    <button
+                                      onClick={() => setResponses({
+                                        ...responses,
+                                        currentEntry: {
+                                          ...responses.currentEntry,
+                                          [q.id]: num
+                                        }
+                                      })}
+                                      className={`w-full h-8 rounded text-xs font-medium transition-all ${
+                                        num <= (responses.currentEntry?.[q.id] || 0)
+                                          ? 'bg-blue-500 text-white' 
+                                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                      }`}
+                                    >
+                                      {num}
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="flex justify-between text-xs text-gray-500">
+                                <span>Very Low</span>
+                                <span>Very High</span>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {q.type === 'pattern-select' && (
+                            <Select 
+                              value={responses.currentEntry?.[q.id] || ''} 
+                              onValueChange={(value) => setResponses({
+                                ...responses,
+                                currentEntry: {
+                                  ...responses.currentEntry,
+                                  [q.id]: value
+                                }
+                              })}
+                            >
+                              <SelectTrigger className="mt-1">
+                                <SelectValue placeholder="Select the pattern that fits best..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {thoughtPatterns.map(pattern => (
+                                  <SelectItem key={pattern.id} value={pattern.id}>
+                                    {pattern.icon} {pattern.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
+                      ))}
+                      
+                      <Button
+                        onClick={() => {
+                          const newEntry = {
+                            ...responses.currentEntry,
+                            day: currentDay,
+                            timestamp: new Date().toISOString()
+                          };
+                          setResponses({
+                            ...responses,
+                            thoughtEntries: [...thoughtEntries, newEntry],
+                            currentEntry: {}
+                          });
+                        }}
+                        disabled={!responses.currentEntry?.trigger || !responses.currentEntry?.exactThought}
+                        className="w-full"
+                      >
+                        Save Thought Entry
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Existing Entries */}
+                  {thoughtEntries.length > 0 && (
+                    <div>
+                      <h5 className="font-semibold text-gray-800 mb-3">Your Thought Entries ({thoughtEntries.length})</h5>
+                      <div className="space-y-4">
+                        {thoughtEntries.map((entry: any, index: number) => renderThoughtEntry(entry, index))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-8 flex gap-3">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setResponses({...responses, auditPhase: 'pattern-learning'})}
+                    >
+                      Review Patterns
+                    </Button>
+                    <Button 
+                      onClick={() => setResponses({...responses, auditPhase: 'insights'})}
+                      className="flex-1"
+                      disabled={thoughtEntries.length < 3}
+                    >
+                      View Insights & Patterns ({thoughtEntries.length}/3 entries minimum)
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Insights Phase */}
+            {auditPhase === 'insights' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Your Thought Pattern Insights</h4>
+                  
+                  {/* Pattern Analysis */}
+                  <div className="mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-3">Most Common Patterns</h5>
+                    {(() => {
+                      const patternCounts = thoughtEntries.reduce((acc: any, entry: any) => {
+                        if (entry.pattern) {
+                          acc[entry.pattern] = (acc[entry.pattern] || 0) + 1;
+                        }
+                        return acc;
+                      }, {});
+                      
+                      const sortedPatterns = Object.entries(patternCounts)
+                        .sort(([,a], [,b]) => (b as number) - (a as number))
+                        .slice(0, 3);
+
+                      return (
+                        <div className="space-y-3">
+                          {sortedPatterns.map(([patternId, count], index) => {
+                            const pattern = thoughtPatterns.find((p: any) => p.id === patternId);
+                            return (
+                              <div key={patternId} className={`p-3 rounded-lg border border-${pattern?.color}-200 bg-${pattern?.color}-50`}>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-lg">{pattern?.icon}</span>
+                                    <span className="font-medium">{pattern?.name}</span>
+                                  </div>
+                                  <Badge variant="secondary">{count} times</Badge>
+                                </div>
+                                <p className={`text-sm text-${pattern?.color}-700 mt-1`}>
+                                  <strong>Focus Strategy:</strong> {pattern?.reframe}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Emotional Progress */}
+                  <div className="mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-3">Emotional Intensity Progress</h5>
+                    {(() => {
+                      const entriesWithBoth = thoughtEntries.filter((e: any) => e.intensity && e.newEmotion);
+                      if (entriesWithBoth.length === 0) {
+                        return <p className="text-sm text-gray-600">Complete more entries with before/after emotions to see progress.</p>;
+                      }
+                      
+                      const avgImprovement = entriesWithBoth.reduce((sum: number, entry: any) => 
+                        sum + (entry.intensity - entry.newEmotion), 0) / entriesWithBoth.length;
+                      
+                      return (
+                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-green-600 font-semibold text-lg">📈</span>
+                            <span className="font-semibold text-green-800">
+                              Average Emotional Improvement: {avgImprovement.toFixed(1)} points
+                            </span>
+                          </div>
+                          <p className="text-sm text-green-700">
+                            You're successfully reducing emotional intensity through balanced thinking! 
+                            Even small improvements compound over time.
+                          </p>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Personal Action Plan */}
+                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
+                    <h5 className="font-semibold text-gray-800 mb-3">Your Personalized Action Plan</h5>
+                    
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start gap-2">
+                        <span className="text-purple-600 font-semibold">1.</span>
+                        <p>
+                          <strong>Daily Practice:</strong> Continue tracking 1-2 thoughts daily, focusing on your top patterns: {
+                            (() => {
+                              const patternCounts = thoughtEntries.reduce((acc: any, entry: any) => {
+                                if (entry.pattern) {
+                                  acc[entry.pattern] = (acc[entry.pattern] || 0) + 1;
+                                }
+                                return acc;
+                              }, {});
+                              const topPattern = Object.entries(patternCounts).sort(([,a], [,b]) => (b as number) - (a as number))[0];
+                              return topPattern ? thoughtPatterns.find((p: any) => p.id === topPattern[0])?.name : 'your identified patterns';
+                            })()
+                          }
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start gap-2">
+                        <span className="text-purple-600 font-semibold">2.</span>
+                        <p>
+                          <strong>Quick Check Method:</strong> When you notice strong emotions, ask: "What thought just went through my mind?" Then: "Is this helpful or harmful?"
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start gap-2">
+                        <span className="text-purple-600 font-semibold">3.</span>
+                        <p>
+                          <strong>Weekly Review:</strong> Every Sunday, review your entries to spot patterns and celebrate progress in emotional regulation.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex gap-3">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setResponses({...responses, auditPhase: 'daily-tracking'})}
+                    >
+                      Continue Tracking
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        setResponses({...responses, thoughtAuditCompleted: true});
+                        onComplete(component.id, responses);
+                      }}
+                      className="flex-1"
+                    >
+                      Complete Thought Audit Practice
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Week 2 - CBT Reframing Techniques (ABCD Model)
     console.log('Checking CBT condition:', component.id, component.id === 'w2-cbt');
     if (component.id === 'w2-cbt') {
