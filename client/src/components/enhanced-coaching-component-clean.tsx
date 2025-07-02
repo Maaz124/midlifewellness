@@ -10893,6 +10893,593 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 3: Pause-Label-Shift Technique
+    if (moduleId === 'week-3' && component.id === 'w3-technique') {
+      const [techniquePhase, setTechniquePhase] = useState<'introduction' | 'learning' | 'practice' | 'integration'>('introduction');
+      const [practiceStep, setPracticeStep] = useState(0);
+      const [practiceScenarios, setPracticeScenarios] = useState<any[]>([]);
+      const [currentScenario, setCurrentScenario] = useState<any>(null);
+      const [responses, setResponses] = useState<any>({
+        understandingQuiz: {},
+        practiceResponses: {},
+        personalSituations: [],
+        commitmentPlan: '',
+        weeklyGoal: ''
+      });
+
+      const pauseLabelShiftSteps = [
+        {
+          id: 'pause',
+          title: 'PAUSE',
+          icon: '⏸️',
+          color: 'red',
+          description: 'Stop the automatic reaction',
+          techniques: [
+            'Take 3 deep breaths',
+            'Count to 10 slowly',
+            'Place your hand on your heart',
+            'Say "STOP" internally'
+          ],
+          science: 'Creates space between trigger and response, activating the prefrontal cortex'
+        },
+        {
+          id: 'label',
+          title: 'LABEL',
+          icon: '🏷️',
+          color: 'blue',
+          description: 'Name what you\'re experiencing',
+          techniques: [
+            'I\'m feeling overwhelmed',
+            'This is anxiety talking',
+            'My stress response is activated',
+            'I notice tension in my body'
+          ],
+          science: 'Labeling emotions reduces amygdala reactivity by 50% according to UCLA research'
+        },
+        {
+          id: 'shift',
+          title: 'SHIFT',
+          icon: '🔄',
+          color: 'green',
+          description: 'Choose a conscious response',
+          techniques: [
+            'What would help me right now?',
+            'What\'s the next smallest step?',
+            'How would my best self respond?',
+            'What do I need to feel grounded?'
+          ],
+          science: 'Engages executive function to make intentional choices rather than reactive ones'
+        }
+      ];
+
+      const practiceScenariosList = [
+        {
+          id: 'morning-rush',
+          title: 'The Morning Rush',
+          description: 'It\'s 7:30 AM. You\'re running late, the kids can\'t find their shoes, you spilled coffee on your shirt, and you have an important meeting at 9 AM.',
+          stressLevel: 'High',
+          triggers: ['Time pressure', 'Multiple demands', 'Unexpected problems'],
+          pauseOptions: [
+            'Stop everything and take 3 deep breaths',
+            'Set a timer for 2 minutes to collect yourself',
+            'Put your hand on your heart and count to 10'
+          ],
+          labelOptions: [
+            'I\'m feeling overwhelmed by trying to control everything',
+            'My anxiety is making me move faster but less effectively',
+            'I\'m in fight-or-flight mode and need to calm my nervous system'
+          ],
+          shiftOptions: [
+            'Focus on what I can control right now and let go of the rest',
+            'Ask for help from family members with specific tasks',
+            'Accept that I might be 5 minutes late and that\'s okay'
+          ]
+        },
+        {
+          id: 'work-meeting',
+          title: 'The Overwhelming Work Meeting',
+          description: 'You\'re in a meeting where your boss just assigned you three new projects with tight deadlines. Your mind is racing with all the things you already have to do.',
+          stressLevel: 'Medium-High',
+          triggers: ['Work overload', 'Authority pressure', 'Competing priorities'],
+          pauseOptions: [
+            'Silently count to 10 while maintaining eye contact',
+            'Take a sip of water and breathe deeply',
+            'Place your feet firmly on the ground and center yourself'
+          ],
+          labelOptions: [
+            'I\'m feeling pressure to say yes when I should negotiate',
+            'My people-pleasing tendency is activated',
+            'I\'m anxious about disappointing others'
+          ],
+          shiftOptions: [
+            'Ask questions about priorities and timelines',
+            'Request a follow-up meeting to discuss capacity',
+            'Suggest alternatives or compromises'
+          ]
+        },
+        {
+          id: 'family-conflict',
+          title: 'Family Tension at Dinner',
+          description: 'Your teenager is being defiant about chores, your partner seems stressed and withdrawn, and you feel like the family mediator again.',
+          stressLevel: 'Medium',
+          triggers: ['Family dynamics', 'Feeling responsible for everyone', 'Communication breakdown'],
+          pauseOptions: [
+            'Excuse yourself for a 2-minute bathroom break',
+            'Take a deep breath and lower your voice',
+            'Put down your fork and center yourself'
+          ],
+          labelOptions: [
+            'I\'m taking on emotional responsibility that isn\'t mine',
+            'I\'m feeling frustrated because I can\'t fix everyone',
+            'I\'m activated because harmony feels threatened'
+          ],
+          shiftOptions: [
+            'Let each person handle their own emotions',
+            'Ask open questions instead of giving solutions',
+            'Set a boundary about what you will and won\'t mediate'
+          ]
+        },
+        {
+          id: 'health-appointment',
+          title: 'Concerning Health News',
+          description: 'You just received test results that need follow-up. Your mind is immediately jumping to worst-case scenarios.',
+          stressLevel: 'High',
+          triggers: ['Health anxiety', 'Uncertainty', 'Loss of control'],
+          pauseOptions: [
+            'Sit down and breathe deeply for 60 seconds',
+            'Hold something comforting in your hands',
+            'Look around and name 5 things you can see'
+          ],
+          labelOptions: [
+            'I\'m catastrophizing about unknowns',
+            'My anxiety is creating stories that aren\'t facts',
+            'I\'m feeling scared and that\'s completely normal'
+          ],
+          shiftOptions: [
+            'Focus on gathering information before drawing conclusions',
+            'Reach out to a trusted friend for emotional support',
+            'Make a list of practical next steps I can take'
+          ]
+        }
+      ];
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">⚡</span>
+              Pause-Label-Shift Technique
+            </CardTitle>
+            <p className="text-gray-600">Learn the 3-step technique for interrupting overwhelm in real-time</p>
+          </CardHeader>
+          <CardContent>
+            {/* Introduction Phase */}
+            {techniquePhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">🧠 The Science Behind Pause-Label-Shift</h3>
+                  <div className="space-y-3 text-sm">
+                    <p>
+                      When we experience overwhelm, our amygdala (the brain's alarm system) takes control, 
+                      bypassing our rational thinking. This technique literally rewires your brain's response pattern.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg">
+                      <h4 className="font-semibold text-purple-800 mb-2">Research-Backed Benefits:</h4>
+                      <ul className="space-y-1 text-sm text-gray-700">
+                        <li>• <strong>50% reduction</strong> in emotional reactivity (UCLA study)</li>
+                        <li>• <strong>Activates prefrontal cortex</strong> within 90 seconds</li>
+                        <li>• <strong>Interrupts stress hormones</strong> before they flood your system</li>
+                        <li>• <strong>Creates new neural pathways</strong> for conscious responding</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-4">Why This Works for Midlife Women</h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-coral-600">🌊 Hormonal Fluctuations</h4>
+                      <p>Perimenopause makes emotional regulation harder. This technique gives you back control when hormones create chaos.</p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-sage-600">🧠 Mental Load Management</h4>
+                      <p>When juggling family, career, and aging parents, this creates space between stimulus and overwhelmed response.</p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-purple-600">💪 Reclaiming Agency</h4>
+                      <p>Instead of feeling like life happens TO you, this helps you consciously choose how to respond.</p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-blue-600">⚡ Rapid Reset</h4>
+                      <p>Can be used anywhere, anytime - even in the middle of a meeting or family crisis.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setTechniquePhase('learning')}
+                  className="w-full"
+                >
+                  Learn the 3-Step Technique
+                </Button>
+              </div>
+            )}
+
+            {/* Learning Phase */}
+            {techniquePhase === 'learning' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">The 3-Step Pause-Label-Shift Technique</h3>
+                  <p className="text-gray-600">Master each step to interrupt overwhelm in real-time</p>
+                </div>
+
+                <div className="space-y-6">
+                  {pauseLabelShiftSteps.map((step, index) => (
+                    <div key={step.id} className={`border-2 border-${step.color}-200 rounded-lg p-6 bg-${step.color}-50`}>
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-3xl">{step.icon}</span>
+                        <div>
+                          <h4 className={`text-lg font-bold text-${step.color}-800`}>Step {index + 1}: {step.title}</h4>
+                          <p className={`text-${step.color}-600`}>{step.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="bg-white p-4 rounded-lg">
+                          <h5 className="font-semibold mb-2">Techniques to Practice:</h5>
+                          <ul className="space-y-1 text-sm">
+                            {step.techniques.map((technique, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className={`text-${step.color}-500 font-bold`}>•</span>
+                                {technique}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="bg-white p-4 rounded-lg">
+                          <h5 className="font-semibold mb-2">The Science:</h5>
+                          <p className="text-sm text-gray-700">{step.science}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-amber-800 mb-2">💡 Memory Tip</h4>
+                  <p className="text-sm text-amber-700">
+                    Think "P.L.S. - Please Let me Stop" to remember the sequence when you're overwhelmed. 
+                    The more you practice, the more automatic it becomes.
+                  </p>
+                </div>
+
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                  <h4 className="font-semibold mb-4">🧭 Quick Understanding Check</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>In your own words, what happens in your brain when you PAUSE?</Label>
+                      <Textarea
+                        placeholder="Explain what pausing does neurologically..."
+                        value={responses.understandingQuiz.pauseExplanation || ''}
+                        onChange={(e) => setResponses({
+                          ...responses,
+                          understandingQuiz: {...responses.understandingQuiz, pauseExplanation: e.target.value}
+                        })}
+                        className="mt-2"
+                        rows={2}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Why is LABELING emotions so powerful for reducing overwhelm?</Label>
+                      <Textarea
+                        placeholder="Describe the impact of labeling emotions..."
+                        value={responses.understandingQuiz.labelExplanation || ''}
+                        onChange={(e) => setResponses({
+                          ...responses,
+                          understandingQuiz: {...responses.understandingQuiz, labelExplanation: e.target.value}
+                        })}
+                        className="mt-2"
+                        rows={2}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>What's the difference between reacting and consciously SHIFTING your response?</Label>
+                      <Textarea
+                        placeholder="Explain the difference between reacting vs. responding..."
+                        value={responses.understandingQuiz.shiftExplanation || ''}
+                        onChange={(e) => setResponses({
+                          ...responses,
+                          understandingQuiz: {...responses.understandingQuiz, shiftExplanation: e.target.value}
+                        })}
+                        className="mt-2"
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => {
+                    setPracticeScenarios(practiceScenariosList);
+                    setTechniquePhase('practice');
+                  }}
+                  className="w-full"
+                  disabled={!responses.understandingQuiz.pauseExplanation || !responses.understandingQuiz.labelExplanation || !responses.understandingQuiz.shiftExplanation}
+                >
+                  Practice with Real Scenarios
+                </Button>
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {techniquePhase === 'practice' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">Practice Scenarios</h3>
+                  <p className="text-gray-600">Work through realistic situations using Pause-Label-Shift</p>
+                  <div className="flex justify-center mt-3">
+                    <Badge variant="outline">
+                      Scenario {Math.min(practiceStep + 1, practiceScenarios.length)} of {practiceScenarios.length}
+                    </Badge>
+                  </div>
+                </div>
+
+                {practiceStep < practiceScenarios.length && (
+                  <div className="space-y-6">
+                    {(() => {
+                      const scenario = practiceScenarios[practiceStep];
+                      const scenarioResponses = responses.practiceResponses[scenario.id] || {};
+                      
+                      return (
+                        <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                          <div className="mb-4">
+                            <h4 className="text-lg font-semibold text-purple-800">{scenario.title}</h4>
+                            <div className="flex items-center gap-4 mt-2">
+                              <Badge variant={scenario.stressLevel === 'High' ? 'destructive' : scenario.stressLevel === 'Medium-High' ? 'default' : 'secondary'}>
+                                Stress Level: {scenario.stressLevel}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                            <p className="text-gray-800">{scenario.description}</p>
+                            <div className="mt-3">
+                              <h5 className="font-semibold text-sm text-gray-700 mb-1">Common Triggers:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                {scenario.triggers.map((trigger, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">
+                                    {trigger}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Step 1: PAUSE */}
+                          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-4">
+                            <h5 className="font-semibold text-red-800 mb-3">⏸️ Step 1: PAUSE - What would you do first?</h5>
+                            <RadioGroup 
+                              value={scenarioResponses.pause || ''} 
+                              onValueChange={(value) => setResponses({
+                                ...responses,
+                                practiceResponses: {
+                                  ...responses.practiceResponses,
+                                  [scenario.id]: {...scenarioResponses, pause: value}
+                                }
+                              })}
+                            >
+                              {scenario.pauseOptions.map((option, i) => (
+                                <div key={i} className="flex items-center space-x-2">
+                                  <RadioGroupItem value={option} id={`pause-${i}`} />
+                                  <Label htmlFor={`pause-${i}`} className="text-sm">{option}</Label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                          </div>
+
+                          {/* Step 2: LABEL */}
+                          {scenarioResponses.pause && (
+                            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+                              <h5 className="font-semibold text-blue-800 mb-3">🏷️ Step 2: LABEL - What are you experiencing?</h5>
+                              <RadioGroup 
+                                value={scenarioResponses.label || ''} 
+                                onValueChange={(value) => setResponses({
+                                  ...responses,
+                                  practiceResponses: {
+                                    ...responses.practiceResponses,
+                                    [scenario.id]: {...scenarioResponses, label: value}
+                                  }
+                                })}
+                              >
+                                {scenario.labelOptions.map((option, i) => (
+                                  <div key={i} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={option} id={`label-${i}`} />
+                                    <Label htmlFor={`label-${i}`} className="text-sm">{option}</Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </div>
+                          )}
+
+                          {/* Step 3: SHIFT */}
+                          {scenarioResponses.label && (
+                            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4">
+                              <h5 className="font-semibold text-green-800 mb-3">🔄 Step 3: SHIFT - How will you respond consciously?</h5>
+                              <RadioGroup 
+                                value={scenarioResponses.shift || ''} 
+                                onValueChange={(value) => setResponses({
+                                  ...responses,
+                                  practiceResponses: {
+                                    ...responses.practiceResponses,
+                                    [scenario.id]: {...scenarioResponses, shift: value}
+                                  }
+                                })}
+                              >
+                                {scenario.shiftOptions.map((option, i) => (
+                                  <div key={i} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={option} id={`shift-${i}`} />
+                                    <Label htmlFor={`shift-${i}`} className="text-sm">{option}</Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </div>
+                          )}
+
+                          {/* Reflection */}
+                          {scenarioResponses.shift && (
+                            <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
+                              <Label>Reflection: How does using P.L.S. change the outcome compared to reacting automatically?</Label>
+                              <Textarea
+                                placeholder="Reflect on how this technique changes your response and the likely outcome..."
+                                value={scenarioResponses.reflection || ''}
+                                onChange={(e) => setResponses({
+                                  ...responses,
+                                  practiceResponses: {
+                                    ...responses.practiceResponses,
+                                    [scenario.id]: {...scenarioResponses, reflection: e.target.value}
+                                  }
+                                })}
+                                className="mt-2"
+                                rows={3}
+                              />
+                            </div>
+                          )}
+
+                          <div className="flex gap-3">
+                            {practiceStep > 0 && (
+                              <Button 
+                                variant="outline" 
+                                onClick={() => setPracticeStep(practiceStep - 1)}
+                              >
+                                Previous Scenario
+                              </Button>
+                            )}
+                            
+                            <Button 
+                              onClick={() => {
+                                if (practiceStep < practiceScenarios.length - 1) {
+                                  setPracticeStep(practiceStep + 1);
+                                } else {
+                                  setTechniquePhase('integration');
+                                }
+                              }}
+                              className="flex-1"
+                              disabled={!scenarioResponses.pause || !scenarioResponses.label || !scenarioResponses.shift || !scenarioResponses.reflection}
+                            >
+                              {practiceStep < practiceScenarios.length - 1 ? 'Next Scenario' : 'Create Your Personal Plan'}
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Integration Phase */}
+            {techniquePhase === 'integration' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🌟 Your Personal P.L.S. Action Plan</h3>
+                  <p className="text-gray-600">Create a personalized plan for using this technique in your daily life</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 rounded-lg">
+                  <h4 className="font-semibold text-purple-800 mb-4">🎯 Practice Summary & Insights</h4>
+                  <div className="space-y-3 text-sm">
+                    <p>
+                      You've practiced the Pause-Label-Shift technique with {practiceScenarios.length} realistic scenarios. 
+                      This technique becomes more powerful with repetition - your brain is already starting to create new neural pathways!
+                    </p>
+                    <div className="bg-white p-3 rounded-lg">
+                      <h5 className="font-semibold text-gray-800 mb-2">Key Insights from Your Practice:</h5>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• Pausing interrupts automatic stress responses within seconds</li>
+                        <li>• Labeling emotions reduces their intensity by activating your prefrontal cortex</li>
+                        <li>• Conscious shifting creates space for wisdom rather than reactivity</li>
+                        <li>• This technique works in any situation - from family conflicts to work stress</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                    <h4 className="font-semibold mb-4">📝 Identify Your Personal Trigger Situations</h4>
+                    <Label>List 3 specific situations in your life where you most need to use P.L.S.</Label>
+                    <div className="space-y-3 mt-3">
+                      {[0, 1, 2].map((index) => (
+                        <Input
+                          key={index}
+                          placeholder={`Personal trigger situation ${index + 1}...`}
+                          value={responses.personalSituations[index] || ''}
+                          onChange={(e) => {
+                            const newSituations = [...responses.personalSituations];
+                            newSituations[index] = e.target.value;
+                            setResponses({...responses, personalSituations: newSituations});
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white border-2 border-coral-200 rounded-lg p-6">
+                    <h4 className="font-semibold mb-4">🚀 Your Implementation Commitment</h4>
+                    <Label>Write your commitment for how you'll practice and implement P.L.S. this week</Label>
+                    <Textarea
+                      placeholder="I commit to practicing Pause-Label-Shift by..."
+                      value={responses.commitmentPlan || ''}
+                      onChange={(e) => setResponses({...responses, commitmentPlan: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                    <h4 className="font-semibold mb-4">🎯 This Week's Specific Goal</h4>
+                    <Label>Choose one specific situation this week where you'll deliberately practice P.L.S.</Label>
+                    <Textarea
+                      placeholder="This week I will practice P.L.S. when..."
+                      value={responses.weeklyGoal || ''}
+                      onChange={(e) => setResponses({...responses, weeklyGoal: e.target.value})}
+                      className="mt-2"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div className="bg-gradient-to-r from-green-100 to-teal-100 p-6 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-3">✨ Remember: Progress, Not Perfection</h4>
+                    <div className="space-y-2 text-sm text-green-700">
+                      <p>• Even remembering to pause AFTER a reaction is progress</p>
+                      <p>• Your brain is rewiring itself with each attempt</p>
+                      <p>• P.L.S. becomes automatic with practice (usually 2-3 weeks)</p>
+                      <p>• Celebrate small wins - awareness is the first step to change</p>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => {
+                      setResponses({...responses, techniqueCompleted: true});
+                      onComplete(component.id, responses);
+                    }}
+                    className="w-full"
+                    disabled={!responses.personalSituations.some(s => s) || !responses.commitmentPlan || !responses.weeklyGoal}
+                  >
+                    Complete Pause-Label-Shift Training
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Default fallback for other components
     return (
       <Card>
