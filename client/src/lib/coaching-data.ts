@@ -225,8 +225,8 @@ export const coachingModules: CoachingModule[] = [
       {
         id: 'w5-assessment',
         type: 'worksheet',
-        title: 'Cognitive Clarity Assessment',
-        description: 'Comprehensive evaluation of current mental clarity, memory patterns, and focus challenges with personalized insights',
+        title: '🧠 Enhanced Cognitive Clarity Assessment',
+        description: 'NEW: 18 detailed questions with educational context and instant personalized tips for midlife cognitive health',
         completed: false
       },
       {
