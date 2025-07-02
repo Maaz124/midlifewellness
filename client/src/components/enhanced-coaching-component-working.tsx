@@ -1578,6 +1578,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
           <p className="text-lg text-gray-600">
             Comprehensive evaluation of your cognitive function with real-time insights and personalized tips
           </p>
+          <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded-lg">
+            <p className="text-sm text-green-800 font-medium">
+              ✨ NEW: Each question now includes educational context and instant tips to help you understand and improve your cognitive health!
+            </p>
+          </div>
         </div>
 
         <div className="flex justify-center mb-8">
@@ -1600,9 +1605,14 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
         {currentSection === 'memory' && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+              <p className="text-sm text-yellow-800 font-medium">
+                🎯 ENHANCED: Questions now include educational context and personalized tips that appear when you select an answer!
+              </p>
+            </div>
             <h3 className="text-xl font-semibold text-blue-800 mb-4">Memory Function Assessment</h3>
             <p className="text-blue-700 mb-6">
-              Rate how often you experience these memory-related situations:
+              Rate how often you experience these memory-related situations. Each question includes context about why this matters for midlife women:
             </p>
             
             <div className="space-y-6">
