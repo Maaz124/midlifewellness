@@ -567,6 +567,452 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Hormone Meditation - Guided Meditation Practice
+    if (component.id === 'hormone-meditation') {
+      const meditationStep = responses.meditationStep || 'preparation';
+      const meditationTime = responses.meditationTime || 0;
+      const calmnessRating = responses.calmnessRating || 5;
+      const bodyAwarenessRating = responses.bodyAwarenessRating || 5;
+      const emotionalBalanceRating = responses.emotionalBalanceRating || 5;
+
+      const getCalmnessInterpretation = (rating: number) => {
+        if (rating <= 3) return { level: 'Restless', color: 'text-red-600', message: 'Feeling agitated or unsettled' };
+        if (rating <= 5) return { level: 'Somewhat Calm', color: 'text-orange-600', message: 'Some peace with underlying tension' };
+        if (rating <= 7) return { level: 'Calm', color: 'text-yellow-600', message: 'Generally peaceful and relaxed' };
+        if (rating <= 9) return { level: 'Very Calm', color: 'text-green-600', message: 'Deep sense of tranquility' };
+        return { level: 'Deeply Peaceful', color: 'text-green-700', message: 'Profound inner stillness and peace' };
+      };
+
+      const meditationSteps = [
+        { id: 'preparation', title: 'Preparation', duration: '2 min', description: 'Setting up your space and intention' },
+        { id: 'grounding', title: 'Grounding', duration: '3 min', description: 'Connecting with your body and breath' },
+        { id: 'hormone-focus', title: 'Hormone Harmony', duration: '7 min', description: 'Visualizing hormonal balance and flow' },
+        { id: 'integration', title: 'Integration', duration: '3 min', description: 'Anchoring the practice in your body' }
+      ];
+
+      const currentStepIndex = meditationSteps.findIndex(step => step.id === meditationStep);
+      const progressPercent = ((currentStepIndex + 1) / meditationSteps.length) * 100;
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-pink-500" />
+              Hormone Harmony Meditation
+            </CardTitle>
+            <p className="text-sm text-gray-600">A 15-minute guided meditation specifically designed to support hormonal balance during midlife transitions.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Meditation Benefits */}
+            <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+              <h5 className="font-semibold text-pink-800 mb-2">How Meditation Supports Hormonal Health</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-pink-700">
+                <div>
+                  <strong>Stress Reduction:</strong> Lowers cortisol levels that can disrupt other hormones
+                </div>
+                <div>
+                  <strong>Better Sleep:</strong> Supports melatonin production for restorative rest
+                </div>
+                <div>
+                  <strong>Nervous System Regulation:</strong> Activates parasympathetic response for healing
+                </div>
+                <div>
+                  <strong>Emotional Balance:</strong> Helps regulate mood-affecting neurotransmitters
+                </div>
+              </div>
+            </div>
+
+            {/* Pre-Meditation Assessment */}
+            <div className="bg-white border-2 border-pink-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold mb-4">Pre-Meditation Check-In</h4>
+              <p className="text-sm text-gray-600 mb-4">Rate how you're feeling right now, then we'll check again after the meditation:</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <Label className="font-medium">Calmness Level</Label>
+                    <span className={`text-sm font-semibold ${getCalmnessInterpretation(calmnessRating).color}`}>
+                      {getCalmnessInterpretation(calmnessRating).level}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-gray-500">Agitated</span>
+                    <Slider
+                      value={[calmnessRating]}
+                      onValueChange={(value) => setResponses({...responses, calmnessRating: value[0]})}
+                      max={10}
+                      min={1}
+                      step={1}
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-gray-500">Peaceful</span>
+                    <span className="text-lg font-bold text-pink-600 min-w-[30px]">{calmnessRating}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="font-medium">Body Awareness</Label>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-xs text-gray-500">Disconnected</span>
+                    <Slider
+                      value={[bodyAwarenessRating]}
+                      onValueChange={(value) => setResponses({...responses, bodyAwarenessRating: value[0]})}
+                      max={10}
+                      min={1}
+                      step={1}
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-gray-500">Very Aware</span>
+                    <span className="text-lg font-bold text-pink-600 min-w-[30px]">{bodyAwarenessRating}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="font-medium">Emotional Balance</Label>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-xs text-gray-500">Unstable</span>
+                    <Slider
+                      value={[emotionalBalanceRating]}
+                      onValueChange={(value) => setResponses({...responses, emotionalBalanceRating: value[0]})}
+                      max={10}
+                      min={1}
+                      step={1}
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-gray-500">Balanced</span>
+                    <span className="text-lg font-bold text-pink-600 min-w-[30px]">{emotionalBalanceRating}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Meditation Practice */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-lg border">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold">Guided Meditation Practice</h4>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">{Math.floor(meditationTime / 60)}:{(meditationTime % 60).toString().padStart(2, '0')}</span>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Meditation Progress</span>
+                  <span className="text-sm text-gray-600">{Math.round(progressPercent)}% Complete</span>
+                </div>
+                <Progress value={progressPercent} className="h-3" />
+              </div>
+
+              {/* Meditation Steps */}
+              <div className="space-y-3 mb-6">
+                {meditationSteps.map((step, index) => (
+                  <div 
+                    key={step.id}
+                    className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                      step.id === meditationStep 
+                        ? 'border-pink-400 bg-white shadow-sm' 
+                        : index < currentStepIndex 
+                          ? 'border-green-200 bg-green-50' 
+                          : 'border-gray-200 bg-gray-50'
+                    }`}
+                    onClick={() => setResponses({...responses, meditationStep: step.id})}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                          index < currentStepIndex 
+                            ? 'bg-green-500 text-white' 
+                            : step.id === meditationStep 
+                              ? 'bg-pink-500 text-white' 
+                              : 'bg-gray-300 text-gray-600'
+                        }`}>
+                          {index < currentStepIndex ? '✓' : index + 1}
+                        </div>
+                        <div>
+                          <h5 className="font-semibold">{step.title}</h5>
+                          <p className="text-sm text-gray-600">{step.description}</p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary">{step.duration}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Current Step Content */}
+              <div className="bg-white p-6 rounded-lg border">
+                {meditationStep === 'preparation' && (
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-lg text-center">Preparation Phase</h5>
+                    <div className="text-center text-sm text-gray-600 mb-4">
+                      Find a comfortable seated position and set your intention for this practice.
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={responses.prepStep1 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, prepStep1: checked})}
+                        />
+                        <span className="text-sm">Find a quiet, comfortable space where you won't be disturbed</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={responses.prepStep2 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, prepStep2: checked})}
+                        />
+                        <span className="text-sm">Sit with your spine straight but relaxed, feet flat on the floor</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={responses.prepStep3 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, prepStep3: checked})}
+                        />
+                        <span className="text-sm">Close your eyes or soften your gaze downward</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={responses.prepStep4 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, prepStep4: checked})}
+                        />
+                        <span className="text-sm">Set an intention to support your body's natural wisdom and balance</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {meditationStep === 'grounding' && (
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-lg text-center">Grounding Phase</h5>
+                    <div className="text-center text-sm text-gray-600 mb-4">
+                      Connect deeply with your breath and body awareness.
+                    </div>
+                    
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h6 className="font-medium mb-2">Breathing Exercise</h6>
+                      <p className="text-sm text-gray-700 mb-3">
+                        Follow this breathing pattern to activate your parasympathetic nervous system:
+                      </p>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600 mb-2">4-7-8 Breath</div>
+                        <div className="text-sm space-y-1">
+                          <div>Inhale for 4 counts</div>
+                          <div>Hold for 7 counts</div>
+                          <div>Exhale for 8 counts</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>How many rounds of 4-7-8 breathing have you completed?</Label>
+                      <div className="flex items-center gap-4">
+                        <Slider
+                          value={[responses.breathingRounds || 0]}
+                          onValueChange={(value) => setResponses({...responses, breathingRounds: value[0]})}
+                          max={8}
+                          min={0}
+                          step={1}
+                          className="flex-1"
+                        />
+                        <span className="text-lg font-bold text-blue-600 min-w-[30px]">{responses.breathingRounds || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {meditationStep === 'hormone-focus' && (
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-lg text-center">Hormone Harmony Visualization</h5>
+                    <div className="text-center text-sm text-gray-600 mb-4">
+                      Visualize your endocrine system working in perfect harmony.
+                    </div>
+                    
+                    <div className="bg-pink-50 p-4 rounded-lg">
+                      <h6 className="font-medium mb-2">Guided Visualization Script</h6>
+                      <div className="text-sm text-gray-700 space-y-3">
+                        <p>
+                          <strong>Imagine</strong> a warm, golden light beginning to glow at the center of your brain, 
+                          where your pituitary gland—your body's master regulator—sits like a wise conductor.
+                        </p>
+                        <p>
+                          <strong>See this light</strong> sending gentle signals throughout your body, 
+                          communicating with your thyroid, adrenals, and ovaries in perfect harmony.
+                        </p>
+                        <p>
+                          <strong>Visualize</strong> each hormone as a different colored light—estrogen as soft blue, 
+                          progesterone as warm green, cortisol as calming lavender—all dancing together in balance.
+                        </p>
+                        <p>
+                          <strong>Feel</strong> your body's natural wisdom guiding this dance, 
+                          trusting in its ability to find its new rhythm during this transition.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label>Which visualization resonated most strongly with you?</Label>
+                      <RadioGroup
+                        value={responses.visualization || ''}
+                        onValueChange={(value) => setResponses({...responses, visualization: value})}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="golden-light" />
+                          <Label>The golden light from the pituitary gland</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="colored-hormones" />
+                          <Label>The colored lights representing different hormones</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="body-wisdom" />
+                          <Label>The sense of body wisdom and natural rhythm</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="harmony-dance" />
+                          <Label>The feeling of hormones dancing in harmony</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                )}
+
+                {meditationStep === 'integration' && (
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-lg text-center">Integration & Closing</h5>
+                    <div className="text-center text-sm text-gray-600 mb-4">
+                      Anchor this feeling of balance in your body and daily life.
+                    </div>
+                    
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h6 className="font-medium mb-2">Integration Practice</h6>
+                      <div className="text-sm text-gray-700 space-y-2">
+                        <p>Place both hands on your heart and feel the steady rhythm beneath your palms.</p>
+                        <p>Set an intention to carry this sense of harmony with you throughout your day.</p>
+                        <p>When you're ready, slowly open your eyes and take three deep breaths.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label>What intention would you like to set for supporting your hormonal health today?</Label>
+                      <Textarea
+                        placeholder="e.g., I will listen to my body's needs with compassion, I will trust my body's wisdom..."
+                        value={responses.intention || ''}
+                        onChange={(e) => setResponses({...responses, intention: e.target.value})}
+                        className="mt-2"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const currentIndex = meditationSteps.findIndex(step => step.id === meditationStep);
+                      if (currentIndex > 0) {
+                        setResponses({...responses, meditationStep: meditationSteps[currentIndex - 1].id});
+                      }
+                    }}
+                    disabled={currentStepIndex === 0}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <Button
+                    onClick={() => {
+                      const currentIndex = meditationSteps.findIndex(step => step.id === meditationStep);
+                      if (currentIndex < meditationSteps.length - 1) {
+                        setResponses({...responses, meditationStep: meditationSteps[currentIndex + 1].id});
+                      }
+                    }}
+                    disabled={currentStepIndex === meditationSteps.length - 1}
+                  >
+                    {currentStepIndex === meditationSteps.length - 1 ? 'Complete' : 'Next'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Post-Meditation Reflection */}
+            {currentStepIndex === meditationSteps.length - 1 && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Post-Meditation Reflection</h4>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label>How do you feel now compared to before the meditation?</Label>
+                    <Textarea
+                      placeholder="Describe any changes in your energy, mood, body sensations, or mental clarity..."
+                      value={responses.postMeditationReflection || ''}
+                      onChange={(e) => setResponses({...responses, postMeditationReflection: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Rate your current calmness level (to compare with your pre-meditation rating):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Agitated</span>
+                      <Slider
+                        value={[responses.postCalmness || 5]}
+                        onValueChange={(value) => setResponses({...responses, postCalmness: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Peaceful</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postCalmness || 5}</span>
+                    </div>
+                  </div>
+
+                  {responses.postCalmness && calmnessRating && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-2">Your Progress</h5>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Calmness Change:</span>
+                        <span className={`font-bold ${
+                          responses.postCalmness > calmnessRating 
+                            ? 'text-green-600' 
+                            : responses.postCalmness < calmnessRating 
+                              ? 'text-orange-600' 
+                              : 'text-gray-600'
+                        }`}>
+                          {responses.postCalmness > calmnessRating ? '+' : ''}{responses.postCalmness - calmnessRating} points
+                        </span>
+                      </div>
+                      {responses.postCalmness > calmnessRating && (
+                        <p className="text-sm text-green-600 mt-2">
+                          Great! The meditation helped increase your sense of calm and balance.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Meditation Tips */}
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-purple-800 mb-2">💡 Daily Practice Tips</h5>
+              <ul className="text-sm text-purple-700 space-y-1">
+                <li>• Practice this meditation at the same time each day to establish a rhythm</li>
+                <li>• Morning practice can set a calm tone for your day</li>
+                <li>• Evening practice can help prepare your body for restorative sleep</li>
+                <li>• Even 5-10 minutes of practice can be beneficial if 15 minutes feels too long</li>
+                <li>• Notice how your symptoms change with regular meditation practice</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
