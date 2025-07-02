@@ -8111,6 +8111,644 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 2 - NLP Reframing Practice
+    if (component.id === 'w2-nlp') {
+      const nlpPhase = responses.nlpPhase || 'introduction';
+      const selectedReframe = responses.selectedReframe || null;
+      const practiceSession = responses.practiceSession || {};
+
+      const nlpTechniques = [
+        {
+          id: 'temporal-shift',
+          name: 'Temporal Shift',
+          description: 'Mentally travel to future points where current problems feel less significant',
+          icon: '⏰',
+          color: 'blue',
+          category: 'Time Perspective',
+          science: 'Activates prefrontal cortex for long-term thinking, reducing amygdala activation',
+          steps: [
+            'Identify your current challenging situation',
+            'Imagine yourself 5 years from now looking back',
+            'From that future perspective, how significant is this challenge?',
+            'What advice would your future self give you?',
+            'Return to present with that expanded perspective'
+          ],
+          midlifeExample: 'Career transition anxiety becomes "exploring new possibilities in my prime years"',
+          powerPhrase: 'In the grand timeline of my life, this is...',
+          benefits: ['Reduces immediate stress', 'Increases perspective', 'Builds resilience']
+        },
+        {
+          id: 'resourceful-state',
+          name: 'Resourceful State Anchoring',
+          description: 'Access and anchor times when you felt most capable and confident',
+          icon: '⚡',
+          color: 'yellow',
+          category: 'State Management',
+          science: 'Uses embodied cognition and neural pathway strengthening through repetition',
+          steps: [
+            'Recall a specific time you felt completely capable and confident',
+            'Relive that memory in vivid detail - see, hear, feel everything',
+            'Notice your posture, breathing, and energy in that state',
+            'Create a physical anchor (touch thumb to finger) at the peak',
+            'Practice accessing this state through your anchor'
+          ],
+          midlifeExample: 'Accessing confidence from past achievements when facing new challenges',
+          powerPhrase: 'I have been resourceful before, and I am resourceful now...',
+          benefits: ['Instant confidence boost', 'Accessible coping tool', 'Builds self-efficacy']
+        },
+        {
+          id: 'perceptual-positions',
+          name: 'Perceptual Positions',
+          description: 'View situations from multiple perspectives to gain clarity and options',
+          icon: '👁️',
+          color: 'purple',
+          category: 'Perspective Shifting',
+          science: 'Enhances cognitive flexibility and reduces cognitive bias through perspective-taking',
+          steps: [
+            'Position 1: Your current perspective - how do you see/feel about this?',
+            'Position 2: Others\' perspective - how might they view this situation?',
+            'Position 3: Observer perspective - what would a neutral advisor notice?',
+            'Position 4: Systems perspective - how does this fit in the bigger picture?',
+            'Integrate insights from all positions'
+          ],
+          midlifeExample: 'Relationship conflicts viewed from partner\'s midlife experience too',
+          powerPhrase: 'From this new vantage point, I can see...',
+          benefits: ['Reduces emotional reactivity', 'Increases empathy', 'Expands solution options']
+        },
+        {
+          id: 'outcome-specification',
+          name: 'Outcome Specification',
+          description: 'Transform problems into well-formed, achievable outcomes',
+          icon: '🎯',
+          color: 'green',
+          category: 'Goal Setting',
+          science: 'Activates goal-oriented brain networks and increases motivation through clarity',
+          steps: [
+            'What specifically do you want instead of this problem?',
+            'How will you know when you have achieved it?',
+            'What will you see, hear, feel when you have it?',
+            'What resources and skills do you already have?',
+            'What is the first small step you can take?'
+          ],
+          midlifeExample: 'From "I hate my body changes" to "I want to feel strong and energetic"',
+          powerPhrase: 'What I really want is...',
+          benefits: ['Clarifies direction', 'Increases motivation', 'Creates actionable steps']
+        },
+        {
+          id: 'reframe-meaning',
+          name: 'Meaning Reframing',
+          description: 'Change the meaning you give to events to change your emotional response',
+          icon: '🔄',
+          color: 'pink',
+          category: 'Meaning Making',
+          science: 'Engages narrative processing centers, literally rewiring how events are stored',
+          steps: [
+            'What meaning are you currently giving to this situation?',
+            'What else could this situation mean?',
+            'How might someone you admire interpret this?',
+            'What if this is happening FOR you rather than TO you?',
+            'Choose the most empowering meaning'
+          ],
+          midlifeExample: 'Perimenopause becomes "my body\'s wisdom transitioning to a new life phase"',
+          powerPhrase: 'Another way to look at this is...',
+          benefits: ['Transforms emotional response', 'Increases resilience', 'Creates empowerment']
+        },
+        {
+          id: 'as-if-frame',
+          name: 'As-If Frame',
+          description: 'Act as if you already have the qualities or capabilities you desire',
+          icon: '🎭',
+          color: 'orange',
+          category: 'Identity Shifting',
+          science: 'Uses neuroplasticity and embodied cognition to create new neural pathways',
+          steps: [
+            'Identify a quality or capability you want to develop',
+            'Think of someone who embodies this quality',
+            'How would they think, feel, and act in your situation?',
+            'Act "as if" you already have this quality for 10 minutes',
+            'Notice what changes in your experience'
+          ],
+          midlifeExample: 'Acting "as if" you\'re confident in your new career transition',
+          powerPhrase: 'If I were someone who..., I would...',
+          benefits: ['Accelerates personal growth', 'Builds new habits', 'Increases self-efficacy']
+        }
+      ];
+
+      const practiceScenarios = [
+        {
+          id: 'career-transition',
+          title: 'Career Transition Anxiety',
+          situation: 'You\'re considering a career change but feel overwhelmed by uncertainty and fear of starting over',
+          emotions: ['anxiety', 'overwhelm', 'fear', 'self-doubt'],
+          commonThoughts: [
+            'I\'m too old to start something new',
+            'I don\'t have the right skills',
+            'What if I fail and waste time?',
+            'Everyone else seems more qualified'
+          ]
+        },
+        {
+          id: 'body-changes',
+          title: 'Body Changes & Self-Image',
+          situation: 'You\'re struggling with physical changes during midlife and feeling disconnected from your body',
+          emotions: ['frustration', 'sadness', 'self-criticism', 'loss'],
+          commonThoughts: [
+            'My body is betraying me',
+            'I don\'t recognize myself anymore',
+            'I\'ll never feel attractive again',
+            'These changes mean I\'m getting old'
+          ]
+        },
+        {
+          id: 'relationship-shifts',
+          title: 'Relationship Dynamics',
+          situation: 'Your relationships are changing as you grow, causing tension and misunderstandings',
+          emotions: ['loneliness', 'confusion', 'disappointment', 'grief'],
+          commonThoughts: [
+            'People don\'t understand me anymore',
+            'I\'m growing apart from everyone',
+            'Maybe I\'m asking for too much',
+            'I feel invisible in my relationships'
+          ]
+        },
+        {
+          id: 'purpose-meaning',
+          title: 'Purpose & Life Meaning',
+          situation: 'You\'re questioning your life\'s direction and wondering if you\'re living meaningfully',
+          emotions: ['emptiness', 'restlessness', 'confusion', 'urgency'],
+          commonThoughts: [
+            'What\'s the point of all this?',
+            'I feel like I\'m just going through the motions',
+            'Have I wasted my potential?',
+            'Time is running out to make a difference'
+          ]
+        }
+      ];
+
+      const renderNLPPractice = (technique: any, scenario: any) => {
+        return (
+          <div className="space-y-6">
+            <div className={`bg-${technique.color}-50 p-4 rounded-lg border border-${technique.color}-200`}>
+              <h5 className={`font-semibold text-${technique.color}-800 mb-2 flex items-center gap-2`}>
+                <span className="text-lg">{technique.icon}</span>
+                {technique.name} Practice
+              </h5>
+              <p className={`text-sm text-${technique.color}-700 mb-3`}>{technique.description}</p>
+              
+              <div className="bg-white p-3 rounded border">
+                <h6 className="font-medium text-gray-800 mb-2">Scenario: {scenario.title}</h6>
+                <p className="text-sm text-gray-600 mb-3">{scenario.situation}</p>
+                
+                <div className="mb-3">
+                  <span className="text-sm font-medium text-gray-700">Common thoughts: </span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {scenario.commonThoughts.map((thought: string, idx: number) => (
+                      <span key={idx} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                        "{thought}"
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border rounded-lg p-4">
+              <h6 className="font-semibold text-gray-800 mb-3">Step-by-Step Practice</h6>
+              <div className="space-y-4">
+                {technique.steps.map((step: string, index: number) => (
+                  <div key={index} className="flex gap-3">
+                    <span className={`flex-shrink-0 w-8 h-8 bg-${technique.color}-200 text-${technique.color}-800 rounded-full flex items-center justify-center text-sm font-medium`}>
+                      {index + 1}
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-700 mb-2">{step}</p>
+                      <Textarea
+                        placeholder={`Your response to step ${index + 1}...`}
+                        value={responses.practiceResponses?.[index] || ''}
+                        onChange={(e) => setResponses({
+                          ...responses,
+                          practiceResponses: {
+                            ...responses.practiceResponses,
+                            [index]: e.target.value
+                          }
+                        })}
+                        rows={2}
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className={`bg-gradient-to-r from-${technique.color}-100 to-${technique.color}-50 p-4 rounded-lg`}>
+              <h6 className="font-semibold text-gray-800 mb-2">Power Phrase Practice</h6>
+              <p className="text-sm text-gray-600 mb-2">Complete this empowering reframe:</p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">{technique.powerPhrase}</span>
+                <Input
+                  placeholder="Complete the reframe..."
+                  value={responses.powerPhraseCompletion || ''}
+                  onChange={(e) => setResponses({...responses, powerPhraseCompletion: e.target.value})}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h6 className="font-semibold text-green-800 mb-2">Integration & Next Steps</h6>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm font-medium">How does this new perspective feel? (1-10 scale)</Label>
+                  <div className="grid grid-cols-10 gap-1 mt-2 mb-2">
+                    {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                      <div key={num} className="text-center">
+                        <button
+                          onClick={() => setResponses({...responses, perspectiveRating: num})}
+                          className={`w-full h-8 rounded text-xs font-medium transition-all ${
+                            num <= (responses.perspectiveRating || 0)
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>Feels forced/fake</span>
+                    <span>Feels authentic/empowering</span>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">What specific action will you take based on this reframe?</Label>
+                  <Textarea
+                    placeholder="Describe one concrete action you'll take in the next 24 hours..."
+                    value={responses.actionCommitment || ''}
+                    onChange={(e) => setResponses({...responses, actionCommitment: e.target.value})}
+                    className="mt-2"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-500" />
+              NLP Reframing Practice - Rewire Your Reality
+            </CardTitle>
+            <p className="text-sm text-gray-600">Use Neuro-Linguistic Programming techniques to shift perspectives, change meanings, and create empowering new ways of experiencing midlife challenges.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind NLP */}
+            <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+              <h5 className="font-semibold text-purple-800 mb-2">The Science Behind NLP Reframing</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-purple-700">
+                <div>
+                  <strong>Neuroplasticity:</strong> Your brain can literally rewire itself through new thought patterns
+                </div>
+                <div>
+                  <strong>Embodied Cognition:</strong> How you position your body affects how you think and feel
+                </div>
+                <div>
+                  <strong>Narrative Psychology:</strong> The stories you tell yourself shape your reality
+                </div>
+                <div>
+                  <strong>State-Dependent Learning:</strong> Your emotional state affects what you can access and remember
+                </div>
+              </div>
+            </div>
+
+            {/* Introduction Phase */}
+            {nlpPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Understanding NLP Reframing for Midlife</h4>
+                  
+                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-gray-800 mb-2">🧠 What Makes NLP Different?</h5>
+                    <p className="text-sm text-gray-700">
+                      While CBT focuses on thoughts and beliefs, NLP works with the structure of experience itself - 
+                      how you represent reality in your mind. It's like upgrading your mental software to run more 
+                      efficiently and create better outcomes.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {[
+                      {
+                        icon: '🔄',
+                        title: 'Rapid State Changes',
+                        description: 'Shift from stuck to resourceful in minutes, not months',
+                        color: 'blue'
+                      },
+                      {
+                        icon: '🎯',
+                        title: 'Outcome Focused',
+                        description: 'Moves from "what\'s wrong" to "what do you want instead"',
+                        color: 'green'
+                      },
+                      {
+                        icon: '👁️',
+                        title: 'Multiple Perspectives',
+                        description: 'Sees situations from different angles to expand options',
+                        color: 'purple'
+                      },
+                      {
+                        icon: '⚡',
+                        title: 'Resource Activation',
+                        description: 'Accesses your existing strengths and capabilities',
+                        color: 'yellow'
+                      }
+                    ].map((benefit, index) => (
+                      <div key={index} className={`p-4 rounded-lg border-l-4 border-${benefit.color}-400 bg-${benefit.color}-50`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{benefit.icon}</span>
+                          <h5 className={`font-semibold text-${benefit.color}-800`}>{benefit.title}</h5>
+                        </div>
+                        <p className={`text-sm text-${benefit.color}-700`}>{benefit.description}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h5 className="font-semibold text-yellow-800 mb-2">🌟 Perfect for Midlife Transitions</h5>
+                    <p className="text-sm text-yellow-700">
+                      Midlife brings complex challenges that benefit from NLP's holistic approach: identity shifts, 
+                      relationship changes, career pivots, and physical transitions. NLP helps you navigate these 
+                      changes with grace and find empowering meanings in every experience.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+                    <Button 
+                      onClick={() => setResponses({...responses, nlpPhase: 'technique-selection'})}
+                      className="flex-1"
+                    >
+                      Explore NLP Techniques
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Technique Selection Phase */}
+            {nlpPhase === 'technique-selection' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Choose Your NLP Reframing Technique</h4>
+                  <p className="text-sm text-gray-600 mb-6">Each technique offers a unique way to shift your perspective and create new possibilities. Select the one that resonates most with your current needs.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {nlpTechniques.map((technique) => (
+                      <div 
+                        key={technique.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          responses.selectedTechnique === technique.id
+                            ? `border-${technique.color}-400 bg-${technique.color}-50`
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setResponses({...responses, selectedTechnique: technique.id})}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{technique.icon}</span>
+                          <h5 className="font-semibold text-gray-800">{technique.name}</h5>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{technique.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <Badge variant="outline" className="text-xs">{technique.category}</Badge>
+                          </div>
+                          
+                          <div className="bg-gray-50 p-2 rounded text-xs text-gray-600">
+                            <strong>Science:</strong> {technique.science}
+                          </div>
+                          
+                          <div className="text-xs text-gray-600">
+                            <strong>Example:</strong> {technique.midlifeExample}
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-1">
+                            {technique.benefits.map((benefit: string, index: number) => (
+                              <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                {benefit}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {responses.selectedTechnique && (
+                    <div className="mt-6 flex gap-3">
+                      <Button 
+                        onClick={() => setResponses({...responses, nlpPhase: 'scenario-selection'})}
+                        className="flex-1"
+                      >
+                        Choose Practice Scenario
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Scenario Selection Phase */}
+            {nlpPhase === 'scenario-selection' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Select Your Practice Scenario</h4>
+                  <p className="text-sm text-gray-600 mb-6">Choose a scenario that feels relevant to your current experience. You'll practice your selected NLP technique with this situation.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {practiceScenarios.map((scenario) => (
+                      <div 
+                        key={scenario.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          responses.selectedScenario === scenario.id
+                            ? 'border-purple-400 bg-purple-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setResponses({...responses, selectedScenario: scenario.id})}
+                      >
+                        <h5 className="font-semibold text-gray-800 mb-2">{scenario.title}</h5>
+                        <p className="text-sm text-gray-600 mb-3">{scenario.situation}</p>
+                        
+                        <div className="space-y-2">
+                          <div>
+                            <span className="text-xs font-medium text-gray-500">Common emotions:</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {scenario.emotions.map((emotion: string, index: number) => (
+                                <span key={index} className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                                  {emotion}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {responses.selectedScenario && (
+                    <div className="mt-6 flex gap-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => setResponses({...responses, nlpPhase: 'technique-selection'})}
+                      >
+                        Change Technique
+                      </Button>
+                      <Button 
+                        onClick={() => setResponses({...responses, nlpPhase: 'practice'})}
+                        className="flex-1"
+                      >
+                        Start NLP Practice Session
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {nlpPhase === 'practice' && responses.selectedTechnique && responses.selectedScenario && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">NLP Practice Session</h4>
+                  
+                  {(() => {
+                    const technique = nlpTechniques.find(t => t.id === responses.selectedTechnique);
+                    const scenario = practiceScenarios.find(s => s.id === responses.selectedScenario);
+                    
+                    return renderNLPPractice(technique, scenario);
+                  })()}
+
+                  <div className="mt-8 flex gap-3">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setResponses({...responses, nlpPhase: 'scenario-selection'})}
+                    >
+                      Try Different Scenario
+                    </Button>
+                    <Button 
+                      onClick={() => setResponses({...responses, nlpPhase: 'integration'})}
+                      className="flex-1"
+                      disabled={!responses.actionCommitment || !responses.perspectiveRating}
+                    >
+                      Complete & Integrate Practice
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Integration Phase */}
+            {nlpPhase === 'integration' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Integration & Daily Application</h4>
+                
+                <div className="space-y-6">
+                  {/* Practice Summary */}
+                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
+                    <h5 className="font-semibold text-gray-800 mb-3">🌟 Your NLP Practice Summary</h5>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <strong>Technique:</strong> {nlpTechniques.find(t => t.id === responses.selectedTechnique)?.name}
+                      </div>
+                      <div>
+                        <strong>Scenario:</strong> {practiceScenarios.find(s => s.id === responses.selectedScenario)?.title}
+                      </div>
+                      <div>
+                        <strong>New Perspective Rating:</strong> {responses.perspectiveRating}/10
+                      </div>
+                      <div>
+                        <strong>Action Commitment:</strong> {responses.actionCommitment ? 'Set' : 'Pending'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Daily Integration Plan */}
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h5 className="font-semibold text-green-800 mb-3">Daily Integration Plan</h5>
+                    
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">1.</span>
+                        <p>
+                          <strong>Morning Anchor:</strong> Spend 2 minutes each morning accessing your resourceful state 
+                          from this practice before challenging situations.
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">2.</span>
+                        <p>
+                          <strong>Situation Reframing:</strong> When you notice stress or stuck feelings, ask: 
+                          "How would my best self handle this?" or "What else could this mean?"
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">3.</span>
+                        <p>
+                          <strong>Evening Reflection:</strong> Review one situation from your day using your 
+                          chosen NLP technique. Notice what shifts.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Commitment Statement */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Personal commitment for using this technique</Label>
+                      <Textarea
+                        placeholder="Write a commitment statement about how you'll integrate this NLP technique into your daily life..."
+                        value={responses.integrationCommitment || ''}
+                        onChange={(e) => setResponses({...responses, integrationCommitment: e.target.value})}
+                        className="mt-2"
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h5 className="font-semibold text-blue-800 mb-2">🚀 Advanced Practice Tip</h5>
+                      <p className="text-sm text-blue-700">
+                        The key to NLP mastery is consistent practice. Start with one technique and use it daily 
+                        for a week before adding others. Your brain needs repetition to create lasting change.
+                      </p>
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        setResponses({...responses, nlpCompleted: true});
+                        onComplete(component.id, responses);
+                      }}
+                      className="w-full"
+                      disabled={!responses.integrationCommitment}
+                    >
+                      Complete NLP Reframing Practice
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Week 2 - CBT Reframing Techniques (ABCD Model)
     console.log('Checking CBT condition:', component.id, component.id === 'w2-cbt');
     if (component.id === 'w2-cbt') {
