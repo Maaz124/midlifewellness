@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { ModuleComponent } from '@/types/wellness';
-import { videoScripts, audioScripts, detailedExercises, worksheetTemplates } from '@/lib/hormone-headspace-content';
+import { videoScripts, audioScripts, detailedExercises, additionalExercises, worksheetTemplates } from '@/lib/hormone-headspace-content';
 import { 
   Play, 
   Pause, 
@@ -97,6 +97,16 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           return {
             type: 'detailed-exercise',
             content: detailedExercises.find(e => e.id === 'energy-mapping')
+          };
+        case 'thought-awareness':
+          return {
+            type: 'detailed-exercise',
+            content: additionalExercises.find(e => e.id === 'thought-awareness-practice')
+          };
+        case 'nutrition-planning':
+          return {
+            type: 'detailed-exercise',
+            content: additionalExercises.find(e => e.id === 'hormone-nutrition-planning')
           };
       }
     }
@@ -448,6 +458,17 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
         </TabsContent>
 
         <TabsContent value="practice" className="space-y-4">
+          {/* Progress indicator for this exercise */}
+          <div className="bg-gradient-to-r from-coral-50 to-sage-50 p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Exercise Progress</span>
+              <span className="text-sm text-gray-600">
+                {Math.round((Object.keys(responses).length / 10) * 100)}% Complete
+              </span>
+            </div>
+            <Progress value={(Object.keys(responses).length / 10) * 100} className="h-2" />
+          </div>
+
           {exercise.id === 'hormone-symptom-tracker' && (
             <Card>
               <CardHeader>
@@ -523,34 +544,246 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
             </Card>
           )}
 
+          {exercise.id === 'thought-awareness-practice' && (
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="w-5 h-5" />
+                    Thought Pattern Tracker
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {worksheetTemplates.thoughtAwareness.sections[0]?.prompts?.map((prompt, index) => (
+                    <div key={index} className="space-y-2">
+                      <Label className="text-sm font-medium">{prompt}</Label>
+                      <Textarea
+                        placeholder="Write your thoughts here..."
+                        value={responses[`thought-${index}`] || ''}
+                        onChange={(e) => setResponses({...responses, [`thought-${index}`]: e.target.value})}
+                        className="min-h-[80px]"
+                      />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="w-5 h-5" />
+                    Compassionate Reframes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-sage-50 p-4 rounded-lg space-y-3">
+                    <h4 className="font-medium">Practice Examples:</h4>
+                    {worksheetTemplates.thoughtAwareness.sections[1]?.examples?.map((example, index) => (
+                      <div key={index} className="text-sm p-3 bg-white rounded border-l-4 border-sage-300">
+                        {example}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label>Write 3 of your own compassionate reframes:</Label>
+                    {[1, 2, 3].map((num) => (
+                      <div key={num} className="space-y-2">
+                        <Label className="text-sm">Reframe #{num}</Label>
+                        <div className="grid grid-cols-1 gap-2">
+                          <Input
+                            placeholder="Instead of... (negative thought)"
+                            value={responses[`negative-${num}`] || ''}
+                            onChange={(e) => setResponses({...responses, [`negative-${num}`]: e.target.value})}
+                          />
+                          <Input
+                            placeholder="I choose to think... (positive reframe)"
+                            value={responses[`positive-${num}`] || ''}
+                            onChange={(e) => setResponses({...responses, [`positive-${num}`]: e.target.value})}
+                            className="border-sage-200"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {exercise.id === 'hormone-nutrition-planning' && (
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Hormone-Supporting Food Categories
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {worksheetTemplates.nutritionPlanning.categories.map((category, index) => (
+                      <div key={index} className="p-4 border rounded-lg">
+                        <h4 className="font-medium mb-3 text-coral-700">{category.name}</h4>
+                        <div className="space-y-2">
+                          {category.options.map((option, optionIndex) => (
+                            <div key={optionIndex} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`food-${index}-${optionIndex}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`food-${index}-${optionIndex}`]: checked
+                                })}
+                              />
+                              <span className="text-sm">{option}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Weekly Meal Planning</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-amber-50 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Meal Structure Guide:</h4>
+                    <div className="space-y-2 text-sm">
+                      {Object.entries(worksheetTemplates.nutritionPlanning.mealStructure).map(([meal, structure]) => (
+                        <div key={meal} className="flex gap-2">
+                          <span className="font-medium capitalize min-w-[80px]">{meal}:</span>
+                          <span className="text-gray-600">{structure}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4">
+                    {['Breakfast', 'Lunch', 'Dinner'].map((meal, index) => (
+                      <div key={meal} className="space-y-2">
+                        <Label className="font-medium">{meal} Plan for This Week:</Label>
+                        <Textarea
+                          placeholder={`Plan your hormone-supporting ${meal.toLowerCase()}...`}
+                          value={responses[`meal-${meal.toLowerCase()}`] || ''}
+                          onChange={(e) => setResponses({...responses, [`meal-${meal.toLowerCase()}`]: e.target.value})}
+                          className="min-h-[60px]"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Shopping List:</Label>
+                    <Textarea
+                      placeholder="List the ingredients you need to buy..."
+                      value={responses.shoppingList || ''}
+                      onChange={(e) => setResponses({...responses, shoppingList: e.target.value})}
+                      className="min-h-[100px]"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {(exercise.id === 'morning-hormone-ritual' || exercise.id === 'brain-fog-clearing') && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Practice Reflection</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="experience">How was your experience with this practice?</Label>
-                  <Textarea
-                    id="experience"
-                    placeholder="Describe your experience..."
-                    value={responses.experience || ''}
-                    onChange={(e) => setResponses({...responses, experience: e.target.value})}
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="commitment">How will you incorporate this into your routine?</Label>
-                  <Textarea
-                    id="commitment"
-                    placeholder="Your commitment plan..."
-                    value={responses.commitment || ''}
-                    onChange={(e) => setResponses({...responses, commitment: e.target.value})}
-                    className="mt-2"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sun className="w-5 h-5" />
+                    Practice Tracker
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-7 gap-2">
+                    <div className="text-center text-sm font-medium text-gray-600">Day</div>
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                      <div key={day} className="text-center text-sm font-medium text-gray-600">{day}</div>
+                    ))}
+                    
+                    <div className="text-center text-sm">Week 1</div>
+                    {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                      <div key={day} className="flex justify-center">
+                        <Checkbox
+                          checked={responses[`day-${day}`] || false}
+                          onCheckedChange={(checked) => setResponses({...responses, [`day-${day}`]: checked})}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Rate your overall experience this week (1-10):</Label>
+                      <div className="flex items-center gap-4 mt-2">
+                        <Slider
+                          value={[responses.weeklyRating || 5]}
+                          onValueChange={(value) => setResponses({...responses, weeklyRating: value[0]})}
+                          max={10}
+                          min={1}
+                          step={1}
+                          className="flex-1"
+                        />
+                        <span className="font-medium text-lg w-8">{responses.weeklyRating || 5}</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="experience">How was your experience with this practice?</Label>
+                      <Textarea
+                        id="experience"
+                        placeholder="Describe your experience, challenges, and wins..."
+                        value={responses.experience || ''}
+                        onChange={(e) => setResponses({...responses, experience: e.target.value})}
+                        className="mt-2 min-h-[100px]"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="commitment">How will you incorporate this into your routine?</Label>
+                      <Textarea
+                        id="commitment"
+                        placeholder="Your commitment plan and specific times..."
+                        value={responses.commitment || ''}
+                        onChange={(e) => setResponses({...responses, commitment: e.target.value})}
+                        className="mt-2 min-h-[80px]"
+                      />
+                    </div>
+
+                    <div>
+                      <Label>What time works best for this practice?</Label>
+                      <RadioGroup
+                        value={responses.bestTime || ''}
+                        onValueChange={(value) => setResponses({...responses, bestTime: value})}
+                        className="mt-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="early-morning" />
+                          <Label>Early Morning (6-8 AM)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="morning" />
+                          <Label>Morning (8-10 AM)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="afternoon" />
+                          <Label>Afternoon (12-3 PM)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="evening" />
+                          <Label>Evening (6-8 PM)</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </TabsContent>
       </Tabs>
