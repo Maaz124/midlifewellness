@@ -681,6 +681,550 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
   );
 }
 
+// Mind Management System Component
+function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [activeSection, setActiveSection] = useState('overview');
+  const [completedSystems, setCompletedSystems] = useState<string[]>([]);
+  const [thoughtRecord, setThoughtRecord] = useState({
+    situation: '',
+    automaticThought: '',
+    emotion: '',
+    evidenceFor: '',
+    evidenceAgainst: '',
+    balancedThought: '',
+    newEmotion: ''
+  });
+  const [cognitiveDistortions, setCognitiveDistortions] = useState<string[]>([]);
+  const [stressManagementTechniques, setStressManagementTechniques] = useState<Record<string, boolean>>({});
+
+  const mindManagementSystems = {
+    'thought-restructuring': {
+      title: 'Thought Restructuring',
+      description: 'Transform negative thought patterns into balanced perspectives',
+      icon: '🧠',
+      color: 'blue',
+      tools: [
+        {
+          id: 'thought-record',
+          name: 'Thought Record Worksheet',
+          description: 'Systematic approach to examining and reframing thoughts'
+        },
+        {
+          id: 'distortion-check',
+          name: 'Cognitive Distortion Checker',
+          description: 'Identify and challenge common thinking errors'
+        }
+      ]
+    },
+    'stress-response': {
+      title: 'Stress Response Management',
+      description: 'Develop effective coping strategies for midlife stressors',
+      icon: '⚡',
+      color: 'orange',
+      tools: [
+        {
+          id: 'stress-triggers',
+          name: 'Stress Trigger Mapping',
+          description: 'Identify and prepare for your unique stress patterns'
+        },
+        {
+          id: 'quick-relief',
+          name: 'Quick Relief Techniques',
+          description: 'Emergency stress management for acute situations'
+        }
+      ]
+    },
+    'emotional-regulation': {
+      title: 'Emotional Regulation',
+      description: 'Navigate hormonal and life transitions with emotional intelligence',
+      icon: '💚',
+      color: 'green',
+      tools: [
+        {
+          id: 'emotion-wheel',
+          name: 'Emotion Identification Wheel',
+          description: 'Expand emotional vocabulary and awareness'
+        },
+        {
+          id: 'regulation-strategies',
+          name: 'Regulation Strategy Toolkit',
+          description: 'Healthy ways to process and manage emotions'
+        }
+      ]
+    },
+    'attention-focus': {
+      title: 'Attention & Focus Training',
+      description: 'Combat brain fog and enhance mental clarity',
+      icon: '🎯',
+      color: 'purple',
+      tools: [
+        {
+          id: 'attention-exercises',
+          name: 'Attention Training Exercises',
+          description: 'Strengthen your ability to sustain focus'
+        },
+        {
+          id: 'distraction-management',
+          name: 'Distraction Management System',
+          description: 'Minimize interruptions and maintain concentration'
+        }
+      ]
+    }
+  };
+
+  const distortionsList = [
+    { id: 'all-nothing', name: 'All-or-Nothing Thinking', description: 'Seeing things in black and white categories' },
+    { id: 'overgeneralization', name: 'Overgeneralization', description: 'Drawing broad conclusions from single events' },
+    { id: 'mental-filter', name: 'Mental Filter', description: 'Focusing exclusively on negative details' },
+    { id: 'disqualifying-positive', name: 'Disqualifying the Positive', description: 'Rejecting positive experiences' },
+    { id: 'jumping-conclusions', name: 'Jumping to Conclusions', description: 'Making assumptions without evidence' },
+    { id: 'magnification', name: 'Magnification/Minimization', description: 'Exaggerating negatives or minimizing positives' },
+    { id: 'emotional-reasoning', name: 'Emotional Reasoning', description: 'Believing feelings reflect reality' },
+    { id: 'should-statements', name: 'Should Statements', description: 'Motivating through guilt and criticism' },
+    { id: 'labeling', name: 'Labeling', description: 'Attaching negative labels to yourself or others' },
+    { id: 'personalization', name: 'Personalization', description: 'Taking responsibility for things outside your control' }
+  ];
+
+  const stressTechniques = {
+    immediate: [
+      { id: 'box-breathing', name: '4-4-4-4 Box Breathing', duration: '2-5 minutes', effectiveness: 95 },
+      { id: 'progressive-relaxation', name: 'Progressive Muscle Relaxation', duration: '10-15 minutes', effectiveness: 92 },
+      { id: 'grounding-54321', name: '5-4-3-2-1 Grounding', duration: '3-5 minutes', effectiveness: 88 },
+      { id: 'cold-water', name: 'Cold Water Reset', duration: '1-2 minutes', effectiveness: 85 }
+    ],
+    daily: [
+      { id: 'morning-intention', name: 'Morning Intention Setting', duration: '5-10 minutes', effectiveness: 89 },
+      { id: 'mindful-transitions', name: 'Mindful Transitions', duration: '1-3 minutes', effectiveness: 87 },
+      { id: 'gratitude-practice', name: 'Gratitude Practice', duration: '5 minutes', effectiveness: 91 },
+      { id: 'evening-reflection', name: 'Evening Reflection', duration: '10 minutes', effectiveness: 86 }
+    ],
+    weekly: [
+      { id: 'stress-audit', name: 'Weekly Stress Audit', duration: '20-30 minutes', effectiveness: 94 },
+      { id: 'boundary-review', name: 'Boundary Review & Reset', duration: '15-20 minutes', effectiveness: 90 },
+      { id: 'self-care-planning', name: 'Self-Care Planning', duration: '20 minutes', effectiveness: 88 },
+      { id: 'relationship-check', name: 'Relationship Check-in', duration: '15 minutes', effectiveness: 85 }
+    ]
+  };
+
+  const handleThoughtRecordSubmit = () => {
+    if (thoughtRecord.situation && thoughtRecord.automaticThought && thoughtRecord.balancedThought) {
+      if (!completedSystems.includes('thought-record')) {
+        setCompletedSystems([...completedSystems, 'thought-record']);
+      }
+    }
+  };
+
+  const toggleDistortion = (distortionId: string) => {
+    if (cognitiveDistortions.includes(distortionId)) {
+      setCognitiveDistortions(cognitiveDistortions.filter(id => id !== distortionId));
+    } else {
+      setCognitiveDistortions([...cognitiveDistortions, distortionId]);
+    }
+  };
+
+  const toggleStressTechnique = (techniqueId: string) => {
+    setStressManagementTechniques(prev => ({
+      ...prev,
+      [techniqueId]: !prev[techniqueId]
+    }));
+  };
+
+  const completedCount = completedSystems.length;
+  const totalSystems = Object.keys(mindManagementSystems).length * 2; // 2 tools per system
+  const progressPercentage = (completedCount / totalSystems) * 100;
+
+  if (activeSection === 'thought-record') {
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="w-5 h-5 text-blue-600" />
+            Thought Record Worksheet
+          </CardTitle>
+          <CardDescription>
+            Transform negative thoughts through systematic examination and reframing
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="grid gap-6">
+              <div>
+                <Label htmlFor="situation">1. Describe the situation</Label>
+                <Textarea
+                  id="situation"
+                  placeholder="What happened? When and where did it occur?"
+                  value={thoughtRecord.situation}
+                  onChange={(e) => setThoughtRecord(prev => ({ ...prev, situation: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="automatic-thought">2. What was your automatic thought?</Label>
+                <Textarea
+                  id="automatic-thought"
+                  placeholder="What went through your mind? What did you think would happen?"
+                  value={thoughtRecord.automaticThought}
+                  onChange={(e) => setThoughtRecord(prev => ({ ...prev, automaticThought: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="emotion">3. What emotions did you feel?</Label>
+                <Input
+                  id="emotion"
+                  placeholder="Anxious, sad, angry, overwhelmed... (Rate intensity 1-10)"
+                  value={thoughtRecord.emotion}
+                  onChange={(e) => setThoughtRecord(prev => ({ ...prev, emotion: e.target.value }))}
+                />
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="evidence-for">4. Evidence FOR this thought</Label>
+                  <Textarea
+                    id="evidence-for"
+                    placeholder="What facts support this thought?"
+                    value={thoughtRecord.evidenceFor}
+                    onChange={(e) => setThoughtRecord(prev => ({ ...prev, evidenceFor: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="evidence-against">5. Evidence AGAINST this thought</Label>
+                  <Textarea
+                    id="evidence-against"
+                    placeholder="What contradicts this thought? What would you tell a friend?"
+                    value={thoughtRecord.evidenceAgainst}
+                    onChange={(e) => setThoughtRecord(prev => ({ ...prev, evidenceAgainst: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="balanced-thought">6. More balanced, realistic thought</Label>
+                <Textarea
+                  id="balanced-thought"
+                  placeholder="What's a more balanced way to think about this situation?"
+                  value={thoughtRecord.balancedThought}
+                  onChange={(e) => setThoughtRecord(prev => ({ ...prev, balancedThought: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="new-emotion">7. How do you feel now?</Label>
+                <Input
+                  id="new-emotion"
+                  placeholder="What emotions do you feel with this new perspective? (Rate 1-10)"
+                  value={thoughtRecord.newEmotion}
+                  onChange={(e) => setThoughtRecord(prev => ({ ...prev, newEmotion: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveSection('overview')}>
+                Back to Overview
+              </Button>
+              <Button 
+                onClick={handleThoughtRecordSubmit}
+                disabled={!thoughtRecord.situation || !thoughtRecord.automaticThought || !thoughtRecord.balancedThought}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Complete Thought Record
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (activeSection === 'distortion-check') {
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-red-600" />
+            Cognitive Distortion Checker
+          </CardTitle>
+          <CardDescription>
+            Identify thinking patterns that may be affecting your mood and perspective
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="grid gap-4">
+              {distortionsList.map((distortion) => (
+                <Card key={distortion.id} className={`cursor-pointer transition-colors ${
+                  cognitiveDistortions.includes(distortion.id) ? 'bg-red-50 border-red-200' : 'hover:bg-gray-50'
+                }`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        checked={cognitiveDistortions.includes(distortion.id)}
+                        onCheckedChange={() => toggleDistortion(distortion.id)}
+                      />
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{distortion.name}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{distortion.description}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {cognitiveDistortions.length > 0 && (
+              <Card className="bg-yellow-50 border-yellow-200">
+                <CardContent className="p-4">
+                  <h4 className="font-semibold text-yellow-800 mb-2">
+                    Identified Patterns ({cognitiveDistortions.length})
+                  </h4>
+                  <p className="text-yellow-700 text-sm mb-3">
+                    Great awareness! These thinking patterns are common and can be changed with practice.
+                  </p>
+                  <Button 
+                    onClick={() => setActiveSection('thought-record')}
+                    variant="outline"
+                    className="border-yellow-300 text-yellow-800 hover:bg-yellow-100"
+                  >
+                    Work on These with Thought Record
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveSection('overview')}>
+                Back to Overview
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (!completedSystems.includes('distortion-check')) {
+                    setCompletedSystems([...completedSystems, 'distortion-check']);
+                  }
+                  setActiveSection('overview');
+                }}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Save Assessment
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (activeSection === 'stress-management') {
+    return (
+      <Card className="max-w-5xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-orange-600" />
+            Stress Management Toolkit
+          </CardTitle>
+          <CardDescription>
+            Build your personalized stress response system with evidence-based techniques
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="immediate">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="immediate">Immediate Relief</TabsTrigger>
+              <TabsTrigger value="daily">Daily Practices</TabsTrigger>
+              <TabsTrigger value="weekly">Weekly Systems</TabsTrigger>
+            </TabsList>
+
+            {Object.entries(stressTechniques).map(([timeframe, techniques]) => (
+              <TabsContent key={timeframe} value={timeframe}>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {techniques.map((technique) => (
+                    <Card key={technique.id} className="relative">
+                      {stressManagementTechniques[technique.id] && (
+                        <div className="absolute top-2 right-2">
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        </div>
+                      )}
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-semibold">{technique.name}</h4>
+                            <Badge variant="secondary">{technique.duration}</Badge>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">Effectiveness:</span>
+                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-green-500 h-2 rounded-full" 
+                                style={{ width: `${technique.effectiveness}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-semibold">{technique.effectiveness}%</span>
+                          </div>
+
+                          <Button 
+                            onClick={() => toggleStressTechnique(technique.id)}
+                            className="w-full"
+                            variant={stressManagementTechniques[technique.id] ? "outline" : "default"}
+                          >
+                            {stressManagementTechniques[technique.id] ? 'Practiced ✓' : 'Try This Technique'}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+
+          <div className="flex justify-between pt-6 border-t mt-6">
+            <Button variant="outline" onClick={() => setActiveSection('overview')}>
+              Back to Overview
+            </Button>
+            <Button 
+              onClick={() => {
+                if (!completedSystems.includes('stress-management')) {
+                  setCompletedSystems([...completedSystems, 'stress-management']);
+                }
+                setActiveSection('overview');
+              }}
+              className="bg-orange-600 hover:bg-orange-700"
+            >
+              Save Progress
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Main Overview
+  return (
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-5 h-5 text-purple-600" />
+          Mind Management System
+        </CardTitle>
+        <CardDescription>
+          Comprehensive cognitive tools for managing thoughts, emotions, and stress during midlife transitions
+        </CardDescription>
+        
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Systems Completed: {completedCount} of {totalSystems}</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
+          <Progress value={progressPercentage} className="h-2" />
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <div className="grid gap-6 md:grid-cols-2">
+          {Object.entries(mindManagementSystems).map(([systemKey, system]) => (
+            <Card key={systemKey} className={`border-2 border-${system.color}-200 hover:border-${system.color}-300 transition-colors`}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <span className="text-2xl">{system.icon}</span>
+                  {system.title}
+                </CardTitle>
+                <CardDescription>{system.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {system.tools.map((tool) => (
+                    <div key={tool.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-sm">{tool.name}</h4>
+                        <p className="text-xs text-gray-600">{tool.description}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {completedSystems.includes(tool.id) && (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        )}
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            if (tool.id === 'thought-record') setActiveSection('thought-record');
+                            else if (tool.id === 'distortion-check') setActiveSection('distortion-check');
+                            else if (tool.id.includes('stress')) setActiveSection('stress-management');
+                          }}
+                          className={`bg-${system.color}-600 hover:bg-${system.color}-700`}
+                        >
+                          {completedSystems.includes(tool.id) ? 'Review' : 'Start'}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Quick Access Tools */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Quick Access Tools</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-3">
+              <Button 
+                onClick={() => setActiveSection('thought-record')}
+                variant="outline"
+                className="p-4 h-auto flex-col"
+              >
+                <Brain className="w-6 h-6 mb-2" />
+                <span>Thought Record</span>
+              </Button>
+              <Button 
+                onClick={() => setActiveSection('distortion-check')}
+                variant="outline"
+                className="p-4 h-auto flex-col"
+              >
+                <Target className="w-6 h-6 mb-2" />
+                <span>Distortion Check</span>
+              </Button>
+              <Button 
+                onClick={() => setActiveSection('stress-management')}
+                variant="outline"
+                className="p-4 h-auto flex-col"
+              >
+                <Shield className="w-6 h-6 mb-2" />
+                <span>Stress Tools</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between pt-6 border-t mt-6">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button 
+            onClick={() => onComplete('w5-mind-system', { 
+              completedSystems,
+              thoughtRecord,
+              cognitiveDistortions,
+              stressManagementTechniques,
+              progressPercentage: Math.round(progressPercentage)
+            })}
+            disabled={completedSystems.length === 0}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            Save Progress ({completedSystems.length} tools completed)
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Main Enhanced Coaching Component
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -2046,6 +2590,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 5: Brain-Boosting Nutrition Plan
   if (component.id === 'w5-nutrition') {
     return <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 5: Mind Management System
+  if (component.id === 'w5-mind-system') {
+    return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
