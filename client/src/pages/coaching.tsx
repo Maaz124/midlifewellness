@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CoachingComponent } from '@/components/coaching-component';
-import { EnhancedCoachingComponent } from '@/components/enhanced-coaching-component-clean';
+import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-minimal';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules, getModuleProgress } from '@/lib/coaching-data';
 import { Clock, CheckCircle, Lock, BookOpen, FileText, Headphones, Brain, Video, Target, Heart, Lightbulb, Shield, Star } from 'lucide-react';
@@ -244,7 +244,7 @@ export default function Coaching() {
     // Use enhanced component for Week 1, Week 2, Week 3, and Week 4 with detailed content
     if (activeModuleId === 'week-1' || activeModuleId === 'week-2' || activeModuleId === 'week-3' || activeModuleId === 'week-4') {
       return (
-        <EnhancedCoachingComponent
+        <EnhancedCoachingComponentMinimal
           component={activeComponent}
           moduleId={activeModuleId}
           onComplete={handleComponentComplete}
