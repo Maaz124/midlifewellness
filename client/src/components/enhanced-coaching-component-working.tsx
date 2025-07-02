@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CognitiveAssessmentFresh } from './cognitive-assessment-fresh';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -1347,8 +1348,9 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     );
   }
 
-  // Week 5: Enhanced Cognitive Clarity Assessment - UPDATED
+  // Week 5: Enhanced Cognitive Clarity Assessment - Using Fresh Component
   if (component.id === 'w5-assessment') {
+    return <CognitiveAssessmentFresh onComplete={onComplete} onClose={onClose} />;
     const [currentSection, setCurrentSection] = useState(responses.currentSection || 'memory');
     const [memoryAssessment, setMemoryAssessment] = useState(responses.memoryAssessment || {});
     const [focusAssessment, setFocusAssessment] = useState(responses.focusAssessment || {});
