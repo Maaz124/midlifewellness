@@ -1,6 +1,318 @@
 import { useState, useEffect } from 'react';
 import { CognitiveAssessmentFresh } from './cognitive-assessment-fresh';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+// Interactive Focus & Memory Rituals Component
+function InteractiveFocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentRitual, setCurrentRitual] = useState<string | null>(null);
+  const [completedRituals, setCompletedRituals] = useState<string[]>([]);
+  const [practiceTimer, setPracticeTimer] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState('morning');
+
+  const rituals = {
+    morning: [
+      {
+        id: 'morning-meditation',
+        title: '5-Minute Morning Brain Boost',
+        duration: 5,
+        description: 'Energize your mind for the day ahead',
+        steps: [
+          'Sit comfortably with your spine straight',
+          'Take 3 deep breaths, counting slowly to 4 on each inhale',
+          'Focus on the sensation of your breath at your nostrils',
+          'When your mind wanders, gently return to your breath',
+          'End by setting an intention for mental clarity today'
+        ],
+        benefits: 'Increases focus, reduces brain fog, prepares mind for learning'
+      },
+      {
+        id: 'memory-priming',
+        title: 'Memory Palace Warm-up',
+        duration: 3,
+        description: 'Activate your spatial memory system',
+        steps: [
+          'Visualize walking through your front door',
+          'Mentally visit each room in your home',
+          'Place 3 important tasks for today in different rooms',
+          'Walk through again, collecting each task',
+          'Notice how location helps you remember'
+        ],
+        benefits: 'Strengthens spatial memory, improves task recall'
+      }
+    ],
+    midday: [
+      {
+        id: 'focus-reset',
+        title: 'Midday Mental Reset',
+        duration: 7,
+        description: 'Clear mental clutter and refocus',
+        steps: [
+          'Stand and stretch your arms overhead',
+          'Take 5 conscious breaths while looking away from screens',
+          'Write down 3 things you accomplished this morning',
+          'Identify your top priority for the afternoon',
+          'Visualize completing that priority successfully'
+        ],
+        benefits: 'Clears decision fatigue, renews mental energy'
+      },
+      {
+        id: 'cognitive-exercise',
+        title: 'Brain Training Burst',
+        duration: 5,
+        description: 'Quick cognitive flexibility exercise',
+        steps: [
+          'Name 5 items you can see that are blue',
+          'Count backwards from 100 by 7s for 1 minute',
+          'Think of 3 words that rhyme with "focus"',
+          'Describe your current location to an imaginary friend',
+          'Plan tomorrow\'s schedule in reverse order'
+        ],
+        benefits: 'Improves cognitive flexibility, working memory'
+      }
+    ],
+    evening: [
+      {
+        id: 'memory-consolidation',
+        title: 'Evening Memory Consolidation',
+        duration: 10,
+        description: 'Help your brain process and store the day\'s learning',
+        steps: [
+          'Review the 3 most important things you learned today',
+          'Connect each learning to something you already knew',
+          'Write one sentence about each in a journal',
+          'Imagine teaching these concepts to someone else',
+          'Set an intention to remember these insights tomorrow'
+        ],
+        benefits: 'Strengthens long-term memory formation'
+      },
+      {
+        id: 'relaxation-ritual',
+        title: 'Cognitive Wind-Down',
+        duration: 8,
+        description: 'Prepare your mind for restorative sleep',
+        steps: [
+          'Dim the lights and remove distracting stimuli',
+          'Progressive muscle relaxation from head to toe',
+          'Practice gratitude for your brain\'s work today',
+          'Visualize tomorrow starting with clarity and focus',
+          'End with 2 minutes of natural breathing'
+        ],
+        benefits: 'Reduces cognitive load, prepares for quality sleep'
+      }
+    ]
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const startTimer = (duration: number) => {
+    setPracticeTimer(duration * 60);
+    setIsTimerActive(true);
+  };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimerActive && practiceTimer > 0) {
+      interval = setInterval(() => {
+        setPracticeTimer(timer => timer - 1);
+      }, 1000);
+    } else if (practiceTimer === 0 && isTimerActive) {
+      setIsTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerActive, practiceTimer]);
+
+  const completeRitual = (ritualId: string) => {
+    if (!completedRituals.includes(ritualId)) {
+      setCompletedRituals([...completedRituals, ritualId]);
+    }
+    setCurrentRitual(null);
+    setIsTimerActive(false);
+    setPracticeTimer(0);
+  };
+
+  const allRitualsCount = Object.values(rituals).flat().length;
+  const progressPercentage = (completedRituals.length / allRitualsCount) * 100;
+
+  if (currentRitual) {
+    const ritual = Object.values(rituals).flat().find(r => r.id === currentRitual);
+    if (!ritual) return null;
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="w-5 h-5 text-purple-600" />
+            {ritual.title}
+          </CardTitle>
+          <p className="text-gray-600">{ritual.description}</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Timer Section */}
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg">
+              <div className="text-4xl font-mono font-bold text-purple-700 mb-4">
+                {formatTime(practiceTimer)}
+              </div>
+              <div className="flex justify-center gap-4">
+                {!isTimerActive ? (
+                  <Button 
+                    onClick={() => startTimer(ritual.duration)}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Clock className="w-4 h-4 mr-2" />
+                    Start {ritual.duration} min Practice
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => setIsTimerActive(false)}
+                    variant="outline"
+                  >
+                    Pause Timer
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Practice Steps */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Target className="w-5 h-5 text-green-600" />
+                Practice Steps
+              </h3>
+              <div className="grid gap-3">
+                {ritual.steps.map((step, index) => (
+                  <div key={index} className="flex gap-3 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-shrink-0 w-8 h-8 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center font-semibold text-sm">
+                      {index + 1}
+                    </div>
+                    <p className="text-gray-700">{step}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Benefits */}
+            <div className="p-4 bg-green-50 rounded-lg">
+              <h4 className="font-semibold text-green-800 mb-2">Benefits:</h4>
+              <p className="text-green-700">{ritual.benefits}</p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-between">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentRitual(null)}
+              >
+                Back to Rituals
+              </Button>
+              <Button 
+                onClick={() => completeRitual(ritual.id)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Mark Complete
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-5 h-5 text-purple-600" />
+          Focus & Memory Rituals
+        </CardTitle>
+        <CardDescription>
+          Build daily habits that enhance cognitive function and memory retention
+        </CardDescription>
+        
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Progress: {completedRituals.length} of {allRitualsCount} rituals completed</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
+          <Progress value={progressPercentage} className="h-2" />
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        <div className="space-y-6">
+          {/* Timeframe Selector */}
+          <Tabs value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="morning">Morning Rituals</TabsTrigger>
+              <TabsTrigger value="midday">Midday Boost</TabsTrigger>
+              <TabsTrigger value="evening">Evening Wind-Down</TabsTrigger>
+            </TabsList>
+
+            {Object.entries(rituals).map(([timeframe, timeframeRituals]) => (
+              <TabsContent key={timeframe} value={timeframe}>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {timeframeRituals.map((ritual) => (
+                    <Card key={ritual.id} className="relative">
+                      {completedRituals.includes(ritual.id) && (
+                        <div className="absolute top-2 right-2">
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        </div>
+                      )}
+                      <CardHeader>
+                        <CardTitle className="text-lg">{ritual.title}</CardTitle>
+                        <CardDescription>{ritual.description}</CardDescription>
+                        <Badge variant="secondary" className="w-fit">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {ritual.duration} minutes
+                        </Badge>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-600 mb-4">{ritual.benefits}</p>
+                        <Button 
+                          onClick={() => setCurrentRitual(ritual.id)}
+                          className="w-full"
+                          variant={completedRituals.includes(ritual.id) ? "outline" : "default"}
+                        >
+                          {completedRituals.includes(ritual.id) ? 'Practice Again' : 'Start Practice'}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+
+          {/* Completion Actions */}
+          <div className="flex justify-between pt-6 border-t">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button 
+              onClick={() => onComplete('w5-rituals', { 
+                completedRituals,
+                progressPercentage: Math.round(progressPercentage)
+              })}
+              disabled={completedRituals.length === 0}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              Save Progress ({completedRituals.length} completed)
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Main Enhanced Coaching Component
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -11,6 +323,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Week4SomaticGrounding } from './week4-somatic-grounding';
 import { BreathworkVagus } from './breathwork-vagus';
 import { CalmCorner } from './calm-corner';
@@ -28,6 +341,7 @@ import {
   Moon,
   Brain,
   Heart,
+  Target,
   Zap,
   BarChart
 } from 'lucide-react';
@@ -1352,6 +1666,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   if (component.id === 'w5-assessment') {
     console.log('Loading Fresh Cognitive Assessment Component');
     return <CognitiveAssessmentFresh onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 5: Interactive Focus & Memory Rituals
+  if (component.id === 'w5-rituals') {
+    return <InteractiveFocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
