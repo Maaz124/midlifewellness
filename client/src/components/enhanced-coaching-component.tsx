@@ -110,6 +110,23 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           };
       }
     }
+    
+    // Fallback for any Week 1 component that doesn't have detailed content yet
+    if (moduleId === 'week-1') {
+      return {
+        type: 'generic-enhanced',
+        content: {
+          title: component.title,
+          description: component.description,
+          steps: [
+            { title: "Prepare", content: "Get ready for this interactive exercise." },
+            { title: "Practice", content: "Follow the guided instructions." },
+            { title: "Reflect", content: "Complete the reflection questions." }
+          ]
+        }
+      };
+    }
+    
     return null;
   };
 

@@ -11,32 +11,77 @@ export const coachingModules: CoachingModule[] = [
     locked: false,
     components: [
       {
-        id: 'w1-video',
+        id: 'hormone-video',
         type: 'video',
-        title: 'Understanding Brain Changes',
-        description: 'Learn about hormonal impacts on cognition and mood',
+        title: 'Understanding Your Hormonal Symphony',
+        description: 'Complete 12-minute video script about hormones and brain changes',
+        duration: 12,
+        completed: false
+      },
+      {
+        id: 'headspace-video',
+        type: 'video',
+        title: 'Resetting Your Mental Space',
+        description: '10-minute guided lesson on brain fog and mental clarity',
+        duration: 10,
+        completed: false
+      },
+      {
+        id: 'hormone-meditation',
+        type: 'audio',
+        title: 'Hormone Harmony Meditation',
+        description: '15-minute guided meditation for hormonal balance',
         duration: 15,
         completed: false
       },
       {
-        id: 'w1-journal',
+        id: 'breathwork',
+        type: 'audio',
+        title: 'Cortisol Reset Breathwork',
+        description: '8-minute breathing practice to lower stress hormones',
+        duration: 8,
+        completed: false
+      },
+      {
+        id: 'symptom-tracker',
+        type: 'exercise',
+        title: 'Daily Hormone Harmony Tracker',
+        description: 'Interactive symptom tracking with sliders and insights',
+        completed: false
+      },
+      {
+        id: 'morning-ritual',
+        type: 'exercise',
+        title: 'Sunrise Hormone Reset Ritual',
+        description: '15-minute morning practice for hormone regulation',
+        completed: false
+      },
+      {
+        id: 'brain-fog-exercise',
+        type: 'exercise',
+        title: 'Mental Clarity Power Practice',
+        description: '10-minute brain fog clearing technique with tracking',
+        completed: false
+      },
+      {
+        id: 'energy-mapping',
+        type: 'exercise',
+        title: 'Personal Energy Pattern Discovery',
+        description: 'Interactive energy tracking across different time periods',
+        completed: false
+      },
+      {
+        id: 'thought-awareness',
         type: 'reflection',
-        title: 'What Am I Carrying?',
-        description: 'Reflective journaling exercise to identify mental load',
+        title: 'Hormonal Thought Awareness Practice',
+        description: 'Interactive thought pattern tracker with reframe exercises',
         completed: false
       },
       {
-        id: 'w1-tracking',
-        type: 'exercise',
-        title: 'Mood & Symptom Tracking',
-        description: 'Begin daily tracking of mood and physical symptoms',
-        completed: false
-      },
-      {
-        id: 'w1-awareness',
-        type: 'exercise',
-        title: 'Thought Awareness Task',
-        description: 'Daily practice to notice automatic thoughts',
+        id: 'nutrition-planning',
+        type: 'worksheet',
+        title: 'Hormone-Supporting Meal Planning',
+        description: 'Food selection tool and weekly meal planner',
         completed: false
       }
     ]
