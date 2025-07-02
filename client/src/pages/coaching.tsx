@@ -132,9 +132,42 @@ export default function Coaching() {
 
       // Week 4 - Nervous System Reset
       'w4-grounding': {
-        content: "Learn powerful somatic grounding practices that help regulate your nervous system through body awareness and movement.",
-        keyPoints: ["Body awareness techniques", "Grounding through movement", "Somatic regulation", "Physical safety signals"],
-        actionSteps: ["Practice daily grounding", "Use during stress", "Build body awareness", "Create safety rituals"]
+        content: `🌱 Somatic Grounding Practices - Body-based techniques to regulate your nervous system and find calm in moments of stress.
+
+        Interactive Grounding Session:
+        This is your dedicated space for learning and practicing nervous system regulation techniques specifically designed for midlife women.
+
+        🎯 Try This Right Now - 5-4-3-2-1 Technique:
+        Take a moment to practice grounding yourself in the present moment:
+
+        👀 Name 5 things you can see: (Blue coffee mug, sunlight through window, wooden table grain...)
+        👂 Name 4 things you can hear: (Air conditioning humming, birds outside, your breathing...)
+        ✋ Name 3 things you can touch: (Smooth phone screen, soft fabric of your shirt, cool table surface...)
+        👃 Name 2 things you can smell: (Coffee brewing, fresh air, cleaning products...)
+        👅 Name 1 thing you can taste: (Lingering coffee, toothpaste, just the taste of your mouth...)
+
+        🌟 Notice the Difference:
+        How do you feel now compared to when you started? Even this simple practice can shift your nervous system from stress to calm.
+
+        💡 Why This Works for Midlife Women:
+        • Hormonal regulation: Grounding activates your vagus nerve, helping balance stress hormones
+        • Instant relief: Works during hot flashes, anxiety spikes, or overwhelming moments  
+        • Brain training: Strengthens your prefrontal cortex to manage emotional responses
+        • Always available: No equipment needed - you can do this anywhere, anytime`,
+        keyPoints: [
+          "5-4-3-2-1 sensory grounding technique",
+          "Progressive body awareness scanning", 
+          "4-7-8 calming breath pattern",
+          "Vagus nerve activation for hormonal balance",
+          "Emergency grounding for acute stress"
+        ],
+        actionSteps: [
+          "Practice 5-4-3-2-1 technique daily for 5 minutes",
+          "Use grounding during stressful moments",
+          "Notice which senses are most grounding for you", 
+          "Build a personal grounding toolkit",
+          "Track your nervous system responses"
+        ]
       },
       'w4-breathwork': {
         content: "Master breathing techniques and vagus nerve exercises that activate your parasympathetic nervous system for deep calm and restoration.",
