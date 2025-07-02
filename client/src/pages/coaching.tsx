@@ -12,7 +12,7 @@ import { coachingModules, getModuleProgress } from '@/lib/coaching-data';
 import { Clock, CheckCircle, Lock, BookOpen, FileText, Headphones, Brain, Video, Target, Heart, Lightbulb, Shield, Star } from 'lucide-react';
 
 export default function Coaching() {
-  const { data, updateCoachingProgress } = useWellnessData();
+  const { data, updateCoachingProgress, resetCoachingProgress } = useWellnessData();
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
   const [activeComponent, setActiveComponent] = useState<any>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
@@ -251,6 +251,17 @@ export default function Coaching() {
           <div className="text-sm text-muted-foreground">
             {data.coachingProgress.completedComponents?.length || 0} components completed
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              resetCoachingProgress();
+              window.location.reload();
+            }}
+            className="text-coral-600 border-coral-200 hover:bg-coral-50"
+          >
+            Reset Progress
+          </Button>
         </div>
       </div>
 
