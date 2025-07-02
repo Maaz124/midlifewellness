@@ -138,7 +138,7 @@ export const coachingModules: CoachingModule[] = [
     id: 'week-3',
     weekNumber: 3,
     title: 'Emotion Regulation & Boundaries',
-    description: 'Managing emotional overwhelm and setting healthy boundaries',
+    description: 'Master emotional overwhelm and create protective boundaries for midlife transitions',
     completed: false,
     progress: 0,
     locked: false,
@@ -147,28 +147,28 @@ export const coachingModules: CoachingModule[] = [
         id: 'w3-patterns',
         type: 'worksheet',
         title: 'Overwhelm Pattern Analysis',
-        description: 'Identify your personal emotional overwhelm triggers',
+        description: 'Complete comprehensive analysis of your overwhelm triggers, physical responses, and most effective coping strategies',
         completed: false
       },
       {
         id: 'w3-technique',
         type: 'exercise',
         title: 'Pause-Label-Shift Technique',
-        description: 'Learn the three-step emotion regulation method',
+        description: 'Master the neuroscience-backed 3-step emotion regulation method with guided practice scenarios',
         completed: false
       },
       {
         id: 'w3-boundaries',
         type: 'worksheet',
         title: 'Boundaries Worksheet',
-        description: 'Establish healthy boundaries in relationships and commitments',
+        description: 'Design personalized boundary scripts for time, emotional, family, and digital situations',
         completed: false
       },
       {
         id: 'w3-mood-map',
         type: 'exercise',
         title: 'Weekly Mood Map',
-        description: 'Create a visual map of your emotional patterns',
+        description: 'Track daily mood and energy patterns across morning, afternoon, and evening with insights analysis',
         completed: false
       }
     ]
