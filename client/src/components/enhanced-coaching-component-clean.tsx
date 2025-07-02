@@ -11480,6 +11480,841 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 3: Boundaries Worksheet
+    if (moduleId === 'week-3' && component.id === 'w3-boundaries') {
+      const [boundariesPhase, setBoundariesPhase] = useState<'introduction' | 'assessment' | 'planning' | 'practice' | 'integration'>('introduction');
+      const [currentBoundaryArea, setCurrentBoundaryArea] = useState(0);
+      const [responses, setResponses] = useState<any>({
+        boundaryAssessment: {},
+        boundaryPlans: {},
+        practiceScenarios: {},
+        implementationPlan: '',
+        weeklyCommitment: '',
+        supportPlan: ''
+      });
+
+      const boundaryAreas = [
+        {
+          id: 'emotional',
+          title: 'Emotional Boundaries',
+          icon: '💙',
+          color: 'blue',
+          description: 'Protecting your emotional well-being and not taking on others\' emotions',
+          midlifeContext: 'As a midlife woman, you may have spent years prioritizing others\' emotions over your own, leading to emotional exhaustion and resentment.',
+          examples: [
+            'Not letting family members\' moods dictate your day',
+            'Refusing to be the family therapist or mediator',
+            'Setting limits on emotional labor at work',
+            'Not feeling guilty for others\' choices or reactions'
+          ],
+          struggles: [
+            'Feeling responsible for everyone\'s happiness',
+            'Absorbing others\' stress and anxiety',
+            'Being unable to say no to emotional requests',
+            'Feeling guilty when others are upset'
+          ],
+          healthyBoundaries: [
+            'I can empathize without absorbing others\' emotions',
+            'I\'m not responsible for managing other people\'s feelings',
+            'I can offer support without becoming emotionally drained',
+            'I prioritize my emotional well-being alongside others\''
+          ]
+        },
+        {
+          id: 'time',
+          title: 'Time Boundaries',
+          icon: '⏰',
+          color: 'green',
+          description: 'Protecting your time and energy from unnecessary demands',
+          midlifeContext: 'Between aging parents, growing children, career demands, and personal health needs, your time feels completely consumed by others\' priorities.',
+          examples: [
+            'Scheduling personal time that\'s non-negotiable',
+            'Setting work hours and sticking to them',
+            'Saying no to social commitments that drain you',
+            'Protecting time for health appointments and self-care'
+          ],
+          struggles: [
+            'Constantly feeling rushed and overwhelmed',
+            'Unable to find time for yourself',
+            'Saying yes to everything and everyone',
+            'Feeling guilty for taking personal time'
+          ],
+          healthyBoundaries: [
+            'My time is valuable and I can choose how to spend it',
+            'I can prioritize my needs alongside others\' needs',
+            'Saying no to one thing means saying yes to something else',
+            'I deserve time for rest, hobbies, and personal growth'
+          ]
+        },
+        {
+          id: 'physical',
+          title: 'Physical Boundaries',
+          icon: '🏃‍♀️',
+          color: 'red',
+          description: 'Protecting your physical space, body, and energy levels',
+          midlifeContext: 'Your body is changing with perimenopause and aging, requiring different care and respect for your physical limitations and needs.',
+          examples: [
+            'Saying no when your body needs rest',
+            'Setting limits on physical tasks you take on',
+            'Protecting your personal space and comfort',
+            'Prioritizing medical care and health needs'
+          ],
+          struggles: [
+            'Ignoring physical pain or fatigue',
+            'Overcommitting physically despite limitations',
+            'Feeling guilty for physical needs',
+            'Putting others\' physical needs before your own'
+          ],
+          healthyBoundaries: [
+            'I listen to my body and respect its signals',
+            'I can ask for help with physical tasks',
+            'My physical health is a priority, not a luxury',
+            'I have the right to comfortable personal space'
+          ]
+        },
+        {
+          id: 'mental',
+          title: 'Mental/Cognitive Boundaries',
+          icon: '🧠',
+          color: 'purple',
+          description: 'Protecting your mental energy and cognitive capacity',
+          midlifeContext: 'Mental load and decision fatigue are at their peak during midlife, making it crucial to protect your cognitive resources.',
+          examples: [
+            'Refusing to be the sole keeper of family logistics',
+            'Setting limits on mental tasks you take on',
+            'Protecting time for mental rest and recovery',
+            'Delegating decisions that others can make'
+          ],
+          struggles: [
+            'Being the family\'s memory and organizer',
+            'Making all the decisions for everyone',
+            'Mental exhaustion from constant problem-solving',
+            'Brain fog from cognitive overload'
+          ],
+          healthyBoundaries: [
+            'I can share mental load with others',
+            'Not every problem is mine to solve',
+            'I need mental rest to function well',
+            'Others can make their own decisions'
+          ]
+        },
+        {
+          id: 'financial',
+          title: 'Financial Boundaries',
+          icon: '💰',
+          color: 'amber',
+          description: 'Protecting your financial resources and setting money limits',
+          midlifeContext: 'Midlife often brings competing financial pressures: children\'s education, aging parents\' care, and your own retirement planning.',
+          examples: [
+            'Setting limits on financial support to adult children',
+            'Not lending money you can\'t afford to lose',
+            'Protecting retirement savings from family requests',
+            'Setting a budget for gifts and extras'
+          ],
+          struggles: [
+            'Feeling obligated to financially rescue family',
+            'Guilt over not giving money when asked',
+            'Sacrificing your financial security for others',
+            'Being unable to say no to financial requests'
+          ],
+          healthyBoundaries: [
+            'My financial security matters too',
+            'I can help others without jeopardizing my future',
+            'Love doesn\'t require financial sacrifice',
+            'I can say no to financial requests with compassion'
+          ]
+        }
+      ];
+
+      const practiceScenarios = [
+        {
+          id: 'family-dinner',
+          title: 'Sunday Family Dinner Overwhelm',
+          area: 'emotional',
+          situation: 'Every Sunday, your family expects you to host dinner for 12 people. Your sister always complains about her marriage, your mother criticizes your cooking, and your adult son brings his laundry. You\'re exhausted but feel guilty changing the tradition.',
+          currentResponse: 'Continue hosting while feeling resentful and overwhelmed',
+          boundaryOptions: [
+            'Suggest rotating hosting duties among family members',
+            'Set a rule that Sunday dinners happen twice a month instead of weekly',
+            'Create boundaries around complaining and criticism during meals',
+            'Offer to coordinate restaurant gatherings instead of home hosting'
+          ],
+          implementationSteps: [
+            'Have a family meeting to discuss the change',
+            'Explain your needs without blaming others',
+            'Offer alternative ways to connect as a family',
+            'Stay firm despite guilt-tripping or resistance'
+          ]
+        },
+        {
+          id: 'work-emergency',
+          title: 'After-Hours Work "Emergency"',
+          area: 'time',
+          situation: 'Your boss regularly calls you after 7 PM and on weekends about "urgent" matters that could wait until Monday. You always answer because you fear being seen as uncommitted, but it\'s affecting your family time and stress levels.',
+          currentResponse: 'Always answer and handle the request immediately',
+          boundaryOptions: [
+            'Set specific hours when you\'re available for true emergencies only',
+            'Propose a system for what constitutes a real emergency',
+            'Offer to check emails once on Sunday evening for Monday prep',
+            'Suggest solutions that don\'t require immediate responses'
+          ],
+          implementationSteps: [
+            'Schedule a conversation with your boss about availability',
+            'Clearly define what emergencies warrant after-hours contact',
+            'Document your boundary in writing (email follow-up)',
+            'Practice not responding immediately to non-urgent requests'
+          ]
+        },
+        {
+          id: 'aging-parent',
+          title: 'Aging Parent\'s Increasing Demands',
+          area: 'physical',
+          situation: 'Your 78-year-old mother calls daily asking you to come over for various tasks: moving furniture, grocery shopping, cleaning. Your siblings live nearby but seem to be "too busy." You\'re exhausted and your own health is suffering.',
+          currentResponse: 'Drop everything and go help immediately every time',
+          boundaryOptions: [
+            'Create a weekly schedule for regular help instead of daily emergencies',
+            'Involve siblings in a rotation system for parent care',
+            'Hire professional help for tasks that are too physically demanding',
+            'Set specific days/times when you\'re available to help'
+          ],
+          implementationSteps: [
+            'Have a family meeting with all siblings about shared responsibility',
+            'Research local senior services and support options',
+            'Create a written schedule that everyone agrees to',
+            'Practice saying "I can help you on Thursday" instead of immediate yes'
+          ]
+        },
+        {
+          id: 'friend-crisis',
+          title: 'Friend\'s Constant Crisis Mode',
+          area: 'mental',
+          situation: 'Your best friend calls you multiple times a week in crisis about her marriage, job, or health. The conversations last 2+ hours and leave you mentally drained. You want to support her but it\'s affecting your own mental health.',
+          currentResponse: 'Listen for hours and try to solve her problems',
+          boundaryOptions: [
+            'Set time limits for crisis calls (30-45 minutes)',
+            'Suggest she speak to a professional counselor for ongoing support',
+            'Offer specific times when you\'re available to talk',
+            'Practice redirecting problem-solving back to her'
+          ],
+          implementationSteps: [
+            'Have a loving conversation about your capacity to help',
+            'Offer resources for professional support',
+            'Practice phrases like "I care about you and want you to get the best help"',
+            'Set your phone to do not disturb during your protected time'
+          ]
+        }
+      ];
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">🛡️</span>
+              Boundaries Worksheet
+            </CardTitle>
+            <p className="text-gray-600">Create personalized boundaries for your midlife challenges</p>
+          </CardHeader>
+          <CardContent>
+            {/* Introduction Phase */}
+            {boundariesPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">🌸 Why Boundaries Matter More in Midlife</h3>
+                  <div className="space-y-4 text-sm">
+                    <p>
+                      As a midlife woman, you've likely spent decades putting everyone else first. Between caring for aging parents, 
+                      supporting grown children, managing a career, and maintaining relationships, your own needs have gotten lost.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg">
+                      <h4 className="font-semibold text-purple-800 mb-2">The Hidden Cost of Boundary-less Living:</h4>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• <strong>Chronic exhaustion</strong> from never saying no</li>
+                        <li>• <strong>Resentment</strong> toward the people you're helping</li>
+                        <li>• <strong>Loss of identity</strong> outside of your caregiving roles</li>
+                        <li>• <strong>Health problems</strong> from chronic stress and self-neglect</li>
+                        <li>• <strong>Relationship problems</strong> from built-up frustration</li>
+                      </ul>
+                    </div>
+                    <div className="bg-pink-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-pink-800 mb-2">What Changes When You Set Boundaries:</h4>
+                      <ul className="space-y-1 text-pink-700">
+                        <li>• You model healthy behavior for your family</li>
+                        <li>• Others become more capable and independent</li>
+                        <li>• Your relationships become more authentic and balanced</li>
+                        <li>• You have energy for the things that truly matter to you</li>
+                        <li>• You feel more respected and less taken for granted</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-4">🧭 Boundary Myths That Keep You Stuck</h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-3">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <h5 className="font-semibold text-red-800">❌ MYTH</h5>
+                        <p className="text-red-700">"Good women don't have boundaries"</p>
+                      </div>
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <h5 className="font-semibold text-green-800">✅ TRUTH</h5>
+                        <p className="text-green-700">Healthy women know their limits and communicate them clearly</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <h5 className="font-semibold text-red-800">❌ MYTH</h5>
+                        <p className="text-red-700">"Setting boundaries is selfish"</p>
+                      </div>
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <h5 className="font-semibold text-green-800">✅ TRUTH</h5>
+                        <p className="text-green-700">Boundaries help you give from abundance, not depletion</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <h5 className="font-semibold text-red-800">❌ MYTH</h5>
+                        <p className="text-red-700">"People will be angry if I set boundaries"</p>
+                      </div>
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <h5 className="font-semibold text-green-800">✅ TRUTH</h5>
+                        <p className="text-green-700">People who respect you will adjust; those who don't reveal their true character</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <h5 className="font-semibold text-red-800">❌ MYTH</h5>
+                        <p className="text-red-700">"I'll hurt people's feelings"</p>
+                      </div>
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <h5 className="font-semibold text-green-800">✅ TRUTH</h5>
+                        <p className="text-green-700">Clear, kind communication prevents bigger hurt later</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setBoundariesPhase('assessment')}
+                  className="w-full"
+                >
+                  Assess Your Current Boundaries
+                </Button>
+              </div>
+            )}
+
+            {/* Assessment Phase */}
+            {boundariesPhase === 'assessment' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🔍 Boundary Assessment</h3>
+                  <p className="text-gray-600">Identify where you need stronger boundaries in your life</p>
+                  <div className="flex justify-center mt-3">
+                    <Badge variant="outline">
+                      Area {currentBoundaryArea + 1} of {boundaryAreas.length}
+                    </Badge>
+                  </div>
+                </div>
+
+                {(() => {
+                  const area = boundaryAreas[currentBoundaryArea];
+                  const areaResponses = responses.boundaryAssessment[area.id] || {};
+
+                  return (
+                    <div className="space-y-6">
+                      <div className={`bg-${area.color}-50 border-2 border-${area.color}-200 rounded-lg p-6`}>
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="text-3xl">{area.icon}</span>
+                          <div>
+                            <h4 className={`text-lg font-bold text-${area.color}-800`}>{area.title}</h4>
+                            <p className={`text-${area.color}-600`}>{area.description}</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-white p-4 rounded-lg mb-4">
+                          <h5 className="font-semibold mb-2">Why This Matters in Midlife:</h5>
+                          <p className="text-sm text-gray-700">{area.midlifeContext}</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4 mb-6">
+                          <div className="bg-white p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2 text-green-700">Examples of Healthy Boundaries:</h5>
+                            <ul className="space-y-1 text-sm">
+                              {area.examples.map((example, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="text-green-500 font-bold">•</span>
+                                  {example}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="bg-white p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2 text-red-700">Common Struggles:</h5>
+                            <ul className="space-y-1 text-sm">
+                              {area.struggles.map((struggle, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="text-red-500 font-bold">•</span>
+                                  {struggle}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Assessment Questions */}
+                      <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                        <h4 className="font-semibold mb-4">Rate Your Current {area.title}:</h4>
+                        
+                        <div className="space-y-6">
+                          <div>
+                            <Label className="text-sm font-medium">How often do you struggle with {area.title.toLowerCase()}?</Label>
+                            <RadioGroup 
+                              value={areaResponses.frequency || ''} 
+                              onValueChange={(value) => setResponses({
+                                ...responses,
+                                boundaryAssessment: {
+                                  ...responses.boundaryAssessment,
+                                  [area.id]: {...areaResponses, frequency: value}
+                                }
+                              })}
+                              className="mt-2"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="rarely" id="rarely" />
+                                <Label htmlFor="rarely" className="text-sm">Rarely - I have good boundaries in this area</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="sometimes" id="sometimes" />
+                                <Label htmlFor="sometimes" className="text-sm">Sometimes - I struggle but manage okay</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="often" id="often" />
+                                <Label htmlFor="often" className="text-sm">Often - This is a regular challenge for me</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="constantly" id="constantly" />
+                                <Label htmlFor="constantly" className="text-sm">Constantly - This is a major problem area</Label>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          <div>
+                            <Label>Which struggles resonate most with you? (Check all that apply)</Label>
+                            <div className="space-y-2 mt-2">
+                              {area.struggles.map((struggle, i) => (
+                                <div key={i} className="flex items-center space-x-2">
+                                  <Checkbox 
+                                    id={`struggle-${i}`}
+                                    checked={areaResponses.selectedStruggles?.includes(struggle) || false}
+                                    onCheckedChange={(checked) => {
+                                      const current = areaResponses.selectedStruggles || [];
+                                      const updated = checked 
+                                        ? [...current, struggle]
+                                        : current.filter(s => s !== struggle);
+                                      setResponses({
+                                        ...responses,
+                                        boundaryAssessment: {
+                                          ...responses.boundaryAssessment,
+                                          [area.id]: {...areaResponses, selectedStruggles: updated}
+                                        }
+                                      });
+                                    }}
+                                  />
+                                  <Label htmlFor={`struggle-${i}`} className="text-sm">{struggle}</Label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label>Describe a specific situation where you need better {area.title.toLowerCase()}:</Label>
+                            <Textarea
+                              placeholder={`Describe a recent situation where you struggled with ${area.title.toLowerCase()}...`}
+                              value={areaResponses.specificExample || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                boundaryAssessment: {
+                                  ...responses.boundaryAssessment,
+                                  [area.id]: {...areaResponses, specificExample: e.target.value}
+                                }
+                              })}
+                              className="mt-2"
+                              rows={3}
+                            />
+                          </div>
+
+                          <div>
+                            <Label>What's the biggest fear you have about setting boundaries in this area?</Label>
+                            <Textarea
+                              placeholder="What stops you from setting stronger boundaries here?"
+                              value={areaResponses.biggestFear || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                boundaryAssessment: {
+                                  ...responses.boundaryAssessment,
+                                  [area.id]: {...areaResponses, biggestFear: e.target.value}
+                                }
+                              })}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        {currentBoundaryArea > 0 && (
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setCurrentBoundaryArea(currentBoundaryArea - 1)}
+                          >
+                            Previous Area
+                          </Button>
+                        )}
+                        
+                        <Button 
+                          onClick={() => {
+                            if (currentBoundaryArea < boundaryAreas.length - 1) {
+                              setCurrentBoundaryArea(currentBoundaryArea + 1);
+                            } else {
+                              setBoundariesPhase('planning');
+                            }
+                          }}
+                          className="flex-1"
+                          disabled={!areaResponses.frequency || !areaResponses.specificExample || !areaResponses.biggestFear}
+                        >
+                          {currentBoundaryArea < boundaryAreas.length - 1 ? 'Next Area' : 'Create Boundary Plan'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Planning Phase */}
+            {boundariesPhase === 'planning' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">📋 Your Personal Boundary Action Plan</h3>
+                  <p className="text-gray-600">Create specific, actionable boundaries for your biggest challenge areas</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-6 rounded-lg">
+                  <h4 className="font-semibold text-purple-800 mb-4">🎯 Your Priority Boundary Areas</h4>
+                  <div className="space-y-3">
+                    {boundaryAreas
+                      .filter(area => {
+                        const assessment = responses.boundaryAssessment[area.id];
+                        return assessment && (assessment.frequency === 'often' || assessment.frequency === 'constantly');
+                      })
+                      .map(area => (
+                        <div key={area.id} className="bg-white p-3 rounded-lg flex items-center gap-3">
+                          <span className="text-2xl">{area.icon}</span>
+                          <div>
+                            <h5 className="font-semibold">{area.title}</h5>
+                            <p className="text-sm text-gray-600">
+                              Challenge frequency: {responses.boundaryAssessment[area.id]?.frequency}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                {/* Boundary Planning for Priority Areas */}
+                {boundaryAreas
+                  .filter(area => {
+                    const assessment = responses.boundaryAssessment[area.id];
+                    return assessment && (assessment.frequency === 'often' || assessment.frequency === 'constantly');
+                  })
+                  .map(area => {
+                    const planResponses = responses.boundaryPlans[area.id] || {};
+                    
+                    return (
+                      <div key={area.id} className={`bg-${area.color}-50 border-2 border-${area.color}-200 rounded-lg p-6`}>
+                        <h4 className={`text-lg font-bold text-${area.color}-800 mb-4`}>
+                          {area.icon} {area.title} Action Plan
+                        </h4>
+
+                        <div className="space-y-4">
+                          <div>
+                            <Label>Choose your new boundary statement for this area:</Label>
+                            <RadioGroup 
+                              value={planResponses.boundaryStatement || ''} 
+                              onValueChange={(value) => setResponses({
+                                ...responses,
+                                boundaryPlans: {
+                                  ...responses.boundaryPlans,
+                                  [area.id]: {...planResponses, boundaryStatement: value}
+                                }
+                              })}
+                              className="mt-2"
+                            >
+                              {area.healthyBoundaries.map((boundary, i) => (
+                                <div key={i} className="flex items-center space-x-2">
+                                  <RadioGroupItem value={boundary} id={`boundary-${area.id}-${i}`} />
+                                  <Label htmlFor={`boundary-${area.id}-${i}`} className="text-sm">{boundary}</Label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                          </div>
+
+                          <div>
+                            <Label>What specific action will you take to implement this boundary?</Label>
+                            <Textarea
+                              placeholder={`Describe the specific steps you'll take to establish this ${area.title.toLowerCase()}...`}
+                              value={planResponses.specificAction || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                boundaryPlans: {
+                                  ...responses.boundaryPlans,
+                                  [area.id]: {...planResponses, specificAction: e.target.value}
+                                }
+                              })}
+                              className="mt-2"
+                              rows={3}
+                            />
+                          </div>
+
+                          <div>
+                            <Label>How will you communicate this boundary to others?</Label>
+                            <Textarea
+                              placeholder="Write the exact words you'll use to communicate this boundary..."
+                              value={planResponses.communicationScript || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                boundaryPlans: {
+                                  ...responses.boundaryPlans,
+                                  [area.id]: {...planResponses, communicationScript: e.target.value}
+                                }
+                              })}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+
+                          <div>
+                            <Label>What resistance do you expect and how will you handle it?</Label>
+                            <Textarea
+                              placeholder="Anticipate pushback and plan your response..."
+                              value={planResponses.resistancePlan || ''}
+                              onChange={(e) => setResponses({
+                                ...responses,
+                                boundaryPlans: {
+                                  ...responses.boundaryPlans,
+                                  [area.id]: {...planResponses, resistancePlan: e.target.value}
+                                }
+                              })}
+                              className="mt-2"
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                <Button 
+                  onClick={() => setBoundariesPhase('practice')}
+                  className="w-full"
+                  disabled={!Object.keys(responses.boundaryPlans).length}
+                >
+                  Practice Boundary Scenarios
+                </Button>
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {boundariesPhase === 'practice' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🎭 Boundary Practice Scenarios</h3>
+                  <p className="text-gray-600">Practice setting boundaries in realistic situations</p>
+                </div>
+
+                {practiceScenarios.map(scenario => {
+                  const scenarioResponses = responses.practiceScenarios[scenario.id] || {};
+                  
+                  return (
+                    <div key={scenario.id} className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                      <div className="mb-4">
+                        <h4 className="text-lg font-semibold text-purple-800">{scenario.title}</h4>
+                        <Badge variant="outline" className="mt-1">
+                          {boundaryAreas.find(a => a.id === scenario.area)?.title}
+                        </Badge>
+                      </div>
+
+                      <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                        <p className="text-gray-800 mb-3">{scenario.situation}</p>
+                        <div className="text-sm">
+                          <strong>Current Response:</strong> <em>{scenario.currentResponse}</em>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Choose a boundary-setting response:</Label>
+                          <RadioGroup 
+                            value={scenarioResponses.chosenBoundary || ''} 
+                            onValueChange={(value) => setResponses({
+                              ...responses,
+                              practiceScenarios: {
+                                ...responses.practiceScenarios,
+                                [scenario.id]: {...scenarioResponses, chosenBoundary: value}
+                              }
+                            })}
+                            className="mt-2"
+                          >
+                            {scenario.boundaryOptions.map((option, i) => (
+                              <div key={i} className="flex items-center space-x-2">
+                                <RadioGroupItem value={option} id={`option-${scenario.id}-${i}`} />
+                                <Label htmlFor={`option-${scenario.id}-${i}`} className="text-sm">{option}</Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </div>
+
+                        {scenarioResponses.chosenBoundary && (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h5 className="font-semibold text-green-800 mb-2">Implementation Steps:</h5>
+                            <ul className="space-y-1 text-sm text-green-700">
+                              {scenario.implementationSteps.map((step, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="text-green-500 font-bold">{i + 1}.</span>
+                                  {step}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <div>
+                          <Label>Write exactly what you would say in this situation:</Label>
+                          <Textarea
+                            placeholder="Practice the exact words you would use to set this boundary..."
+                            value={scenarioResponses.scriptPractice || ''}
+                            onChange={(e) => setResponses({
+                              ...responses,
+                              practiceScenarios: {
+                                ...responses.practiceScenarios,
+                                [scenario.id]: {...scenarioResponses, scriptPractice: e.target.value}
+                              }
+                            })}
+                            className="mt-2"
+                            rows={3}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <Button 
+                  onClick={() => setBoundariesPhase('integration')}
+                  className="w-full"
+                  disabled={!practiceScenarios.every(scenario => 
+                    responses.practiceScenarios[scenario.id]?.chosenBoundary && 
+                    responses.practiceScenarios[scenario.id]?.scriptPractice
+                  )}
+                >
+                  Create Implementation Plan
+                </Button>
+              </div>
+            )}
+
+            {/* Integration Phase */}
+            {boundariesPhase === 'integration' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🚀 Your Boundary Implementation Plan</h3>
+                  <p className="text-gray-600">Create a concrete plan for implementing boundaries in your daily life</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-100 to-teal-100 p-6 rounded-lg">
+                  <h4 className="font-semibold text-green-800 mb-4">🎉 Boundary Setting Wins!</h4>
+                  <div className="space-y-2 text-sm text-green-700">
+                    <p>You've identified your priority boundary areas and practiced specific scenarios. Remember:</p>
+                    <ul className="space-y-1 ml-4">
+                      <li>• Boundaries are acts of self-care, not selfishness</li>
+                      <li>• You're modeling healthy behavior for others</li>
+                      <li>• It gets easier with practice</li>
+                      <li>• You deserve respect for your limits</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                    <h4 className="font-semibold mb-4">📅 This Week's Implementation Plan</h4>
+                    <Label>Choose ONE boundary to implement this week and write your specific plan:</Label>
+                    <Textarea
+                      placeholder="This week I will implement my [boundary type] by [specific action] when [specific situation] occurs. I will communicate this by saying..."
+                      value={responses.implementationPlan || ''}
+                      onChange={(e) => setResponses({...responses, implementationPlan: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                    <h4 className="font-semibold mb-4">💪 Your Weekly Commitment</h4>
+                    <Label>What will you do daily this week to strengthen your boundary-setting skills?</Label>
+                    <Textarea
+                      placeholder="Each day this week I commit to..."
+                      value={responses.weeklyCommitment || ''}
+                      onChange={(e) => setResponses({...responses, weeklyCommitment: e.target.value})}
+                      className="mt-2"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-coral-200 rounded-lg p-6">
+                    <h4 className="font-semibold mb-4">🤝 Support Plan</h4>
+                    <Label>Who will support you in setting boundaries? How will you ask for their help?</Label>
+                    <Textarea
+                      placeholder="I will ask [specific person] to support me by [specific way]. When I feel guilty about boundaries, I will..."
+                      value={responses.supportPlan || ''}
+                      onChange={(e) => setResponses({...responses, supportPlan: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-800 mb-3">🌟 Boundary Setting Reminders</h4>
+                    <div className="space-y-2 text-sm text-amber-700">
+                      <p>• Start small - one boundary at a time</p>
+                      <p>• Expect pushback initially - it's normal</p>
+                      <p>• Be consistent - boundaries work only when you maintain them</p>
+                      <p>• Practice self-compassion when you slip up</p>
+                      <p>• Celebrate every boundary you successfully set</p>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => {
+                      setResponses({...responses, boundariesCompleted: true});
+                      onComplete(component.id, responses);
+                    }}
+                    className="w-full"
+                    disabled={!responses.implementationPlan || !responses.weeklyCommitment || !responses.supportPlan}
+                  >
+                    Complete Boundaries Worksheet
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Default fallback for other components
     return (
       <Card>
