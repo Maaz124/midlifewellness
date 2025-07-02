@@ -217,37 +217,37 @@ export const coachingModules: CoachingModule[] = [
     id: 'week-5',
     weekNumber: 5,
     title: 'Clarity & Cognitive Flow',
-    description: 'Focus enhancement, memory support, and mental clarity tools',
+    description: 'Enhance mental clarity, memory, and focus during midlife transitions and hormonal changes',
     completed: false,
     progress: 0,
-    locked: true,
+    locked: false,
     components: [
+      {
+        id: 'w5-assessment',
+        type: 'worksheet',
+        title: 'Cognitive Clarity Assessment',
+        description: 'Comprehensive evaluation of current mental clarity, memory patterns, and focus challenges with personalized insights',
+        completed: false
+      },
       {
         id: 'w5-rituals',
         type: 'exercise',
         title: 'Focus & Memory Rituals',
-        description: 'Daily practices to enhance cognitive function',
+        description: 'Design personalized daily cognitive enhancement routines including brain training, mindfulness, and memory techniques',
         completed: false
       },
       {
         id: 'w5-nutrition',
         type: 'worksheet',
-        title: 'Nutritional Brain Support',
-        description: 'Guide to foods and supplements that support brain health',
+        title: 'Brain-Boosting Nutrition Plan',
+        description: 'Create customized meal plans with cognitive-supporting foods, supplements, and hydration strategies for midlife',
         completed: false
       },
       {
-        id: 'w5-planner',
-        type: 'worksheet',
-        title: 'Weekly Focus Planner',
-        description: 'Tool to prioritize and organize your mental energy',
-        completed: false
-      },
-      {
-        id: 'w5-mind-dump',
+        id: 'w5-mind-management',
         type: 'exercise',
-        title: 'Mind-Dump & Prioritization',
-        description: 'Clear mental clutter and focus on what matters most',
+        title: 'Mind Management System',
+        description: 'Master brain dump techniques, priority matrices, and cognitive load management for mental clarity',
         completed: false
       }
     ]
