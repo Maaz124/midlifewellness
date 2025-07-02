@@ -1013,6 +1013,500 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Breathwork - Cortisol Reset Practice
+    if (component.id === 'breathwork') {
+      const breathworkPhase = responses.breathworkPhase || 'assessment';
+      const stressLevel = responses.stressLevel || 5;
+      const energyLevel = responses.energyLevel || 5;
+      const breathingTechnique = responses.breathingTechnique || 'box-breathing';
+      const practiceRounds = responses.practiceRounds || 0;
+      const breathingSpeed = responses.breathingSpeed || 'normal';
+
+      const getStressInterpretation = (level: number) => {
+        if (level <= 2) return { status: 'Very Calm', color: 'text-green-700', message: 'You feel relaxed and at ease' };
+        if (level <= 4) return { status: 'Mild Stress', color: 'text-green-600', message: 'Some tension but generally manageable' };
+        if (level <= 6) return { status: 'Moderate Stress', color: 'text-yellow-600', message: 'Noticeable stress affecting your day' };
+        if (level <= 8) return { status: 'High Stress', color: 'text-orange-600', message: 'Significant stress impacting well-being' };
+        return { status: 'Very High Stress', color: 'text-red-600', message: 'Overwhelming stress needs immediate attention' };
+      };
+
+      const breathingTechniques = [
+        {
+          id: 'box-breathing',
+          name: 'Box Breathing (4-4-4-4)',
+          description: 'Equal counts for inhale, hold, exhale, hold',
+          pattern: 'Inhale 4 → Hold 4 → Exhale 4 → Hold 4',
+          benefits: 'Balances nervous system, reduces anxiety',
+          difficulty: 'Beginner'
+        },
+        {
+          id: 'coherent-breathing',
+          name: 'Coherent Breathing (5-5)',
+          description: 'Slow, rhythmic breathing at 6 breaths per minute',
+          pattern: 'Inhale 5 → Exhale 5',
+          benefits: 'Activates vagus nerve, promotes heart coherence',
+          difficulty: 'Beginner'
+        },
+        {
+          id: 'physiological-sigh',
+          name: 'Physiological Sigh',
+          description: 'Double inhale followed by long exhale',
+          pattern: 'Inhale → Second inhale → Long exhale',
+          benefits: 'Rapidly downregulates stress response',
+          difficulty: 'Beginner'
+        },
+        {
+          id: 'wim-hof',
+          name: 'Modified Wim Hof (3 rounds)',
+          description: 'Controlled hyperventilation with breath holds',
+          pattern: '30 breaths → Hold → Recovery breath',
+          benefits: 'Reduces stress hormones, boosts resilience',
+          difficulty: 'Advanced'
+        }
+      ];
+
+      const currentTechnique = breathingTechniques.find(t => t.id === breathingTechnique) || breathingTechniques[0];
+      const stressInterpretation = getStressInterpretation(stressLevel);
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="w-5 h-5 text-blue-500" />
+              Cortisol Reset Breathwork
+            </CardTitle>
+            <p className="text-sm text-gray-600">An 8-minute breathing practice designed to lower stress hormones and activate your parasympathetic nervous system.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind Breathwork */}
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+              <h5 className="font-semibold text-blue-800 mb-2">How Breathwork Reduces Cortisol</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
+                <div>
+                  <strong>Vagus Nerve Activation:</strong> Slow exhales stimulate the vagus nerve, signaling safety to your brain
+                </div>
+                <div>
+                  <strong>Stress Response Reversal:</strong> Controlled breathing shifts you from fight-or-flight to rest-and-digest
+                </div>
+                <div>
+                  <strong>Cortisol Reduction:</strong> Regular practice can lower cortisol levels by up to 25%
+                </div>
+                <div>
+                  <strong>Heart Rate Variability:</strong> Improves your body's ability to adapt to stress
+                </div>
+              </div>
+            </div>
+
+            {/* Pre-Practice Assessment */}
+            {breathworkPhase === 'assessment' && (
+              <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Pre-Practice Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Rate your current state before we begin the breathwork practice:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <Label className="font-medium">Current Stress Level</Label>
+                      <span className={`text-sm font-semibold ${stressInterpretation.color}`}>
+                        {stressInterpretation.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500">Very Calm</span>
+                      <Slider
+                        value={[stressLevel]}
+                        onValueChange={(value) => setResponses({...responses, stressLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Very Stressed</span>
+                      <span className="text-lg font-bold text-blue-600 min-w-[30px]">{stressLevel}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">{stressInterpretation.message}</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Energy Level</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Depleted</span>
+                      <Slider
+                        value={[energyLevel]}
+                        onValueChange={(value) => setResponses({...responses, energyLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <span className="text-lg font-bold text-blue-600 min-w-[30px]">{energyLevel}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Physical Symptoms (check all that apply):</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Tight shoulders/neck', 'Shallow breathing', 'Racing heart', 'Headache',
+                        'Jaw tension', 'Stomach knots', 'Restlessness', 'Fatigue'
+                      ].map((symptom) => (
+                        <div key={symptom} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`symptom-${symptom}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`symptom-${symptom}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{symptom}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, breathworkPhase: 'technique-selection'})}
+                    className="w-full"
+                  >
+                    Continue to Technique Selection
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Technique Selection */}
+            {breathworkPhase === 'technique-selection' && (
+              <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Choose Your Breathing Technique</h4>
+                <p className="text-sm text-gray-600 mb-4">Based on your stress level of {stressLevel}/10, here are recommended techniques:</p>
+                
+                <div className="space-y-4">
+                  {breathingTechniques.map((technique) => {
+                    const isRecommended = 
+                      (stressLevel <= 4 && technique.id === 'coherent-breathing') ||
+                      (stressLevel >= 5 && stressLevel <= 7 && technique.id === 'box-breathing') ||
+                      (stressLevel >= 8 && technique.id === 'physiological-sigh');
+
+                    return (
+                      <div 
+                        key={technique.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          breathingTechnique === technique.id 
+                            ? 'border-blue-400 bg-blue-50' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        } ${isRecommended ? 'ring-2 ring-green-200' : ''}`}
+                        onClick={() => setResponses({...responses, breathingTechnique: technique.id})}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <RadioGroupItem 
+                                value={technique.id} 
+                                checked={breathingTechnique === technique.id}
+                              />
+                              <h5 className="font-semibold">{technique.name}</h5>
+                              {isRecommended && (
+                                <Badge variant="default" className="bg-green-500">Recommended</Badge>
+                              )}
+                              <Badge variant="outline">{technique.difficulty}</Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{technique.description}</p>
+                            <div className="text-sm">
+                              <strong>Pattern:</strong> {technique.pattern}
+                            </div>
+                            <div className="text-sm text-green-600">
+                              <strong>Benefits:</strong> {technique.benefits}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <div>
+                    <Label className="font-medium">Breathing Speed Preference:</Label>
+                    <RadioGroup
+                      value={breathingSpeed}
+                      onValueChange={(value) => setResponses({...responses, breathingSpeed: value})}
+                      className="flex gap-6 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="slow" />
+                        <Label>Slow & Deep</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="normal" />
+                        <Label>Normal Pace</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="guided" />
+                        <Label>Follow Audio Cues</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, breathworkPhase: 'practice'})}
+                    className="w-full"
+                  >
+                    Start {currentTechnique.name} Practice
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {breathworkPhase === 'practice' && (
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border">
+                <div className="text-center mb-6">
+                  <h4 className="text-xl font-semibold mb-2">{currentTechnique.name}</h4>
+                  <p className="text-sm text-gray-600">{currentTechnique.description}</p>
+                  <div className="text-lg font-bold text-blue-600 mt-2">{currentTechnique.pattern}</div>
+                </div>
+
+                {/* Visual Breathing Guide */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <div className="w-32 h-32 rounded-full border-4 border-blue-300 flex items-center justify-center">
+                      <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span className="text-blue-600 font-semibold">Breathe</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Practice Instructions */}
+                <div className="bg-white p-4 rounded-lg mb-6">
+                  {breathingTechnique === 'box-breathing' && (
+                    <div className="text-center space-y-2">
+                      <div className="grid grid-cols-4 gap-2 text-sm">
+                        <div className="p-2 bg-blue-100 rounded">Inhale<br/>4 counts</div>
+                        <div className="p-2 bg-yellow-100 rounded">Hold<br/>4 counts</div>
+                        <div className="p-2 bg-green-100 rounded">Exhale<br/>4 counts</div>
+                        <div className="p-2 bg-purple-100 rounded">Hold<br/>4 counts</div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-2">
+                        Follow the rhythm: In through nose, hold gently, out through mouth, pause naturally
+                      </p>
+                    </div>
+                  )}
+
+                  {breathingTechnique === 'coherent-breathing' && (
+                    <div className="text-center space-y-2">
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="p-3 bg-blue-100 rounded">Inhale<br/>5 counts</div>
+                        <div className="p-3 bg-green-100 rounded">Exhale<br/>5 counts</div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-2">
+                        Smooth, continuous breathing. Aim for 6 complete breaths per minute.
+                      </p>
+                    </div>
+                  )}
+
+                  {breathingTechnique === 'physiological-sigh' && (
+                    <div className="text-center space-y-2">
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div className="p-2 bg-blue-100 rounded">Inhale<br/>Normal</div>
+                        <div className="p-2 bg-blue-200 rounded">Second Inhale<br/>Small sip</div>
+                        <div className="p-2 bg-green-100 rounded">Long Exhale<br/>Through mouth</div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-2">
+                        Repeat 1-3 times when you need rapid stress relief
+                      </p>
+                    </div>
+                  )}
+
+                  {breathingTechnique === 'wim-hof' && (
+                    <div className="text-center space-y-2">
+                      <div className="bg-orange-50 p-3 rounded border-l-4 border-orange-400">
+                        <strong className="text-orange-800">Advanced Technique</strong>
+                        <p className="text-sm text-orange-700 mt-1">
+                          30 full breaths → Exhale and hold → Recovery breath and hold
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-600">
+                        Stop if you feel dizzy. Practice on empty stomach in safe environment.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Practice Tracker */}
+                <div className="bg-white p-4 rounded-lg space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="font-medium">Practice Rounds Completed:</Label>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setResponses({...responses, practiceRounds: Math.max(0, practiceRounds - 1)})}
+                      >
+                        -
+                      </Button>
+                      <span className="text-2xl font-bold text-blue-600 min-w-[40px] text-center">{practiceRounds}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setResponses({...responses, practiceRounds: practiceRounds + 1})}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-2">
+                    {[1,2,3,4,5].map((round) => (
+                      <div key={round} className={`h-8 rounded flex items-center justify-center text-sm font-medium ${
+                        round <= practiceRounds 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        {round}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="text-center">
+                    {practiceRounds >= 5 && (
+                      <Button 
+                        onClick={() => setResponses({...responses, breathworkPhase: 'completion'})}
+                        className="w-full"
+                      >
+                        Complete Practice & Assess Results
+                      </Button>
+                    )}
+                    {practiceRounds < 5 && (
+                      <p className="text-sm text-gray-600">
+                        Complete {5 - practiceRounds} more rounds for optimal cortisol reduction
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Completion Assessment */}
+            {breathworkPhase === 'completion' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Post-Practice Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">How do you feel after completing the {currentTechnique.name} practice?</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Current Stress Level (compare with your initial {stressLevel}/10):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Very Calm</span>
+                      <Slider
+                        value={[responses.postStressLevel || 5]}
+                        onValueChange={(value) => setResponses({...responses, postStressLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Very Stressed</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postStressLevel || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Energy Level:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Depleted</span>
+                      <Slider
+                        value={[responses.postEnergyLevel || 5]}
+                        onValueChange={(value) => setResponses({...responses, postEnergyLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postEnergyLevel || 5}</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Summary */}
+                  {responses.postStressLevel && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-2">Your Progress Summary</h5>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Stress Reduction:</span>
+                          <span className={`font-bold ${
+                            stressLevel - responses.postStressLevel > 0 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            -{stressLevel - responses.postStressLevel} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Energy Change:</span>
+                          <span className={`font-bold ${
+                            (responses.postEnergyLevel || 5) - energyLevel > 0 
+                              ? 'text-green-600' 
+                              : (responses.postEnergyLevel || 5) - energyLevel < 0
+                                ? 'text-orange-600'
+                                : 'text-gray-600'
+                          }`}>
+                            {(responses.postEnergyLevel || 5) - energyLevel > 0 ? '+' : ''}{(responses.postEnergyLevel || 5) - energyLevel} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Technique Used:</span>
+                          <span className="font-medium">{currentTechnique.name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Rounds Completed:</span>
+                          <span className="font-medium">{practiceRounds}/5</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label>Reflection notes:</Label>
+                    <Textarea
+                      placeholder="How do you feel now? What did you notice during the practice? Any physical sensations or mental shifts?"
+                      value={responses.breathworkReflection || ''}
+                      onChange={(e) => setResponses({...responses, breathworkReflection: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, breathworkPhase: 'assessment'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Practice Again
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Daily Practice Tips */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-blue-800 mb-2">💡 Cortisol Reset Tips</h5>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Practice 2-3 times daily: morning, midday, and before bed</li>
+                <li>• Use physiological sighs for acute stress (instant relief)</li>
+                <li>• Box breathing is perfect for general anxiety management</li>
+                <li>• Coherent breathing works best for heart rate variability</li>
+                <li>• Track your stress levels over time to see patterns</li>
+                <li>• Practice for 21 days to see lasting cortisol improvements</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
