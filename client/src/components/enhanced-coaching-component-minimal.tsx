@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, CheckCircle, Play, Pause } from 'lucide-react';
 import { SomaticGroundingFixed } from './somatic-grounding-fixed';
+import { BreathworkVagus } from './breathwork-vagus';
 
 interface EnhancedCoachingComponentMinimalProps {
   component: any;
@@ -20,6 +21,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 4: Somatic Grounding Practices
   if (moduleId === 'week-4' && component.id === 'w4-grounding') {
     return <SomaticGroundingFixed onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 4: Breathwork & Vagus Nerve Reset
+  if (moduleId === 'week-4' && component.id === 'w4-breathwork') {
+    return <BreathworkVagus onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback content for other components
