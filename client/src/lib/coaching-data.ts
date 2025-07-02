@@ -180,7 +180,7 @@ export const coachingModules: CoachingModule[] = [
     description: 'Somatic practices, breathwork, and vagus nerve reset techniques',
     completed: false,
     progress: 0,
-    locked: true,
+    locked: false,
     components: [
       {
         id: 'w4-grounding',
