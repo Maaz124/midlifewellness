@@ -43,6 +43,8 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
   const [timeElapsed, setTimeElapsed] = useState(0);
   const { data, updateCoachingProgress } = useWellnessData();
 
+  console.log('EnhancedCoachingComponent rendering:', { componentId: component.id, moduleId });
+
   const getDetailedContent = () => {
     // Find matching video script
     const videoScript = videoScripts.find(v => 
