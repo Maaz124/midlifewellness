@@ -108,6 +108,11 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
             type: 'detailed-exercise',
             content: additionalExercises.find(e => e.id === 'hormone-nutrition-planning')
           };
+        case 'evening-wind-down':
+          return {
+            type: 'detailed-exercise',
+            content: detailedExercises.find(e => e.id === 'evening-wind-down')
+          };
       }
     }
     
@@ -487,42 +492,150 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           </div>
 
           {exercise.id === 'hormone-symptom-tracker' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Hormone Symptom Tracker</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {worksheetTemplates.hormoneSymptomTracker.sections.map((section, sectionIndex) => (
-                  <div key={sectionIndex} className="space-y-3">
-                    <h4 className="font-medium">{section.name}</h4>
-                    <div className="grid gap-3">
-                      {section.items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="flex items-center justify-between p-3 border rounded">
-                          <span className="text-sm">{item}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">1-5:</span>
-                            <Slider
-                              value={[responses[`${section.name}-${item}`] || 1]}
-                              onValueChange={(value) => setResponses({
-                                ...responses,
-                                [`${section.name}-${item}`]: value[0]
-                              })}
-                              max={5}
-                              min={1}
-                              step={1}
-                              className="w-20"
-                            />
-                            <span className="text-sm font-medium w-6">
-                              {responses[`${section.name}-${item}`] || 1}
-                            </span>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Daily Hormone Harmony Tracker
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">Track your symptoms daily to identify patterns and progress. Rate each symptom from 1 (none) to 5 (severe).</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {worksheetTemplates.hormoneSymptomTracker.sections.map((section, sectionIndex) => (
+                    <div key={sectionIndex} className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          sectionIndex === 0 ? 'bg-red-400' : 
+                          sectionIndex === 1 ? 'bg-yellow-400' : 
+                          sectionIndex === 2 ? 'bg-blue-400' : 'bg-green-400'
+                        }`}></div>
+                        <h4 className="font-semibold text-lg">{section.name}</h4>
+                      </div>
+                      <div className="grid gap-4">
+                        {section.items.map((item, itemIndex) => (
+                          <div key={itemIndex} className="p-4 border rounded-lg bg-gradient-to-r from-gray-50 to-white">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium">{item}</span>
+                              <Badge variant="outline" className={`text-xs ${
+                                (responses[`${section.name}-${item}`] || 1) <= 2 ? 'text-green-600 border-green-300' :
+                                (responses[`${section.name}-${item}`] || 1) <= 3 ? 'text-yellow-600 border-yellow-300' :
+                                'text-red-600 border-red-300'
+                              }`}>
+                                {(responses[`${section.name}-${item}`] || 1) <= 2 ? 'Mild' :
+                                 (responses[`${section.name}-${item}`] || 1) <= 3 ? 'Moderate' : 'Severe'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="flex-1">
+                                <Slider
+                                  value={[responses[`${section.name}-${item}`] || 1]}
+                                  onValueChange={(value) => setResponses({
+                                    ...responses,
+                                    [`${section.name}-${item}`]: value[0]
+                                  })}
+                                  max={5}
+                                  min={1}
+                                  step={1}
+                                  className="w-full"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1 min-w-[60px]">
+                                <span className="text-sm font-bold text-2xl">
+                                  {responses[`${section.name}-${item}`] || 1}
+                                </span>
+                                <span className="text-xs text-gray-500">/5</span>
+                              </div>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-500 mt-2">
+                              <span>None</span>
+                              <span>Mild</span>
+                              <span>Moderate</span>
+                              <span>Strong</span>
+                              <span>Severe</span>
+                            </div>
                           </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div className="border-t pt-6 space-y-4">
+                    <h4 className="font-semibold">Daily Notes & Observations</h4>
+                    <div className="grid gap-4">
+                      <div>
+                        <Label>What time of day do symptoms feel strongest?</Label>
+                        <RadioGroup
+                          value={responses.strongestTime || ''}
+                          onValueChange={(value) => setResponses({...responses, strongestTime: value})}
+                          className="mt-2 grid grid-cols-2 gap-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="morning" />
+                            <Label>Morning</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="afternoon" />
+                            <Label>Afternoon</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="evening" />
+                            <Label>Evening</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="night" />
+                            <Label>Night</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                      
+                      <div>
+                        <Label>Potential triggers you noticed today:</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {['Stress', 'Poor sleep', 'Caffeine', 'Sugar', 'Skipped meals', 'Lack of exercise'].map((trigger) => (
+                            <div key={trigger} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`trigger-${trigger}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`trigger-${trigger}`]: checked
+                                })}
+                              />
+                              <Label className="text-sm">{trigger}</Label>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
+
+                      <div>
+                        <Label>What helped you feel better today?</Label>
+                        <Textarea
+                          placeholder="Note any activities, foods, or practices that improved how you felt..."
+                          value={responses.whatHelped || ''}
+                          onChange={(e) => setResponses({...responses, whatHelped: e.target.value})}
+                          className="mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Overall energy level today (1-10):</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                          <Slider
+                            value={[responses.energyLevel || 5]}
+                            onValueChange={(value) => setResponses({...responses, energyLevel: value[0]})}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="font-medium text-lg w-8">{responses.energyLevel || 5}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {exercise.id === 'energy-mapping' && (
@@ -707,7 +820,186 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
             </div>
           )}
 
-          {(exercise.id === 'morning-hormone-ritual' || exercise.id === 'brain-fog-clearing') && (
+          {exercise.id === 'morning-ritual' && (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sun className="w-5 h-5 text-yellow-500" />
+                    Morning Sunlight Practice Setup
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">This practice helps regulate your circadian rhythm and supports healthy cortisol production.</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-3">Your Personal Morning Ritual Plan</h4>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>What time will you do this practice?</Label>
+                        <RadioGroup
+                          value={responses.morningTime || ''}
+                          onValueChange={(value) => setResponses({...responses, morningTime: value})}
+                          className="mt-2 grid grid-cols-2 gap-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="6-7am" />
+                            <Label>6:00-7:00 AM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="7-8am" />
+                            <Label>7:00-8:00 AM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="8-9am" />
+                            <Label>8:00-9:00 AM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="9-10am" />
+                            <Label>9:00-10:00 AM</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div>
+                        <Label>Where will you do your sunlight practice?</Label>
+                        <RadioGroup
+                          value={responses.sunlightLocation || ''}
+                          onValueChange={(value) => setResponses({...responses, sunlightLocation: value})}
+                          className="mt-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="outside" />
+                            <Label>Outside (garden, balcony, porch)</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="window" />
+                            <Label>By a large window (open if possible)</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="walk" />
+                            <Label>During a morning walk</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div>
+                        <Label>Duration you can commit to:</Label>
+                        <RadioGroup
+                          value={responses.duration || ''}
+                          onValueChange={(value) => setResponses({...responses, duration: value})}
+                          className="mt-2 grid grid-cols-3 gap-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="5min" />
+                            <Label>5 minutes</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="10min" />
+                            <Label>10 minutes</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="15min" />
+                            <Label>15 minutes</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-3">Step-by-Step Morning Ritual</h4>
+                    <div className="space-y-3">
+                      {[
+                        { step: 1, action: "Wake up and drink 16oz of water with a pinch of sea salt", benefit: "Rehydrates and supports adrenals" },
+                        { step: 2, action: "Step outside or sit by a bright window within 30 minutes of waking", benefit: "Triggers healthy cortisol release" },
+                        { step: 3, action: "Face east toward the sunrise (or brightest part of sky)", benefit: "Maximizes light exposure to eyes" },
+                        { step: 4, action: "Take 10 deep breaths while feeling sunlight on your face", benefit: "Combines breathwork with light therapy" },
+                        { step: 5, action: "Do 5 minutes of gentle stretching or movement", benefit: "Activates circulation and energy" },
+                        { step: 6, action: "Set a positive intention for your day", benefit: "Programs mindset for success" },
+                        { step: 7, action: "Eat protein within 30 minutes of this ritual", benefit: "Stabilizes blood sugar and hormones" }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-white rounded border">
+                          <div className="flex items-center justify-center w-8 h-8 bg-yellow-500 text-white rounded-full text-sm font-bold flex-shrink-0">
+                            {item.step}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{item.action}</p>
+                            <p className="text-xs text-gray-600 mt-1">{item.benefit}</p>
+                          </div>
+                          <Checkbox
+                            checked={responses[`step-${item.step}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`step-${item.step}`]: checked
+                            })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border p-4 rounded-lg">
+                    <h4 className="font-semibold mb-3">Daily Practice Tracker</h4>
+                    <div className="grid grid-cols-7 gap-2 mb-4">
+                      <div className="text-center text-sm font-medium text-gray-600">Day</div>
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                        <div key={day} className="text-center text-sm font-medium text-gray-600">{day}</div>
+                      ))}
+                      
+                      <div className="text-center text-sm">Week 1</div>
+                      {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                        <div key={day} className="flex justify-center">
+                          <Checkbox
+                            checked={responses[`morning-day-${day}`] || false}
+                            onCheckedChange={(checked) => setResponses({...responses, [`morning-day-${day}`]: checked})}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <Label>How did the sunlight make you feel? (1-10)</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                          <Slider
+                            value={[responses.sunlightFeeling || 5]}
+                            onValueChange={(value) => setResponses({...responses, sunlightFeeling: value[0]})}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="font-medium text-lg w-8">{responses.sunlightFeeling || 5}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>What positive intention did you set today?</Label>
+                        <Input
+                          placeholder="e.g., I choose calm confidence today"
+                          value={responses.dailyIntention || ''}
+                          onChange={(e) => setResponses({...responses, dailyIntention: e.target.value})}
+                          className="mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Notes about your morning practice:</Label>
+                        <Textarea
+                          placeholder="How did you feel? Any challenges or wins?"
+                          value={responses.morningNotes || ''}
+                          onChange={(e) => setResponses({...responses, morningNotes: e.target.value})}
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {exercise.id === 'brain-fog-clearing' && (
             <div className="space-y-4">
               <Card>
                 <CardHeader>
@@ -796,6 +1088,214 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                           <Label>Evening (6-8 PM)</Label>
                         </div>
                       </RadioGroup>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {exercise.id === 'evening-wind-down' && (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Moon className="w-5 h-5 text-purple-500" />
+                    Design Your Evening Wind-Down Routine
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">Create a personalized evening ritual that supports progesterone production and prepares your body for restorative sleep.</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-3">Your Evening Routine Preferences</h4>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>What time do you want to start your wind-down routine?</Label>
+                        <RadioGroup
+                          value={responses.windDownStart || ''}
+                          onValueChange={(value) => setResponses({...responses, windDownStart: value})}
+                          className="mt-2 grid grid-cols-2 gap-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="8pm" />
+                            <Label>8:00 PM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="9pm" />
+                            <Label>9:00 PM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="10pm" />
+                            <Label>10:00 PM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="11pm" />
+                            <Label>11:00 PM</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div>
+                        <Label>What's your ideal bedtime?</Label>
+                        <RadioGroup
+                          value={responses.bedtime || ''}
+                          onValueChange={(value) => setResponses({...responses, bedtime: value})}
+                          className="mt-2 grid grid-cols-2 gap-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="9pm" />
+                            <Label>9:00 PM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="10pm" />
+                            <Label>10:00 PM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="11pm" />
+                            <Label>11:00 PM</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="12am" />
+                            <Label>12:00 AM</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div>
+                        <Label>Select the activities you'd like to include in your routine:</Label>
+                        <div className="grid grid-cols-2 gap-3 mt-2">
+                          {[
+                            'Warm bath/shower', 'Herbal tea', 'Gentle stretching', 'Reading', 
+                            'Meditation', 'Journaling', 'Essential oils', 'Soft music',
+                            'Breathing exercises', 'Gratitude practice', 'Dim lighting', 'No screens'
+                          ].map((activity) => (
+                            <div key={activity} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`evening-${activity}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`evening-${activity}`]: checked
+                                })}
+                              />
+                              <Label className="text-sm">{activity}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-indigo-50 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-3">Your Personalized Evening Ritual</h4>
+                    <div className="space-y-3">
+                      {[
+                        { time: "1 hour before bed", action: "Dim all lights and turn off screens", benefit: "Signals melatonin production" },
+                        { time: "45 minutes before", action: "Take warm bath or shower with Epsom salts", benefit: "Relaxes muscles and lowers body temperature" },
+                        { time: "30 minutes before", action: "Practice gentle yoga or stretching", benefit: "Releases physical tension" },
+                        { time: "20 minutes before", action: "Drink herbal tea (chamomile, passionflower)", benefit: "Natural relaxation support" },
+                        { time: "15 minutes before", action: "Practice hormone harmony meditation", benefit: "Activates parasympathetic nervous system" },
+                        { time: "10 minutes before", action: "Write 3 things you're grateful for", benefit: "Shifts mindset to positive" },
+                        { time: "5 minutes before", action: "Set intention for restful sleep", benefit: "Programs subconscious for healing" }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-white rounded border">
+                          <div className="flex items-center justify-center min-w-[100px] h-8 bg-purple-500 text-white rounded text-xs font-medium flex-shrink-0">
+                            {item.time}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{item.action}</p>
+                            <p className="text-xs text-gray-600 mt-1">{item.benefit}</p>
+                          </div>
+                          <Checkbox
+                            checked={responses[`evening-step-${index}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`evening-step-${index}`]: checked
+                            })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border p-4 rounded-lg">
+                    <h4 className="font-semibold mb-3">Evening Routine Tracker</h4>
+                    <div className="grid grid-cols-7 gap-2 mb-4">
+                      <div className="text-center text-sm font-medium text-gray-600">Day</div>
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                        <div key={day} className="text-center text-sm font-medium text-gray-600">{day}</div>
+                      ))}
+                      
+                      <div className="text-center text-sm">Week 1</div>
+                      {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                        <div key={day} className="flex justify-center">
+                          <Checkbox
+                            checked={responses[`evening-day-${day}`] || false}
+                            onCheckedChange={(checked) => setResponses({...responses, [`evening-day-${day}`]: checked})}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <Label>How well did you sleep last night? (1-10)</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                          <Slider
+                            value={[responses.sleepQuality || 5]}
+                            onValueChange={(value) => setResponses({...responses, sleepQuality: value[0]})}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="font-medium text-lg w-8">{responses.sleepQuality || 5}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>How relaxed did you feel during your routine? (1-10)</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                          <Slider
+                            value={[responses.relaxationLevel || 5]}
+                            onValueChange={(value) => setResponses({...responses, relaxationLevel: value[0]})}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="font-medium text-lg w-8">{responses.relaxationLevel || 5}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>What time did you actually fall asleep?</Label>
+                        <Input
+                          placeholder="e.g., 10:30 PM"
+                          value={responses.actualSleepTime || ''}
+                          onChange={(e) => setResponses({...responses, actualSleepTime: e.target.value})}
+                          className="mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Evening routine notes:</Label>
+                        <Textarea
+                          placeholder="What worked well? What was challenging? How did you feel?"
+                          value={responses.eveningNotes || ''}
+                          onChange={(e) => setResponses({...responses, eveningNotes: e.target.value})}
+                          className="mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Tomorrow's intention:</Label>
+                        <Input
+                          placeholder="Set a positive intention for tomorrow's rest"
+                          value={responses.tomorrowIntention || ''}
+                          onChange={(e) => setResponses({...responses, tomorrowIntention: e.target.value})}
+                          className="mt-2"
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
