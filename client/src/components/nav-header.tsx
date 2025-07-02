@@ -12,6 +12,7 @@ export function NavHeader() {
     { path: '/coaching', label: 'Coaching', icon: 'fas fa-graduation-cap' },
     { path: '/journal', label: 'Journal', icon: 'fas fa-book' },
     { path: '/progress', label: 'Progress', icon: 'fas fa-trophy' },
+    { path: '/community', label: 'Community', icon: 'fas fa-users' },
   ];
 
   const isActive = (path: string) => {
