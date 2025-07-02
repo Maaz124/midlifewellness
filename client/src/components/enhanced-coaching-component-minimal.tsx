@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, CheckCircle, Play, Pause } from 'lucide-react';
-import { SomaticGrounding } from './somatic-grounding';
+import { SomaticGroundingFixed } from './somatic-grounding-fixed';
 
 interface EnhancedCoachingComponentMinimalProps {
   component: any;
@@ -19,7 +19,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   // Week 4: Somatic Grounding Practices
   if (moduleId === 'week-4' && component.id === 'w4-grounding') {
-    return <SomaticGrounding onComplete={onComplete} onClose={onClose} />;
+    return <SomaticGroundingFixed onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback content for other components

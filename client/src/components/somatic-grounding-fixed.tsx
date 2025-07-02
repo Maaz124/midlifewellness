@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle } from 'lucide-react';
 
-interface SomaticGroundingProps {
+interface SomaticGroundingFixedProps {
   onComplete: (componentId: string, data?: any) => void;
   onClose: () => void;
 }
 
-export function SomaticGrounding({ onComplete, onClose }: SomaticGroundingProps) {
+export function SomaticGroundingFixed({ onComplete, onClose }: SomaticGroundingFixedProps) {
   const [activeTechnique, setActiveTechnique] = useState<'grounding' | 'bodyscan' | 'breathing'>('grounding');
   const [responses, setResponses] = useState({
     sight: '',
@@ -21,10 +20,7 @@ export function SomaticGrounding({ onComplete, onClose }: SomaticGroundingProps)
   const [isBreathing, setIsBreathing] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setResponses(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setResponses(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -95,63 +91,63 @@ export function SomaticGrounding({ onComplete, onClose }: SomaticGroundingProps)
             <p className="text-sm text-blue-700 mb-4">Take a moment to practice grounding yourself in the present moment:</p>
             
             <div className="space-y-4">
-            <div>
-              <label className="block font-medium text-blue-900 mb-2">👀 Name 5 things you can see:</label>
-              <input 
-                type="text" 
-                placeholder="Blue coffee mug, sunlight through window, wooden table grain..."
-                className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={responses.sight}
-                onChange={(e) => handleInputChange('sight', e.target.value)}
-              />
+              <div>
+                <label className="block font-medium text-blue-900 mb-2">👀 Name 5 things you can see:</label>
+                <input 
+                  type="text" 
+                  placeholder="Blue coffee mug, sunlight through window, wooden table grain..."
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={responses.sight}
+                  onChange={(e) => handleInputChange('sight', e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="block font-medium text-blue-900 mb-2">👂 Name 4 things you can hear:</label>
+                <input 
+                  type="text" 
+                  placeholder="Air conditioning humming, birds outside, your breathing..."
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={responses.hearing}
+                  onChange={(e) => handleInputChange('hearing', e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="block font-medium text-blue-900 mb-2">✋ Name 3 things you can touch:</label>
+                <input 
+                  type="text" 
+                  placeholder="Smooth phone screen, soft fabric of your shirt, cool table surface..."
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={responses.touch}
+                  onChange={(e) => handleInputChange('touch', e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="block font-medium text-blue-900 mb-2">👃 Name 2 things you can smell:</label>
+                <input 
+                  type="text" 
+                  placeholder="Coffee brewing, fresh air, cleaning products..."
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={responses.smell}
+                  onChange={(e) => handleInputChange('smell', e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="block font-medium text-blue-900 mb-2">👅 Name 1 thing you can taste:</label>
+                <input 
+                  type="text" 
+                  placeholder="Lingering coffee, toothpaste, just the taste of your mouth..."
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={responses.taste}
+                  onChange={(e) => handleInputChange('taste', e.target.value)}
+                />
+              </div>
             </div>
             
-            <div>
-              <label className="block font-medium text-blue-900 mb-2">👂 Name 4 things you can hear:</label>
-              <input 
-                type="text" 
-                placeholder="Air conditioning humming, birds outside, your breathing..."
-                className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={responses.hearing}
-                onChange={(e) => handleInputChange('hearing', e.target.value)}
-              />
-            </div>
-            
-            <div>
-              <label className="block font-medium text-blue-900 mb-2">✋ Name 3 things you can touch:</label>
-              <input 
-                type="text" 
-                placeholder="Smooth phone screen, soft fabric of your shirt, cool table surface..."
-                className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={responses.touch}
-                onChange={(e) => handleInputChange('touch', e.target.value)}
-              />
-            </div>
-            
-            <div>
-              <label className="block font-medium text-blue-900 mb-2">👃 Name 2 things you can smell:</label>
-              <input 
-                type="text" 
-                placeholder="Coffee brewing, fresh air, cleaning products..."
-                className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={responses.smell}
-                onChange={(e) => handleInputChange('smell', e.target.value)}
-              />
-            </div>
-            
-            <div>
-              <label className="block font-medium text-blue-900 mb-2">👅 Name 1 thing you can taste:</label>
-              <input 
-                type="text" 
-                placeholder="Lingering coffee, toothpaste, just the taste of your mouth..."
-                className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={responses.taste}
-                onChange={(e) => handleInputChange('taste', e.target.value)}
-              />
-            </div>
-            </div>
-            
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-4 mb-4">
               <h4 className="font-semibold text-amber-800 mb-2">🌟 Notice the Difference</h4>
               <p className="text-sm text-amber-700">
                 How do you feel now compared to when you started? Even this simple practice can shift your nervous system from stress to calm.
@@ -189,6 +185,11 @@ export function SomaticGrounding({ onComplete, onClose }: SomaticGroundingProps)
                   <label htmlFor={`body-${index}`} className="text-sm text-green-800">{part} - Notice, breathe, release</label>
                 </div>
               ))}
+              
+              <div className="bg-green-100 border border-green-300 rounded-lg p-4 mt-4">
+                <h5 className="font-semibold text-green-800 mb-2">💡 For Midlife Women:</h5>
+                <p className="text-sm text-green-700">Body scanning helps identify where you store stress and hormonal tension. Many women notice tight shoulders from carrying emotional load, or tension in the abdomen from perimenopause changes.</p>
+              </div>
             </div>
           </div>
         )}
@@ -217,6 +218,11 @@ export function SomaticGrounding({ onComplete, onClose }: SomaticGroundingProps)
               >
                 {isBreathing ? 'Breathing...' : 'Start Breathing Exercise'}
               </Button>
+              
+              <div className="bg-purple-100 border border-purple-300 rounded-lg p-4 mt-4">
+                <h5 className="font-semibold text-purple-800 mb-2">💡 Perfect for Hot Flashes:</h5>
+                <p className="text-sm text-purple-700">This breathing pattern helps regulate your nervous system during hormonal surges and can reduce the intensity and duration of hot flashes.</p>
+              </div>
             </div>
           </div>
         )}
@@ -224,10 +230,15 @@ export function SomaticGrounding({ onComplete, onClose }: SomaticGroundingProps)
 
       <div className="text-center">
         <Button 
-          onClick={() => onComplete('w4-grounding', { responses, completed: true })}
+          onClick={() => onComplete('w4-grounding', { 
+            activeTechnique, 
+            responses, 
+            bodyParts, 
+            breathCount, 
+            completed: true 
+          })}
           className="bg-sage-600 hover:bg-sage-700 text-white px-8 py-3"
         >
-          <CheckCircle className="w-4 h-4 mr-2" />
           Complete Grounding Practice
         </Button>
       </div>
