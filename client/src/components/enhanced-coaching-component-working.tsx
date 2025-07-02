@@ -311,6 +311,376 @@ function InteractiveFocusMemoryRituals({ onComplete, onClose }: { onComplete: (i
   );
 }
 
+// Brain-Boosting Nutrition Plan Component
+function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentDay, setCurrentDay] = useState(1);
+  const [selectedMealPlan, setSelectedMealPlan] = useState('cognitive');
+  const [completedMeals, setCompletedMeals] = useState<string[]>([]);
+  const [nutritionGoals, setNutritionGoals] = useState<Record<string, boolean>>({});
+  const [shoppingList, setShoppingList] = useState<string[]>([]);
+
+  const nutritionPlans = {
+    cognitive: {
+      title: "Cognitive Enhancement Plan",
+      description: "Optimize memory, focus, and mental clarity",
+      color: "purple",
+      keyNutrients: ["Omega-3", "Antioxidants", "B-Vitamins", "Magnesium"],
+      dailyMeals: [
+        {
+          id: 'breakfast-cognitive',
+          type: 'breakfast',
+          name: 'Brain-Boosting Berry Bowl',
+          ingredients: ['Blueberries', 'Walnuts', 'Greek yogurt', 'Chia seeds', 'Honey'],
+          brainBenefits: 'Antioxidants improve memory, omega-3s support brain structure',
+          prepTime: '5 mins',
+          nutrients: ['Anthocyanins', 'Omega-3', 'Protein', 'Fiber']
+        },
+        {
+          id: 'lunch-cognitive',
+          type: 'lunch',
+          name: 'Salmon & Avocado Power Salad',
+          ingredients: ['Wild salmon', 'Avocado', 'Spinach', 'Quinoa', 'Olive oil'],
+          brainBenefits: 'DHA supports cognitive function, folate aids neurotransmitter production',
+          prepTime: '15 mins',
+          nutrients: ['DHA', 'Folate', 'Vitamin E', 'Complex carbs']
+        },
+        {
+          id: 'dinner-cognitive',
+          type: 'dinner',
+          name: 'Turmeric Chicken with Sweet Potato',
+          ingredients: ['Organic chicken', 'Sweet potato', 'Turmeric', 'Broccoli', 'Coconut oil'],
+          brainBenefits: 'Curcumin reduces inflammation, beta-carotene protects brain cells',
+          prepTime: '25 mins',
+          nutrients: ['Curcumin', 'Beta-carotene', 'Protein', 'Vitamin K']
+        }
+      ]
+    },
+    hormonal: {
+      title: "Hormonal Balance Plan",
+      description: "Support hormonal health during midlife transitions",
+      color: "pink",
+      keyNutrients: ["Phytoestrogens", "Vitamin D", "Calcium", "Iron"],
+      dailyMeals: [
+        {
+          id: 'breakfast-hormonal',
+          type: 'breakfast',
+          name: 'Flax & Almond Smoothie Bowl',
+          ingredients: ['Ground flaxseed', 'Almond butter', 'Spinach', 'Banana', 'Coconut milk'],
+          brainBenefits: 'Lignans support hormone balance, magnesium reduces stress',
+          prepTime: '7 mins',
+          nutrients: ['Lignans', 'Magnesium', 'Potassium', 'Plant protein']
+        },
+        {
+          id: 'lunch-hormonal',
+          type: 'lunch',
+          name: 'Tempeh Buddha Bowl',
+          ingredients: ['Fermented tempeh', 'Edamame', 'Purple cabbage', 'Brown rice', 'Sesame seeds'],
+          brainBenefits: 'Isoflavones support cognitive function during menopause',
+          prepTime: '20 mins',
+          nutrients: ['Isoflavones', 'Probiotics', 'B-vitamins', 'Fiber']
+        },
+        {
+          id: 'dinner-hormonal',
+          type: 'dinner',
+          name: 'Lentil & Veggie Curry',
+          ingredients: ['Red lentils', 'Cauliflower', 'Kale', 'Coconut milk', 'Ginger'],
+          brainBenefits: 'Plant estrogens support brain health, iron prevents cognitive fatigue',
+          prepTime: '30 mins',
+          nutrients: ['Plant estrogens', 'Iron', 'Folate', 'Anti-inflammatory compounds']
+        }
+      ]
+    },
+    energy: {
+      title: "Sustained Energy Plan",
+      description: "Combat fatigue and maintain steady energy levels",
+      color: "orange",
+      keyNutrients: ["Complex Carbs", "B-Vitamins", "Iron", "CoQ10"],
+      dailyMeals: [
+        {
+          id: 'breakfast-energy',
+          type: 'breakfast',
+          name: 'Overnight Oats with Nuts',
+          ingredients: ['Steel-cut oats', 'Almonds', 'Pumpkin seeds', 'Cinnamon', 'Apple'],
+          brainBenefits: 'Stable glucose supports consistent brain energy',
+          prepTime: '5 mins prep (overnight)',
+          nutrients: ['Complex carbs', 'Magnesium', 'Zinc', 'Fiber']
+        },
+        {
+          id: 'lunch-energy',
+          type: 'lunch',
+          name: 'Quinoa Power Bowl',
+          ingredients: ['Tri-color quinoa', 'Black beans', 'Bell peppers', 'Pumpkin seeds', 'Tahini'],
+          brainBenefits: 'Complete proteins and B-vitamins support neurotransmitter production',
+          prepTime: '15 mins',
+          nutrients: ['Complete protein', 'B-vitamins', 'Iron', 'Healthy fats']
+        },
+        {
+          id: 'dinner-energy',
+          type: 'dinner',
+          name: 'Grass-Fed Beef with Roasted Vegetables',
+          ingredients: ['Lean beef', 'Brussels sprouts', 'Carrots', 'Red potatoes', 'Herbs'],
+          brainBenefits: 'Heme iron and B12 prevent cognitive fatigue',
+          prepTime: '35 mins',
+          nutrients: ['Heme iron', 'B12', 'Zinc', 'Antioxidants']
+        }
+      ]
+    }
+  };
+
+  const weeklyGoals = [
+    { id: 'omega3', title: 'Include omega-3 rich foods 3x per week', target: 3, current: 0 },
+    { id: 'antioxidants', title: 'Eat colorful fruits/vegetables daily', target: 7, current: 0 },
+    { id: 'hydration', title: 'Drink 8 glasses of water daily', target: 7, current: 0 },
+    { id: 'processed', title: 'Limit processed foods to 2x per week', target: 5, current: 0 },
+    { id: 'meal-timing', title: 'Eat at consistent times daily', target: 7, current: 0 }
+  ];
+
+  const brainFoods = {
+    'Memory Enhancers': ['Blueberries', 'Walnuts', 'Dark chocolate', 'Turmeric', 'Broccoli'],
+    'Focus Boosters': ['Green tea', 'Avocados', 'Eggs', 'Fatty fish', 'Pumpkin seeds'],
+    'Mood Stabilizers': ['Spinach', 'Yogurt', 'Bananas', 'Oats', 'Dark leafy greens'],
+    'Energy Sustainers': ['Quinoa', 'Sweet potatoes', 'Nuts', 'Legumes', 'Chia seeds']
+  };
+
+  const supplements = [
+    { name: 'Omega-3 (EPA/DHA)', dosage: '1000-2000mg daily', benefit: 'Brain structure and cognitive function' },
+    { name: 'Vitamin D3', dosage: '1000-2000 IU daily', benefit: 'Mood regulation and cognitive health' },
+    { name: 'B-Complex', dosage: 'As directed', benefit: 'Energy metabolism and neurotransmitter production' },
+    { name: 'Magnesium', dosage: '300-400mg daily', benefit: 'Stress reduction and sleep quality' }
+  ];
+
+  const generateShoppingList = (plan: string) => {
+    const selectedPlan = nutritionPlans[plan as keyof typeof nutritionPlans];
+    const allIngredients = selectedPlan.dailyMeals.flatMap(meal => meal.ingredients);
+    const uniqueIngredients = [...new Set(allIngredients)];
+    setShoppingList(uniqueIngredients);
+  };
+
+  const toggleMealComplete = (mealId: string) => {
+    if (completedMeals.includes(mealId)) {
+      setCompletedMeals(completedMeals.filter(id => id !== mealId));
+    } else {
+      setCompletedMeals([...completedMeals, mealId]);
+    }
+  };
+
+  const currentPlan = nutritionPlans[selectedMealPlan as keyof typeof nutritionPlans];
+  const completedMealsCount = completedMeals.length;
+  const totalMealsCount = Object.values(nutritionPlans).flatMap(plan => plan.dailyMeals).length;
+  const progressPercentage = (completedMealsCount / totalMealsCount) * 100;
+
+  return (
+    <Card className="max-w-6xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Utensils className="w-5 h-5 text-green-600" />
+          Brain-Boosting Nutrition Plan
+        </CardTitle>
+        <CardDescription>
+          Fuel your mind with targeted nutrition for cognitive enhancement and hormonal balance
+        </CardDescription>
+        
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Meals Completed: {completedMealsCount} of {totalMealsCount}</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
+          <Progress value={progressPercentage} className="h-2" />
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <Tabs value={selectedMealPlan} onValueChange={setSelectedMealPlan}>
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            {Object.entries(nutritionPlans).map(([key, plan]) => (
+              <TabsTrigger key={key} value={key} className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full bg-${plan.color}-500`}></div>
+                {plan.title}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {Object.entries(nutritionPlans).map(([planKey, plan]) => (
+            <TabsContent key={planKey} value={planKey}>
+              <div className="space-y-6">
+                {/* Plan Overview */}
+                <Card className="bg-gradient-to-r from-green-50 to-blue-50">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
+                    <p className="text-gray-600 mb-4">{plan.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {plan.keyNutrients.map((nutrient) => (
+                        <Badge key={nutrient} variant="secondary">
+                          {nutrient}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Daily Meals */}
+                <div className="grid gap-4 md:grid-cols-3">
+                  {plan.dailyMeals.map((meal) => (
+                    <Card key={meal.id} className="relative">
+                      {completedMeals.includes(meal.id) && (
+                        <div className="absolute top-2 right-2">
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        </div>
+                      )}
+                      <CardHeader>
+                        <CardTitle className="text-lg capitalize">{meal.type}</CardTitle>
+                        <CardDescription>{meal.name}</CardDescription>
+                        <Badge variant="outline" className="w-fit">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {meal.prepTime}
+                        </Badge>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2">Ingredients:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {meal.ingredients.map((ingredient) => (
+                                <Badge key={ingredient} variant="secondary" className="text-xs">
+                                  {ingredient}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h4 className="font-semibold text-blue-800 text-sm mb-1">Brain Benefits:</h4>
+                            <p className="text-blue-700 text-sm">{meal.brainBenefits}</p>
+                          </div>
+
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2">Key Nutrients:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {meal.nutrients.map((nutrient) => (
+                                <Badge key={nutrient} variant="outline" className="text-xs">
+                                  {nutrient}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <Button 
+                            onClick={() => toggleMealComplete(meal.id)}
+                            className="w-full"
+                            variant={completedMeals.includes(meal.id) ? "outline" : "default"}
+                          >
+                            {completedMeals.includes(meal.id) ? 'Completed ✓' : 'Mark as Prepared'}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+
+        {/* Brain Foods Reference */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-600" />
+              Brain Foods Reference Guide
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {Object.entries(brainFoods).map(([category, foods]) => (
+                <div key={category} className="space-y-2">
+                  <h4 className="font-semibold text-sm text-purple-700">{category}</h4>
+                  <div className="space-y-1">
+                    {foods.map((food) => (
+                      <div key={food} className="text-sm text-gray-600 p-2 bg-gray-50 rounded">
+                        {food}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Shopping List Generator */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Shopping List Generator</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Button 
+                onClick={() => generateShoppingList(selectedMealPlan)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Generate Shopping List for {currentPlan.title}
+              </Button>
+              
+              {shoppingList.length > 0 && (
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <h4 className="font-semibold mb-3">Your Shopping List:</h4>
+                  <div className="grid gap-2 md:grid-cols-3">
+                    {shoppingList.map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-sm">
+                        <Checkbox />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Supplement Recommendations */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Supplement Recommendations</CardTitle>
+            <CardDescription>Consult with healthcare provider before starting any supplements</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              {supplements.map((supplement) => (
+                <div key={supplement.name} className="p-4 border rounded-lg">
+                  <h4 className="font-semibold">{supplement.name}</h4>
+                  <p className="text-sm text-gray-600 mb-2">Dosage: {supplement.dosage}</p>
+                  <p className="text-sm text-blue-700">{supplement.benefit}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between pt-6 border-t mt-6">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button 
+            onClick={() => onComplete('w5-nutrition', { 
+              completedMeals,
+              selectedPlan: selectedMealPlan,
+              progressPercentage: Math.round(progressPercentage),
+              shoppingList
+            })}
+            disabled={completedMeals.length === 0}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Save Progress ({completedMeals.length} meals completed)
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Main Enhanced Coaching Component
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -1671,6 +2041,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 5: Interactive Focus & Memory Rituals
   if (component.id === 'w5-rituals') {
     return <InteractiveFocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 5: Brain-Boosting Nutrition Plan
+  if (component.id === 'w5-nutrition') {
+    return <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
