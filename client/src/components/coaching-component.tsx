@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { ModuleComponent } from '@/types/wellness';
+import { videoScripts, audioScripts, detailedExercises, worksheetTemplates } from '@/lib/hormone-headspace-content';
 import { 
   Play, 
   Pause, 
