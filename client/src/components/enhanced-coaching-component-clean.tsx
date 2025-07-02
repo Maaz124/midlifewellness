@@ -4512,6 +4512,641 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Thought Awareness - Hormonal Thought Awareness Practice
+    if (component.id === 'thought-awareness') {
+      const awarenessPhase = responses.awarenessPhase || 'assessment';
+      const thoughtPattern = responses.thoughtPattern || 'negative-spiral';
+      const thoughtIntensity = responses.thoughtIntensity || 5;
+      const emotionalImpact = responses.emotionalImpact || 5;
+      const thoughtExerciseRounds = responses.thoughtExerciseRounds || 0;
+
+      const thoughtPatterns = [
+        {
+          id: 'negative-spiral',
+          name: 'Negative Thinking Spiral',
+          description: 'Cascading negative thoughts that build on each other',
+          icon: '🌪️',
+          triggers: ['Stress', 'Fatigue', 'Hormonal fluctuations'],
+          examples: ['I can\'t handle this', 'Everything is falling apart', 'I\'m failing at everything'],
+          techniques: ['Thought stopping', 'Reality checking', 'Pattern interruption']
+        },
+        {
+          id: 'catastrophizing',
+          name: 'Catastrophic Thinking',
+          description: 'Jumping to worst-case scenarios',
+          icon: '🚨',
+          triggers: ['Anxiety', 'Sleep deprivation', 'Hormonal surges'],
+          examples: ['This headache means something terrible', 'My memory loss is permanent', 'I\'ll never feel normal again'],
+          techniques: ['Probability assessment', 'Evidence examination', 'Perspective shifting']
+        },
+        {
+          id: 'all-or-nothing',
+          name: 'All-or-Nothing Thinking',
+          description: 'Seeing things in black and white extremes',
+          icon: '⚫⚪',
+          triggers: ['Perfectionism', 'Hormonal imbalance', 'Decision fatigue'],
+          examples: ['I\'m either perfect or a failure', 'If I can\'t do it all, why bother', 'This day is completely ruined'],
+          techniques: ['Gray area exploration', 'Spectrum thinking', 'Progress acknowledgment']
+        },
+        {
+          id: 'rumination',
+          name: 'Obsessive Rumination',
+          description: 'Repeatedly cycling through the same worries',
+          icon: '🔄',
+          triggers: ['Progesterone drops', 'Stress', 'Unresolved concerns'],
+          examples: ['What if I said the wrong thing', 'I should have handled that differently', 'Why did that happen'],
+          techniques: ['Thought scheduling', 'Worry time', 'Mindful redirection']
+        },
+        {
+          id: 'mind-reading',
+          name: 'Mind Reading',
+          description: 'Assuming you know what others are thinking',
+          icon: '🔮',
+          triggers: ['Social anxiety', 'Estrogen fluctuations', 'Self-doubt'],
+          examples: ['They think I\'m incompetent', 'Everyone can see I\'m struggling', 'They\'re judging me'],
+          techniques: ['Fact vs. assumption', 'Direct communication', 'Self-compassion']
+        }
+      ];
+
+      const awarenessExercises = [
+        {
+          id: 'thought-catching',
+          name: 'Real-Time Thought Catching',
+          duration: '5 min',
+          description: 'Identify and capture automatic thoughts as they occur',
+          steps: [
+            'Set a gentle timer to check in every hour',
+            'When the timer goes off, pause and notice your current thoughts',
+            'Write down the exact thought without judgment',
+            'Rate the emotional intensity (1-10)',
+            'Note any physical sensations',
+            'Continue with your day mindfully'
+          ]
+        },
+        {
+          id: 'evidence-examination',
+          name: 'Evidence Examination',
+          duration: '8 min',
+          description: 'Challenge thoughts by examining evidence for and against',
+          steps: [
+            'Choose one specific negative thought',
+            'List evidence that supports this thought',
+            'List evidence that contradicts this thought',
+            'Consider alternative explanations',
+            'Create a more balanced perspective',
+            'Notice how this feels in your body'
+          ]
+        },
+        {
+          id: 'perspective-shifting',
+          name: 'Perspective Shifting Exercise',
+          duration: '6 min',
+          description: 'View the situation from different angles',
+          steps: [
+            'Describe the situation objectively (just facts)',
+            'How would your best friend view this situation?',
+            'How will this matter in 5 years?',
+            'What would you tell someone else in this situation?',
+            'What opportunities might this challenge create?',
+            'Choose the most helpful perspective'
+          ]
+        }
+      ];
+
+      const getCurrentPattern = () => {
+        return thoughtPatterns.find(pattern => pattern.id === thoughtPattern) || thoughtPatterns[0];
+      };
+
+      const getIntensityInterpretation = (intensity: number) => {
+        if (intensity <= 3) return { level: 'Mild', color: 'text-green-600', message: 'Manageable thought intensity' };
+        if (intensity <= 5) return { level: 'Moderate', color: 'text-yellow-600', message: 'Noticeable impact on mood' };
+        if (intensity <= 7) return { level: 'Strong', color: 'text-orange-600', message: 'Significantly affecting wellbeing' };
+        if (intensity <= 9) return { level: 'Intense', color: 'text-red-600', message: 'Very distressing thoughts' };
+        return { level: 'Overwhelming', color: 'text-red-700', message: 'Thoughts feel out of control' };
+      };
+
+      const intensityInterpretation = getIntensityInterpretation(thoughtIntensity);
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-500" />
+              Hormonal Thought Awareness Practice
+            </CardTitle>
+            <p className="text-sm text-gray-600">Learn to recognize and reframe thought patterns that intensify during hormonal fluctuations, building mental resilience during perimenopause.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Thought-Hormone Connection Science */}
+            <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+              <h5 className="font-semibold text-purple-800 mb-2">How Hormones Affect Your Thoughts</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-purple-700">
+                <div>
+                  <strong>Estrogen & Serotonin:</strong> Low estrogen reduces serotonin, affecting mood and thought patterns
+                </div>
+                <div>
+                  <strong>Progesterone & GABA:</strong> Declining progesterone reduces calming neurotransmitters
+                </div>
+                <div>
+                  <strong>Cortisol Sensitivity:</strong> Hormonal changes increase stress response and negative thinking
+                </div>
+                <div>
+                  <strong>Neural Pathways:</strong> Repeated negative thoughts create stronger neural patterns during hormonal shifts
+                </div>
+              </div>
+            </div>
+
+            {/* Thought Pattern Assessment */}
+            {awarenessPhase === 'assessment' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Thought Pattern Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Let's identify your current thought patterns and their impact:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Overall thought intensity today</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Very Calm</span>
+                      <Slider
+                        value={[thoughtIntensity]}
+                        onValueChange={(value) => setResponses({...responses, thoughtIntensity: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Overwhelming</span>
+                      <span className="text-lg font-bold text-purple-600 min-w-[30px]">{thoughtIntensity}</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-xs text-gray-600">How intense are your thoughts right now?</span>
+                      <span className={`text-sm font-semibold ${intensityInterpretation.color}`}>
+                        {intensityInterpretation.level}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Emotional impact of thoughts</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">No Impact</span>
+                      <Slider
+                        value={[emotionalImpact]}
+                        onValueChange={(value) => setResponses({...responses, emotionalImpact: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Very Distressing</span>
+                      <span className="text-lg font-bold text-purple-600 min-w-[30px]">{emotionalImpact}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">How much do your thoughts affect your emotions?</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Recent negative thought patterns (check all that apply):</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Racing thoughts that won\'t stop', 'Worst-case scenario thinking', 'Harsh self-criticism', 'Worry about the future',
+                        'Replaying past mistakes', 'Comparing myself to others', 'Feeling like nothing is working', 'Doubting my abilities'
+                      ].map((pattern) => (
+                        <div key={pattern} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`thought-pattern-${pattern}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`thought-pattern-${pattern}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{pattern}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">When do negative thoughts feel strongest?</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Early morning', 'Before my period', 'When I\'m tired', 'During stress',
+                        'Late at night', 'When I\'m alone', 'During hot flashes', 'When making decisions'
+                      ].map((trigger) => (
+                        <div key={trigger} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`thought-trigger-${trigger}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`thought-trigger-${trigger}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{trigger}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, awarenessPhase: 'pattern-selection'})}
+                    className="w-full"
+                  >
+                    Identify My Thought Patterns
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Pattern Selection & Education */}
+            {awarenessPhase === 'pattern-selection' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Common Hormonal Thought Patterns</h4>
+                <p className="text-sm text-gray-600 mb-4">Select the pattern that feels most familiar to you right now:</p>
+                
+                <div className="space-y-4">
+                  {thoughtPatterns.map((pattern) => (
+                    <div 
+                      key={pattern.id}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        thoughtPattern === pattern.id 
+                          ? 'border-purple-400 bg-purple-50' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setResponses({...responses, thoughtPattern: pattern.id})}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="text-3xl">{pattern.icon}</div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              thoughtPattern === pattern.id 
+                                ? 'border-purple-500 bg-purple-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {thoughtPattern === pattern.id && (
+                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                              )}
+                            </div>
+                            <h5 className="font-semibold">{pattern.name}</h5>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3">{pattern.description}</p>
+                          
+                          <div className="space-y-2 text-sm">
+                            <div>
+                              <strong className="text-purple-700">Common Triggers:</strong>
+                              <span className="text-gray-600"> {pattern.triggers.join(', ')}</span>
+                            </div>
+                            <div>
+                              <strong className="text-purple-700">Examples:</strong>
+                              <ul className="text-gray-600 ml-4 mt-1">
+                                {pattern.examples.map((example, index) => (
+                                  <li key={index} className="list-disc">"{example}"</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <strong className="text-green-700">Helpful Techniques:</strong>
+                              <span className="text-gray-600"> {pattern.techniques.join(', ')}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Button 
+                  onClick={() => setResponses({...responses, awarenessPhase: 'practice'})}
+                  className="w-full mt-6"
+                >
+                  Practice {getCurrentPattern().name} Awareness
+                </Button>
+              </div>
+            )}
+
+            {/* Awareness Practice */}
+            {awarenessPhase === 'practice' && (
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-lg border">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-3">{getCurrentPattern().icon}</div>
+                  <h4 className="text-xl font-semibold mb-2">{getCurrentPattern().name} Practice</h4>
+                  <p className="text-sm text-gray-600">{getCurrentPattern().description}</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Current Thought Exercise */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Awareness Exercise: Catch It in Action</h5>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="font-medium">Write down a specific thought you're having right now that fits this pattern:</Label>
+                        <Textarea
+                          placeholder={`Example: "${getCurrentPattern().examples[0]}"`}
+                          value={responses.currentThought || ''}
+                          onChange={(e) => setResponses({...responses, currentThought: e.target.value})}
+                          className="mt-2"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="font-medium">What triggered this thought? (What was happening just before?)</Label>
+                        <Textarea
+                          placeholder="Describe the situation, feeling, or event that led to this thought..."
+                          value={responses.thoughtTrigger || ''}
+                          onChange={(e) => setResponses({...responses, thoughtTrigger: e.target.value})}
+                          className="mt-2"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="font-medium">Physical sensations when having this thought:</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {[
+                            'Tight chest', 'Racing heart', 'Tense shoulders', 'Stomach knots',
+                            'Shallow breathing', 'Clenched jaw', 'Restlessness', 'Heavy feeling'
+                          ].map((sensation) => (
+                            <div key={sensation} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={responses[`sensation-${sensation}`] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  [`sensation-${sensation}`]: checked
+                                })}
+                              />
+                              <Label className="text-sm">{sensation}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="font-medium">How believable does this thought feel right now? (1-10)</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-xs text-gray-500">Not believable</span>
+                          <Slider
+                            value={[responses.thoughtBelievability || 5]}
+                            onValueChange={(value) => setResponses({...responses, thoughtBelievability: value[0]})}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="text-xs text-gray-500">Completely true</span>
+                          <span className="text-lg font-bold text-purple-600 min-w-[30px]">{responses.thoughtBelievability || 5}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Reframing Exercise */}
+                  <div className="bg-white p-6 rounded-lg">
+                    <h5 className="font-semibold mb-4">Reframing Exercise</h5>
+                    
+                    <div className="space-y-4">
+                      {awarenessExercises.map((exercise, index) => (
+                        <div key={exercise.id} className="border rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <h6 className="font-medium">{exercise.name}</h6>
+                            <Badge variant="outline">{exercise.duration}</Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3">{exercise.description}</p>
+                          
+                          <div className="space-y-2">
+                            {exercise.steps.map((step, stepIndex) => (
+                              <div key={stepIndex} className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                  {stepIndex + 1}
+                                </div>
+                                <div className="flex items-center gap-3 flex-1">
+                                  <Checkbox
+                                    checked={responses[`exercise-${exercise.id}-step-${stepIndex}`] || false}
+                                    onCheckedChange={(checked) => setResponses({
+                                      ...responses,
+                                      [`exercise-${exercise.id}-step-${stepIndex}`]: checked
+                                    })}
+                                  />
+                                  <span className="text-sm">{step}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* New Thought Creation */}
+                  <div className="bg-green-50 p-6 rounded-lg">
+                    <h5 className="font-semibold text-green-800 mb-4">Create Your Balanced Thought</h5>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="font-medium">Rewrite your original thought in a more balanced, realistic way:</Label>
+                        <Textarea
+                          placeholder="Based on the exercises above, what's a more balanced way to think about this situation?"
+                          value={responses.balancedThought || ''}
+                          onChange={(e) => setResponses({...responses, balancedThought: e.target.value})}
+                          className="mt-2"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="font-medium">How believable does this new thought feel? (1-10)</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-xs text-gray-500">Not believable</span>
+                          <Slider
+                            value={[responses.newThoughtBelievability || 5]}
+                            onValueChange={(value) => setResponses({...responses, newThoughtBelievability: value[0]})}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="text-xs text-gray-500">Completely true</span>
+                          <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.newThoughtBelievability || 5}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Practice Rounds */}
+                  <div className="bg-white p-4 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                      <Label className="font-medium">Practice Rounds Completed:</Label>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setResponses({...responses, thoughtExerciseRounds: Math.max(0, thoughtExerciseRounds - 1)})}
+                        >
+                          -
+                        </Button>
+                        <span className="text-2xl font-bold text-purple-600 min-w-[40px] text-center">{thoughtExerciseRounds}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setResponses({...responses, thoughtExerciseRounds: thoughtExerciseRounds + 1})}
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      {[1,2,3].map((round) => (
+                        <div key={round} className={`h-10 rounded flex items-center justify-center text-sm font-medium ${
+                          round <= thoughtExerciseRounds 
+                            ? 'bg-purple-500 text-white' 
+                            : 'bg-gray-200 text-gray-600'
+                        }`}>
+                          Round {round}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, awarenessPhase: 'reflection'})}
+                    className="w-full"
+                    disabled={!responses.balancedThought || thoughtExerciseRounds < 1}
+                  >
+                    Reflect on Practice Results
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Practice Reflection */}
+            {awarenessPhase === 'reflection' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">🌟</div>
+                  <h4 className="text-xl font-semibold">Thought Awareness Complete!</h4>
+                  <p className="text-sm text-gray-600">How has your relationship with your thoughts shifted?</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Before/After Comparison */}
+                  {responses.thoughtBelievability && responses.newThoughtBelievability && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-3">Your Thought Transformation</h5>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="p-3 bg-red-50 rounded border-l-4 border-red-400">
+                            <h6 className="font-medium text-red-800">Original Thought</h6>
+                            <p className="text-sm text-red-700 mt-1">"{responses.currentThought}"</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className="text-xs text-red-600">Believability:</span>
+                              <span className="font-bold text-red-600">{responses.thoughtBelievability}/10</span>
+                            </div>
+                          </div>
+                          <div className="p-3 bg-green-50 rounded border-l-4 border-green-400">
+                            <h6 className="font-medium text-green-800">Balanced Thought</h6>
+                            <p className="text-sm text-green-700 mt-1">"{responses.balancedThought}"</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className="text-xs text-green-600">Believability:</span>
+                              <span className="font-bold text-green-600">{responses.newThoughtBelievability}/10</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-center">
+                          <span className={`text-lg font-bold ${
+                            responses.newThoughtBelievability > responses.thoughtBelievability 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            Shift: {responses.newThoughtBelievability - responses.thoughtBelievability > 0 ? '+' : ''}{responses.newThoughtBelievability - responses.thoughtBelievability} believability points
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label className="font-medium">Current emotional state (compare with starting {emotionalImpact}/10):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Distressed</span>
+                      <Slider
+                        value={[responses.postEmotionalState || 5]}
+                        onValueChange={(value) => setResponses({...responses, postEmotionalState: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Calm & Clear</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postEmotionalState || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Key insights from this practice:</Label>
+                    <Textarea
+                      placeholder="What did you learn about your thought patterns? What surprised you? How might you use this awareness in daily life?"
+                      value={responses.awarenessInsights || ''}
+                      onChange={(e) => setResponses({...responses, awarenessInsights: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Strategies to remember for next time:</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Notice physical sensations as thought warning signs',
+                        'Question the evidence for negative thoughts',
+                        'Ask "How would I advise a friend in this situation?"',
+                        'Remember that thoughts are not facts',
+                        'Practice the balanced thought regularly',
+                        'Use these techniques during hormonal fluctuations'
+                      ].map((strategy) => (
+                        <div key={strategy} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`strategy-${strategy}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`strategy-${strategy}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{strategy}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, awarenessPhase: 'assessment'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Practice with Different Thought Pattern
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Daily Practice Tips */}
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-purple-800 mb-2">💡 Daily Thought Awareness Tips</h5>
+              <ul className="text-sm text-purple-700 space-y-1">
+                <li>• Set hourly reminders to check in with your thoughts</li>
+                <li>• Keep a thought diary to track patterns over time</li>
+                <li>• Practice these techniques especially during hormonal fluctuation periods</li>
+                <li>• Remember: thoughts are mental events, not absolute truths</li>
+                <li>• Be patient - retraining thought patterns takes consistent practice</li>
+                <li>• Combine with other stress management techniques for best results</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
