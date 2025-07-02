@@ -2593,7 +2593,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   }
 
   // Week 5: Mind Management System
-  if (component.id === 'w5-mind-system') {
+  if (component.id === 'w5-mind-management') {
     return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
   }
 
