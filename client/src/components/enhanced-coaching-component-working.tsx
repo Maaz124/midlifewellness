@@ -1574,9 +1574,9 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
         </button>
 
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-purple-800 mb-4">🧠 Cognitive Clarity Assessment</h2>
+          <h2 className="text-3xl font-bold text-purple-800 mb-4">🧠 Enhanced Cognitive Clarity Assessment</h2>
           <p className="text-lg text-gray-600">
-            Evaluate your current cognitive function to create a personalized enhancement plan
+            Comprehensive evaluation of your cognitive function with real-time insights and personalized tips
           </p>
         </div>
 
