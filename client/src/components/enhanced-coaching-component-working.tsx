@@ -1363,27 +1363,44 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       {
         id: 'short-term',
         question: 'How often do you forget where you put things (keys, phone, glasses)?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+        context: 'Short-term memory challenges are common during hormonal transitions',
+        tips: 'Designated spots for important items can help reduce this stress'
       },
       {
         id: 'names-faces',
         question: 'How often do you forget names or faces of people you\'ve recently met?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+        context: 'Social memory can be affected by stress and hormonal changes',
+        tips: 'Repeating names aloud and making mental associations can improve retention'
       },
       {
         id: 'appointments',
         question: 'How often do you forget appointments or important dates without reminders?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+        context: 'Prospective memory (remembering to do things) is often impacted first',
+        tips: 'Digital calendars with multiple alerts can provide reliable backup support'
       },
       {
         id: 'word-finding',
         question: 'How often do you have trouble finding the right word in conversation?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+        context: 'Word retrieval difficulties often fluctuate with hormonal cycles',
+        tips: 'Reading regularly and doing crosswords can help maintain verbal fluency'
       },
       {
         id: 'multistep-tasks',
         question: 'How often do you lose track of multi-step tasks or instructions?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
+        context: 'Working memory capacity can be reduced during periods of high stress',
+        tips: 'Breaking complex tasks into smaller steps and writing them down helps'
+      },
+      {
+        id: 'recent-changes',
+        question: 'Compared to 2-3 years ago, how would you rate your overall memory?',
+        scale: ['Much better', 'Somewhat better', 'About the same', 'Somewhat worse', 'Much worse'],
+        context: 'Tracking changes over time helps identify patterns and improvements',
+        tips: 'Memory changes are often temporary and can improve with targeted strategies'
       }
     ];
 
@@ -1391,27 +1408,44 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       {
         id: 'attention-span',
         question: 'How long can you typically focus on a demanding task without distraction?',
-        scale: ['2+ hours', '1-2 hours', '30-60 min', '15-30 min', 'Less than 15 min']
+        scale: ['2+ hours', '1-2 hours', '30-60 min', '15-30 min', 'Less than 15 min'],
+        context: 'Sustained attention often decreases during hormonal fluctuations',
+        tips: 'The Pomodoro Technique (25-minute focused blocks) can help rebuild concentration'
       },
       {
         id: 'task-switching',
         question: 'How easily can you switch between different tasks without losing momentum?',
-        scale: ['Very easily', 'Easily', 'Moderately', 'With difficulty', 'Very difficult']
+        scale: ['Very easily', 'Easily', 'Moderately', 'With difficulty', 'Very difficult'],
+        context: 'Executive function flexibility can be impacted by stress and hormones',
+        tips: 'Creating transition rituals between tasks can improve mental flexibility'
       },
       {
         id: 'digital-distraction',
         question: 'How often do digital notifications/devices interrupt your focus?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Constantly']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Constantly'],
+        context: 'Digital distractions compound natural attention challenges during midlife',
+        tips: 'Use Do Not Disturb modes and app timers to create focused work environments'
       },
       {
         id: 'mental-fatigue',
         question: 'How often do you experience mental fatigue by mid-afternoon?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Daily']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Daily'],
+        context: 'Afternoon cognitive dips are common and often relate to blood sugar and cortisol',
+        tips: 'Protein-rich lunches and brief walks can help maintain afternoon mental energy'
       },
       {
         id: 'concentration',
         question: 'How would you rate your ability to concentrate during important conversations?',
-        scale: ['Excellent', 'Good', 'Fair', 'Poor', 'Very Poor']
+        scale: ['Excellent', 'Good', 'Fair', 'Poor', 'Very Poor'],
+        context: 'Social focus requires working memory and attention - both can be affected by stress',
+        tips: 'Active listening techniques like summarizing can improve conversation focus'
+      },
+      {
+        id: 'environment-focus',
+        question: 'How much do environmental factors (noise, lighting, temperature) affect your ability to focus?',
+        scale: ['Not at all', 'Slightly', 'Moderately', 'Significantly', 'Extremely'],
+        context: 'Sensitivity to environmental factors often increases during midlife transitions',
+        tips: 'Creating optimal environments becomes more important for cognitive performance'
       }
     ];
 
@@ -1419,27 +1453,44 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       {
         id: 'decision-making',
         question: 'How clear and confident are you when making important decisions?',
-        scale: ['Very confident', 'Confident', 'Somewhat confident', 'Uncertain', 'Very uncertain']
+        scale: ['Very confident', 'Confident', 'Somewhat confident', 'Uncertain', 'Very uncertain'],
+        context: 'Decision-making confidence often decreases when cognitive resources are strained',
+        tips: 'Pro-and-con lists and trusted advisor input can support clearer decision-making'
       },
       {
         id: 'mental-fog',
         question: 'How often do you experience "brain fog" or mental cloudiness?',
-        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Daily']
+        scale: ['Never', 'Rarely', 'Sometimes', 'Often', 'Daily'],
+        context: 'Brain fog is one of the most common complaints during perimenopause and midlife stress',
+        tips: 'Hydration, quality sleep, and reducing inflammation can significantly improve mental clarity'
       },
       {
         id: 'problem-solving',
         question: 'How quickly can you work through complex problems compared to a few years ago?',
-        scale: ['Much faster', 'Faster', 'Same', 'Slower', 'Much slower']
+        scale: ['Much faster', 'Faster', 'Same', 'Slower', 'Much slower'],
+        context: 'Processing speed naturally varies but shouldn\'t dramatically decline in midlife',
+        tips: 'Breaking problems into smaller steps can compensate for any processing changes'
       },
       {
         id: 'creativity',
         question: 'How would you rate your current creative thinking and new idea generation?',
-        scale: ['Very high', 'High', 'Moderate', 'Low', 'Very low']
+        scale: ['Very high', 'High', 'Moderate', 'Low', 'Very low'],
+        context: 'Creativity often benefits from reduced stress and increased mental space',
+        tips: 'Regular breaks, diverse experiences, and reduced multitasking can boost creativity'
       },
       {
         id: 'mental-organization',
         question: 'How organized do your thoughts feel throughout the day?',
-        scale: ['Very organized', 'Organized', 'Somewhat organized', 'Disorganized', 'Very disorganized']
+        scale: ['Very organized', 'Organized', 'Somewhat organized', 'Disorganized', 'Very disorganized'],
+        context: 'Mental organization requires cognitive resources that may be overtaxed during transitions',
+        tips: 'External organization systems can free up mental space for clearer thinking'
+      },
+      {
+        id: 'learning-retention',
+        question: 'How well do you retain new information compared to a few years ago?',
+        scale: ['Much better', 'Better', 'About the same', 'Worse', 'Much worse'],
+        context: 'Learning and retention can be affected by stress, sleep quality, and hormonal changes',
+        tips: 'Spaced repetition and connecting new info to existing knowledge improves retention'
       }
     ];
 
@@ -1556,23 +1607,35 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
             
             <div className="space-y-6">
               {memoryQuestions.map((q, index) => (
-                <div key={q.id} className="bg-white border border-blue-200 rounded-lg p-4">
-                  <p className="font-medium text-blue-900 mb-3">{index + 1}. {q.question}</p>
-                  <div className="flex flex-wrap gap-2">
+                <div key={q.id} className="bg-white border border-blue-200 rounded-lg p-5">
+                  <div className="mb-4">
+                    <p className="font-semibold text-blue-900 mb-2 text-lg">{index + 1}. {q.question}</p>
+                    <p className="text-sm text-blue-700 mb-2 italic">💡 {q.context}</p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {q.scale.map((option, optionIndex) => (
                       <button
                         key={optionIndex}
                         onClick={() => updateAssessment('memory', q.id, optionIndex + 1)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`px-4 py-3 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${
                           memoryAssessment[q.id] === optionIndex + 1
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200 hover:shadow-md'
                         }`}
                       >
                         {option}
                       </button>
                     ))}
                   </div>
+                  
+                  {memoryAssessment[q.id] && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm text-green-800">
+                        <span className="font-medium">💡 Helpful Tip:</span> {q.tips}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -1596,23 +1659,35 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
             
             <div className="space-y-6">
               {focusQuestions.map((q, index) => (
-                <div key={q.id} className="bg-white border border-green-200 rounded-lg p-4">
-                  <p className="font-medium text-green-900 mb-3">{index + 1}. {q.question}</p>
-                  <div className="flex flex-wrap gap-2">
+                <div key={q.id} className="bg-white border border-green-200 rounded-lg p-5">
+                  <div className="mb-4">
+                    <p className="font-semibold text-green-900 mb-2 text-lg">{index + 1}. {q.question}</p>
+                    <p className="text-sm text-green-700 mb-2 italic">💡 {q.context}</p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {q.scale.map((option, optionIndex) => (
                       <button
                         key={optionIndex}
                         onClick={() => updateAssessment('focus', q.id, optionIndex + 1)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`px-4 py-3 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${
                           focusAssessment[q.id] === optionIndex + 1
-                            ? 'bg-green-600 text-white'
-                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            ? 'bg-green-600 text-white shadow-lg'
+                            : 'bg-green-100 text-green-700 hover:bg-green-200 hover:shadow-md'
                         }`}
                       >
                         {option}
                       </button>
                     ))}
                   </div>
+                  
+                  {focusAssessment[q.id] && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        <span className="font-medium">💡 Helpful Tip:</span> {q.tips}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -1636,23 +1711,35 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
             
             <div className="space-y-6">
               {clarityQuestions.map((q, index) => (
-                <div key={q.id} className="bg-white border border-orange-200 rounded-lg p-4">
-                  <p className="font-medium text-orange-900 mb-3">{index + 1}. {q.question}</p>
-                  <div className="flex flex-wrap gap-2">
+                <div key={q.id} className="bg-white border border-orange-200 rounded-lg p-5">
+                  <div className="mb-4">
+                    <p className="font-semibold text-orange-900 mb-2 text-lg">{index + 1}. {q.question}</p>
+                    <p className="text-sm text-orange-700 mb-2 italic">💡 {q.context}</p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {q.scale.map((option, optionIndex) => (
                       <button
                         key={optionIndex}
                         onClick={() => updateAssessment('clarity', q.id, optionIndex + 1)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`px-4 py-3 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${
                           clarityAssessment[q.id] === optionIndex + 1
-                            ? 'bg-orange-600 text-white'
-                            : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                            ? 'bg-orange-600 text-white shadow-lg'
+                            : 'bg-orange-100 text-orange-700 hover:bg-orange-200 hover:shadow-md'
                         }`}
                       >
                         {option}
                       </button>
                     ))}
                   </div>
+                  
+                  {clarityAssessment[q.id] && (
+                    <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <p className="text-sm text-purple-800">
+                        <span className="font-medium">💡 Helpful Tip:</span> {q.tips}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
