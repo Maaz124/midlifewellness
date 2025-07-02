@@ -152,6 +152,17 @@ export function useWellnessData() {
     }));
   };
 
+  const resetCoachingProgress = () => {
+    setData(prev => ({
+      ...prev,
+      coachingProgress: {
+        completedComponents: [],
+        currentWeek: 1,
+        responseData: {}
+      }
+    }));
+  };
+
   return {
     data,
     updateHealthScores,
@@ -161,6 +172,7 @@ export function useWellnessData() {
     addGoal,
     updateHabit,
     addHabit,
-    updateCoachingProgress
+    updateCoachingProgress,
+    resetCoachingProgress
   };
 }
