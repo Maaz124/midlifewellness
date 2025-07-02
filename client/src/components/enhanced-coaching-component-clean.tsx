@@ -4332,7 +4332,7 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                   <Button 
                     onClick={() => setResponses({...responses, energyMappingPhase: 'insights'})}
                     className="w-full"
-                    disabled={Object.keys(energyTriggers).length < 6}
+                    disabled={Object.keys(energyTriggers).length < 4}
                   >
                     Generate Personal Energy Insights
                   </Button>
