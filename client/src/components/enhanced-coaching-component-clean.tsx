@@ -6634,7 +6634,9 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
     }
 
     // Week 2 - CBT Reframing Techniques (ABCD Model)
+    console.log('Checking CBT condition:', component.id, component.id === 'w2-cbt');
     if (component.id === 'w2-cbt') {
+      console.log('CBT condition matched! Rendering CBT component');
       const cbtPhase = responses.cbtPhase || 'introduction';
       const selectedScenario = responses.selectedScenario || null;
       const abcdData = responses.abcdData || {};
@@ -7780,8 +7782,8 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           </div>
         )}
 
-        {/* Component-specific interactive content for Week 1 */}
-        {moduleId === 'week-1' && (
+        {/* Component-specific interactive content for Week 1 and Week 2 */}
+        {(moduleId === 'week-1' || moduleId === 'week-2') && (
           <div className="mt-8">
             {renderComponentSpecificContent()}
           </div>
