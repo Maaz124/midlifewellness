@@ -380,7 +380,7 @@ export const detailedExercises: ExerciseDetail[] = [
   },
   {
     id: 'evening-wind-down',
-    title: 'Progesterone-Supporting Evening Ritual',
+    title: 'Evening Wind-Down Routine Creation',
     type: 'meditation',
     duration: '20 minutes',
     instructions: [

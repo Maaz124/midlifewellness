@@ -83,6 +83,14 @@ export const coachingModules: CoachingModule[] = [
         title: 'Hormone-Supporting Meal Planning',
         description: 'Food selection tool and weekly meal planner',
         completed: false
+      },
+      {
+        id: 'evening-wind-down',
+        type: 'exercise',
+        title: 'Evening Wind-Down Routine Creation',
+        description: 'Design your personalized progesterone-supporting evening ritual',
+        duration: 20,
+        completed: false
       }
     ]
   },
