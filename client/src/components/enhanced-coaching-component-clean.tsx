@@ -13274,6 +13274,18 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                   </div>
                 </div>
 
+                {/* TEST - Interactive Practice Button */}
+                <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-6 mb-4">
+                  <h4 className="font-semibold text-blue-800 mb-3">🎯 Interactive Practice Test</h4>
+                  <p className="text-sm text-blue-700 mb-3">Click below to test interactive elements:</p>
+                  <Button 
+                    onClick={() => setGroundingPhase('practice')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Start Interactive Practice Session
+                  </Button>
+                </div>
+
                 <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
                   <h4 className="font-semibold text-amber-800 mb-2">🌟 Remember</h4>
                   <div className="space-y-1 text-sm text-amber-700">
