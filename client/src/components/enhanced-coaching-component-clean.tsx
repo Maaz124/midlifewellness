@@ -20,7 +20,8 @@ import {
   Moon,
   Brain,
   Heart,
-  Zap
+  Zap,
+  BarChart
 } from 'lucide-react';
 import { CoachingComponent } from './coaching-component';
 import { useWellnessData } from '@/hooks/use-local-storage';
@@ -2322,6 +2323,1021 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                 <li>• Adjust the ritual seasonally - less outdoor time in winter is okay</li>
                 <li>• Notice how your hormone symptoms change with regular practice</li>
                 <li>• Share your ritual with family so they can support your morning time</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Symptom Tracker - Daily Hormone Harmony Tracker
+    if (component.id === 'symptom-tracker') {
+      const trackerPhase = responses.trackerPhase || 'overview';
+      const trackingDate = responses.trackingDate || new Date().toISOString().split('T')[0];
+      const periodDay = responses.periodDay || 0;
+      const cyclePhase = responses.cyclePhase || 'unknown';
+
+      // Symptom categories with detailed tracking
+      const symptomCategories = [
+        {
+          id: 'physical',
+          title: 'Physical Symptoms',
+          icon: '💪',
+          color: 'blue',
+          symptoms: [
+            { id: 'hot-flashes', name: 'Hot flashes/Night sweats', scale: [0, 10] },
+            { id: 'fatigue', name: 'Fatigue/Low energy', scale: [0, 10] },
+            { id: 'joint-pain', name: 'Joint aches/stiffness', scale: [0, 10] },
+            { id: 'headaches', name: 'Headaches', scale: [0, 10] },
+            { id: 'breast-tenderness', name: 'Breast tenderness', scale: [0, 10] },
+            { id: 'bloating', name: 'Bloating/digestive issues', scale: [0, 10] }
+          ]
+        },
+        {
+          id: 'emotional',
+          title: 'Emotional/Mental',
+          icon: '🧠',
+          color: 'purple',
+          symptoms: [
+            { id: 'mood-swings', name: 'Mood swings', scale: [0, 10] },
+            { id: 'anxiety', name: 'Anxiety/worry', scale: [0, 10] },
+            { id: 'irritability', name: 'Irritability/anger', scale: [0, 10] },
+            { id: 'brain-fog', name: 'Brain fog/memory issues', scale: [0, 10] },
+            { id: 'depression', name: 'Low mood/sadness', scale: [0, 10] },
+            { id: 'overwhelm', name: 'Feeling overwhelmed', scale: [0, 10] }
+          ]
+        },
+        {
+          id: 'sleep',
+          title: 'Sleep & Energy',
+          icon: '😴',
+          color: 'green',
+          symptoms: [
+            { id: 'sleep-quality', name: 'Sleep quality', scale: [10, 0] }, // Reversed scale
+            { id: 'wake-frequency', name: 'Night awakenings', scale: [0, 10] },
+            { id: 'morning-energy', name: 'Morning energy', scale: [10, 0] }, // Reversed scale
+            { id: 'afternoon-crash', name: 'Afternoon energy crash', scale: [0, 10] },
+            { id: 'restlessness', name: 'Restlessness', scale: [0, 10] },
+            { id: 'sleep-duration', name: 'Difficulty falling asleep', scale: [0, 10] }
+          ]
+        },
+        {
+          id: 'hormonal',
+          title: 'Hormonal Signs',
+          icon: '🌸',
+          color: 'pink',
+          symptoms: [
+            { id: 'period-changes', name: 'Menstrual irregularities', scale: [0, 10] },
+            { id: 'libido', name: 'Low sex drive', scale: [0, 10] },
+            { id: 'dry-skin', name: 'Skin/hair changes', scale: [0, 10] },
+            { id: 'weight-gain', name: 'Weight gain difficulty', scale: [0, 10] },
+            { id: 'food-cravings', name: 'Food cravings', scale: [0, 10] },
+            { id: 'temperature-regulation', name: 'Temperature sensitivity', scale: [0, 10] }
+          ]
+        }
+      ];
+
+      const getSymptomScore = (symptomId: string) => responses[`symptom-${symptomId}`] || 0;
+      const getCategoryAverage = (category: any) => {
+        const scores = category.symptoms.map((s: any) => getSymptomScore(s.id));
+        return scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
+      };
+
+      const overallSymptomScore = symptomCategories.reduce((total, cat) => total + getCategoryAverage(cat), 0) / symptomCategories.length;
+
+      const getSymptomInterpretation = (score: number) => {
+        if (score <= 2) return { level: 'Minimal', color: 'text-green-700', message: 'Symptoms are very manageable' };
+        if (score <= 4) return { level: 'Mild', color: 'text-green-600', message: 'Some symptoms but generally doing well' };
+        if (score <= 6) return { level: 'Moderate', color: 'text-yellow-600', message: 'Noticeable symptoms affecting daily life' };
+        if (score <= 8) return { level: 'Significant', color: 'text-orange-600', message: 'Symptoms impacting well-being considerably' };
+        return { level: 'Severe', color: 'text-red-600', message: 'Symptoms significantly disrupting daily life' };
+      };
+
+      const interpretation = getSymptomInterpretation(overallSymptomScore);
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart className="w-5 h-5 text-indigo-500" />
+              Daily Hormone Harmony Tracker
+            </CardTitle>
+            <p className="text-sm text-gray-600">Track your perimenopause symptoms to identify patterns and monitor progress over time.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Tracking Benefits */}
+            <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-400">
+              <h5 className="font-semibold text-indigo-800 mb-2">Why Daily Tracking Helps</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-indigo-700">
+                <div>
+                  <strong>Pattern Recognition:</strong> Identify triggers and timing of symptoms
+                </div>
+                <div>
+                  <strong>Treatment Effectiveness:</strong> Monitor how interventions help over time
+                </div>
+                <div>
+                  <strong>Healthcare Communication:</strong> Provide detailed data to your doctor
+                </div>
+                <div>
+                  <strong>Personal Empowerment:</strong> Take control of your health journey
+                </div>
+              </div>
+            </div>
+
+            {/* Overview Dashboard */}
+            {trackerPhase === 'overview' && (
+              <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Today's Tracking Overview</h4>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Tracking Date:</Label>
+                    <input
+                      type="date"
+                      value={trackingDate}
+                      onChange={(e) => setResponses({...responses, trackingDate: e.target.value})}
+                      className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Menstrual Cycle Information (if applicable):</Label>
+                    <div className="mt-3 space-y-3">
+                      <div>
+                        <Label className="text-sm">Day of cycle (if tracking):</Label>
+                        <div className="flex items-center gap-4 mt-1">
+                          <Slider
+                            value={[periodDay]}
+                            onValueChange={(value) => setResponses({...responses, periodDay: value[0]})}
+                            max={35}
+                            min={0}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="text-lg font-bold text-indigo-600 min-w-[40px]">{periodDay}</span>
+                          <span className="text-sm text-gray-600">days</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">Set to 0 if cycles have stopped or are irregular</p>
+                      </div>
+
+                      <div>
+                        <Label className="text-sm">Current phase (best guess):</Label>
+                        <RadioGroup
+                          value={cyclePhase}
+                          onValueChange={(value) => setResponses({...responses, cyclePhase: value})}
+                          className="mt-2"
+                        >
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="menstrual" />
+                              <Label>Menstrual</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="follicular" />
+                              <Label>Follicular</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="ovulatory" />
+                              <Label>Ovulatory</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="luteal" />
+                              <Label>Luteal</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="postmenopausal" />
+                              <Label>Postmenopausal</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="unknown" />
+                              <Label>Unknown/Irregular</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Overall Symptom Score */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <h5 className="font-semibold">Overall Symptom Level</h5>
+                      <span className={`text-lg font-bold ${interpretation.color}`}>
+                        {interpretation.level}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className={`h-3 rounded-full transition-all ${
+                          overallSymptomScore <= 3 ? 'bg-green-500' : 
+                          overallSymptomScore <= 6 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}
+                        style={{ width: `${(overallSymptomScore / 10) * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-600 mt-1">
+                      <span>0 (No symptoms)</span>
+                      <span>{overallSymptomScore.toFixed(1)}/10</span>
+                      <span>10 (Severe)</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">{interpretation.message}</p>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, trackerPhase: 'physical'})}
+                    className="w-full"
+                  >
+                    Begin Detailed Symptom Tracking
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Category-specific tracking */}
+            {symptomCategories.map((category) => (
+              trackerPhase === category.id && (
+                <div key={category.id} className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-2">{category.icon}</div>
+                    <h4 className="text-xl font-semibold">{category.title}</h4>
+                    <p className="text-sm text-gray-600">Rate each symptom from 0 (none) to 10 (severe)</p>
+                  </div>
+
+                  <div className="space-y-6">
+                    {category.symptoms.map((symptom) => {
+                      const currentScore = getSymptomScore(symptom.id);
+                      const isReversed = symptom.scale[0] > symptom.scale[1];
+                      
+                      return (
+                        <div key={symptom.id} className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <Label className="font-medium">{symptom.name}</Label>
+                            <span className={`text-lg font-bold ${
+                              currentScore <= 3 ? 'text-green-600' : 
+                              currentScore <= 6 ? 'text-yellow-600' : 'text-red-600'
+                            }`}>
+                              {currentScore}/10
+                            </span>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Slider
+                              value={[currentScore]}
+                              onValueChange={(value) => setResponses({
+                                ...responses, 
+                                [`symptom-${symptom.id}`]: value[0]
+                              })}
+                              max={10}
+                              min={0}
+                              step={1}
+                              className="w-full"
+                            />
+                            
+                            <div className="flex justify-between text-xs text-gray-600">
+                              <span>{isReversed ? 'Excellent' : 'None'}</span>
+                              <span>{isReversed ? 'Poor' : 'Severe'}</span>
+                            </div>
+                            
+                            {/* Visual scale with numbers */}
+                            <div className="grid grid-cols-11 gap-1">
+                              {[0,1,2,3,4,5,6,7,8,9,10].map((num) => (
+                                <button
+                                  key={num}
+                                  onClick={() => setResponses({
+                                    ...responses, 
+                                    [`symptom-${symptom.id}`]: num
+                                  })}
+                                  className={`h-8 rounded text-xs font-medium transition-all ${
+                                    num === currentScore 
+                                      ? `bg-${category.color}-500 text-white` 
+                                      : `bg-gray-200 text-gray-600 hover:bg-${category.color}-100`
+                                  }`}
+                                >
+                                  {num}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Category average */}
+                    <div className="bg-gray-50 p-4 rounded-lg mt-6">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{category.title} Average:</span>
+                        <span className={`text-xl font-bold ${
+                          getCategoryAverage(category) <= 3 ? 'text-green-600' : 
+                          getCategoryAverage(category) <= 6 ? 'text-yellow-600' : 'text-red-600'
+                        }`}>
+                          {getCategoryAverage(category).toFixed(1)}/10
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex justify-between mt-6">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          const currentIndex = symptomCategories.findIndex(cat => cat.id === category.id);
+                          if (currentIndex > 0) {
+                            setResponses({...responses, trackerPhase: symptomCategories[currentIndex - 1].id});
+                          } else {
+                            setResponses({...responses, trackerPhase: 'overview'});
+                          }
+                        }}
+                      >
+                        Previous
+                      </Button>
+                      
+                      <Button
+                        onClick={() => {
+                          const currentIndex = symptomCategories.findIndex(cat => cat.id === category.id);
+                          if (currentIndex < symptomCategories.length - 1) {
+                            setResponses({...responses, trackerPhase: symptomCategories[currentIndex + 1].id});
+                          } else {
+                            setResponses({...responses, trackerPhase: 'insights'});
+                          }
+                        }}
+                      >
+                        {category.id === 'hormonal' ? 'View Insights' : 'Next Category'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )
+            ))}
+
+            {/* Insights and Patterns */}
+            {trackerPhase === 'insights' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">📊</div>
+                  <h4 className="text-xl font-semibold">Your Symptom Insights</h4>
+                  <p className="text-sm text-gray-600">Based on today's tracking, here are your patterns and recommendations</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Category Breakdown */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {symptomCategories.map((category) => {
+                      const avgScore = getCategoryAverage(category);
+                      return (
+                        <div key={category.id} className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">{category.icon}</span>
+                              <span className="font-medium">{category.title}</span>
+                            </div>
+                            <span className={`text-lg font-bold ${
+                              avgScore <= 3 ? 'text-green-600' : 
+                              avgScore <= 6 ? 'text-yellow-600' : 'text-red-600'
+                            }`}>
+                              {avgScore.toFixed(1)}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full ${
+                                avgScore <= 3 ? 'bg-green-500' : 
+                                avgScore <= 6 ? 'bg-yellow-500' : 'bg-red-500'
+                              }`}
+                              style={{ width: `${(avgScore / 10) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Personalized Recommendations */}
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h5 className="font-semibold text-blue-800 mb-3">Personalized Recommendations</h5>
+                    <div className="space-y-2 text-sm text-blue-700">
+                      {getCategoryAverage(symptomCategories[0]) > 6 && (
+                        <div>• Consider cooling techniques and breathwork for hot flashes and physical symptoms</div>
+                      )}
+                      {getCategoryAverage(symptomCategories[1]) > 6 && (
+                        <div>• Focus on stress management and meditation for emotional balance</div>
+                      )}
+                      {getCategoryAverage(symptomCategories[2]) > 6 && (
+                        <div>• Prioritize sleep hygiene and morning light exposure for better rest</div>
+                      )}
+                      {getCategoryAverage(symptomCategories[3]) > 6 && (
+                        <div>• Consider hormonal support strategies and discuss with healthcare provider</div>
+                      )}
+                      {overallSymptomScore <= 4 && (
+                        <div>• You're managing well! Maintain your current practices and track patterns</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Daily Notes */}
+                  <div>
+                    <Label className="font-medium">Daily notes and observations:</Label>
+                    <Textarea
+                      placeholder="What might have influenced your symptoms today? Sleep, stress, food, exercise, emotions..."
+                      value={responses.dailyNotes || ''}
+                      onChange={(e) => setResponses({...responses, dailyNotes: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  {/* Actions for Tomorrow */}
+                  <div>
+                    <Label className="font-medium">Priority actions for tomorrow:</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Morning sunlight exposure', 'Stress management practice', 'Better sleep hygiene',
+                        'Gentle movement/exercise', 'Hydration focus', 'Mindful eating',
+                        'Evening wind-down routine', 'Social connection', 'Creative activity'
+                      ].map((action) => (
+                        <div key={action} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`action-${action}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`action-${action}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{action}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, trackerPhase: 'overview'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Start New Day's Tracking
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Progress Navigation */}
+            {trackerPhase !== 'overview' && trackerPhase !== 'insights' && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Tracking Progress</span>
+                  <span className="text-sm text-gray-600">
+                    {symptomCategories.findIndex(cat => cat.id === trackerPhase) + 1} of {symptomCategories.length} categories
+                  </span>
+                </div>
+                <Progress 
+                  value={((symptomCategories.findIndex(cat => cat.id === trackerPhase) + 1) / symptomCategories.length) * 100} 
+                  className="h-2" 
+                />
+              </div>
+            )}
+
+            {/* Tracking Tips */}
+            <div className="bg-indigo-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-indigo-800 mb-2">💡 Effective Tracking Tips</h5>
+              <ul className="text-sm text-indigo-700 space-y-1">
+                <li>• Track at the same time each day for consistency</li>
+                <li>• Be honest about symptom intensity - this data helps you</li>
+                <li>• Note potential triggers: stress, sleep, diet, weather</li>
+                <li>• Track for at least 2-3 months to see meaningful patterns</li>
+                <li>• Share your data with healthcare providers for better care</li>
+                <li>• Celebrate improvements, even small ones</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Mental Clarity Power Practice
+    if (component.id === 'clarity-practice') {
+      const practicePhase = responses.practicePhase || 'assessment';
+      const clarityScore = responses.clarityScore || 5;
+      const focusLevel = responses.focusLevel || 5;
+      const memorySharpness = responses.memorySharpness || 5;
+      const practiceType = responses.practiceType || 'brain-training';
+      const completedExercises = responses.completedExercises || [];
+
+      const clarityExercises = [
+        {
+          id: 'memory-palace',
+          name: 'Memory Palace Technique',
+          duration: '10 min',
+          difficulty: 'Advanced',
+          description: 'Create vivid mental locations to store and recall information',
+          steps: [
+            'Choose a familiar location (your home, office, or route)',
+            'Identify 5-7 distinct landmarks in that space',
+            'Associate each piece of information with a landmark',
+            'Walk through your mental palace to recall the information',
+            'Practice the journey 3 times to solidify the memory'
+          ],
+          benefits: ['Improves long-term memory', 'Enhances spatial thinking', 'Builds mental imagery skills']
+        },
+        {
+          id: 'attention-switching',
+          name: 'Attention Switching Exercise',
+          duration: '8 min',
+          difficulty: 'Intermediate',
+          description: 'Train your brain to rapidly switch between different tasks',
+          steps: [
+            'Set a timer for 1-minute intervals',
+            'Task 1: Count backwards from 100 by 7s',
+            'Switch: Name animals alphabetically',
+            'Switch: List items in your kitchen',
+            'Switch: Continue counting backwards from where you left off',
+            'Repeat cycle 3 times, noting your switching speed'
+          ],
+          benefits: ['Improves cognitive flexibility', 'Enhances executive function', 'Reduces brain fog']
+        },
+        {
+          id: 'dual-n-back',
+          name: 'Dual N-Back Challenge',
+          duration: '12 min',
+          difficulty: 'Advanced',
+          description: 'Exercise working memory with visual and auditory stimuli',
+          steps: [
+            'Focus on a 3x3 grid of squares',
+            'Track both position and sound sequences',
+            'Identify when current stimulus matches one from N steps back',
+            'Start with N=1, increase difficulty as you improve',
+            'Complete 3 rounds, tracking your accuracy'
+          ],
+          benefits: ['Boosts working memory', 'Increases processing speed', 'Enhances fluid intelligence']
+        },
+        {
+          id: 'mindful-observation',
+          name: 'Mindful Observation Training',
+          duration: '6 min',
+          difficulty: 'Beginner',
+          description: 'Sharpen attention through detailed observation',
+          steps: [
+            'Choose a complex object (plant, artwork, or view outside)',
+            'Observe for 2 minutes, noting every detail',
+            'Close your eyes and mentally recreate the image',
+            'Open eyes and compare - what did you miss?',
+            'Repeat observation, focusing on missed details'
+          ],
+          benefits: ['Improves sustained attention', 'Enhances visual processing', 'Builds mindfulness']
+        },
+        {
+          id: 'number-sequence',
+          name: 'Progressive Number Sequences',
+          duration: '7 min',
+          difficulty: 'Intermediate',
+          description: 'Challenge working memory with increasing complexity',
+          steps: [
+            'Start with a 3-digit sequence (e.g., 2-4-6)',
+            'Add one number following the pattern',
+            'Repeat the full sequence aloud',
+            'Increase to 4, then 5, then 6 digits',
+            'Try different patterns: +3, ×2, fibonacci'
+          ],
+          benefits: ['Strengthens working memory', 'Improves pattern recognition', 'Enhances mathematical thinking']
+        }
+      ];
+
+      const getCurrentExercise = () => {
+        return clarityExercises.find(ex => ex.id === practiceType) || clarityExercises[0];
+      };
+
+      const getClarityInterpretation = (score: number) => {
+        if (score <= 3) return { level: 'Foggy', color: 'text-red-600', message: 'Mental clarity feels clouded' };
+        if (score <= 5) return { level: 'Moderate', color: 'text-yellow-600', message: 'Some mental clarity with moments of fog' };
+        if (score <= 7) return { level: 'Clear', color: 'text-green-600', message: 'Good mental sharpness' };
+        if (score <= 9) return { level: 'Sharp', color: 'text-green-700', message: 'Excellent cognitive function' };
+        return { level: 'Crystal Clear', color: 'text-green-800', message: 'Peak mental performance' };
+      };
+
+      const interpretation = getClarityInterpretation(clarityScore);
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-purple-500" />
+              Mental Clarity Power Practice
+            </CardTitle>
+            <p className="text-sm text-gray-600">Targeted cognitive exercises designed to combat brain fog and enhance mental sharpness during hormonal transitions.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind Cognitive Training */}
+            <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+              <h5 className="font-semibold text-purple-800 mb-2">Why Cognitive Training Works</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-purple-700">
+                <div>
+                  <strong>Neuroplasticity:</strong> Regular mental exercise creates new neural pathways
+                </div>
+                <div>
+                  <strong>Working Memory:</strong> Targeted practice improves information processing capacity
+                </div>
+                <div>
+                  <strong>Attention Control:</strong> Training enhances focus and reduces distractibility
+                </div>
+                <div>
+                  <strong>Cognitive Reserve:</strong> Building mental strength protects against age-related decline
+                </div>
+              </div>
+            </div>
+
+            {/* Initial Assessment */}
+            {practicePhase === 'assessment' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Cognitive Baseline Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Rate your current mental state before beginning the practice:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <Label className="font-medium">Overall Mental Clarity</Label>
+                      <span className={`text-sm font-semibold ${interpretation.color}`}>
+                        {interpretation.level}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500">Very Foggy</span>
+                      <Slider
+                        value={[clarityScore]}
+                        onValueChange={(value) => setResponses({...responses, clarityScore: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Crystal Clear</span>
+                      <span className="text-lg font-bold text-purple-600 min-w-[30px]">{clarityScore}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">{interpretation.message}</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Focus & Concentration</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Scattered</span>
+                      <Slider
+                        value={[focusLevel]}
+                        onValueChange={(value) => setResponses({...responses, focusLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Laser Focus</span>
+                      <span className="text-lg font-bold text-purple-600 min-w-[30px]">{focusLevel}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Memory Sharpness</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Forgetful</span>
+                      <Slider
+                        value={[memorySharpness]}
+                        onValueChange={(value) => setResponses({...responses, memorySharpness: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Sharp Recall</span>
+                      <span className="text-lg font-bold text-purple-600 min-w-[30px]">{memorySharpness}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Current challenges (check all that apply):</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Forgetting names', 'Losing train of thought', 'Difficulty concentrating', 'Word-finding issues',
+                        'Feeling mentally slow', 'Easily distracted', 'Memory lapses', 'Decision fatigue'
+                      ].map((challenge) => (
+                        <div key={challenge} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`challenge-${challenge}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`challenge-${challenge}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{challenge}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, practicePhase: 'selection'})}
+                    className="w-full"
+                  >
+                    Choose Your Cognitive Training
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Exercise Selection */}
+            {practicePhase === 'selection' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Select Your Power Practice</h4>
+                <p className="text-sm text-gray-600 mb-4">Choose an exercise based on your current focus level and available time:</p>
+                
+                <div className="space-y-4">
+                  {clarityExercises.map((exercise) => {
+                    const isRecommended = 
+                      (clarityScore <= 4 && exercise.difficulty === 'Beginner') ||
+                      (clarityScore >= 5 && clarityScore <= 7 && exercise.difficulty === 'Intermediate') ||
+                      (clarityScore >= 8 && exercise.difficulty === 'Advanced');
+
+                    return (
+                      <div 
+                        key={exercise.id}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          practiceType === exercise.id 
+                            ? 'border-purple-400 bg-purple-50' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        } ${isRecommended ? 'ring-2 ring-green-200' : ''}`}
+                        onClick={() => setResponses({...responses, practiceType: exercise.id})}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                practiceType === exercise.id 
+                                  ? 'border-purple-500 bg-purple-500' 
+                                  : 'border-gray-300'
+                              }`}>
+                                {practiceType === exercise.id && (
+                                  <div className="w-2 h-2 rounded-full bg-white"></div>
+                                )}
+                              </div>
+                              <h5 className="font-semibold">{exercise.name}</h5>
+                              {isRecommended && (
+                                <Badge variant="default" className="bg-green-500">Recommended</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{exercise.description}</p>
+                            <div className="flex gap-3 text-xs">
+                              <Badge variant="outline">{exercise.duration}</Badge>
+                              <Badge variant="outline">{exercise.difficulty}</Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <Button 
+                  onClick={() => setResponses({...responses, practicePhase: 'practice'})}
+                  className="w-full mt-6"
+                >
+                  Start {getCurrentExercise().name}
+                </Button>
+              </div>
+            )}
+
+            {/* Practice Execution */}
+            {practicePhase === 'practice' && (
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-lg border">
+                <div className="text-center mb-6">
+                  <h4 className="text-xl font-semibold mb-2">{getCurrentExercise().name}</h4>
+                  <p className="text-sm text-gray-600">{getCurrentExercise().description}</p>
+                  <div className="flex justify-center gap-4 mt-2">
+                    <Badge variant="secondary">{getCurrentExercise().duration}</Badge>
+                    <Badge variant="secondary">{getCurrentExercise().difficulty}</Badge>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg mb-6">
+                  <h5 className="font-semibold mb-4">Step-by-Step Instructions</h5>
+                  <div className="space-y-3">
+                    {getCurrentExercise().steps.map((step, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                          {index + 1}
+                        </div>
+                        <div className="flex items-center gap-3 flex-1">
+                          <Checkbox
+                            checked={responses[`step-${index}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`step-${index}`]: checked
+                            })}
+                          />
+                          <span className="text-sm">{step}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-lg mb-6">
+                  <h5 className="font-semibold mb-2">Expected Benefits</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    {getCurrentExercise().benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-green-700">
+                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        {benefit}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">Practice intensity (how challenging did this feel?):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Too Easy</span>
+                      <Slider
+                        value={[responses.practiceIntensity || 5]}
+                        onValueChange={(value) => setResponses({...responses, practiceIntensity: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Very Challenging</span>
+                      <span className="text-lg font-bold text-purple-600 min-w-[30px]">{responses.practiceIntensity || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Completion percentage:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <Slider
+                        value={[responses.completionRate || 0]}
+                        onValueChange={(value) => setResponses({...responses, completionRate: value[0]})}
+                        max={100}
+                        min={0}
+                        step={10}
+                        className="flex-1"
+                      />
+                      <span className="text-lg font-bold text-purple-600 min-w-[50px]">{responses.completionRate || 0}%</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, practicePhase: 'results'})}
+                    className="w-full"
+                    disabled={!responses.completionRate || responses.completionRate < 50}
+                  >
+                    Complete Practice & Assess Results
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Results Assessment */}
+            {practicePhase === 'results' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">🧠✨</div>
+                  <h4 className="text-xl font-semibold">Practice Complete!</h4>
+                  <p className="text-sm text-gray-600">How do you feel after the {getCurrentExercise().name}?</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Mental clarity now (compare with starting {clarityScore}/10):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Very Foggy</span>
+                      <Slider
+                        value={[responses.postClarityScore || 5]}
+                        onValueChange={(value) => setResponses({...responses, postClarityScore: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Crystal Clear</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postClarityScore || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Focus level now:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Scattered</span>
+                      <Slider
+                        value={[responses.postFocusLevel || 5]}
+                        onValueChange={(value) => setResponses({...responses, postFocusLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Laser Focus</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postFocusLevel || 5}</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Summary */}
+                  {responses.postClarityScore && responses.postFocusLevel && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-3">Your Cognitive Improvement</h5>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Mental Clarity Change:</span>
+                          <span className={`font-bold ${
+                            responses.postClarityScore > clarityScore 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            {responses.postClarityScore > clarityScore ? '+' : ''}{responses.postClarityScore - clarityScore} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Focus Improvement:</span>
+                          <span className={`font-bold ${
+                            responses.postFocusLevel > focusLevel 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            {responses.postFocusLevel > focusLevel ? '+' : ''}{responses.postFocusLevel - focusLevel} points
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Exercise Completed:</span>
+                          <span className="font-medium">{getCurrentExercise().name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Completion Rate:</span>
+                          <span className="font-medium">{responses.completionRate}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label>What did you notice during the practice?</Label>
+                    <Textarea
+                      placeholder="Describe any mental shifts, challenges, insights, or improvements you experienced..."
+                      value={responses.practiceReflection || ''}
+                      onChange={(e) => setResponses({...responses, practiceReflection: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Mark this exercise as completed:</Label>
+                    <Button
+                      onClick={() => {
+                        const newCompleted = [...completedExercises];
+                        if (!newCompleted.includes(getCurrentExercise().id)) {
+                          newCompleted.push(getCurrentExercise().id);
+                          setResponses({...responses, completedExercises: newCompleted});
+                        }
+                      }}
+                      className="w-full mt-2"
+                      variant={completedExercises.includes(getCurrentExercise().id) ? "default" : "outline"}
+                    >
+                      {completedExercises.includes(getCurrentExercise().id) ? '✓ Exercise Completed' : 'Mark as Complete'}
+                    </Button>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, practicePhase: 'selection'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Try Another Exercise
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Completed Exercises Tracker */}
+            {completedExercises.length > 0 && (
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h5 className="font-semibold text-green-800 mb-2">Completed Exercises ({completedExercises.length}/5)</h5>
+                <div className="grid grid-cols-1 gap-2">
+                  {clarityExercises.map((exercise) => (
+                    <div key={exercise.id} className={`text-sm ${
+                      completedExercises.includes(exercise.id) 
+                        ? 'text-green-700 font-medium' 
+                        : 'text-gray-600'
+                    }`}>
+                      {completedExercises.includes(exercise.id) ? '✓' : '○'} {exercise.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Daily Practice Tips */}
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-purple-800 mb-2">💡 Cognitive Training Tips</h5>
+              <ul className="text-sm text-purple-700 space-y-1">
+                <li>• Practice for 10-15 minutes daily for best results</li>
+                <li>• Start with easier exercises and gradually increase difficulty</li>
+                <li>• Track your progress to see improvements over time</li>
+                <li>• Mix different types of exercises to train various cognitive skills</li>
+                <li>• Practice when you're alert, not when mentally fatigued</li>
+                <li>• Consistency is more important than duration</li>
               </ul>
             </div>
           </CardContent>
