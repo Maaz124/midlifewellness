@@ -387,6 +387,17 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
 
     // Headspace Video - Brain Fog Clearing
     if (component.id === 'headspace-video') {
+      const clarityRating = responses.clarityRating || 5;
+      const getClarityInterpretation = (rating: number) => {
+        if (rating <= 3) return { level: 'Heavy Fog', color: 'text-red-600', message: 'Your mind feels cloudy and unclear' };
+        if (rating <= 5) return { level: 'Some Clarity', color: 'text-orange-600', message: 'You have some mental clarity with moments of fog' };
+        if (rating <= 7) return { level: 'Good Clarity', color: 'text-yellow-600', message: 'Your thinking feels clearer and more focused' };
+        if (rating <= 9) return { level: 'Sharp Focus', color: 'text-green-600', message: 'Your mind feels alert and well-organized' };
+        return { level: 'Crystal Clear', color: 'text-green-700', message: 'Your thinking is exceptionally sharp and clear' };
+      };
+
+      const interpretation = getClarityInterpretation(clarityRating);
+
       return (
         <Card>
           <CardHeader>
@@ -394,59 +405,162 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
               <Brain className="w-5 h-5 text-purple-500" />
               Brain Fog Clearing Practice
             </CardTitle>
-            <p className="text-sm text-gray-600">Mental clarity techniques for your changing brain.</p>
+            <p className="text-sm text-gray-600">Mental clarity techniques designed for your changing brain patterns during midlife transitions.</p>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Explanation of the exercise */}
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+              <h5 className="font-semibold text-blue-800 mb-2">Why This Exercise Works</h5>
+              <p className="text-sm text-blue-700 mb-3">
+                During perimenopause, hormonal fluctuations affect neurotransmitters that impact focus and memory. 
+                This "brain dump" technique works by:
+              </p>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• <strong>Clearing Mental Clutter:</strong> Writing thoughts externally frees up cognitive space</li>
+                <li>• <strong>Reducing Cognitive Load:</strong> Stops your brain from trying to remember everything at once</li>
+                <li>• <strong>Activating the Prefrontal Cortex:</strong> The act of writing engages your brain's executive function</li>
+                <li>• <strong>Creating Mental Space:</strong> Gives your mind permission to let go of racing thoughts</li>
+              </ul>
+            </div>
+
             <div className="bg-purple-50 p-4 rounded-lg">
               <h4 className="font-semibold mb-3">3-Minute Mental Clear Exercise</h4>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
+              <p className="text-sm text-purple-700 mb-4">
+                <strong>Before starting:</strong> Rate your current mental clarity below, then complete the exercise and rate again to see the difference.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-3 bg-white rounded border">
                   <Checkbox
                     checked={responses.mentalClearStep1 || false}
                     onCheckedChange={(checked) => setResponses({...responses, mentalClearStep1: checked})}
                   />
-                  <span className="text-sm">Set a timer for 3 minutes</span>
+                  <div>
+                    <span className="text-sm font-medium">Step 1: Set a timer for 3 minutes</span>
+                    <p className="text-xs text-gray-600 mt-1">Use your phone or a kitchen timer. The time limit creates urgency that helps bypass your inner critic.</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
+                
+                <div className="flex items-start gap-3 p-3 bg-white rounded border">
                   <Checkbox
                     checked={responses.mentalClearStep2 || false}
                     onCheckedChange={(checked) => setResponses({...responses, mentalClearStep2: checked})}
                   />
-                  <span className="text-sm">Write down every racing thought - no judgment</span>
+                  <div>
+                    <span className="text-sm font-medium">Step 2: Write down every racing thought - no judgment</span>
+                    <p className="text-xs text-gray-600 mt-1">Let everything flow onto paper: worries, to-dos, random thoughts. Don't edit or organize - just dump it all out.</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
+                
+                <div className="flex items-start gap-3 p-3 bg-white rounded border">
                   <Checkbox
                     checked={responses.mentalClearStep3 || false}
                     onCheckedChange={(checked) => setResponses({...responses, mentalClearStep3: checked})}
                   />
-                  <span className="text-sm">Notice how your mind feels after the brain dump</span>
+                  <div>
+                    <span className="text-sm font-medium">Step 3: Notice how your mind feels after the brain dump</span>
+                    <p className="text-xs text-gray-600 mt-1">Take 30 seconds to observe: Is there more space? Less mental noise? Any sense of relief or clarity?</p>
+                  </div>
                 </div>
               </div>
+            </div>
+
+            {/* Enhanced Rating System */}
+            <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+              <div className="mb-4">
+                <Label className="text-lg font-semibold">Mental Clarity Assessment</Label>
+                <p className="text-sm text-gray-600 mt-1">
+                  Rate your mental clarity right now (complete the exercise above first for best results)
+                </p>
+              </div>
               
-              <div className="mt-4">
-                <Label>Mental clarity rating after exercise (1-10):</Label>
-                <div className="flex items-center gap-4 mt-2">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm font-medium min-w-[60px]">Rating:</span>
                   <Slider
-                    value={[responses.clarityRating || 5]}
+                    value={[clarityRating]}
                     onValueChange={(value) => setResponses({...responses, clarityRating: value[0]})}
                     max={10}
                     min={1}
                     step={1}
                     className="flex-1"
                   />
-                  <span className="font-medium text-lg w-8">{responses.clarityRating || 5}</span>
+                  <div className="text-right min-w-[40px]">
+                    <span className="text-2xl font-bold text-purple-600">{clarityRating}</span>
+                    <div className="text-xs text-gray-500">/ 10</div>
+                  </div>
+                </div>
+                
+                {/* Visual clarity scale */}
+                <div className="grid grid-cols-10 gap-1">
+                  {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                    <div key={num} className="text-center">
+                      <button
+                        onClick={() => setResponses({...responses, clarityRating: num})}
+                        className={`w-full h-8 rounded text-xs font-medium transition-all ${
+                          num <= clarityRating 
+                            ? 'bg-purple-500 text-white' 
+                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                        }`}
+                      >
+                        {num}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>Extremely Foggy</span>
+                  <span>Crystal Clear</span>
+                </div>
+                
+                {/* Interpretation */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Current State:</span>
+                    <span className={`text-sm font-semibold ${interpretation.color}`}>
+                      {interpretation.level}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">{interpretation.message}</p>
+                  
+                  {clarityRating >= 7 && (
+                    <div className="mt-2 p-2 bg-green-50 rounded border-l-2 border-green-400">
+                      <p className="text-xs text-green-700">
+                        <strong>Great progress!</strong> This level of clarity will help you tackle tasks more efficiently and feel more confident in your thinking.
+                      </p>
+                    </div>
+                  )}
+                  
+                  {clarityRating <= 4 && (
+                    <div className="mt-2 p-2 bg-yellow-50 rounded border-l-2 border-yellow-400">
+                      <p className="text-xs text-yellow-700">
+                        <strong>Try the exercise:</strong> Even 3 minutes of brain dumping can significantly improve mental clarity. Consider doing this twice daily during challenging periods.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
+            </div>
 
-              <div className="mt-4">
-                <Label>Reflection notes:</Label>
-                <Textarea
-                  placeholder="What did you notice about your thoughts? How do you feel now?"
-                  value={responses.clarityNotes || ''}
-                  onChange={(e) => setResponses({...responses, clarityNotes: e.target.value})}
-                  className="mt-2"
-                />
-              </div>
+            <div className="mt-4">
+              <Label>Reflection notes:</Label>
+              <Textarea
+                placeholder="What did you notice about your thoughts? How does your mind feel now compared to before the exercise? Any insights about your mental patterns?"
+                value={responses.clarityNotes || ''}
+                onChange={(e) => setResponses({...responses, clarityNotes: e.target.value})}
+                className="mt-2"
+                rows={4}
+              />
+            </div>
+
+            {/* Additional tip */}
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-purple-800 mb-2">💡 Pro Tip for Midlife Brain Fog</h5>
+              <p className="text-sm text-purple-700">
+                Use this technique before important conversations, decision-making, or when you feel mentally scattered. 
+                Many women find it especially helpful first thing in the morning or during the 3 PM energy dip.
+              </p>
             </div>
           </CardContent>
         </Card>
