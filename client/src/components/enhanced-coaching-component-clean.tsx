@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GroundingPractices } from './grounding-practices';
+import { SomaticGrounding } from './somatic-grounding';
 import { 
   Play, 
   Pause, 
@@ -13026,92 +13026,7 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
 
     // Week 4: Somatic Grounding Practices
     if (moduleId === 'week-4' && component.id === 'w4-grounding') {
-      return (
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-sage-800 mb-4">🌱 Somatic Grounding Practices</h2>
-            <p className="text-lg text-gray-600 mb-6">
-              Body-based techniques to regulate your nervous system and find calm in moments of stress
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-r from-sage-50 to-blue-50 p-6 rounded-lg mb-6">
-            <h3 className="text-xl font-semibold mb-4 text-sage-800">Interactive Grounding Session</h3>
-            <p className="text-gray-700 mb-4">
-              This is your dedicated space for learning and practicing nervous system regulation techniques specifically designed for midlife women.
-            </p>
-            
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg border border-blue-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">👁️</span>
-                  <h4 className="font-semibold text-blue-800">5-4-3-2-1 Grounding</h4>
-                </div>
-                <p className="text-sm text-gray-600">Use your senses to anchor yourself in the present moment</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg border border-green-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">💆‍♀️</span>
-                  <h4 className="font-semibold text-green-800">Body Scan</h4>
-                </div>
-                <p className="text-sm text-gray-600">Systematically release tension throughout your body</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg border border-purple-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">🌬️</span>
-                  <h4 className="font-semibold text-purple-800">4-7-8 Breathing</h4>
-                </div>
-                <p className="text-sm text-gray-600">Rhythmic breathing to activate relaxation</p>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h4 className="font-semibold text-blue-800 mb-2">🎯 Try This Right Now</h4>
-              <p className="text-sm text-blue-700 mb-3">Take a moment to practice the 5-4-3-2-1 technique:</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">👀 5 things you can see:</span>
-                  <input type="text" placeholder="Blue mug, window light..." className="flex-1 px-2 py-1 border rounded text-xs" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">👂 4 things you can hear:</span>
-                  <input type="text" placeholder="Air conditioning, birds..." className="flex-1 px-2 py-1 border rounded text-xs" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">✋ 3 things you can touch:</span>
-                  <input type="text" placeholder="Smooth table, soft fabric..." className="flex-1 px-2 py-1 border rounded text-xs" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">👃 2 things you can smell:</span>
-                  <input type="text" placeholder="Coffee, fresh air..." className="flex-1 px-2 py-1 border rounded text-xs" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">👅 1 thing you can taste:</span>
-                  <input type="text" placeholder="Toothpaste, coffee..." className="flex-1 px-2 py-1 border rounded text-xs" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <h4 className="font-semibold text-amber-800 mb-2">🌟 Notice the Difference</h4>
-              <p className="text-sm text-amber-700">
-                How do you feel now compared to when you started? Even this simple practice can shift your nervous system from stress to calm.
-              </p>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <Button 
-              onClick={() => onComplete('w4-grounding', { completed: true })}
-              className="bg-sage-600 hover:bg-sage-700 text-white px-8 py-3"
-            >
-              Complete Grounding Practice
-            </Button>
-          </div>
-        </div>
-      );
+      return <SomaticGrounding onComplete={onComplete} onClose={onClose} />;
     }
 
     // Week 4: Somatic Grounding Practices (Original - keeping for reference)
