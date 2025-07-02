@@ -13023,6 +13023,1733 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 4: Somatic Grounding Practices
+    if (moduleId === 'week-4' && component.id === 'w4-grounding') {
+      const [groundingPhase, setGroundingPhase] = useState<'introduction' | 'learning' | 'practice' | 'integration'>('introduction');
+      const [currentTechnique, setCurrentTechnique] = useState(0);
+      const [responses, setResponses] = useState<any>({
+        nervousSystemAssessment: {},
+        techniqueExperience: {},
+        personalPlan: '',
+        dailyCommitment: '',
+        emergencyPlan: ''
+      });
+
+      const groundingTechniques = [
+        {
+          id: 'five-senses',
+          title: '5-4-3-2-1 Grounding',
+          category: 'Cognitive',
+          duration: '3-5 minutes',
+          difficulty: 'Beginner',
+          description: 'Use your senses to anchor yourself in the present moment',
+          benefits: ['Reduces anxiety', 'Stops rumination', 'Brings immediate calm', 'Works anywhere'],
+          instructions: [
+            'Look around and name 5 things you can see',
+            'Listen and identify 4 things you can hear',
+            'Feel and notice 3 things you can touch',
+            'Smell and name 2 scents you can detect',
+            'Taste 1 thing in your mouth'
+          ],
+          scienceExplanation: 'This technique activates your prefrontal cortex and pulls you out of the fight-or-flight response by engaging your conscious attention.',
+          midlifeContext: 'Particularly helpful during hot flashes, anxiety spikes, or overwhelming moments when hormones create intense sensations.'
+        },
+        {
+          id: 'body-scan',
+          title: 'Progressive Body Awareness',
+          category: 'Somatic',
+          duration: '10-15 minutes',
+          difficulty: 'Intermediate',
+          description: 'Systematically tune into your body to release tension and stress',
+          benefits: ['Releases physical tension', 'Improves body awareness', 'Calms nervous system', 'Enhances sleep'],
+          instructions: [
+            'Lie down comfortably and close your eyes',
+            'Start at the top of your head, noticing any sensations',
+            'Slowly move your attention down through each body part',
+            'When you find tension, breathe into that area',
+            'Imagine warmth and relaxation flowing through your body',
+            'End by noticing your whole body as one connected system'
+          ],
+          scienceExplanation: 'Body scanning activates the vagus nerve and shifts you into parasympathetic (rest and digest) mode.',
+          midlifeContext: 'Helps you reconnect with your changing body and identify areas holding stress from daily caregiving demands.'
+        },
+        {
+          id: 'earth-connection',
+          title: 'Earthing & Root Visualization',
+          category: 'Nature-Based',
+          duration: '5-10 minutes',
+          difficulty: 'Beginner',
+          description: 'Connect with the earth\'s energy to feel stable and supported',
+          benefits: ['Increases feelings of stability', 'Reduces stress hormones', 'Improves mood', 'Enhances sense of safety'],
+          instructions: [
+            'Sit or stand with your feet flat on the ground',
+            'Imagine roots growing from your feet into the earth',
+            'Visualize drawing up earth\'s stable, nurturing energy',
+            'Feel this energy filling your body from feet to head',
+            'Send any stress or worry down through your roots',
+            'Rest in the feeling of being supported by the earth'
+          ],
+          scienceExplanation: 'Visualization combined with physical grounding activates the relaxation response and reduces cortisol levels.',
+          midlifeContext: 'Powerful for times when you feel unmoored by life changes or when you need to feel supported and held.'
+        },
+        {
+          id: 'bilateral-tapping',
+          title: 'Bilateral Stimulation Tapping',
+          category: 'Movement-Based',
+          duration: '3-7 minutes',
+          difficulty: 'Beginner',
+          description: 'Use alternating tapping to calm your nervous system',
+          benefits: ['Balances brain hemispheres', 'Reduces anxiety quickly', 'Processes stress', 'Regulates emotions'],
+          instructions: [
+            'Cross your arms over your chest, hands on opposite shoulders',
+            'Gently tap alternating hands on your shoulders',
+            'Keep a slow, steady rhythm like a heartbeat',
+            'Breathe naturally while tapping',
+            'Continue for 2-3 minutes or until you feel calmer',
+            'Notice any shifts in how your body feels'
+          ],
+          scienceExplanation: 'Bilateral stimulation helps integrate the logical and emotional parts of your brain, reducing overwhelm.',
+          midlifeContext: 'Excellent for moments of high stress or emotional intensity, especially during difficult family situations.'
+        },
+        {
+          id: 'vagus-nerve',
+          title: 'Vagus Nerve Activation',
+          category: 'Physiological',
+          duration: '5-8 minutes',
+          difficulty: 'Intermediate',
+          description: 'Specific techniques to activate your body\'s relaxation nerve',
+          benefits: ['Activates parasympathetic response', 'Improves digestion', 'Reduces inflammation', 'Enhances mood'],
+          instructions: [
+            'Gently massage the area behind your ears',
+            'Hum or sing for 30 seconds to vibrate your vocal cords',
+            'Take a deep breath in, then exhale with a long "ahhhh" sound',
+            'Gently turn your head side to side slowly',
+            'End with cold water on your wrists and face',
+            'Notice the sense of calm that follows'
+          ],
+          scienceExplanation: 'These techniques directly stimulate the vagus nerve, which signals your body to relax and restore.',
+          midlifeContext: 'Particularly beneficial for digestive issues, sleep problems, and the chronic stress common in midlife.'
+        }
+      ];
+
+      const stressSignals = [
+        { category: 'Physical', signals: ['Tight shoulders/neck', 'Shallow breathing', 'Clenched jaw', 'Stomach tension', 'Headaches', 'Fatigue'] },
+        { category: 'Emotional', signals: ['Irritability', 'Anxiety', 'Feeling overwhelmed', 'Sadness', 'Numbness', 'Anger'] },
+        { category: 'Mental', signals: ['Racing thoughts', 'Can\'t focus', 'Overthinking', 'Forgetfulness', 'Confusion', 'Indecision'] },
+        { category: 'Behavioral', signals: ['Withdrawing from others', 'Procrastinating', 'Restlessness', 'Changes in appetite', 'Sleep disruption', 'Increased reactivity'] }
+      ];
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">🌱</span>
+              Somatic Grounding Practices
+            </CardTitle>
+            <p className="text-gray-600">Body-based techniques to regulate your nervous system</p>
+          </CardHeader>
+          <CardContent>
+            {/* Introduction Phase */}
+            {groundingPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-green-100 to-teal-100 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">🧠 Understanding Your Nervous System in Midlife</h3>
+                  <div className="space-y-4 text-sm">
+                    <p>
+                      During midlife, your nervous system is working overtime. Between hormonal changes, increased responsibilities, 
+                      and life transitions, your body often gets stuck in "fight or flight" mode. Somatic grounding practices help 
+                      you return to a state of calm and safety.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg">
+                      <h4 className="font-semibold text-green-800 mb-2">Why Your Nervous System Gets Dysregulated:</h4>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• <strong>Hormonal fluctuations</strong> affect your stress response system</li>
+                        <li>• <strong>Chronic stress</strong> from caregiving and multiple responsibilities</li>
+                        <li>• <strong>Sleep disruption</strong> prevents nervous system recovery</li>
+                        <li>• <strong>Life transitions</strong> trigger uncertainty and anxiety</li>
+                        <li>• <strong>Physical changes</strong> create unfamiliar sensations in your body</li>
+                      </ul>
+                    </div>
+                    <div className="bg-teal-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-teal-800 mb-2">What Grounding Practices Do:</h4>
+                      <div className="grid md:grid-cols-2 gap-3 text-teal-700">
+                        <div>
+                          <strong>Physical Benefits:</strong> Lower heart rate, deeper breathing, muscle relaxation
+                        </div>
+                        <div>
+                          <strong>Mental Benefits:</strong> Clearer thinking, reduced anxiety, better focus
+                        </div>
+                        <div>
+                          <strong>Emotional Benefits:</strong> Increased calm, emotional stability, self-compassion
+                        </div>
+                        <div>
+                          <strong>Long-term Benefits:</strong> Better sleep, improved resilience, enhanced well-being
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-4">📊 Your Current Stress Signal Assessment</h3>
+                  <p className="text-sm text-gray-600 mb-4">Check all the stress signals you've experienced in the past week:</p>
+                  
+                  <div className="space-y-4">
+                    {stressSignals.map((category) => (
+                      <div key={category.category}>
+                        <h4 className="font-semibold text-gray-700 mb-2">{category.category} Signals:</h4>
+                        <div className="grid md:grid-cols-2 gap-2">
+                          {category.signals.map((signal, i) => (
+                            <div key={i} className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={`signal-${category.category}-${i}`}
+                                checked={responses.nervousSystemAssessment?.[signal] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  nervousSystemAssessment: {
+                                    ...responses.nervousSystemAssessment,
+                                    [signal]: checked
+                                  }
+                                })}
+                              />
+                              <Label htmlFor={`signal-${category.category}-${i}`} className="text-sm">{signal}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-amber-800 mb-2">🌟 Remember</h4>
+                  <div className="space-y-1 text-sm text-amber-700">
+                    <p>• Your nervous system responses are normal reactions to an overwhelming world</p>
+                    <p>• Grounding practices work immediately and improve with repetition</p>
+                    <p>• Even 2-3 minutes of grounding can shift your entire day</p>
+                    <p>• These techniques work anywhere - no special equipment needed</p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setGroundingPhase('learning')}
+                  className="w-full"
+                >
+                  Learn Grounding Techniques
+                </Button>
+              </div>
+            )}
+
+            {/* Learning Phase */}
+            {groundingPhase === 'learning' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🎓 Learn Grounding Techniques</h3>
+                  <p className="text-gray-600">Master 5 powerful nervous system regulation techniques</p>
+                  <div className="flex justify-center mt-3">
+                    <Badge variant="outline">
+                      Technique {currentTechnique + 1} of {groundingTechniques.length}
+                    </Badge>
+                  </div>
+                </div>
+
+                {(() => {
+                  const technique = groundingTechniques[currentTechnique];
+
+                  return (
+                    <div className="space-y-6">
+                      <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span className="text-lg font-bold text-blue-800">{currentTechnique + 1}</span>
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-bold text-blue-800">{technique.title}</h4>
+                            <p className="text-blue-600">{technique.description}</p>
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4 mb-6">
+                          <div className="bg-blue-50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2">Technique Details:</h5>
+                            <div className="space-y-1 text-sm">
+                              <p><strong>Category:</strong> {technique.category}</p>
+                              <p><strong>Duration:</strong> {technique.duration}</p>
+                              <p><strong>Difficulty:</strong> {technique.difficulty}</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-green-50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2">Benefits:</h5>
+                            <ul className="space-y-1 text-sm">
+                              {technique.benefits.map((benefit, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="text-green-500 font-bold">•</span>
+                                  {benefit}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                          <h5 className="font-semibold mb-3">Step-by-Step Instructions:</h5>
+                          <ol className="space-y-2 text-sm">
+                            {technique.instructions.map((instruction, i) => (
+                              <li key={i} className="flex items-start gap-3">
+                                <span className="w-6 h-6 bg-purple-100 text-purple-800 rounded-full flex items-center justify-center text-xs font-bold">
+                                  {i + 1}
+                                </span>
+                                {instruction}
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+
+                        <div className="bg-purple-50 p-4 rounded-lg mb-4">
+                          <h5 className="font-semibold text-purple-800 mb-2">The Science Behind It:</h5>
+                          <p className="text-sm text-purple-700">{technique.scienceExplanation}</p>
+                        </div>
+
+                        <div className="bg-pink-50 p-4 rounded-lg">
+                          <h5 className="font-semibold text-pink-800 mb-2">Why This Matters in Midlife:</h5>
+                          <p className="text-sm text-pink-700">{technique.midlifeContext}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        {currentTechnique > 0 && (
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setCurrentTechnique(currentTechnique - 1)}
+                          >
+                            Previous Technique
+                          </Button>
+                        )}
+                        
+                        <Button 
+                          onClick={() => {
+                            if (currentTechnique < groundingTechniques.length - 1) {
+                              setCurrentTechnique(currentTechnique + 1);
+                            } else {
+                              setGroundingPhase('practice');
+                            }
+                          }}
+                          className="flex-1"
+                        >
+                          {currentTechnique < groundingTechniques.length - 1 ? 'Next Technique' : 'Practice Techniques'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {groundingPhase === 'practice' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🎯 Practice Session</h3>
+                  <p className="text-gray-600">Try each technique and record your experience</p>
+                </div>
+
+                {groundingTechniques.map((technique, index) => {
+                  const techniqueResponses = responses.techniqueExperience[technique.id] || {};
+                  
+                  return (
+                    <div key={technique.id} className="bg-white border-2 border-green-200 rounded-lg p-6">
+                      <h4 className="text-lg font-semibold text-green-800 mb-4">
+                        Practice: {technique.title}
+                      </h4>
+
+                      <div className="space-y-4">
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <h5 className="font-semibold mb-2">Quick Reminder:</h5>
+                          <p className="text-sm">{technique.description}</p>
+                          <p className="text-sm mt-1"><strong>Duration:</strong> {technique.duration}</p>
+                        </div>
+
+                        <div>
+                          <Label>After practicing this technique, how do you feel? (Rate 1-10)</Label>
+                          <div className="mt-3">
+                            <Slider
+                              value={[techniqueResponses.effectiveness || 5]}
+                              onValueChange={(value) => setResponses({
+                                ...responses,
+                                techniqueExperience: {
+                                  ...responses.techniqueExperience,
+                                  [technique.id]: { ...techniqueResponses, effectiveness: value[0] }
+                                }
+                              })}
+                              max={10}
+                              min={1}
+                              step={1}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-sm text-gray-500 mt-1">
+                              <span>1 - No change</span>
+                              <span>5 - Moderate improvement</span>
+                              <span>10 - Significantly calmer</span>
+                            </div>
+                            <p className="text-center mt-2 font-medium">
+                              Effectiveness: {techniqueResponses.effectiveness || 5}/10
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label>What did you notice during this practice?</Label>
+                          <Textarea
+                            placeholder="Describe what you experienced... Did you feel calmer? Were there any physical sensations? Was it easy or challenging?"
+                            value={techniqueResponses.observations || ''}
+                            onChange={(e) => setResponses({
+                              ...responses,
+                              techniqueExperience: {
+                                ...responses.techniqueExperience,
+                                [technique.id]: { ...techniqueResponses, observations: e.target.value }
+                              }
+                            })}
+                            className="mt-2"
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Would you use this technique again?</Label>
+                          <RadioGroup 
+                            value={techniqueResponses.willUseAgain || ''} 
+                            onValueChange={(value) => setResponses({
+                              ...responses,
+                              techniqueExperience: {
+                                ...responses.techniqueExperience,
+                                [technique.id]: { ...techniqueResponses, willUseAgain: value }
+                              }
+                            })}
+                            className="mt-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="definitely" id="definitely" />
+                              <Label htmlFor="definitely" className="text-sm">Definitely - this was very helpful</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="probably" id="probably" />
+                              <Label htmlFor="probably" className="text-sm">Probably - I can see this being useful</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="maybe" id="maybe" />
+                              <Label htmlFor="maybe" className="text-sm">Maybe - needs more practice</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="unlikely" id="unlikely" />
+                              <Label htmlFor="unlikely" className="text-sm">Unlikely - didn't resonate with me</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <Button 
+                  onClick={() => setGroundingPhase('integration')}
+                  className="w-full"
+                  disabled={!groundingTechniques.every(technique => 
+                    responses.techniqueExperience[technique.id]?.effectiveness && 
+                    responses.techniqueExperience[technique.id]?.observations &&
+                    responses.techniqueExperience[technique.id]?.willUseAgain
+                  )}
+                >
+                  Create Your Personal Grounding Plan
+                </Button>
+              </div>
+            )}
+
+            {/* Integration Phase */}
+            {groundingPhase === 'integration' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🌟 Your Personal Grounding Plan</h3>
+                  <p className="text-gray-600">Create a customized nervous system regulation toolkit</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-100 to-teal-100 p-6 rounded-lg">
+                  <h4 className="font-semibold text-green-800 mb-4">🎉 Your Top Techniques</h4>
+                  <div className="space-y-2">
+                    {groundingTechniques
+                      .filter(technique => {
+                        const score = responses.techniqueExperience[technique.id]?.effectiveness || 0;
+                        return score >= 7;
+                      })
+                      .map(technique => (
+                        <div key={technique.id} className="bg-white p-3 rounded-lg flex items-center gap-3">
+                          <span className="font-bold text-green-600">
+                            {responses.techniqueExperience[technique.id]?.effectiveness}/10
+                          </span>
+                          <div>
+                            <h5 className="font-semibold">{technique.title}</h5>
+                            <p className="text-sm text-gray-600">{technique.duration} • {technique.category}</p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-blue-800 mb-4">📋 Daily Grounding Commitment</h4>
+                    <Label>Choose one technique to practice daily this week:</Label>
+                    <Textarea
+                      placeholder="I commit to practicing [technique name] for [duration] each day at [specific time]. I will use this technique when I notice [specific stress signals]."
+                      value={responses.dailyCommitment || ''}
+                      onChange={(e) => setResponses({...responses, dailyCommitment: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-coral-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-coral-800 mb-4">🚨 Emergency Calm-Down Plan</h4>
+                    <Label>Which technique will you use for acute stress or panic moments?</Label>
+                    <Textarea
+                      placeholder="When I feel overwhelmed or panicked, I will immediately use [technique name] because it [why it works for you]. I will remind myself that [calming statement]."
+                      value={responses.emergencyPlan || ''}
+                      onChange={(e) => setResponses({...responses, emergencyPlan: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-purple-800 mb-4">🎯 Personal Implementation Plan</h4>
+                    <Label>How will you remember to use these techniques in your daily life?</Label>
+                    <Textarea
+                      placeholder="I will remember to use grounding techniques by [specific reminders]. I'll practice them [when/where]. My goal is to [specific outcome you want]."
+                      value={responses.personalPlan || ''}
+                      onChange={(e) => setResponses({...responses, personalPlan: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-800 mb-3">🌱 Grounding Practice Reminders</h4>
+                    <div className="space-y-1 text-sm text-amber-700">
+                      <p>• Start with just 2-3 minutes daily - consistency matters more than duration</p>
+                      <p>• Practice when you're calm so the techniques are ready when you need them</p>
+                      <p>• Your nervous system will learn to regulate more quickly with practice</p>
+                      <p>• Notice small improvements - every bit of calm matters</p>
+                      <p>• Be patient with yourself - nervous system healing takes time</p>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => {
+                      setResponses({...responses, groundingCompleted: true});
+                      onComplete(component.id, responses);
+                    }}
+                    className="w-full"
+                    disabled={!responses.dailyCommitment || !responses.emergencyPlan || !responses.personalPlan}
+                  >
+                    Complete Somatic Grounding Practices
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Week 4: Breathwork & Vagus Nerve Reset
+    if (moduleId === 'week-4' && component.id === 'w4-breathwork') {
+      const [breathworkPhase, setBreathworkPhase] = useState<'introduction' | 'learning' | 'practice' | 'integration'>('introduction');
+      const [currentBreathwork, setCurrentBreathwork] = useState(0);
+      const [responses, setResponses] = useState<any>({
+        vagusAssessment: {},
+        breathworkExperience: {},
+        breathingPlan: '',
+        emergencyBreathing: '',
+        vagusActivities: []
+      });
+
+      const breathworkTechniques = [
+        {
+          id: 'box-breathing',
+          title: '4-4-4-4 Box Breathing',
+          category: 'Calming',
+          duration: '5-10 minutes',
+          difficulty: 'Beginner',
+          description: 'Square breathing pattern for immediate nervous system regulation',
+          benefits: ['Slows heart rate', 'Reduces blood pressure', 'Calms anxiety', 'Improves focus'],
+          instructions: [
+            'Sit comfortably with your back straight',
+            'Inhale slowly through your nose for 4 counts',
+            'Hold your breath gently for 4 counts',
+            'Exhale slowly through your mouth for 4 counts',
+            'Hold empty for 4 counts',
+            'Repeat this cycle 8-12 times'
+          ],
+          visualCue: 'Imagine tracing the sides of a square as you breathe',
+          physiologyExplanation: 'Equal breathing patterns activate the parasympathetic nervous system and regulate your autonomic functions.',
+          midlifeApplication: 'Perfect during hot flashes, work stress, or before difficult conversations. Use during medical appointments to stay calm.'
+        },
+        {
+          id: 'extended-exhale',
+          title: '4-7-8 Extended Exhale',
+          category: 'Relaxation',
+          duration: '3-5 minutes',
+          difficulty: 'Beginner',
+          description: 'Longer exhales activate your relaxation response',
+          benefits: ['Triggers relaxation response', 'Improves sleep', 'Reduces anxiety', 'Lowers stress hormones'],
+          instructions: [
+            'Sit or lie down in a comfortable position',
+            'Inhale quietly through your nose for 4 counts',
+            'Hold your breath for 7 counts',
+            'Exhale completely through your mouth for 8 counts',
+            'This completes one cycle',
+            'Repeat for 4-8 cycles total'
+          ],
+          visualCue: 'Imagine a balloon slowly deflating on the long exhale',
+          physiologyExplanation: 'Extended exhales stimulate the vagus nerve and shift your nervous system into rest-and-digest mode.',
+          midlifeApplication: 'Excellent for bedtime routine, managing anxiety about aging parents, or calming racing thoughts about the future.'
+        },
+        {
+          id: 'coherent-breathing',
+          title: '5-5 Coherent Breathing',
+          category: 'Balancing',
+          duration: '10-20 minutes',
+          difficulty: 'Intermediate',
+          description: 'Heart-brain coherence breathing for optimal nervous system balance',
+          benefits: ['Balances nervous system', 'Improves heart rate variability', 'Enhances emotional regulation', 'Increases resilience'],
+          instructions: [
+            'Sit comfortably with feet flat on floor',
+            'Place one hand on chest, one on belly',
+            'Breathe in slowly through nose for 5 counts',
+            'Breathe out slowly through nose for 5 counts',
+            'Focus on smooth, even breaths',
+            'Continue for 10-20 minutes'
+          ],
+          visualCue: 'Imagine ocean waves gently rising and falling',
+          physiologyExplanation: 'This 5-second rhythm optimizes heart rate variability and creates coherence between your heart and brain.',
+          midlifeApplication: 'Use for daily stress management, before important decisions, or when feeling overwhelmed by multiple demands.'
+        },
+        {
+          id: 'alternate-nostril',
+          title: 'Alternate Nostril Breathing',
+          category: 'Balancing',
+          duration: '5-15 minutes',
+          difficulty: 'Intermediate',
+          description: 'Ancient technique to balance left and right brain hemispheres',
+          benefits: ['Balances nervous system', 'Improves concentration', 'Reduces stress', 'Enhances mental clarity'],
+          instructions: [
+            'Sit comfortably with spine straight',
+            'Use your right thumb to close your right nostril',
+            'Inhale through your left nostril for 4 counts',
+            'Close left nostril with ring finger, release thumb',
+            'Exhale through right nostril for 4 counts',
+            'Inhale right, switch, exhale left - this is one round'
+          ],
+          visualCue: 'Imagine energy flowing in a figure-8 pattern through your brain',
+          physiologyExplanation: 'Alternate nostril breathing balances the sympathetic and parasympathetic nervous systems.',
+          midlifeApplication: 'Great for brain fog, indecision, or when you need mental clarity for complex family or work situations.'
+        },
+        {
+          id: 'bee-breath',
+          title: 'Bhramari (Bee Breath)',
+          category: 'Vagus Activation',
+          duration: '5-10 minutes',
+          difficulty: 'Beginner',
+          description: 'Humming breath that directly stimulates the vagus nerve',
+          benefits: ['Stimulates vagus nerve', 'Reduces stress instantly', 'Improves sleep', 'Calms mind chatter'],
+          instructions: [
+            'Sit comfortably and close your eyes',
+            'Place your thumbs in your ears',
+            'Place your index fingers above your eyebrows',
+            'Place remaining fingers gently over your closed eyes',
+            'Take a deep breath in',
+            'Exhale making a humming sound like a bee'
+          ],
+          visualCue: 'Feel the vibrations spreading through your head and chest',
+          physiologyExplanation: 'The humming vibrations directly stimulate the vagus nerve and create instant calm.',
+          midlifeApplication: 'Perfect for insomnia, anxiety, or when your mind won\'t stop racing. Very effective before sleep.'
+        }
+      ];
+
+      const vagusNerveActivities = [
+        {
+          category: 'Vocal',
+          activities: [
+            'Humming your favorite song',
+            'Singing in the shower',
+            'Gargling with water',
+            'Laughing deeply',
+            'Chanting or vocal toning',
+            'Reading aloud with expression'
+          ]
+        },
+        {
+          category: 'Physical',
+          activities: [
+            'Cold water on face and wrists',
+            'Gentle neck stretches',
+            'Massaging behind ears',
+            'Slow head rotations',
+            'Gentle jaw massage',
+            'Foot massage'
+          ]
+        },
+        {
+          category: 'Breathing',
+          activities: [
+            'Extended exhale breathing',
+            'Humming while exhaling',
+            'Breath holds after exhale',
+            'Belly breathing',
+            'Sighing deeply',
+            'Yawning intentionally'
+          ]
+        },
+        {
+          category: 'Social',
+          activities: [
+            'Hugging for 20+ seconds',
+            'Gentle touch or massage',
+            'Compassionate conversation',
+            'Connecting with pets',
+            'Acts of kindness',
+            'Meditation in groups'
+          ]
+        }
+      ];
+
+      const vagusNerveSignals = [
+        { category: 'Strong Vagus Tone', signals: ['Good digestion', 'Deep sleep', 'Emotional resilience', 'Quick stress recovery', 'Heart rate variability', 'Social connection'] },
+        { category: 'Weak Vagus Tone', signals: ['Digestive issues', 'Chronic inflammation', 'Anxiety/depression', 'Sleep problems', 'High blood pressure', 'Social isolation'] }
+      ];
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">🫁</span>
+              Breathwork & Vagus Nerve Reset
+            </CardTitle>
+            <p className="text-gray-600">Breathing techniques to activate your body's natural relaxation response</p>
+          </CardHeader>
+          <CardContent>
+            {/* Introduction Phase */}
+            {breathworkPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-100 to-cyan-100 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">🧬 Your Vagus Nerve: The Reset Button You Didn't Know You Had</h3>
+                  <div className="space-y-4 text-sm">
+                    <p>
+                      The vagus nerve is your body's main relaxation pathway, running from your brain to your digestive system. 
+                      In midlife, this crucial nerve can become less responsive due to chronic stress, making it harder to calm down 
+                      and recover. Breathwork is the fastest way to reactivate it.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 mb-2">What Your Vagus Nerve Controls:</h4>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• <strong>Heart rate and blood pressure</strong> - keeping you calm</li>
+                        <li>• <strong>Digestion</strong> - allowing proper nutrient absorption</li>
+                        <li>• <strong>Inflammation</strong> - reducing chronic inflammatory responses</li>
+                        <li>• <strong>Mood regulation</strong> - supporting emotional stability</li>
+                        <li>• <strong>Sleep quality</strong> - enabling deep, restorative rest</li>
+                      </ul>
+                    </div>
+                    <div className="bg-cyan-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-cyan-800 mb-2">Why Breathwork Works So Well:</h4>
+                      <div className="grid md:grid-cols-2 gap-3 text-cyan-700">
+                        <div>
+                          <strong>Immediate:</strong> Changes your nervous system in 30 seconds
+                        </div>
+                        <div>
+                          <strong>Accessible:</strong> No equipment needed, works anywhere
+                        </div>
+                        <div>
+                          <strong>Cumulative:</strong> Builds resilience with regular practice
+                        </div>
+                        <div>
+                          <strong>Scientifically Proven:</strong> Backed by extensive research
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-4">📊 Your Vagus Nerve Health Assessment</h3>
+                  <p className="text-sm text-gray-600 mb-4">Check which signs you experience regularly:</p>
+                  
+                  <div className="space-y-4">
+                    {vagusNerveSignals.map((category) => (
+                      <div key={category.category}>
+                        <h4 className={`font-semibold mb-2 ${category.category === 'Strong Vagus Tone' ? 'text-green-700' : 'text-red-700'}`}>
+                          {category.category}:
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-2">
+                          {category.signals.map((signal, i) => (
+                            <div key={i} className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={`vagus-${category.category}-${i}`}
+                                checked={responses.vagusAssessment?.[signal] || false}
+                                onCheckedChange={(checked) => setResponses({
+                                  ...responses,
+                                  vagusAssessment: {
+                                    ...responses.vagusAssessment,
+                                    [signal]: checked
+                                  }
+                                })}
+                              />
+                              <Label htmlFor={`vagus-${category.category}-${i}`} className="text-sm">{signal}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-amber-800 mb-2">💡 Breathwork Success Tips</h4>
+                  <div className="space-y-1 text-sm text-amber-700">
+                    <p>• Start with just 2-3 minutes - your nervous system adapts quickly</p>
+                    <p>• Practice when calm first, then use during stress</p>
+                    <p>• Focus on the exhale - this is where the magic happens</p>
+                    <p>• Don't strain - gentle, comfortable breathing works best</p>
+                    <p>• Consistency matters more than perfection</p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setBreathworkPhase('learning')}
+                  className="w-full"
+                >
+                  Learn Breathwork Techniques
+                </Button>
+              </div>
+            )}
+
+            {/* Learning Phase */}
+            {breathworkPhase === 'learning' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🎓 Master Breathwork Techniques</h3>
+                  <p className="text-gray-600">Learn 5 powerful breathing patterns for nervous system regulation</p>
+                  <div className="flex justify-center mt-3">
+                    <Badge variant="outline">
+                      Technique {currentBreathwork + 1} of {breathworkTechniques.length}
+                    </Badge>
+                  </div>
+                </div>
+
+                {(() => {
+                  const technique = breathworkTechniques[currentBreathwork];
+
+                  return (
+                    <div className="space-y-6">
+                      <div className="bg-white border-2 border-cyan-200 rounded-lg p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center">
+                            <span className="text-lg font-bold text-cyan-800">{currentBreathwork + 1}</span>
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-bold text-cyan-800">{technique.title}</h4>
+                            <p className="text-cyan-600">{technique.description}</p>
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4 mb-6">
+                          <div className="bg-cyan-50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2">Technique Details:</h5>
+                            <div className="space-y-1 text-sm">
+                              <p><strong>Category:</strong> {technique.category}</p>
+                              <p><strong>Duration:</strong> {technique.duration}</p>
+                              <p><strong>Difficulty:</strong> {technique.difficulty}</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-green-50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2">Benefits:</h5>
+                            <ul className="space-y-1 text-sm">
+                              {technique.benefits.map((benefit, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="text-green-500 font-bold">•</span>
+                                  {benefit}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                          <h5 className="font-semibold mb-3">Step-by-Step Instructions:</h5>
+                          <ol className="space-y-2 text-sm">
+                            {technique.instructions.map((instruction, i) => (
+                              <li key={i} className="flex items-start gap-3">
+                                <span className="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-xs font-bold">
+                                  {i + 1}
+                                </span>
+                                {instruction}
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+
+                        <div className="bg-purple-50 p-4 rounded-lg mb-4">
+                          <h5 className="font-semibold text-purple-800 mb-2">Visual Guide:</h5>
+                          <p className="text-sm text-purple-700">{technique.visualCue}</p>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                          <h5 className="font-semibold text-blue-800 mb-2">The Science:</h5>
+                          <p className="text-sm text-blue-700">{technique.physiologyExplanation}</p>
+                        </div>
+
+                        <div className="bg-pink-50 p-4 rounded-lg">
+                          <h5 className="font-semibold text-pink-800 mb-2">Perfect For Midlife When:</h5>
+                          <p className="text-sm text-pink-700">{technique.midlifeApplication}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        {currentBreathwork > 0 && (
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setCurrentBreathwork(currentBreathwork - 1)}
+                          >
+                            Previous Technique
+                          </Button>
+                        )}
+                        
+                        <Button 
+                          onClick={() => {
+                            if (currentBreathwork < breathworkTechniques.length - 1) {
+                              setCurrentBreathwork(currentBreathwork + 1);
+                            } else {
+                              setBreathworkPhase('practice');
+                            }
+                          }}
+                          className="flex-1"
+                        >
+                          {currentBreathwork < breathworkTechniques.length - 1 ? 'Next Technique' : 'Practice Breathwork'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Practice Phase */}
+            {breathworkPhase === 'practice' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🎯 Breathwork Practice Session</h3>
+                  <p className="text-gray-600">Practice each technique and track your experience</p>
+                </div>
+
+                {breathworkTechniques.map((technique, index) => {
+                  const techniqueResponses = responses.breathworkExperience[technique.id] || {};
+                  
+                  return (
+                    <div key={technique.id} className="bg-white border-2 border-cyan-200 rounded-lg p-6">
+                      <h4 className="text-lg font-semibold text-cyan-800 mb-4">
+                        Practice: {technique.title}
+                      </h4>
+
+                      <div className="space-y-4">
+                        <div className="bg-cyan-50 p-4 rounded-lg">
+                          <h5 className="font-semibold mb-2">Practice Reminder:</h5>
+                          <p className="text-sm">{technique.description}</p>
+                          <p className="text-sm mt-1"><strong>Pattern:</strong> {technique.title.split(' ')[0]} • <strong>Duration:</strong> {technique.duration}</p>
+                        </div>
+
+                        <div>
+                          <Label>After practicing, how relaxed do you feel? (Rate 1-10)</Label>
+                          <div className="mt-3">
+                            <Slider
+                              value={[techniqueResponses.relaxationLevel || 5]}
+                              onValueChange={(value) => setResponses({
+                                ...responses,
+                                breathworkExperience: {
+                                  ...responses.breathworkExperience,
+                                  [technique.id]: { ...techniqueResponses, relaxationLevel: value[0] }
+                                }
+                              })}
+                              max={10}
+                              min={1}
+                              step={1}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-sm text-gray-500 mt-1">
+                              <span>1 - No change</span>
+                              <span>5 - Somewhat relaxed</span>
+                              <span>10 - Deeply calm</span>
+                            </div>
+                            <p className="text-center mt-2 font-medium">
+                              Relaxation Level: {techniqueResponses.relaxationLevel || 5}/10
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label>How easy was this technique to follow?</Label>
+                          <RadioGroup 
+                            value={techniqueResponses.easeOfUse || ''} 
+                            onValueChange={(value) => setResponses({
+                              ...responses,
+                              breathworkExperience: {
+                                ...responses.breathworkExperience,
+                                [technique.id]: { ...techniqueResponses, easeOfUse: value }
+                              }
+                            })}
+                            className="mt-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="very-easy" id="very-easy" />
+                              <Label htmlFor="very-easy" className="text-sm">Very easy - felt natural</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="easy" id="easy" />
+                              <Label htmlFor="easy" className="text-sm">Easy - manageable with focus</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="moderate" id="moderate" />
+                              <Label htmlFor="moderate" className="text-sm">Moderate - needed concentration</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="difficult" id="difficult" />
+                              <Label htmlFor="difficult" className="text-sm">Difficult - hard to maintain pattern</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        <div>
+                          <Label>What did you notice in your body during this breathwork?</Label>
+                          <Textarea
+                            placeholder="Describe physical sensations, changes in tension, heart rate, temperature, or any other bodily responses..."
+                            value={techniqueResponses.physicalSensations || ''}
+                            onChange={(e) => setResponses({
+                              ...responses,
+                              breathworkExperience: {
+                                ...responses.breathworkExperience,
+                                [technique.id]: { ...techniqueResponses, physicalSensations: e.target.value }
+                              }
+                            })}
+                            className="mt-2"
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>How did your mental state change?</Label>
+                          <Textarea
+                            placeholder="Notice changes in your thoughts, mental clarity, anxiety, or overall mood..."
+                            value={techniqueResponses.mentalChanges || ''}
+                            onChange={(e) => setResponses({
+                              ...responses,
+                              breathworkExperience: {
+                                ...responses.breathworkExperience,
+                                [technique.id]: { ...techniqueResponses, mentalChanges: e.target.value }
+                              }
+                            })}
+                            className="mt-2"
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-green-800 mb-4">🌟 Additional Vagus Nerve Activities</h4>
+                  <p className="text-sm text-gray-600 mb-4">Select activities you'd like to try to further stimulate your vagus nerve:</p>
+                  
+                  {vagusNerveActivities.map((category) => (
+                    <div key={category.category} className="mb-4">
+                      <h5 className="font-semibold text-gray-700 mb-2">{category.category} Activities:</h5>
+                      <div className="grid md:grid-cols-2 gap-2">
+                        {category.activities.map((activity, i) => (
+                          <div key={i} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`activity-${category.category}-${i}`}
+                              checked={responses.vagusActivities?.includes(activity) || false}
+                              onCheckedChange={(checked) => {
+                                const current = responses.vagusActivities || [];
+                                const updated = checked 
+                                  ? [...current, activity]
+                                  : current.filter(a => a !== activity);
+                                setResponses({...responses, vagusActivities: updated});
+                              }}
+                            />
+                            <Label htmlFor={`activity-${category.category}-${i}`} className="text-sm">{activity}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Button 
+                  onClick={() => setBreathworkPhase('integration')}
+                  className="w-full"
+                  disabled={!breathworkTechniques.every(technique => 
+                    responses.breathworkExperience[technique.id]?.relaxationLevel && 
+                    responses.breathworkExperience[technique.id]?.easeOfUse &&
+                    responses.breathworkExperience[technique.id]?.physicalSensations &&
+                    responses.breathworkExperience[technique.id]?.mentalChanges
+                  )}
+                >
+                  Create Your Breathing Plan
+                </Button>
+              </div>
+            )}
+
+            {/* Integration Phase */}
+            {breathworkPhase === 'integration' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🌟 Your Personal Breathwork Plan</h3>
+                  <p className="text-gray-600">Create a customized breathing practice for nervous system reset</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-cyan-100 to-blue-100 p-6 rounded-lg">
+                  <h4 className="font-semibold text-cyan-800 mb-4">🎉 Your Most Effective Techniques</h4>
+                  <div className="space-y-2">
+                    {breathworkTechniques
+                      .filter(technique => {
+                        const score = responses.breathworkExperience[technique.id]?.relaxationLevel || 0;
+                        return score >= 7;
+                      })
+                      .map(technique => (
+                        <div key={technique.id} className="bg-white p-3 rounded-lg flex items-center gap-3">
+                          <span className="font-bold text-cyan-600">
+                            {responses.breathworkExperience[technique.id]?.relaxationLevel}/10
+                          </span>
+                          <div className="flex-1">
+                            <h5 className="font-semibold">{technique.title}</h5>
+                            <p className="text-sm text-gray-600">{technique.category} • {technique.duration}</p>
+                          </div>
+                          <Badge variant="outline">
+                            {responses.breathworkExperience[technique.id]?.easeOfUse}
+                          </Badge>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-blue-800 mb-4">📅 Daily Breathing Practice</h4>
+                    <Label>Choose your daily breathwork routine (when, where, which technique):</Label>
+                    <Textarea
+                      placeholder="I will practice [technique name] for [duration] every [morning/afternoon/evening] [where]. This will help me [specific goal like 'stay calm during work' or 'prepare for sleep']."
+                      value={responses.breathingPlan || ''}
+                      onChange={(e) => setResponses({...responses, breathingPlan: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-red-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-red-800 mb-4">🚨 Emergency Breathing Protocol</h4>
+                    <Label>Which breathing technique will you use for acute stress or panic?</Label>
+                    <Textarea
+                      placeholder="When I feel panicked, overwhelmed, or extremely stressed, I will immediately use [technique name] because [why it works for you]. I'll do this for [duration] until I feel [specific outcome]."
+                      value={responses.emergencyBreathing || ''}
+                      onChange={(e) => setResponses({...responses, emergencyBreathing: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-green-800 mb-4">🌱 Vagus Nerve Support Plan</h4>
+                    <Label>How will you incorporate vagus nerve activities into your week?</Label>
+                    <Textarea
+                      placeholder="In addition to breathwork, I will support my vagus nerve by [list 3-5 activities from your selections]. I'll do these [how often] to build long-term resilience."
+                      value={responses.vagusSupport || ''}
+                      onChange={(e) => setResponses({...responses, vagusSupport: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-800 mb-3">🌟 Breathwork Success Reminders</h4>
+                    <div className="space-y-1 text-sm text-amber-700">
+                      <p>• Even 30 seconds of conscious breathing can shift your nervous system</p>
+                      <p>• Practice when calm so the technique is ready when you need it</p>
+                      <p>• Your vagus nerve gets stronger with regular activation</p>
+                      <p>• Notice small improvements - they compound over time</p>
+                      <p>• Breathwork is always available to you, anywhere, anytime</p>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => {
+                      setResponses({...responses, breathworkCompleted: true});
+                      onComplete(component.id, responses);
+                    }}
+                    className="w-full"
+                    disabled={!responses.breathingPlan || !responses.emergencyBreathing}
+                  >
+                    Complete Breathwork & Vagus Nerve Reset
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Week 4: Create Your Calm Corner
+    if (moduleId === 'week-4' && component.id === 'w4-calm-corner') {
+      const [calmCornerPhase, setCalmCornerPhase] = useState<'introduction' | 'assessment' | 'design' | 'implementation'>('introduction');
+      const [responses, setResponses] = useState<any>({
+        currentSpace: {},
+        designChoices: {},
+        implementationPlan: '',
+        budget: '',
+        timeline: ''
+      });
+
+      const spaceElements = [
+        {
+          category: 'Lighting',
+          essential: true,
+          description: 'Soft, warm lighting to signal relaxation to your nervous system',
+          options: [
+            { name: 'Salt lamp', cost: '$15-30', benefits: 'Warm glow, negative ions', difficulty: 'Easy' },
+            { name: 'String lights', cost: '$10-20', benefits: 'Cozy ambiance, adjustable', difficulty: 'Easy' },
+            { name: 'Candles', cost: '$5-15', benefits: 'Calming scent, flickering light', difficulty: 'Easy' },
+            { name: 'Dimmer switch', cost: '$20-40', benefits: 'Controllable brightness', difficulty: 'Moderate' },
+            { name: 'Table lamp with warm bulb', cost: '$25-50', benefits: 'Focused soft light', difficulty: 'Easy' }
+          ]
+        },
+        {
+          category: 'Seating',
+          essential: true,
+          description: 'Comfortable place to sit that supports relaxation and meditation',
+          options: [
+            { name: 'Floor cushions', cost: '$20-40', benefits: 'Ground connection, flexible', difficulty: 'Easy' },
+            { name: 'Meditation pillow', cost: '$25-50', benefits: 'Proper posture, comfortable', difficulty: 'Easy' },
+            { name: 'Comfortable chair', cost: '$50-200', benefits: 'Back support, familiar', difficulty: 'Easy' },
+            { name: 'Bean bag', cost: '$30-70', benefits: 'Moldable, cozy', difficulty: 'Easy' },
+            { name: 'Yoga bolster', cost: '$40-80', benefits: 'Multiple positions, support', difficulty: 'Easy' }
+          ]
+        },
+        {
+          category: 'Sound',
+          essential: false,
+          description: 'Audio elements to mask distractions and promote calm',
+          options: [
+            { name: 'White noise machine', cost: '$20-50', benefits: 'Masks outside noise, consistent', difficulty: 'Easy' },
+            { name: 'Small fountain', cost: '$30-80', benefits: 'Natural water sounds, humidity', difficulty: 'Easy' },
+            { name: 'Wind chimes', cost: '$15-35', benefits: 'Gentle sounds, movement', difficulty: 'Easy' },
+            { name: 'Bluetooth speaker', cost: '$25-100', benefits: 'Custom playlists, meditation apps', difficulty: 'Easy' },
+            { name: 'Singing bowl', cost: '$20-60', benefits: 'Intentional sound, ritual', difficulty: 'Easy' }
+          ]
+        },
+        {
+          category: 'Scent',
+          essential: false,
+          description: 'Aromatherapy to trigger relaxation response',
+          options: [
+            { name: 'Essential oil diffuser', cost: '$20-60', benefits: 'Customizable scents, timer', difficulty: 'Easy' },
+            { name: 'Incense and holder', cost: '$10-25', benefits: 'Ritual element, variety', difficulty: 'Easy' },
+            { name: 'Reed diffuser', cost: '$15-30', benefits: 'Constant gentle scent', difficulty: 'Easy' },
+            { name: 'Scented candles', cost: '$10-40', benefits: 'Combined light and scent', difficulty: 'Easy' },
+            { name: 'Potpourri', cost: '$5-15', benefits: 'Natural, long-lasting', difficulty: 'Easy' }
+          ]
+        },
+        {
+          category: 'Nature Elements',
+          essential: false,
+          description: 'Bringing natural elements indoors for grounding',
+          options: [
+            { name: 'Small plants', cost: '$10-40', benefits: 'Living energy, air purification', difficulty: 'Moderate' },
+            { name: 'Crystals or stones', cost: '$10-50', benefits: 'Tactile comfort, beauty', difficulty: 'Easy' },
+            { name: 'Natural materials (wood, bamboo)', cost: '$15-60', benefits: 'Organic textures, warmth', difficulty: 'Easy' },
+            { name: 'Shell or driftwood collection', cost: '$5-20', benefits: 'Ocean memories, texture', difficulty: 'Easy' },
+            { name: 'Fresh flowers', cost: '$10-25/week', benefits: 'Color, scent, life energy', difficulty: 'Easy' }
+          ]
+        },
+        {
+          category: 'Storage & Organization',
+          essential: false,
+          description: 'Keeping your calm corner clutter-free and functional',
+          options: [
+            { name: 'Small basket', cost: '$15-30', benefits: 'Hidden storage, natural texture', difficulty: 'Easy' },
+            { name: 'Floating shelf', cost: '$20-50', benefits: 'Display space, minimal footprint', difficulty: 'Moderate' },
+            { name: 'Storage ottoman', cost: '$40-100', benefits: 'Dual purpose, extra seating', difficulty: 'Easy' },
+            { name: 'Small side table', cost: '$30-80', benefits: 'Surface space, convenience', difficulty: 'Easy' },
+            { name: 'Wall hooks', cost: '$10-25', benefits: 'Hang items, save space', difficulty: 'Moderate' }
+          ]
+        }
+      ];
+
+      const budgetRanges = [
+        { range: 'Under $50', description: 'Basic essentials: cushion, candles, simple storage' },
+        { range: '$50-100', description: 'Comfortable setup: good seating, lighting, one special element' },
+        { range: '$100-200', description: 'Enhanced space: multiple elements, quality items' },
+        { range: '$200+', description: 'Luxurious retreat: premium items, multiple categories' }
+      ];
+
+      const spaceOptions = [
+        { type: 'Corner of bedroom', pros: ['Private', 'Quiet', 'Already familiar'], cons: ['Sleep association', 'Limited space'] },
+        { type: 'Living room corner', pros: ['Easy access', 'Good lighting', 'Family can see your self-care'], cons: ['Noise', 'Distractions'] },
+        { type: 'Home office nook', pros: ['Separate from relaxation', 'Transition space'], cons: ['Work associations', 'May be busy'] },
+        { type: 'Spare room/guest room', pros: ['Privacy', 'Dedicated space', 'Quiet'], cons: ['May feel isolated', 'Less convenient'] },
+        { type: 'Outdoor space (porch, garden)', pros: ['Natural elements', 'Fresh air', 'Seasonal connection'], cons: ['Weather dependent', 'Less private'] },
+        { type: 'Bathroom corner', pros: ['Very private', 'Associated with self-care'], cons: ['Limited space', 'Humidity issues'] }
+      ];
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">🏡</span>
+              Create Your Calm Corner
+            </CardTitle>
+            <p className="text-gray-600">Design a dedicated space for relaxation and nervous system reset</p>
+          </CardHeader>
+          <CardContent>
+            {/* Introduction Phase */}
+            {calmCornerPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-sage-100 to-green-100 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">🌿 Why Every Midlife Woman Needs a Calm Corner</h3>
+                  <div className="space-y-4 text-sm">
+                    <p>
+                      In midlife, your home often serves everyone else's needs first. A calm corner is a physical space that 
+                      signals to your nervous system - and your family - that your well-being matters. It's not selfish; 
+                      it's essential self-care that makes you more available and present for others.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg">
+                      <h4 className="font-semibold text-sage-800 mb-2">What a Calm Corner Provides:</h4>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• <strong>Physical sanctuary</strong> - A place that's just for you</li>
+                        <li>• <strong>Visual cue</strong> - Reminds you to pause and breathe</li>
+                        <li>• <strong>Nervous system signal</strong> - Environment tells your body to relax</li>
+                        <li>• <strong>Boundary setting</strong> - Shows family your self-care is important</li>
+                        <li>• <strong>Ritual anchor</strong> - Consistent place for daily practices</li>
+                      </ul>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-green-800 mb-2">Perfect for Midlife Because:</h4>
+                      <div className="space-y-2 text-green-700">
+                        <p>• <strong>Overstimulation relief:</strong> Your nervous system needs a break from constant demands</p>
+                        <p>• <strong>Identity reclaiming:</strong> A space that reflects who YOU are, not just your roles</p>
+                        <p>• <strong>Hormone support:</strong> Calm environments help regulate stress hormones</p>
+                        <p>• <strong>Transition support:</strong> A place to process life changes and emotions</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-4">💡 Calm Corner Principles</h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-3">
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                        <h5 className="font-semibold text-blue-800">Start Small</h5>
+                        <p className="text-blue-700">Even a chair and candle can create a sacred space</p>
+                      </div>
+                      <div className="p-3 bg-purple-50 border border-purple-200 rounded">
+                        <h5 className="font-semibold text-purple-800">Make it Yours</h5>
+                        <p className="text-purple-700">Choose elements that feel personally meaningful</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <h5 className="font-semibold text-green-800">Keep it Simple</h5>
+                        <p className="text-green-700">Clutter creates stress; simplicity creates calm</p>
+                      </div>
+                      <div className="p-3 bg-coral-50 border border-coral-200 rounded">
+                        <h5 className="font-semibold text-coral-800">Honor the Space</h5>
+                        <p className="text-coral-700">Use it regularly to make it truly sacred</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-amber-800 mb-2">🌟 Remember</h4>
+                  <div className="space-y-1 text-sm text-amber-700">
+                    <p>• Your calm corner doesn't need to be Pinterest-perfect</p>
+                    <p>• Even 5 minutes of daily use makes a difference</p>
+                    <p>• You can start with items you already have</p>
+                    <p>• It's okay to ask family to respect this space</p>
+                    <p>• Your needs and preferences are the only design rules that matter</p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setCalmCornerPhase('assessment')}
+                  className="w-full"
+                >
+                  Assess Your Space & Needs
+                </Button>
+              </div>
+            )}
+
+            {/* Assessment Phase */}
+            {calmCornerPhase === 'assessment' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">📍 Space & Needs Assessment</h3>
+                  <p className="text-gray-600">Identify the best location and understand your preferences</p>
+                </div>
+
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-blue-800 mb-4">🏠 Available Space Options</h4>
+                  <Label className="text-sm font-medium mb-3 block">Which spaces in your home could work for a calm corner?</Label>
+                  
+                  <div className="space-y-3">
+                    {spaceOptions.map((space, i) => (
+                      <div key={i} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Checkbox 
+                            id={`space-${i}`}
+                            checked={responses.currentSpace?.options?.includes(space.type) || false}
+                            onCheckedChange={(checked) => {
+                              const current = responses.currentSpace?.options || [];
+                              const updated = checked 
+                                ? [...current, space.type]
+                                : current.filter(s => s !== space.type);
+                              setResponses({
+                                ...responses,
+                                currentSpace: { ...responses.currentSpace, options: updated }
+                              });
+                            }}
+                          />
+                          <Label htmlFor={`space-${i}`} className="font-semibold">{space.type}</Label>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <strong className="text-green-700">Pros:</strong>
+                            <ul className="list-disc list-inside text-green-600">
+                              {space.pros.map((pro, j) => <li key={j}>{pro}</li>)}
+                            </ul>
+                          </div>
+                          <div>
+                            <strong className="text-red-700">Considerations:</strong>
+                            <ul className="list-disc list-inside text-red-600">
+                              {space.cons.map((con, j) => <li key={j}>{con}</li>)}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-green-800 mb-4">💰 Budget Considerations</h4>
+                  <Label>What's a comfortable budget for creating your calm corner?</Label>
+                  <RadioGroup 
+                    value={responses.currentSpace?.budget || ''} 
+                    onValueChange={(value) => setResponses({
+                      ...responses,
+                      currentSpace: { ...responses.currentSpace, budget: value }
+                    })}
+                    className="mt-2"
+                  >
+                    {budgetRanges.map((budget, i) => (
+                      <div key={i} className="flex items-center space-x-2">
+                        <RadioGroupItem value={budget.range} id={`budget-${i}`} />
+                        <Label htmlFor={`budget-${i}`} className="text-sm">
+                          <strong>{budget.range}</strong> - {budget.description}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-purple-800 mb-4">🎯 Your Calm Corner Goals</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>What do you most want to feel in your calm corner?</Label>
+                      <div className="grid md:grid-cols-2 gap-2 mt-2">
+                        {['Peaceful', 'Energized', 'Grounded', 'Inspired', 'Safe', 'Connected', 'Focused', 'Restored'].map((feeling, i) => (
+                          <div key={i} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`feeling-${i}`}
+                              checked={responses.currentSpace?.desiredFeelings?.includes(feeling) || false}
+                              onCheckedChange={(checked) => {
+                                const current = responses.currentSpace?.desiredFeelings || [];
+                                const updated = checked 
+                                  ? [...current, feeling]
+                                  : current.filter(f => f !== feeling);
+                                setResponses({
+                                  ...responses,
+                                  currentSpace: { ...responses.currentSpace, desiredFeelings: updated }
+                                });
+                              }}
+                            />
+                            <Label htmlFor={`feeling-${i}`} className="text-sm">{feeling}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>What activities will you do in your calm corner?</Label>
+                      <div className="grid md:grid-cols-2 gap-2 mt-2">
+                        {['Meditation', 'Deep breathing', 'Journaling', 'Reading', 'Gentle stretching', 'Prayer/reflection', 'Listening to music', 'Just sitting quietly'].map((activity, i) => (
+                          <div key={i} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`activity-${i}`}
+                              checked={responses.currentSpace?.plannedActivities?.includes(activity) || false}
+                              onCheckedChange={(checked) => {
+                                const current = responses.currentSpace?.plannedActivities || [];
+                                const updated = checked 
+                                  ? [...current, activity]
+                                  : current.filter(a => a !== activity);
+                                setResponses({
+                                  ...responses,
+                                  currentSpace: { ...responses.currentSpace, plannedActivities: updated }
+                                });
+                              }}
+                            />
+                            <Label htmlFor={`activity-${i}`} className="text-sm">{activity}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>What time of day will you most likely use your calm corner?</Label>
+                      <RadioGroup 
+                        value={responses.currentSpace?.preferredTime || ''} 
+                        onValueChange={(value) => setResponses({
+                          ...responses,
+                          currentSpace: { ...responses.currentSpace, preferredTime: value }
+                        })}
+                        className="mt-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="early-morning" id="early-morning" />
+                          <Label htmlFor="early-morning" className="text-sm">Early morning (before family wakes)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="mid-morning" id="mid-morning" />
+                          <Label htmlFor="mid-morning" className="text-sm">Mid-morning (after morning routine)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="afternoon" id="afternoon" />
+                          <Label htmlFor="afternoon" className="text-sm">Afternoon (stress break)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="evening" id="evening" />
+                          <Label htmlFor="evening" className="text-sm">Evening (wind-down time)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="varies" id="varies" />
+                          <Label htmlFor="varies" className="text-sm">Varies - whenever I need it</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setCalmCornerPhase('design')}
+                  className="w-full"
+                  disabled={!responses.currentSpace?.options?.length || !responses.currentSpace?.budget || !responses.currentSpace?.desiredFeelings?.length}
+                >
+                  Design Your Calm Corner
+                </Button>
+              </div>
+            )}
+
+            {/* Design Phase */}
+            {calmCornerPhase === 'design' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🎨 Design Your Personal Sanctuary</h3>
+                  <p className="text-gray-600">Choose elements that create your ideal calm corner</p>
+                </div>
+
+                {spaceElements.map((category) => (
+                  <div key={category.category} className="bg-white border-2 border-sage-200 rounded-lg p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <h4 className="text-lg font-semibold text-sage-800">{category.category}</h4>
+                      {category.essential && <Badge variant="secondary" className="text-xs">Essential</Badge>}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">{category.description}</p>
+                    
+                    <div className="space-y-3">
+                      {category.options.map((option, i) => (
+                        <div key={i} className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Checkbox 
+                              id={`option-${category.category}-${i}`}
+                              checked={responses.designChoices?.[category.category]?.includes(option.name) || false}
+                              onCheckedChange={(checked) => {
+                                const current = responses.designChoices?.[category.category] || [];
+                                const updated = checked 
+                                  ? [...current, option.name]
+                                  : current.filter(item => item !== option.name);
+                                setResponses({
+                                  ...responses,
+                                  designChoices: { 
+                                    ...responses.designChoices, 
+                                    [category.category]: updated 
+                                  }
+                                });
+                              }}
+                            />
+                            <Label htmlFor={`option-${category.category}-${i}`} className="font-semibold">
+                              {option.name}
+                            </Label>
+                          </div>
+                          <div className="grid md:grid-cols-3 gap-3 text-sm">
+                            <div>
+                              <strong className="text-green-700">Cost:</strong> {option.cost}
+                            </div>
+                            <div>
+                              <strong className="text-blue-700">Benefits:</strong> {option.benefits}
+                            </div>
+                            <div>
+                              <strong className="text-purple-700">Setup:</strong> {option.difficulty}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="bg-white border-2 border-coral-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-coral-800 mb-4">🌈 Personal Touches</h4>
+                  <Label>What personal items will make this space feel uniquely yours?</Label>
+                  <Textarea
+                    placeholder="Think about meaningful objects, photos, artwork, colors, or textures that bring you joy and comfort..."
+                    value={responses.designChoices?.personalTouches || ''}
+                    onChange={(e) => setResponses({
+                      ...responses,
+                      designChoices: { 
+                        ...responses.designChoices, 
+                        personalTouches: e.target.value 
+                      }
+                    })}
+                    className="mt-2"
+                    rows={3}
+                  />
+                </div>
+
+                <Button 
+                  onClick={() => setCalmCornerPhase('implementation')}
+                  className="w-full"
+                  disabled={!Object.keys(responses.designChoices || {}).length}
+                >
+                  Create Implementation Plan
+                </Button>
+              </div>
+            )}
+
+            {/* Implementation Phase */}
+            {calmCornerPhase === 'implementation' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">🚀 Your Calm Corner Action Plan</h3>
+                  <p className="text-gray-600">Turn your vision into reality with a step-by-step plan</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-sage-100 to-green-100 p-6 rounded-lg">
+                  <h4 className="font-semibold text-sage-800 mb-4">🎉 Your Calm Corner Design Summary</h4>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <strong>Space Options:</strong> {responses.currentSpace?.options?.join(', ') || 'Not specified'}
+                    </div>
+                    <div>
+                      <strong>Budget:</strong> {responses.currentSpace?.budget || 'Not specified'}
+                    </div>
+                    <div>
+                      <strong>Desired Feelings:</strong> {responses.currentSpace?.desiredFeelings?.join(', ') || 'Not specified'}
+                    </div>
+                    <div>
+                      <strong>Planned Activities:</strong> {responses.currentSpace?.plannedActivities?.join(', ') || 'Not specified'}
+                    </div>
+                    <div>
+                      <strong>Preferred Time:</strong> {responses.currentSpace?.preferredTime || 'Not specified'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-blue-800 mb-4">📋 Implementation Steps</h4>
+                  <Label>Write your step-by-step plan for creating your calm corner:</Label>
+                  <Textarea
+                    placeholder="Week 1: Choose final location and clear the space. Week 2: Purchase essential items (seating, lighting). Week 3: Add personal touches and test the setup. Include specific action items and timeline."
+                    value={responses.implementationPlan || ''}
+                    onChange={(e) => setResponses({...responses, implementationPlan: e.target.value})}
+                    className="mt-2"
+                    rows={5}
+                  />
+                </div>
+
+                <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-green-800 mb-4">💰 Shopping List & Budget</h4>
+                  <Label>List what you need to buy and estimated costs:</Label>
+                  <Textarea
+                    placeholder="Essential items: Floor cushion ($30), Salt lamp ($25), Essential oil diffuser ($35). Optional: Small plant ($15), Basket for storage ($20). Total estimated: $125"
+                    value={responses.budget || ''}
+                    onChange={(e) => setResponses({...responses, budget: e.target.value})}
+                    className="mt-2"
+                    rows={4}
+                  />
+                </div>
+
+                <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <h4 className="font-semibold text-purple-800 mb-4">⏰ Timeline & Commitment</h4>
+                  <Label>When will you complete your calm corner and start using it daily?</Label>
+                  <Textarea
+                    placeholder="I will have my calm corner set up by [date] and commit to using it for [duration] each [time of day]. My first week goal is to spend [amount of time] there daily for [specific activity]."
+                    value={responses.timeline || ''}
+                    onChange={(e) => setResponses({...responses, timeline: e.target.value})}
+                    className="mt-2"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-amber-800 mb-3">🌟 Calm Corner Success Tips</h4>
+                  <div className="space-y-1 text-sm text-amber-700">
+                    <p>• Start with just the essentials - you can always add more later</p>
+                    <p>• Use your space daily, even if just for 2-3 minutes</p>
+                    <p>• Keep it clutter-free - less is more for nervous system calm</p>
+                    <p>• Let family know this space is important to you</p>
+                    <p>• Adjust and evolve your space as your needs change</p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => {
+                    setResponses({...responses, calmCornerCompleted: true});
+                    onComplete(component.id, responses);
+                  }}
+                  className="w-full"
+                  disabled={!responses.implementationPlan || !responses.budget || !responses.timeline}
+                >
+                  Complete Calm Corner Design
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Default fallback for other components
     return (
       <Card>
