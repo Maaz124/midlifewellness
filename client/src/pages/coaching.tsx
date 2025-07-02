@@ -208,8 +208,8 @@ export default function Coaching() {
   if (activeComponent && activeModuleId) {
     console.log('Coaching Page - Active Component:', activeComponent.id, 'Module:', activeModuleId);
     
-    // Use enhanced component for Week 1 with detailed content
-    if (activeModuleId === 'week-1') {
+    // Use enhanced component for Week 1 and Week 2 with detailed content
+    if (activeModuleId === 'week-1' || activeModuleId === 'week-2') {
       return (
         <EnhancedCoachingComponent
           component={activeComponent}
