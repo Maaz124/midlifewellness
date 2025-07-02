@@ -59,7 +59,7 @@ export default function Coaching() {
   };
 
   const isModuleUnlocked = (weekNumber: number) => {
-    return weekNumber <= data.userProfile.currentWeek || weekNumber <= 3; // Unlock first 3 weeks for demo
+    return weekNumber <= data.userProfile.currentWeek || weekNumber <= 4; // Unlock first 4 weeks for demo
   };
 
   const getComponentContent = (component: any) => {
