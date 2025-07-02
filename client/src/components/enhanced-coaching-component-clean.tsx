@@ -2193,7 +2193,6 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                   <Button 
                     onClick={() => setResponses({...responses, ritualPhase: 'completion'})}
                     className="w-full"
-                    disabled={!responses.dailyIntention}
                   >
                     Complete Ritual & Assess Results
                   </Button>
