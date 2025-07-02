@@ -6,6 +6,7 @@ interface CognitiveAssessmentProps {
 }
 
 export function CognitiveAssessmentFresh({ onComplete, onClose }: CognitiveAssessmentProps) {
+  console.log('CognitiveAssessmentFresh component is rendering!');
   const [currentSection, setCurrentSection] = useState('memory');
   const [memoryAssessment, setMemoryAssessment] = useState<Record<string, number>>({});
   const [focusAssessment, setFocusAssessment] = useState<Record<string, number>>({});
