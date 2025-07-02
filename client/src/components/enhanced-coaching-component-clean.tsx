@@ -1512,6 +1512,824 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Morning Ritual - Sunrise Hormone Reset
+    if (component.id === 'morning-ritual') {
+      const ritualPhase = responses.ritualPhase || 'preparation';
+      const wakeTime = responses.wakeTime || '7:00';
+      const sunlightExposure = responses.sunlightExposure || 0;
+      const hydrationGlasses = responses.hydrationGlasses || 0;
+      const movementMinutes = responses.movementMinutes || 0;
+      const morningMood = responses.morningMood || 5;
+      const energyLevel = responses.energyLevel || 5;
+
+      const ritualSteps = [
+        { 
+          id: 'hydration', 
+          title: 'Hydration Boost', 
+          duration: '2 min', 
+          description: 'Rehydrate after 8 hours of sleep',
+          icon: '💧',
+          benefits: ['Kickstarts metabolism', 'Supports cortisol regulation', 'Aids toxin elimination']
+        },
+        { 
+          id: 'sunlight', 
+          title: 'Sunlight Exposure', 
+          duration: '10-15 min', 
+          description: 'Natural light to reset circadian rhythm',
+          icon: '☀️',
+          benefits: ['Regulates melatonin', 'Boosts serotonin', 'Sets internal clock']
+        },
+        { 
+          id: 'movement', 
+          title: 'Gentle Movement', 
+          duration: '5-10 min', 
+          description: 'Light exercise to activate your system',
+          icon: '🧘‍♀️',
+          benefits: ['Increases circulation', 'Releases endorphins', 'Reduces morning stiffness']
+        },
+        { 
+          id: 'intention', 
+          title: 'Intention Setting', 
+          duration: '3-5 min', 
+          description: 'Mental preparation for the day',
+          icon: '🎯',
+          benefits: ['Reduces anxiety', 'Improves focus', 'Creates positive mindset']
+        }
+      ];
+
+      const currentStepIndex = ritualSteps.findIndex(step => step.id === ritualPhase);
+      const progressPercent = ((currentStepIndex + 1) / ritualSteps.length) * 100;
+
+      const getMoodInterpretation = (mood: number) => {
+        if (mood <= 3) return { level: 'Low Energy', color: 'text-red-600', message: 'Feeling sluggish or depleted' };
+        if (mood <= 5) return { level: 'Moderate', color: 'text-yellow-600', message: 'Some energy but could be better' };
+        if (mood <= 7) return { level: 'Good Energy', color: 'text-green-600', message: 'Feeling alert and positive' };
+        if (mood <= 9) return { level: 'High Energy', color: 'text-green-700', message: 'Very energized and motivated' };
+        return { level: 'Excellent', color: 'text-green-800', message: 'Peak energy and vitality' };
+      };
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sun className="w-5 h-5 text-yellow-500" />
+              Sunrise Hormone Reset Ritual
+            </CardTitle>
+            <p className="text-sm text-gray-600">A 20-30 minute morning routine designed to optimize your hormonal balance and set a positive tone for your entire day.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Science Behind Morning Rituals */}
+            <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+              <h5 className="font-semibold text-yellow-800 mb-2">Why Morning Rituals Matter for Hormones</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-yellow-700">
+                <div>
+                  <strong>Cortisol Rhythm:</strong> Morning light and movement help establish healthy cortisol patterns
+                </div>
+                <div>
+                  <strong>Circadian Reset:</strong> Consistent timing supports all hormone production cycles
+                </div>
+                <div>
+                  <strong>Metabolism Activation:</strong> Early hydration and movement boost metabolic hormones
+                </div>
+                <div>
+                  <strong>Stress Resilience:</strong> Starting calmly reduces stress hormone spikes throughout the day
+                </div>
+              </div>
+            </div>
+
+            {/* Morning Check-in */}
+            {ritualPhase === 'preparation' && (
+              <div className="bg-white border-2 border-yellow-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Morning Check-In</h4>
+                <p className="text-sm text-gray-600 mb-4">Let's assess how you're feeling this morning and customize your ritual:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">What time did you wake up today?</Label>
+                    <div className="mt-2">
+                      <input
+                        type="time"
+                        value={wakeTime}
+                        onChange={(e) => setResponses({...responses, wakeTime: e.target.value})}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <Label className="font-medium">Current Energy Level</Label>
+                      <span className={`text-sm font-semibold ${getMoodInterpretation(energyLevel).color}`}>
+                        {getMoodInterpretation(energyLevel).level}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500">Exhausted</span>
+                      <Slider
+                        value={[energyLevel]}
+                        onValueChange={(value) => setResponses({...responses, energyLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <span className="text-lg font-bold text-yellow-600 min-w-[30px]">{energyLevel}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">{getMoodInterpretation(energyLevel).message}</p>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Morning Mood</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Anxious/Low</span>
+                      <Slider
+                        value={[morningMood]}
+                        onValueChange={(value) => setResponses({...responses, morningMood: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Calm/Happy</span>
+                      <span className="text-lg font-bold text-yellow-600 min-w-[30px]">{morningMood}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How did you sleep? (check all that apply)</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Restful sleep', 'Woke up tired', 'Multiple wake-ups', 'Vivid dreams',
+                        'Hot flashes', 'Racing thoughts', 'Good sleep quality', 'Needed alarm'
+                      ].map((symptom) => (
+                        <div key={symptom} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`sleep-${symptom}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`sleep-${symptom}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{symptom}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, ritualPhase: 'hydration'})}
+                    className="w-full"
+                  >
+                    Begin Your Hormone Reset Ritual
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Ritual Progress Overview */}
+            {ritualPhase !== 'preparation' && (
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg border">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold">Your Morning Ritual Progress</h4>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">~{20 + (currentStepIndex * 5)} min total</span>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Ritual Progress</span>
+                    <span className="text-sm text-gray-600">{Math.round(progressPercent)}% Complete</span>
+                  </div>
+                  <Progress value={progressPercent} className="h-3" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  {ritualSteps.map((step, index) => (
+                    <div 
+                      key={step.id}
+                      className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                        step.id === ritualPhase 
+                          ? 'border-yellow-400 bg-white shadow-sm' 
+                          : index < currentStepIndex 
+                            ? 'border-green-200 bg-green-50' 
+                            : 'border-gray-200 bg-gray-50'
+                      }`}
+                      onClick={() => setResponses({...responses, ritualPhase: step.id})}
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">{step.icon}</div>
+                        <div className={`w-6 h-6 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold ${
+                          index < currentStepIndex 
+                            ? 'bg-green-500 text-white' 
+                            : step.id === ritualPhase 
+                              ? 'bg-yellow-500 text-white' 
+                              : 'bg-gray-300 text-gray-600'
+                        }`}>
+                          {index < currentStepIndex ? '✓' : index + 1}
+                        </div>
+                        <h6 className="font-semibold text-sm">{step.title}</h6>
+                        <p className="text-xs text-gray-600">{step.duration}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 1: Hydration */}
+            {ritualPhase === 'hydration' && (
+              <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-2">💧</div>
+                  <h4 className="text-xl font-semibold">Hydration Boost</h4>
+                  <p className="text-sm text-gray-600">Rehydrate your body after 8 hours of sleep</p>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                  <h5 className="font-semibold text-blue-800 mb-2">Why Morning Hydration Matters</h5>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• <strong>Cortisol Support:</strong> Proper hydration helps regulate morning cortisol spike</li>
+                    <li>• <strong>Metabolism Boost:</strong> Water increases metabolic rate by up to 30%</li>
+                    <li>• <strong>Brain Function:</strong> Even mild dehydration affects mood and cognitive function</li>
+                    <li>• <strong>Hormone Transport:</strong> Water helps transport hormones throughout your body</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">Your Hydration Protocol:</Label>
+                    <div className="grid grid-cols-1 gap-3 mt-3">
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded border">
+                        <Checkbox
+                          checked={responses.hydroStep1 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, hydroStep1: checked})}
+                        />
+                        <div className="flex-1">
+                          <span className="font-medium">Step 1: Warm lemon water (8-12 oz)</span>
+                          <p className="text-xs text-gray-600">Squeeze half a lemon into warm water. Supports liver detox and alkalizes your system.</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded border">
+                        <Checkbox
+                          checked={responses.hydroStep2 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, hydroStep2: checked})}
+                        />
+                        <div className="flex-1">
+                          <span className="font-medium">Step 2: Add a pinch of sea salt</span>
+                          <p className="text-xs text-gray-600">Himalayan or sea salt helps with electrolyte balance and adrenal support.</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded border">
+                        <Checkbox
+                          checked={responses.hydroStep3 || false}
+                          onCheckedChange={(checked) => setResponses({...responses, hydroStep3: checked})}
+                        />
+                        <div className="flex-1">
+                          <span className="font-medium">Step 3: Drink slowly and mindfully</span>
+                          <p className="text-xs text-gray-600">Take 2-3 minutes to drink slowly, focusing on nourishing your body.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Glasses of water consumed this morning:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setResponses({...responses, hydrationGlasses: Math.max(0, hydrationGlasses - 1)})}
+                      >
+                        -
+                      </Button>
+                      <span className="text-2xl font-bold text-blue-600 min-w-[40px] text-center">{hydrationGlasses}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setResponses({...responses, hydrationGlasses: hydrationGlasses + 1})}
+                      >
+                        +
+                      </Button>
+                      <span className="text-sm text-gray-600">glasses (8 oz each)</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-4 gap-2 mt-3">
+                      {[1,2,3,4].map((glass) => (
+                        <div key={glass} className={`h-12 rounded flex items-center justify-center text-sm font-medium ${
+                          glass <= hydrationGlasses 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-200 text-gray-600'
+                        }`}>
+                          💧
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {hydrationGlasses >= 2 && (
+                      <p className="text-sm text-green-600 mt-2">
+                        Great! You've met the minimum hydration for hormone support.
+                      </p>
+                    )}
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, ritualPhase: 'sunlight'})}
+                    className="w-full"
+                    disabled={hydrationGlasses < 1}
+                  >
+                    Continue to Sunlight Exposure
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Sunlight */}
+            {ritualPhase === 'sunlight' && (
+              <div className="bg-white border-2 border-yellow-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-2">☀️</div>
+                  <h4 className="text-xl font-semibold">Sunlight Exposure</h4>
+                  <p className="text-sm text-gray-600">Reset your circadian rhythm with natural light</p>
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg mb-6">
+                  <h5 className="font-semibold text-yellow-800 mb-2">The Power of Morning Light</h5>
+                  <ul className="text-sm text-yellow-700 space-y-1">
+                    <li>• <strong>Melatonin Regulation:</strong> Morning light stops melatonin production, improving sleep</li>
+                    <li>• <strong>Serotonin Boost:</strong> Sunlight increases serotonin, improving mood and focus</li>
+                    <li>• <strong>Cortisol Timing:</strong> Light exposure helps time your natural cortisol awakening response</li>
+                    <li>• <strong>Vitamin D:</strong> Even 10 minutes can start vitamin D synthesis</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">Sunlight Protocol (choose your option):</Label>
+                    <RadioGroup
+                      value={responses.sunlightOption || 'outdoor'}
+                      onValueChange={(value) => setResponses({...responses, sunlightOption: value})}
+                      className="mt-3"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="outdoor" />
+                          <div className="flex-1">
+                            <Label className="font-medium">Outdoor sunlight (ideal)</Label>
+                            <p className="text-sm text-gray-600">10-15 minutes outside, even if cloudy. No sunglasses needed.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="window" />
+                          <div className="flex-1">
+                            <Label className="font-medium">By a bright window</Label>
+                            <p className="text-sm text-gray-600">15-20 minutes by an east-facing window with maximum light.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="light-therapy" />
+                          <div className="flex-1">
+                            <Label className="font-medium">Light therapy lamp</Label>
+                            <p className="text-sm text-gray-600">10,000 lux light box for 10-15 minutes.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Minutes of light exposure:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <Slider
+                        value={[sunlightExposure]}
+                        onValueChange={(value) => setResponses({...responses, sunlightExposure: value[0]})}
+                        max={30}
+                        min={0}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-2xl font-bold text-yellow-600 min-w-[40px]">{sunlightExposure}</span>
+                      <span className="text-sm text-gray-600">minutes</span>
+                    </div>
+                    
+                    <div className="mt-3">
+                      <div className="flex justify-between text-xs text-gray-600 mb-1">
+                        <span>0 min</span>
+                        <span>15 min (ideal)</span>
+                        <span>30 min</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all ${
+                            sunlightExposure >= 10 ? 'bg-green-500' : sunlightExposure >= 5 ? 'bg-yellow-500' : 'bg-red-400'
+                          }`}
+                          style={{ width: `${Math.min((sunlightExposure / 30) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    {sunlightExposure >= 10 && (
+                      <p className="text-sm text-green-600 mt-2">
+                        Excellent! This amount of light exposure will help optimize your circadian rhythm.
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Activities during light exposure (check all you did):</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Deep breathing', 'Gentle stretching', 'Gratitude practice', 'Reading',
+                        'Light walking', 'Journaling', 'Meditation', 'Planning my day'
+                      ].map((activity) => (
+                        <div key={activity} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`sunlight-${activity}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`sunlight-${activity}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{activity}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, ritualPhase: 'movement'})}
+                    className="w-full"
+                    disabled={sunlightExposure < 5}
+                  >
+                    Continue to Gentle Movement
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Movement */}
+            {ritualPhase === 'movement' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-2">🧘‍♀️</div>
+                  <h4 className="text-xl font-semibold">Gentle Movement</h4>
+                  <p className="text-sm text-gray-600">Activate your body and boost circulation</p>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg mb-6">
+                  <h5 className="font-semibold text-green-800 mb-2">Benefits of Morning Movement</h5>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• <strong>Endorphin Release:</strong> Natural mood boosters reduce stress hormones</li>
+                    <li>• <strong>Lymphatic Drainage:</strong> Gentle movement helps eliminate toxins</li>
+                    <li>• <strong>Energy Activation:</strong> Gets blood flowing to muscles and brain</li>
+                    <li>• <strong>Joint Mobility:</strong> Reduces morning stiffness common in perimenopause</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">Choose your movement style:</Label>
+                    <RadioGroup
+                      value={responses.movementType || 'stretching'}
+                      onValueChange={(value) => setResponses({...responses, movementType: value})}
+                      className="mt-3"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="stretching" />
+                          <div className="flex-1">
+                            <Label className="font-medium">Gentle Stretching</Label>
+                            <p className="text-sm text-gray-600">Cat-cow, neck rolls, shoulder shrugs, hip circles</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="yoga" />
+                          <div className="flex-1">
+                            <Label className="font-medium">Sun Salutation</Label>
+                            <p className="text-sm text-gray-600">3-5 rounds of gentle yoga flow</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="walking" />
+                          <div className="flex-1">
+                            <Label className="font-medium">Light Walking</Label>
+                            <p className="text-sm text-gray-600">5-10 minutes of easy walking</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                          <RadioGroupItem value="dance" />
+                          <div className="flex-1">
+                            <Label className="font-medium">Gentle Dance</Label>
+                            <p className="text-sm text-gray-600">Free movement to favorite music</p>
+                          </div>
+                        </div>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Minutes of movement:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <Slider
+                        value={[movementMinutes]}
+                        onValueChange={(value) => setResponses({...responses, movementMinutes: value[0]})}
+                        max={20}
+                        min={0}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-2xl font-bold text-green-600 min-w-[40px]">{movementMinutes}</span>
+                      <span className="text-sm text-gray-600">minutes</span>
+                    </div>
+                    
+                    {movementMinutes >= 5 && (
+                      <p className="text-sm text-green-600 mt-2">
+                        Perfect! Even 5 minutes of morning movement can boost your energy for hours.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h5 className="font-semibold mb-2">Quick Movement Ideas (check what you did):</h5>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        'Arm circles', 'Neck stretches', 'Hip circles', 'Calf raises',
+                        'Side bends', 'Deep squats', 'Shoulder rolls', 'Ankle rotations'
+                      ].map((movement) => (
+                        <div key={movement} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`movement-${movement}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`movement-${movement}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{movement}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, ritualPhase: 'intention'})}
+                    className="w-full"
+                    disabled={movementMinutes < 3}
+                  >
+                    Continue to Intention Setting
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Intention Setting */}
+            {ritualPhase === 'intention' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-2">🎯</div>
+                  <h4 className="text-xl font-semibold">Intention Setting</h4>
+                  <p className="text-sm text-gray-600">Set a positive direction for your day</p>
+                </div>
+
+                <div className="bg-purple-50 p-4 rounded-lg mb-6">
+                  <h5 className="font-semibold text-purple-800 mb-2">Power of Intentional Mornings</h5>
+                  <ul className="text-sm text-purple-700 space-y-1">
+                    <li>• <strong>Stress Reduction:</strong> Clear intentions reduce decision fatigue and anxiety</li>
+                    <li>• <strong>Hormone Balance:</strong> Positive mindset supports healthy cortisol patterns</li>
+                    <li>• <strong>Focus Enhancement:</strong> Intention setting improves concentration throughout the day</li>
+                    <li>• <strong>Emotional Regulation:</strong> Mindful planning helps manage mood swings</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Today's Primary Intention:</Label>
+                    <Textarea
+                      placeholder="e.g., I will move through my day with calm confidence... I will listen to my body's needs... I choose to respond rather than react..."
+                      value={responses.dailyIntention || ''}
+                      onChange={(e) => setResponses({...responses, dailyIntention: e.target.value})}
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Three things I'm grateful for this morning:</Label>
+                    <div className="space-y-2 mt-2">
+                      <input
+                        type="text"
+                        placeholder="1. Something that makes me smile..."
+                        value={responses.gratitude1 || ''}
+                        onChange={(e) => setResponses({...responses, gratitude1: e.target.value})}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="2. A person who supports me..."
+                        value={responses.gratitude2 || ''}
+                        onChange={(e) => setResponses({...responses, gratitude2: e.target.value})}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="3. Something my body does for me..."
+                        value={responses.gratitude3 || ''}
+                        onChange={(e) => setResponses({...responses, gratitude3: e.target.value})}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Priority focus for today (choose one):</Label>
+                    <RadioGroup
+                      value={responses.dailyFocus || 'self-care'}
+                      onValueChange={(value) => setResponses({...responses, dailyFocus: value})}
+                      className="mt-3"
+                    >
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="self-care" />
+                          <Label>Self-care & rest</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="productivity" />
+                          <Label>Productive focus</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="relationships" />
+                          <Label>Connection & relationships</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="creativity" />
+                          <Label>Creative expression</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="learning" />
+                          <Label>Learning & growth</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="balance" />
+                          <Label>Overall balance</Label>
+                        </div>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How do you want to feel at the end of today?</Label>
+                    <Textarea
+                      placeholder="Describe the feeling you want to cultivate: calm, accomplished, connected, energized..."
+                      value={responses.desiredFeeling || ''}
+                      onChange={(e) => setResponses({...responses, desiredFeeling: e.target.value})}
+                      className="mt-2"
+                      rows={2}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, ritualPhase: 'completion'})}
+                    className="w-full"
+                    disabled={!responses.dailyIntention}
+                  >
+                    Complete Ritual & Assess Results
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Ritual Completion */}
+            {ritualPhase === 'completion' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-2">🌟</div>
+                  <h4 className="text-xl font-semibold">Ritual Complete!</h4>
+                  <p className="text-sm text-gray-600">How do you feel after your morning hormone reset?</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Current energy level (compare with your starting {energyLevel}/10):</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Exhausted</span>
+                      <Slider
+                        value={[responses.postRitualEnergy || 5]}
+                        onValueChange={(value) => setResponses({...responses, postRitualEnergy: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postRitualEnergy || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Mood after ritual:</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Anxious/Low</span>
+                      <Slider
+                        value={[responses.postRitualMood || 5]}
+                        onValueChange={(value) => setResponses({...responses, postRitualMood: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Calm/Happy</span>
+                      <span className="text-lg font-bold text-green-600 min-w-[30px]">{responses.postRitualMood || 5}</span>
+                    </div>
+                  </div>
+
+                  {/* Ritual Summary */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h5 className="font-semibold mb-3">Your Morning Ritual Summary</h5>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <strong>Hydration:</strong> {hydrationGlasses} glasses
+                      </div>
+                      <div>
+                        <strong>Sunlight:</strong> {sunlightExposure} minutes
+                      </div>
+                      <div>
+                        <strong>Movement:</strong> {movementMinutes} minutes
+                      </div>
+                      <div>
+                        <strong>Wake Time:</strong> {wakeTime}
+                      </div>
+                    </div>
+                    
+                    {responses.postRitualEnergy && energyLevel && (
+                      <div className="mt-4 p-3 bg-white rounded border">
+                        <div className="flex justify-between items-center">
+                          <span>Energy Change:</span>
+                          <span className={`font-bold ${
+                            responses.postRitualEnergy > energyLevel 
+                              ? 'text-green-600' 
+                              : 'text-gray-600'
+                          }`}>
+                            {responses.postRitualEnergy > energyLevel ? '+' : ''}{responses.postRitualEnergy - energyLevel} points
+                          </span>
+                        </div>
+                        {responses.postRitualMood && morningMood && (
+                          <div className="flex justify-between items-center mt-1">
+                            <span>Mood Improvement:</span>
+                            <span className={`font-bold ${
+                              responses.postRitualMood > morningMood 
+                                ? 'text-green-600' 
+                                : 'text-gray-600'
+                            }`}>
+                              {responses.postRitualMood > morningMood ? '+' : ''}{responses.postRitualMood - morningMood} points
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label>Reflection on your ritual:</Label>
+                    <Textarea
+                      placeholder="How did each part feel? What worked best? What would you adjust tomorrow?"
+                      value={responses.ritualReflection || ''}
+                      onChange={(e) => setResponses({...responses, ritualReflection: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, ritualPhase: 'preparation'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Plan Tomorrow's Ritual
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Daily Tips */}
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-yellow-800 mb-2">💡 Morning Ritual Tips</h5>
+              <ul className="text-sm text-yellow-700 space-y-1">
+                <li>• Consistency matters more than perfection - even 10 minutes helps</li>
+                <li>• Prepare the night before: set out water, clothes, intentions</li>
+                <li>• Track your energy patterns to find your optimal wake time</li>
+                <li>• Adjust the ritual seasonally - less outdoor time in winter is okay</li>
+                <li>• Notice how your hormone symptoms change with regular practice</li>
+                <li>• Share your ritual with family so they can support your morning time</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
