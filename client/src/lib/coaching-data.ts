@@ -177,7 +177,7 @@ export const coachingModules: CoachingModule[] = [
     id: 'week-4',
     weekNumber: 4,
     title: 'Nervous System Reset',
-    description: 'Somatic practices, breathwork, and vagus nerve reset techniques',
+    description: 'Somatic practices, breathwork, and vagus nerve reset techniques for midlife regulation',
     completed: false,
     progress: 0,
     locked: false,
@@ -186,28 +186,28 @@ export const coachingModules: CoachingModule[] = [
         id: 'w4-grounding',
         type: 'exercise',
         title: 'Somatic Grounding Practices',
-        description: 'Body-based techniques to regulate your nervous system',
+        description: 'Master 5 powerful body-based techniques including 5-4-3-2-1 grounding, body scan, progressive relaxation, and quick nervous system resets',
         completed: false
       },
       {
         id: 'w4-breathwork',
         type: 'exercise',
         title: 'Breathwork & Vagus Nerve Reset',
-        description: 'Breathing techniques to activate the parasympathetic nervous system',
+        description: 'Learn box breathing, heart coherence, cold exposure breathing, and humming techniques for instant calm',
         completed: false
       },
       {
         id: 'w4-calm-corner',
         type: 'worksheet',
         title: 'Create Your Calm Corner',
-        description: 'Design a dedicated space for relaxation and self-care',
+        description: 'Design your personalized sanctuary with color psychology, aromatherapy, and mindful rituals',
         completed: false
       },
       {
         id: 'w4-meditation',
         type: 'audio',
         title: 'Guided Grounding Meditation',
-        description: 'Audio meditation for nervous system regulation',
+        description: '12-minute nervous system regulation meditation with body scan and breath awareness',
         duration: 12,
         completed: false
       }
