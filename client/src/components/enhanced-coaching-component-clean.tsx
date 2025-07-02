@@ -12,7 +12,8 @@ import { Slider } from '@/components/ui/slider';
 import { 
   Play, 
   Pause, 
-  ArrowLeft, 
+  ArrowLeft,
+  Utensils, 
   Clock, 
   CheckCircle, 
   Activity,
@@ -5291,7 +5292,7 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           currentSymptoms.includes(symptom.id)
         );
         const allNutrients = selectedSymptoms.flatMap(symptom => symptom.supportiveNutrients);
-        const uniqueNutrients = [...new Set(allNutrients)];
+        const uniqueNutrients = Array.from(new Set(allNutrients));
         return uniqueNutrients;
       };
 
@@ -5300,7 +5301,7 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           currentSymptoms.includes(symptom.id)
         );
         const allAvoidFoods = selectedSymptoms.flatMap(symptom => symptom.avoidFoods);
-        const uniqueAvoidFoods = [...new Set(allAvoidFoods)];
+        const uniqueAvoidFoods = Array.from(new Set(allAvoidFoods));
         return uniqueAvoidFoods;
       };
 
