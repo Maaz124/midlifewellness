@@ -1201,10 +1201,15 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <RadioGroupItem 
-                                value={technique.id} 
-                                checked={breathingTechnique === technique.id}
-                              />
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                breathingTechnique === technique.id 
+                                  ? 'border-blue-500 bg-blue-500' 
+                                  : 'border-gray-300'
+                              }`}>
+                                {breathingTechnique === technique.id && (
+                                  <div className="w-2 h-2 rounded-full bg-white"></div>
+                                )}
+                              </div>
                               <h5 className="font-semibold">{technique.name}</h5>
                               {isRecommended && (
                                 <Badge variant="default" className="bg-green-500">Recommended</Badge>
