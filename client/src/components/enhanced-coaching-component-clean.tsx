@@ -3922,6 +3922,596 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Energy Mapping - Personal Energy Pattern Discovery
+    if (component.id === 'energy-mapping') {
+      const mappingPhase = responses.energyMappingPhase || 'baseline';
+      const currentTime = new Date().getHours();
+      const energyReadings = responses.energyReadings || {};
+      const energyTriggers = responses.energyTriggers || {};
+      const sleepQuality = responses.sleepQuality || 5;
+      const stressLevel = responses.stressLevel || 5;
+
+      const timeSlots = [
+        { time: '6 AM', hour: 6, label: 'Early Morning', description: 'Just after waking' },
+        { time: '8 AM', hour: 8, label: 'Morning', description: 'Start of day routine' },
+        { time: '10 AM', hour: 10, label: 'Mid-Morning', description: 'Peak morning hours' },
+        { time: '12 PM', hour: 12, label: 'Noon', description: 'Midday energy' },
+        { time: '2 PM', hour: 14, label: 'Early Afternoon', description: 'Post-lunch period' },
+        { time: '4 PM', hour: 16, label: 'Late Afternoon', description: 'Afternoon dip zone' },
+        { time: '6 PM', hour: 18, label: 'Early Evening', description: 'End of workday' },
+        { time: '8 PM', hour: 20, label: 'Evening', description: 'Wind-down time' },
+        { time: '10 PM', hour: 22, label: 'Late Evening', description: 'Pre-sleep hours' }
+      ];
+
+      const energyFactors = [
+        { id: 'sleep', name: 'Sleep Quality', icon: '😴', impact: 'high' },
+        { id: 'nutrition', name: 'Meals & Nutrition', icon: '🍽️', impact: 'high' },
+        { id: 'movement', name: 'Physical Activity', icon: '🏃‍♀️', impact: 'medium' },
+        { id: 'stress', name: 'Stress Levels', icon: '😰', impact: 'high' },
+        { id: 'hydration', name: 'Hydration', icon: '💧', impact: 'medium' },
+        { id: 'social', name: 'Social Interactions', icon: '👥', impact: 'medium' },
+        { id: 'environment', name: 'Environment/Weather', icon: '🌤️', impact: 'low' },
+        { id: 'hormones', name: 'Hormonal Changes', icon: '🌸', impact: 'high' }
+      ];
+
+      const getEnergyLevel = (timeSlot: string) => energyReadings[timeSlot] || 0;
+      const averageEnergy = Object.values(energyReadings).length > 0 
+        ? Object.values(energyReadings).reduce((a: number, b: number) => a + b, 0) / Object.values(energyReadings).length 
+        : 0;
+
+      const getEnergyInterpretation = (level: number) => {
+        if (level >= 8) return { status: 'High Energy', color: 'text-green-700', message: 'Peak vitality and alertness' };
+        if (level >= 6) return { status: 'Good Energy', color: 'text-green-600', message: 'Solid energy levels' };
+        if (level >= 4) return { status: 'Moderate Energy', color: 'text-yellow-600', message: 'Average energy, some fluctuation' };
+        if (level >= 2) return { status: 'Low Energy', color: 'text-orange-600', message: 'Below optimal energy levels' };
+        return { status: 'Very Low Energy', color: 'text-red-600', message: 'Significant energy depletion' };
+      };
+
+      const energyInterpretation = getEnergyInterpretation(averageEnergy);
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="w-5 h-5 text-orange-500" />
+              Personal Energy Pattern Discovery
+            </CardTitle>
+            <p className="text-sm text-gray-600">Map your daily energy patterns to identify your natural rhythms and optimize your schedule during hormonal transitions.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Energy Science */}
+            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+              <h5 className="font-semibold text-orange-800 mb-2">Understanding Energy Patterns in Perimenopause</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-orange-700">
+                <div>
+                  <strong>Circadian Disruption:</strong> Hormonal changes affect your natural daily rhythm
+                </div>
+                <div>
+                  <strong>Cortisol Shifts:</strong> Stress hormone patterns change, affecting energy timing
+                </div>
+                <div>
+                  <strong>Sleep Fragmentation:</strong> Poor sleep quality creates unpredictable energy dips
+                </div>
+                <div>
+                  <strong>Metabolic Changes:</strong> Energy production and usage patterns shift with hormones
+                </div>
+              </div>
+            </div>
+
+            {/* Baseline Assessment */}
+            {mappingPhase === 'baseline' && (
+              <div className="bg-white border-2 border-orange-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Energy Baseline Assessment</h4>
+                <p className="text-sm text-gray-600 mb-4">Let's establish your current energy foundation before detailed mapping:</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="font-medium">Overall energy level today</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Depleted</span>
+                      <Slider
+                        value={[responses.overallEnergy || 5]}
+                        onValueChange={(value) => setResponses({...responses, overallEnergy: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Energized</span>
+                      <span className="text-lg font-bold text-orange-600 min-w-[30px]">{responses.overallEnergy || 5}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Sleep quality last night</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Terrible</span>
+                      <Slider
+                        value={[sleepQuality]}
+                        onValueChange={(value) => setResponses({...responses, sleepQuality: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Excellent</span>
+                      <span className="text-lg font-bold text-orange-600 min-w-[30px]">{sleepQuality}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">Current stress level</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-500">Very Calm</span>
+                      <Slider
+                        value={[stressLevel]}
+                        onValueChange={(value) => setResponses({...responses, stressLevel: value[0]})}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500">Very Stressed</span>
+                      <span className="text-lg font-bold text-orange-600 min-w-[30px]">{stressLevel}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">When do you typically feel most energized? (check all that apply)</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Early morning (6-9 AM)', 'Mid-morning (9 AM-12 PM)', 'Early afternoon (12-3 PM)', 'Late afternoon (3-6 PM)',
+                        'Early evening (6-8 PM)', 'Late evening (8-10 PM)', 'Night (after 10 PM)', 'Energy varies daily'
+                      ].map((timeOption) => (
+                        <div key={timeOption} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`peak-time-${timeOption}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`peak-time-${timeOption}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{timeOption}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">When do you typically experience energy crashes?</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        'Mid-morning slump', 'After lunch (1-3 PM)', 'Late afternoon (3-5 PM)', 'Early evening',
+                        'After dinner', 'No consistent pattern', 'Multiple times daily', 'Rarely crash'
+                      ].map((crashTime) => (
+                        <div key={crashTime} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`crash-time-${crashTime}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`crash-time-${crashTime}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{crashTime}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, energyMappingPhase: 'hourly-tracking'})}
+                    className="w-full"
+                  >
+                    Begin Detailed Energy Mapping
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Hourly Energy Tracking */}
+            {mappingPhase === 'hourly-tracking' && (
+              <div className="bg-white border-2 border-orange-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Hourly Energy Mapping</h4>
+                <p className="text-sm text-gray-600 mb-4">Rate your energy level at different times throughout the day (0 = exhausted, 10 = peak energy):</p>
+                
+                <div className="space-y-6">
+                  {/* Current Time Indicator */}
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">
+                        Current time: {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </span>
+                    </div>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Start with your current energy level, then fill in other time slots based on your typical patterns.
+                    </p>
+                  </div>
+
+                  {/* Energy Tracking Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {timeSlots.map((slot) => {
+                      const energyLevel = getEnergyLevel(slot.time);
+                      const isCurrentTime = Math.abs(currentTime - slot.hour) <= 1;
+                      
+                      return (
+                        <div key={slot.time} className={`p-4 border-2 rounded-lg ${
+                          isCurrentTime ? 'border-blue-400 bg-blue-50' : 'border-gray-200'
+                        }`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <h5 className="font-semibold">{slot.time}</h5>
+                              <p className="text-xs text-gray-600">{slot.label}</p>
+                            </div>
+                            {isCurrentTime && (
+                              <Badge variant="default" className="bg-blue-500">Now</Badge>
+                            )}
+                          </div>
+                          
+                          <p className="text-xs text-gray-600 mb-3">{slot.description}</p>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium">Energy Level:</span>
+                              <span className={`text-lg font-bold ${
+                                energyLevel >= 7 ? 'text-green-600' : 
+                                energyLevel >= 4 ? 'text-yellow-600' : 'text-red-600'
+                              }`}>
+                                {energyLevel}/10
+                              </span>
+                            </div>
+                            
+                            <Slider
+                              value={[energyLevel]}
+                              onValueChange={(value) => setResponses({
+                                ...responses, 
+                                energyReadings: {...energyReadings, [slot.time]: value[0]}
+                              })}
+                              max={10}
+                              min={0}
+                              step={1}
+                              className="w-full"
+                            />
+                            
+                            <div className="grid grid-cols-11 gap-0.5 mt-2">
+                              {[0,1,2,3,4,5,6,7,8,9,10].map((num) => (
+                                <button
+                                  key={num}
+                                  onClick={() => setResponses({
+                                    ...responses, 
+                                    energyReadings: {...energyReadings, [slot.time]: num}
+                                  })}
+                                  className={`h-6 rounded text-xs font-medium transition-all ${
+                                    num === energyLevel 
+                                      ? 'bg-orange-500 text-white' 
+                                      : 'bg-gray-200 text-gray-600 hover:bg-orange-100'
+                                  }`}
+                                >
+                                  {num}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Energy Pattern Visualization */}
+                  {Object.keys(energyReadings).length >= 3 && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-3">Your Energy Pattern Today</h5>
+                      <div className="flex items-end gap-2 h-32">
+                        {timeSlots.map((slot) => {
+                          const level = getEnergyLevel(slot.time);
+                          const height = (level / 10) * 100;
+                          return (
+                            <div key={slot.time} className="flex-1 flex flex-col items-center">
+                              <div 
+                                className={`w-full rounded-t transition-all ${
+                                  level >= 7 ? 'bg-green-500' : 
+                                  level >= 4 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                                style={{ height: `${height}%` }}
+                              />
+                              <span className="text-xs mt-1 text-center">{slot.time}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <span className="text-sm">Average Energy:</span>
+                        <span className={`text-lg font-bold ${energyInterpretation.color}`}>
+                          {averageEnergy.toFixed(1)}/10 - {energyInterpretation.status}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <Button 
+                    onClick={() => setResponses({...responses, energyMappingPhase: 'factors'})}
+                    className="w-full"
+                    disabled={Object.keys(energyReadings).length < 5}
+                  >
+                    Analyze Energy Influences
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Energy Factors Analysis */}
+            {mappingPhase === 'factors' && (
+              <div className="bg-white border-2 border-orange-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Energy Influencing Factors</h4>
+                <p className="text-sm text-gray-600 mb-4">Rate how much each factor impacts your energy levels today (1 = very negative, 5 = neutral, 10 = very positive):</p>
+                
+                <div className="space-y-6">
+                  {energyFactors.map((factor) => {
+                    const impact = energyTriggers[factor.id] || 5;
+                    
+                    return (
+                      <div key={factor.id} className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">{factor.icon}</span>
+                            <div>
+                              <Label className="font-medium">{factor.name}</Label>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className={`text-xs ${
+                                  factor.impact === 'high' ? 'border-red-300 text-red-600' :
+                                  factor.impact === 'medium' ? 'border-yellow-300 text-yellow-600' :
+                                  'border-gray-300 text-gray-600'
+                                }`}>
+                                  {factor.impact} impact
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          <span className={`text-lg font-bold ${
+                            impact >= 7 ? 'text-green-600' : 
+                            impact >= 4 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {impact}/10
+                          </span>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Slider
+                            value={[impact]}
+                            onValueChange={(value) => setResponses({
+                              ...responses, 
+                              energyTriggers: {...energyTriggers, [factor.id]: value[0]}
+                            })}
+                            max={10}
+                            min={1}
+                            step={1}
+                            className="w-full"
+                          />
+                          
+                          <div className="flex justify-between text-xs text-gray-600">
+                            <span>Drains Energy</span>
+                            <span>Neutral</span>
+                            <span>Boosts Energy</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Factor Analysis */}
+                  {Object.keys(energyTriggers).length >= 5 && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold mb-3">Energy Factor Analysis</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h6 className="font-medium text-green-700 mb-2">Energy Boosters</h6>
+                          {energyFactors
+                            .filter(factor => energyTriggers[factor.id] >= 7)
+                            .map(factor => (
+                              <div key={factor.id} className="flex items-center gap-2 text-sm text-green-600">
+                                <span>{factor.icon}</span>
+                                <span>{factor.name}</span>
+                              </div>
+                            ))}
+                        </div>
+                        <div>
+                          <h6 className="font-medium text-red-700 mb-2">Energy Drains</h6>
+                          {energyFactors
+                            .filter(factor => energyTriggers[factor.id] <= 4)
+                            .map(factor => (
+                              <div key={factor.id} className="flex items-center gap-2 text-sm text-red-600">
+                                <span>{factor.icon}</span>
+                                <span>{factor.name}</span>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <Button 
+                    onClick={() => setResponses({...responses, energyMappingPhase: 'insights'})}
+                    className="w-full"
+                    disabled={Object.keys(energyTriggers).length < 6}
+                  >
+                    Generate Personal Energy Insights
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Personal Insights & Recommendations */}
+            {mappingPhase === 'insights' && (
+              <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-2">⚡</div>
+                  <h4 className="text-xl font-semibold">Your Personal Energy Profile</h4>
+                  <p className="text-sm text-gray-600">Based on your mapping, here are your unique energy patterns and optimization strategies</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Energy Pattern Summary */}
+                  <div className="bg-orange-50 p-4 rounded-lg">
+                    <h5 className="font-semibold text-orange-800 mb-3">Your Energy Pattern Summary</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <strong>Peak Energy Times:</strong>
+                        <div className="mt-1">
+                          {timeSlots
+                            .filter(slot => getEnergyLevel(slot.time) >= 7)
+                            .map(slot => (
+                              <div key={slot.time} className="text-green-600">
+                                • {slot.time} ({slot.label})
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                      <div>
+                        <strong>Low Energy Times:</strong>
+                        <div className="mt-1">
+                          {timeSlots
+                            .filter(slot => getEnergyLevel(slot.time) <= 3)
+                            .map(slot => (
+                              <div key={slot.time} className="text-red-600">
+                                • {slot.time} ({slot.label})
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Personalized Recommendations */}
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h5 className="font-semibold text-blue-800 mb-3">Personalized Energy Optimization</h5>
+                    <div className="space-y-3 text-sm text-blue-700">
+                      {averageEnergy >= 7 && (
+                        <div>• Your overall energy is strong - focus on maintaining these patterns</div>
+                      )}
+                      {averageEnergy < 5 && (
+                        <div>• Priority: Address low energy with sleep, nutrition, and stress management</div>
+                      )}
+                      {Object.values(energyReadings).some((level: number) => level >= 8) && (
+                        <div>• Schedule important tasks during your peak energy windows</div>
+                      )}
+                      {Object.values(energyReadings).some((level: number) => level <= 2) && (
+                        <div>• Plan rest periods during your lowest energy times</div>
+                      )}
+                      {energyTriggers.sleep <= 4 && (
+                        <div>• Critical: Improve sleep quality - this is significantly draining your energy</div>
+                      )}
+                      {energyTriggers.stress <= 4 && (
+                        <div>• Focus on stress management techniques to prevent energy depletion</div>
+                      )}
+                      {energyTriggers.nutrition <= 4 && (
+                        <div>• Optimize meal timing and nutrition to stabilize energy levels</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Energy Schedule Recommendations */}
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h5 className="font-semibold text-green-800 mb-3">Optimal Daily Schedule</h5>
+                    <div className="space-y-2 text-sm text-green-700">
+                      {/* High energy recommendations */}
+                      {timeSlots
+                        .filter(slot => getEnergyLevel(slot.time) >= 7)
+                        .slice(0, 2)
+                        .map(slot => (
+                          <div key={slot.time}>
+                            <strong>{slot.time}:</strong> Best time for demanding tasks, important decisions, or challenging workouts
+                          </div>
+                        ))}
+                      
+                      {/* Medium energy recommendations */}
+                      {timeSlots
+                        .filter(slot => getEnergyLevel(slot.time) >= 4 && getEnergyLevel(slot.time) < 7)
+                        .slice(0, 2)
+                        .map(slot => (
+                          <div key={slot.time}>
+                            <strong>{slot.time}:</strong> Good for routine tasks, light exercise, or social activities
+                          </div>
+                        ))}
+                      
+                      {/* Low energy recommendations */}
+                      {timeSlots
+                        .filter(slot => getEnergyLevel(slot.time) < 4)
+                        .slice(0, 2)
+                        .map(slot => (
+                          <div key={slot.time}>
+                            <strong>{slot.time}:</strong> Rest time - gentle activities, meal prep, or relaxation
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  {/* Action Plan */}
+                  <div>
+                    <Label className="font-medium">My energy optimization action plan:</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Schedule important tasks during peak energy times',
+                        'Plan rest during low energy periods',
+                        'Improve sleep quality and consistency',
+                        'Optimize meal timing for energy stability',
+                        'Add stress management practices',
+                        'Track patterns for 1 week to confirm',
+                        'Adjust exercise timing to match energy',
+                        'Create energy-supportive environment'
+                      ].map((action) => (
+                        <div key={action} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`action-plan-${action}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`action-plan-${action}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{action}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Energy mapping insights and observations:</Label>
+                    <Textarea
+                      placeholder="What surprised you about your energy patterns? What patterns do you want to change or optimize?"
+                      value={responses.energyInsights || ''}
+                      onChange={(e) => setResponses({...responses, energyInsights: e.target.value})}
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, energyMappingPhase: 'baseline'})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Map Another Day's Energy
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Energy Mapping Tips */}
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-orange-800 mb-2">💡 Energy Mapping Tips</h5>
+              <ul className="text-sm text-orange-700 space-y-1">
+                <li>• Map your energy for 3-7 days to identify consistent patterns</li>
+                <li>• Note how different foods, activities, and stressors affect your energy</li>
+                <li>• Track energy alongside your menstrual cycle if still menstruating</li>
+                <li>• Use this data to optimize your schedule and improve productivity</li>
+                <li>• Remember that energy patterns can shift with hormonal changes</li>
+                <li>• Be patient - finding your new rhythm takes time during perimenopause</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
