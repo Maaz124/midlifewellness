@@ -7,6 +7,7 @@ import { ArrowLeft, CheckCircle, Play, Pause } from 'lucide-react';
 import { SomaticGroundingFixed } from './somatic-grounding-fixed';
 import { BreathworkVagus } from './breathwork-vagus';
 import { CalmCorner } from './calm-corner';
+import { GuidedMeditation } from './guided-meditation';
 
 interface EnhancedCoachingComponentMinimalProps {
   component: any;
@@ -32,6 +33,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 4: Create Your Calm Corner
   if (moduleId === 'week-4' && component.id === 'w4-calm-corner') {
     return <CalmCorner onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 4: Guided Grounding Meditation
+  if (moduleId === 'week-4' && component.id === 'w4-meditation') {
+    return <GuidedMeditation onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback content for other components
