@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GroundingPractices } from './grounding-practices';
 import { 
   Play, 
   Pause, 
@@ -13025,6 +13026,11 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
 
     // Week 4: Somatic Grounding Practices
     if (moduleId === 'week-4' && component.id === 'w4-grounding') {
+      return <GroundingPractices onComplete={onComplete} onClose={onClose} />;
+    }
+
+    // Week 4: Somatic Grounding Practices (Original - keeping for reference)
+    if (moduleId === 'week-4' && component.id === 'w4-grounding-old') {
       const [groundingPhase, setGroundingPhase] = useState<'introduction' | 'learning' | 'practice' | 'integration'>('introduction');
       const [currentTechnique, setCurrentTechnique] = useState(0);
       const [responses, setResponses] = useState<any>({
