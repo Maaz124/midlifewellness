@@ -1350,6 +1350,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   // Week 5: Enhanced Cognitive Clarity Assessment - Using Fresh Component
   if (component.id === 'w5-assessment') {
+    console.log('Loading Fresh Cognitive Assessment Component');
     return <CognitiveAssessmentFresh onComplete={onComplete} onClose={onClose} />;
   }
 
