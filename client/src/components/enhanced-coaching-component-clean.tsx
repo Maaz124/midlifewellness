@@ -6631,6 +6631,798 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
       );
     }
 
+    // Week 2 - CBT Reframing Techniques (ABCD Model)
+    if (component.id === 'w2-cbt') {
+      const cbtPhase = responses.cbtPhase || 'introduction';
+      const selectedScenario = responses.selectedScenario || null;
+      const abcdData = responses.abcdData || {};
+      const practiceScenarios = responses.practiceScenarios || [];
+
+      const thoughtDistortions = [
+        {
+          id: 'all-or-nothing',
+          name: 'All-or-Nothing Thinking',
+          description: 'Seeing things in black and white categories',
+          example: '"I ate one cookie, so I completely ruined my diet"',
+          reframe: '"One cookie doesn\'t define my entire eating pattern"',
+          keywords: ['always', 'never', 'perfect', 'ruined', 'completely']
+        },
+        {
+          id: 'catastrophizing',
+          name: 'Catastrophizing',
+          description: 'Expecting the worst possible outcome',
+          example: '"If I don\'t sleep well tonight, tomorrow will be terrible"',
+          reframe: '"One poor night doesn\'t determine my entire day"',
+          keywords: ['disaster', 'terrible', 'awful', 'worst', 'catastrophe']
+        },
+        {
+          id: 'mind-reading',
+          name: 'Mind Reading',
+          description: 'Assuming you know what others are thinking',
+          example: '"She thinks I\'m too old and irrelevant"',
+          reframe: '"I don\'t actually know what she\'s thinking"',
+          keywords: ['thinks', 'believes', 'knows', 'assumes', 'judging']
+        },
+        {
+          id: 'fortune-telling',
+          name: 'Fortune Telling',
+          description: 'Predicting negative outcomes without evidence',
+          example: '"I\'ll never find meaningful work at my age"',
+          reframe: '"I can\'t predict the future, and age brings valuable experience"',
+          keywords: ['will never', 'going to', 'bound to', 'destined', 'inevitable']
+        },
+        {
+          id: 'personalization',
+          name: 'Personalization',
+          description: 'Taking responsibility for things outside your control',
+          example: '"It\'s my fault my family is stressed"',
+          reframe: '"Everyone is responsible for managing their own stress"',
+          keywords: ['my fault', 'because of me', 'I caused', 'I should have', 'blame']
+        },
+        {
+          id: 'emotional-reasoning',
+          name: 'Emotional Reasoning',
+          description: 'Believing feelings are facts',
+          example: '"I feel overwhelmed, so I must be failing"',
+          reframe: '"Feeling overwhelmed doesn\'t mean I\'m actually failing"',
+          keywords: ['feel like', 'must be', 'seems like', 'appears', 'obviously']
+        }
+      ];
+
+      const scenarioLibrary = [
+        {
+          id: 'workplace-change',
+          title: 'Workplace Technology Changes',
+          situation: 'Your workplace is implementing new technology systems that younger colleagues seem to pick up quickly',
+          commonThoughts: [
+            'I\'m too old to learn this new system',
+            'Everyone thinks I\'m outdated and slow',
+            'I\'ll probably lose my job because I can\'t keep up',
+            'I should just retire rather than embarrass myself'
+          ],
+          triggerEmotions: ['anxiety', 'shame', 'inadequacy', 'fear'],
+          physicalSensations: ['tight chest', 'rapid heartbeat', 'sweaty palms', 'stomach knots']
+        },
+        {
+          id: 'social-gathering',
+          title: 'Social Gathering with Younger People',
+          situation: 'You\'re at a party where most people are 10-20 years younger than you',
+          commonThoughts: [
+            'I don\'t belong here',
+            'Everyone is looking at me and thinking I\'m old',
+            'I have nothing interesting to contribute',
+            'I should leave before I embarrass myself'
+          ],
+          triggerEmotions: ['self-consciousness', 'isolation', 'inadequacy', 'anxiety'],
+          physicalSensations: ['blushing', 'tension', 'fidgeting', 'shallow breathing']
+        },
+        {
+          id: 'body-changes',
+          title: 'Physical Changes and Energy Levels',
+          situation: 'You notice your energy levels aren\'t what they used to be, and your body is changing',
+          commonThoughts: [
+            'My best years are behind me',
+            'I\'m becoming invisible and irrelevant',
+            'I\'ll never feel attractive or confident again',
+            'Everyone can see that I\'m aging and declining'
+          ],
+          triggerEmotions: ['sadness', 'grief', 'self-criticism', 'hopelessness'],
+          physicalSensations: ['heaviness', 'fatigue', 'slumped posture', 'sighing']
+        },
+        {
+          id: 'family-dynamics',
+          title: 'Adult Children Making Independent Decisions',
+          situation: 'Your adult child makes a life choice you disagree with or worry about',
+          commonThoughts: [
+            'I failed as a parent',
+            'If I was a better mother, they would make better choices',
+            'I should be able to protect them from making mistakes',
+            'Their problems are my responsibility'
+          ],
+          triggerEmotions: ['guilt', 'anxiety', 'helplessness', 'self-blame'],
+          physicalSensations: ['tight shoulders', 'headache', 'restlessness', 'clenched jaw']
+        },
+        {
+          id: 'health-concerns',
+          title: 'Minor Health Issues and Medical Appointments',
+          situation: 'You have a minor health symptom or upcoming medical test',
+          commonThoughts: [
+            'This is definitely something serious',
+            'My body is falling apart',
+            'I\'m going to be a burden to my family',
+            'This is the beginning of the end'
+          ],
+          triggerEmotions: ['panic', 'dread', 'overwhelm', 'helplessness'],
+          physicalSensations: ['racing heart', 'sweating', 'dizziness', 'nausea']
+        },
+        {
+          id: 'career-transition',
+          title: 'Career Changes or Job Search',
+          situation: 'You\'re considering a career change or looking for new work in midlife',
+          commonThoughts: [
+            'No one will hire someone my age',
+            'I\'ve wasted too much time to start something new',
+            'I should be more established by now',
+            'It\'s too late to pursue my dreams'
+          ],
+          triggerEmotions: ['discouragement', 'regret', 'fear', 'self-doubt'],
+          physicalSensations: ['heavy feeling', 'tiredness', 'muscle tension', 'shallow breathing']
+        }
+      ];
+
+      const getDistortionMatch = (thought) => {
+        return thoughtDistortions.find(distortion =>
+          distortion.keywords.some(keyword =>
+            thought.toLowerCase().includes(keyword.toLowerCase())
+          )
+        );
+      };
+
+      const ABCDAnalyzer = ({ scenario, onComplete }) => {
+        const [currentStep, setCurrentStep] = useState('A');
+        const [analysis, setAnalysis] = useState({
+          A: '', // Activating Event
+          B: '', // Beliefs/Thoughts
+          C: '', // Consequences (Emotional & Behavioral)
+          D: ''  // Disputing/Reframing
+        });
+
+        const steps = [
+          {
+            letter: 'A',
+            title: 'Activating Event',
+            description: 'The specific situation or trigger that started the emotional response',
+            prompt: 'Describe the specific situation that triggered these thoughts and feelings:',
+            example: 'At the team meeting, the manager asked everyone to use the new software system',
+            tips: [
+              'Focus on facts, not interpretations',
+              'Be specific about when and where',
+              'Avoid adding your thoughts or feelings here',
+              'Think of this as what a camera would capture'
+            ]
+          },
+          {
+            letter: 'B',
+            title: 'Beliefs & Thoughts',
+            description: 'The automatic thoughts and beliefs triggered by the situation',
+            prompt: 'What thoughts went through your mind? What did you tell yourself?',
+            example: '"I\'m too old to learn this. Everyone will think I\'m incompetent."',
+            tips: [
+              'Write down the exact words in your head',
+              'Include both rational and irrational thoughts',
+              'Notice any "should" or "must" statements',
+              'Look for thoughts that feel automatic'
+            ]
+          },
+          {
+            letter: 'C',
+            title: 'Consequences',
+            description: 'The emotional and behavioral results of your thoughts',
+            prompt: 'How did you feel emotionally? What did you do or want to do?',
+            example: 'Felt anxious and embarrassed. Avoided speaking up. Considered calling in sick.',
+            tips: [
+              'Include both emotions and behaviors',
+              'Notice physical sensations too',
+              'Consider what you avoided doing',
+              'Think about long-term consequences'
+            ]
+          },
+          {
+            letter: 'D',
+            title: 'Disputing & Reframing',
+            description: 'Challenge the unhelpful thoughts and create balanced alternatives',
+            prompt: 'How can you challenge these thoughts? What\'s a more balanced perspective?',
+            example: '"Learning new skills at any age is normal. I have valuable experience to contribute."',
+            tips: [
+              'Look for evidence for and against the thought',
+              'Consider what you\'d tell a friend',
+              'Focus on what you can control',
+              'Create realistic, balanced statements'
+            ]
+          }
+        ];
+
+        const currentStepData = steps.find(s => s.letter === currentStep);
+        const stepIndex = steps.findIndex(s => s.letter === currentStep);
+        const isLastStep = stepIndex === steps.length - 1;
+        const isFirstStep = stepIndex === 0;
+
+        const getDistortionInsights = () => {
+          if (currentStep !== 'B' || !analysis.B) return null;
+          
+          const matchedDistortions = thoughtDistortions.filter(distortion =>
+            distortion.keywords.some(keyword =>
+              analysis.B.toLowerCase().includes(keyword.toLowerCase())
+            )
+          );
+
+          return matchedDistortions.length > 0 ? matchedDistortions : null;
+        };
+
+        const getReframingPrompts = () => {
+          if (currentStep !== 'D') return [];
+          
+          return [
+            'What evidence supports this thought? What evidence contradicts it?',
+            'What would I tell a close friend who had this thought?',
+            'How might I view this situation in 5 years?',
+            'What aspects of this situation can I actually control?',
+            'What\'s the most realistic, balanced way to view this?',
+            'How can I focus on my strengths and capabilities?'
+          ];
+        };
+
+        return (
+          <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+            <div className="mb-6">
+              <h4 className="text-xl font-semibold mb-2">ABCD Analysis: {scenario.title}</h4>
+              <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+                <strong>Situation:</strong> {scenario.situation}
+              </div>
+            </div>
+
+            {/* Progress Indicator */}
+            <div className="flex items-center justify-between mb-6">
+              {steps.map((step, index) => (
+                <div key={step.letter} className="flex items-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                    currentStep === step.letter ? 'bg-blue-500' : 
+                    stepIndex > index ? 'bg-green-500' : 'bg-gray-300'
+                  }`}>
+                    {step.letter}
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div className={`w-8 h-1 mx-2 ${
+                      stepIndex > index ? 'bg-green-500' : 'bg-gray-300'
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Current Step */}
+            <div className="space-y-6">
+              <div>
+                <h5 className="text-lg font-semibold text-blue-700 mb-2">
+                  {currentStepData.letter}. {currentStepData.title}
+                </h5>
+                <p className="text-gray-600 mb-4">{currentStepData.description}</p>
+              </div>
+
+              <div>
+                <Label className="font-medium text-gray-700">{currentStepData.prompt}</Label>
+                <Textarea
+                  value={analysis[currentStep]}
+                  onChange={(e) => setAnalysis({...analysis, [currentStep]: e.target.value})}
+                  placeholder={`Example: ${currentStepData.example}`}
+                  className="mt-2"
+                  rows={4}
+                />
+              </div>
+
+              {/* Step-specific content */}
+              {currentStep === 'B' && getDistortionInsights() && (
+                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                  <h6 className="font-semibold text-orange-800 mb-2">🔍 Thought Pattern Detected</h6>
+                  {getDistortionInsights().map((distortion) => (
+                    <div key={distortion.id} className="mb-3">
+                      <div className="font-medium text-orange-700">{distortion.name}</div>
+                      <div className="text-sm text-orange-600">{distortion.description}</div>
+                      <div className="text-sm text-orange-600 mt-1">
+                        <strong>Reframe:</strong> {distortion.reframe}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {currentStep === 'D' && (
+                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                  <h6 className="font-semibold text-green-800 mb-3">💭 Reframing Questions</h6>
+                  <div className="space-y-2">
+                    {getReframingPrompts().map((prompt, index) => (
+                      <div key={index} className="text-sm text-green-700">
+                        <strong>•</strong> {prompt}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tips */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h6 className="font-medium text-gray-700 mb-2">💡 Tips for Step {currentStep}</h6>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  {currentStepData.tips.map((tip, index) => (
+                    <li key={index}>• {tip}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Navigation */}
+              <div className="flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const prevIndex = Math.max(0, stepIndex - 1);
+                    setCurrentStep(steps[prevIndex].letter);
+                  }}
+                  disabled={isFirstStep}
+                >
+                  Previous
+                </Button>
+
+                {isLastStep ? (
+                  <Button
+                    onClick={() => onComplete(analysis)}
+                    disabled={!analysis.D.trim()}
+                  >
+                    Complete Analysis
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      const nextIndex = Math.min(steps.length - 1, stepIndex + 1);
+                      setCurrentStep(steps[nextIndex].letter);
+                    }}
+                    disabled={!analysis[currentStep].trim()}
+                  >
+                    Next Step
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-blue-500" />
+              CBT Reframing Techniques - The ABCD Model
+            </CardTitle>
+            <p className="text-sm text-gray-600">Learn to identify and challenge unhelpful thought patterns using Cognitive Behavioral Therapy techniques specifically designed for midlife transitions.</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* CBT Science */}
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+              <h5 className="font-semibold text-blue-800 mb-2">The Science Behind CBT</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
+                <div>
+                  <strong>Thought-Feeling Connection:</strong> Your thoughts directly influence your emotions and behaviors
+                </div>
+                <div>
+                  <strong>Neuroplasticity:</strong> You can rewire your brain to think more helpfully at any age
+                </div>
+                <div>
+                  <strong>Automatic Thoughts:</strong> Most negative thoughts happen without conscious awareness
+                </div>
+                <div>
+                  <strong>Evidence-Based:</strong> CBT is proven effective for anxiety, depression, and life transitions
+                </div>
+              </div>
+            </div>
+
+            {/* Introduction Phase */}
+            {cbtPhase === 'introduction' && (
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Understanding the ABCD Model</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      {
+                        letter: 'A',
+                        title: 'Activating Event',
+                        description: 'The situation or trigger that starts the cycle',
+                        icon: '⚡',
+                        color: 'red',
+                        example: 'Your boss mentions "updating skills"'
+                      },
+                      {
+                        letter: 'B',
+                        title: 'Beliefs & Thoughts',
+                        description: 'What you tell yourself about the situation',
+                        icon: '💭',
+                        color: 'orange',
+                        example: '"I\'m too old to learn new things"'
+                      },
+                      {
+                        letter: 'C',
+                        title: 'Consequences',
+                        description: 'Your emotional and behavioral responses',
+                        icon: '😟',
+                        color: 'yellow',
+                        example: 'Feel anxious, avoid training opportunities'
+                      },
+                      {
+                        letter: 'D',
+                        title: 'Disputing & Reframing',
+                        description: 'Challenge unhelpful thoughts with evidence',
+                        icon: '🔍',
+                        color: 'green',
+                        example: '"I have successfully learned many things throughout my life"'
+                      }
+                    ].map((step) => (
+                      <div key={step.letter} className={`p-4 rounded-lg border-2 border-${step.color}-200 bg-${step.color}-50`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="text-2xl">{step.icon}</div>
+                          <div>
+                            <h6 className="font-semibold">{step.letter}. {step.title}</h6>
+                            <p className="text-sm text-gray-600">{step.description}</p>
+                          </div>
+                        </div>
+                        <div className="text-sm bg-white p-2 rounded border-l-4 border-gray-300">
+                          <strong>Example:</strong> {step.example}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg">
+                    <h6 className="font-semibold text-blue-800 mb-2">Why ABCD Works for Midlife Women</h6>
+                    <div className="text-sm text-blue-700 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>• Addresses age-related thought patterns</div>
+                      <div>• Builds on life experience and wisdom</div>
+                      <div>• Tackles perfectionism and self-criticism</div>
+                      <div>• Supports confidence during transitions</div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, cbtPhase: 'scenario-selection'})}
+                    className="w-full mt-6"
+                  >
+                    Start Practicing the ABCD Model
+                  </Button>
+                </div>
+
+                {/* Common Thought Distortions */}
+                <div className="bg-white border-2 border-orange-200 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold mb-4">Common Thought Patterns in Midlife</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {thoughtDistortions.map((distortion) => (
+                      <div key={distortion.id} className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <h6 className="font-semibold text-orange-800 mb-2">{distortion.name}</h6>
+                        <p className="text-sm text-orange-700 mb-2">{distortion.description}</p>
+                        <div className="text-xs space-y-1">
+                          <div className="bg-white p-2 rounded border-l-4 border-red-300">
+                            <strong className="text-red-600">Thought:</strong> {distortion.example}
+                          </div>
+                          <div className="bg-white p-2 rounded border-l-4 border-green-300">
+                            <strong className="text-green-600">Reframe:</strong> {distortion.reframe}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Scenario Selection */}
+            {cbtPhase === 'scenario-selection' && (
+              <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Choose a Scenario to Practice</h4>
+                <p className="text-sm text-gray-600 mb-4">Select a situation that resonates with you to practice the ABCD model:</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {scenarioLibrary.map((scenario) => (
+                    <div 
+                      key={scenario.id}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        selectedScenario === scenario.id
+                          ? 'border-blue-400 bg-blue-50' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setResponses({...responses, selectedScenario: scenario.id})}
+                    >
+                      <h6 className="font-semibold mb-2">{scenario.title}</h6>
+                      <p className="text-sm text-gray-600 mb-3">{scenario.situation}</p>
+                      
+                      <div className="space-y-2 text-xs">
+                        <div>
+                          <strong className="text-red-600">Common Thoughts:</strong>
+                          <div className="text-gray-600 ml-2">
+                            {scenario.commonThoughts[0]}
+                          </div>
+                        </div>
+                        <div>
+                          <strong className="text-orange-600">Emotions:</strong>
+                          <span className="text-gray-600 ml-2">
+                            {scenario.triggerEmotions.join(', ')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <Button 
+                    onClick={() => setResponses({...responses, cbtPhase: 'practice'})}
+                    disabled={!selectedScenario}
+                    className="flex-1"
+                  >
+                    Practice with Selected Scenario
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setResponses({...responses, cbtPhase: 'custom-scenario'})}
+                  >
+                    Use My Own Situation
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Scenario */}
+            {cbtPhase === 'custom-scenario' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Create Your Own Scenario</h4>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">Describe a recent situation that triggered difficult thoughts or emotions:</Label>
+                    <Textarea
+                      value={responses.customSituation || ''}
+                      onChange={(e) => setResponses({...responses, customSituation: e.target.value})}
+                      placeholder="Example: Last week at work, my younger colleague was promoted to a position I had been hoping for..."
+                      className="mt-2"
+                      rows={4}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">What thoughts went through your mind?</Label>
+                    <Textarea
+                      value={responses.customThoughts || ''}
+                      onChange={(e) => setResponses({...responses, customThoughts: e.target.value})}
+                      placeholder="Example: I'm too old for advancement. They probably think I'm outdated. I should just accept being overlooked..."
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How did you feel? What did you do?</Label>
+                    <Textarea
+                      value={responses.customConsequences || ''}
+                      onChange={(e) => setResponses({...responses, customConsequences: e.target.value})}
+                      placeholder="Example: Felt disappointed and discouraged. Avoided my colleague. Considered looking for other jobs..."
+                      className="mt-2"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button 
+                      onClick={() => setResponses({...responses, cbtPhase: 'custom-practice'})}
+                      disabled={!responses.customSituation || !responses.customThoughts}
+                      className="flex-1"
+                    >
+                      Practice ABCD with My Situation
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setResponses({...responses, cbtPhase: 'scenario-selection'})}
+                    >
+                      Back to Scenarios
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ABCD Practice with Selected Scenario */}
+            {cbtPhase === 'practice' && selectedScenario && (
+              <ABCDAnalyzer 
+                scenario={scenarioLibrary.find(s => s.id === selectedScenario)}
+                onComplete={(analysis) => {
+                  setResponses({
+                    ...responses, 
+                    abcdData: analysis,
+                    cbtPhase: 'results'
+                  });
+                }}
+              />
+            )}
+
+            {/* ABCD Practice with Custom Scenario */}
+            {cbtPhase === 'custom-practice' && (
+              <ABCDAnalyzer 
+                scenario={{
+                  title: 'Your Personal Situation',
+                  situation: responses.customSituation || 'Your described situation'
+                }}
+                onComplete={(analysis) => {
+                  setResponses({
+                    ...responses, 
+                    abcdData: analysis,
+                    cbtPhase: 'results'
+                  });
+                }}
+              />
+            )}
+
+            {/* Results and Insights */}
+            {cbtPhase === 'results' && abcdData.D && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg border">
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-3">🎯</div>
+                    <h4 className="text-xl font-semibold mb-2">Your ABCD Analysis Complete!</h4>
+                    <p className="text-sm text-gray-600">You've successfully practiced cognitive reframing</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {[
+                      { letter: 'A', title: 'Activating Event', content: abcdData.A, color: 'red' },
+                      { letter: 'B', title: 'Beliefs & Thoughts', content: abcdData.B, color: 'orange' },
+                      { letter: 'C', title: 'Consequences', content: abcdData.C, color: 'yellow' },
+                      { letter: 'D', title: 'Disputing & Reframing', content: abcdData.D, color: 'green' }
+                    ].map((step) => (
+                      <div key={step.letter} className="bg-white p-4 rounded-lg border-l-4 border-gray-300">
+                        <h6 className="font-semibold text-gray-700 mb-2">{step.letter}. {step.title}</h6>
+                        <p className="text-sm text-gray-600">{step.content}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg">
+                    <h6 className="font-semibold text-green-700 mb-2">🌟 Your Reframing Achievement</h6>
+                    <p className="text-sm text-gray-600 mb-3">
+                      You've successfully transformed an unhelpful thought pattern into a more balanced perspective. 
+                      This is a powerful skill that gets stronger with practice.
+                    </p>
+                    <div className="bg-green-50 p-3 rounded border-l-4 border-green-400">
+                      <strong className="text-green-800">Remember:</strong>
+                      <span className="text-green-700"> The goal isn't to think positively all the time, but to think more realistically and helpfully.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
+                  <h5 className="font-semibold mb-4">Continue Practicing</h5>
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={() => setResponses({
+                        ...responses, 
+                        cbtPhase: 'scenario-selection',
+                        selectedScenario: null,
+                        abcdData: {}
+                      })}
+                      className="w-full"
+                      variant="outline"
+                    >
+                      Practice with Another Scenario
+                    </Button>
+                    <Button 
+                      onClick={() => setResponses({
+                        ...responses, 
+                        cbtPhase: 'daily-practice'
+                      })}
+                      className="w-full"
+                    >
+                      Set Up Daily Thought Tracking
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Daily Practice Setup */}
+            {cbtPhase === 'daily-practice' && (
+              <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+                <h4 className="text-lg font-semibold mb-4">Daily Thought Tracking Practice</h4>
+                <p className="text-sm text-gray-600 mb-4">Set up a simple daily practice to strengthen your reframing skills:</p>
+                
+                <div className="space-y-6">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h6 className="font-semibold text-purple-800 mb-2">📝 Your 5-Minute Daily Practice</h6>
+                    <div className="text-sm text-purple-700 space-y-2">
+                      <div><strong>When:</strong> Choose a consistent time (morning coffee, before bed, etc.)</div>
+                      <div><strong>What:</strong> Notice one unhelpful thought from your day</div>
+                      <div><strong>How:</strong> Use the ABCD model to reframe it</div>
+                      <div><strong>Track:</strong> Rate your mood before and after (1-10)</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">When will you practice daily thought tracking?</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                      {[
+                        'Morning with coffee',
+                        'Lunch break',
+                        'After work',
+                        'Before bed'
+                      ].map((time) => (
+                        <div 
+                          key={time}
+                          className={`p-3 rounded-lg border-2 cursor-pointer text-center transition-all ${
+                            responses.practiceTime === time
+                              ? 'border-purple-400 bg-purple-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setResponses({...responses, practiceTime: time})}
+                        >
+                          <div className="text-sm font-medium">{time}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="font-medium">How will you remind yourself to practice?</Label>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      {[
+                        'Phone alarm/notification',
+                        'Journal next to bed',
+                        'Sticky note on mirror',
+                        'Calendar reminder',
+                        'Link to existing habit'
+                      ].map((reminder) => (
+                        <div key={reminder} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={responses[`reminder-${reminder}`] || false}
+                            onCheckedChange={(checked) => setResponses({
+                              ...responses,
+                              [`reminder-${reminder}`]: checked
+                            })}
+                          />
+                          <Label className="text-sm">{reminder}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => setResponses({...responses, cbtPhase: 'introduction'})}
+                    className="w-full"
+                    disabled={!responses.practiceTime}
+                  >
+                    Complete CBT Reframing Setup
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Reference */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h5 className="font-semibold text-blue-800 mb-2">🔧 Quick ABCD Reference</h5>
+              <div className="text-sm text-blue-700 grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div><strong>A:</strong> What happened?</div>
+                <div><strong>B:</strong> What did I think?</div>
+                <div><strong>C:</strong> How did I feel/act?</div>
+                <div><strong>D:</strong> What's more balanced?</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Hormone Exercise - Morning Sunlight
     if (component.id === 'hormone-exercise') {
       return (
