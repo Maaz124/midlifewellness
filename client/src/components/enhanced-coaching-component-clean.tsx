@@ -18,6 +18,7 @@ import {
   Clock, 
   CheckCircle, 
   Activity,
+  Shield,
   Sun,
   Moon,
   Brain,
@@ -10942,8 +10943,8 @@ export function EnhancedCoachingComponent({ component, moduleId, onComplete, onC
           </div>
         )}
 
-        {/* Component-specific interactive content for Week 1 and Week 2 */}
-        {(moduleId === 'week-1' || moduleId === 'week-2') && (
+        {/* Component-specific interactive content for Week 1, Week 2, and Week 3 */}
+        {(moduleId === 'week-1' || moduleId === 'week-2' || moduleId === 'week-3') && (
           <div className="mt-8">
             {renderComponentSpecificContent()}
           </div>
