@@ -4924,57 +4924,108 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 1: Understanding Your Hormonal Symphony
   if (component.id === 'hormone-video') {
     const [currentSection, setCurrentSection] = useState(responses.currentSection || 'intro');
-    const [hormoneKnowledge, setHormoneKnowledge] = useState(responses.hormoneKnowledge || {
-      currentSymptoms: [],
-      severityRatings: {},
-      lifestageAwareness: '',
-      keyInsights: []
-    });
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [symptomRatings, setSymptomRatings] = useState(responses.symptomRatings || {});
+    const [hormonalScore, setHormonalScore] = useState(responses.hormonalScore || 0);
 
     const updateResponses = (newData: any) => {
       setResponses((prev: any) => ({ ...prev, ...newData }));
     };
 
-    const videoSections = [
-      {
-        id: 'intro',
-        title: 'Your Hormonal Symphony Introduction',
-        content: 'Welcome to understanding your unique hormonal journey. Perimenopause is not just about hot flashes - it\'s a complete transformation affecting your brain, emotions, and energy levels.',
-        duration: 2
+    const physicalSymptoms = [
+      { name: 'Hot flashes', id: 'hot_flashes' },
+      { name: 'Night sweats', id: 'night_sweats' },
+      { name: 'Fatigue', id: 'fatigue' },
+      { name: 'Joint aches', id: 'joint_aches' }
+    ];
+
+    const emotionalSymptoms = [
+      { name: 'Mood swings', id: 'mood_swings' },
+      { name: 'Irritability', id: 'irritability' },
+      { name: 'Anxiety', id: 'anxiety' },
+      { name: 'Overwhelm', id: 'overwhelm' }
+    ];
+
+    const cognitiveSymptoms = [
+      { name: 'Brain fog', id: 'brain_fog' },
+      { name: 'Memory issues', id: 'memory_issues' },
+      { name: 'Concentration problems', id: 'concentration_problems' }
+    ];
+
+    const allSymptoms = [...physicalSymptoms, ...emotionalSymptoms, ...cognitiveSymptoms];
+
+    const updateSymptomRating = (symptomId: string, rating: number) => {
+      const updated = { ...symptomRatings, [symptomId]: rating };
+      setSymptomRatings(updated);
+      
+      // Calculate hormonal health score
+      const totalRatings = Object.values(updated).reduce((sum: number, rating: any) => sum + rating, 0);
+      const maxPossibleScore = allSymptoms.length * 5;
+      const score = maxPossibleScore > 0 ? Math.round(((maxPossibleScore - totalRatings) / maxPossibleScore) * 100) : 0;
+      setHormonalScore(score);
+      
+      updateResponses({ symptomRatings: updated, hormonalScore: score });
+    };
+
+    const getSymptomSeverityText = () => {
+      if (hormonalScore >= 80) return "Minimal Symptoms";
+      if (hormonalScore >= 60) return "Mild Symptoms";
+      if (hormonalScore >= 40) return "Moderate Symptoms";
+      if (hormonalScore >= 20) return "Significant Symptoms";
+      return "Severe Symptoms";
+    };
+
+    const videoScript = {
+      intro: {
+        title: 'Understanding Your Hormonal Symphony',
+        duration: '0:30',
+        content: 'Welcome to Week 1 of your Mind-Body Reset journey. I\'m here to guide you through understanding the beautiful, complex symphony of hormones that influence every aspect of your midlife experience.'
       },
-      {
-        id: 'brain-changes',
-        title: 'How Hormones Reshape Your Brain',
-        content: 'Estrogen acts like fertilizer for your brain. As levels fluctuate during perimenopause, you may experience memory changes, mood shifts, and processing differences. This is neuroplasticity in action - your brain is literally rewiring itself.',
-        duration: 3
+      main: {
+        title: 'The Three Key Players',
+        duration: '9:30',
+        content: `Let's start with the truth: your hormones aren't broken, they're transitioning. Think of perimenopause as your body's wisdom preparing for the next chapter of your life.
+
+The three key players we'll focus on:
+
+ESTROGEN - Your mood stabilizer
+• Fluctuating estrogen affects serotonin production
+• This explains the emotional rollercoaster you might be experiencing  
+• Low estrogen can impact memory and focus - you're not losing your mind
+
+PROGESTERONE - Your calm companion
+• Known as nature's anti-anxiety hormone
+• Declining progesterone can disrupt sleep and increase anxiety
+• Understanding this helps you respond with compassion, not frustration
+
+CORTISOL - Your stress responder
+• Chronic stress during midlife amplifies hormonal symptoms
+• When cortisol is elevated, it interferes with other hormone production
+• Learning to manage stress becomes crucial for hormonal balance`
       },
-      {
-        id: 'symptoms-map',
-        title: 'Mapping Your Symptom Landscape',
-        content: 'Every woman\'s hormonal journey is unique. Understanding your specific pattern of symptoms helps you work WITH your body rather than against it. Let\'s identify your current experience.',
-        duration: 2
+      practical: {
+        title: 'Daily Hormone-Supporting Practices',
+        duration: '1:30',
+        content: `Your daily hormone-supporting practices:
+1. Morning sunlight exposure - regulates cortisol rhythm
+2. Protein at breakfast - stabilizes blood sugar and mood
+3. Evening wind-down routine - supports progesterone production
+4. Mindful movement - not intense exercise that spikes cortisol`
       },
-      {
-        id: 'optimization',
-        title: 'Brain Optimization Strategies',
-        content: 'Your changing brain is incredibly adaptable. Through targeted nutrition, movement, stress management, and cognitive practices, you can enhance your mental clarity and emotional resilience.',
-        duration: 3
-      },
-      {
-        id: 'integration',
-        title: 'Integrating Your New Understanding',
-        content: 'Knowledge becomes power when applied. Let\'s create your personalized plan for working harmoniously with your changing hormones to optimize your brain function.',
-        duration: 2
+      closing: {
+        title: 'Key Takeaways',
+        duration: '0:30',
+        content: `Remember: You're not at the mercy of your hormones. You're learning to dance with them. This week, we'll build your personalized hormone harmony toolkit.
+
+Key Takeaways:
+• Hormones are transitioning, not broken
+• Estrogen affects mood and memory
+• Progesterone supports calm and sleep
+• Cortisol management is crucial
+• Daily practices support hormone balance`
       }
-    ];
-
-    const perimenopauseSymptoms = [
-      'Brain fog', 'Memory issues', 'Difficulty concentrating', 'Mood swings', 'Anxiety', 'Depression',
-      'Hot flashes', 'Night sweats', 'Sleep disruption', 'Irregular periods', 'Low libido', 'Weight gain',
-      'Joint aches', 'Fatigue', 'Irritability', 'Emotional sensitivity'
-    ];
-
-    const symptomSeverity = ['Mild', 'Moderate', 'Significant', 'Severe'];
+    };
 
     return (
       <Card className="max-w-4xl mx-auto">
@@ -4989,136 +5040,240 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
             <Heart className="w-5 h-5 text-pink-600" />
             Understanding Your Hormonal Symphony
           </CardTitle>
-          <Progress value={(videoSections.findIndex(s => s.id === currentSection) + 1) / videoSections.length * 100} className="mt-4" />
+          <CardDescription>
+            Complete 12-minute video script about hormones and brain changes
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {currentSection === 'symptoms-map' ? (
+            {currentSection === 'video' ? (
+              <div className="bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-6">
+                {/* Video Player Section */}
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-pink-800 mb-2">Understanding Your Hormonal Symphony</h3>
+                  <p className="text-pink-600 mb-4">12 minutes</p>
+                  
+                  <div className="relative bg-pink-100 rounded-lg p-8 mb-6">
+                    <div className="w-20 h-20 bg-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer"
+                         onClick={() => setIsPlaying(!isPlaying)}>
+                      {isPlaying ? <Pause className="w-8 h-8 text-white" /> : <Play className="w-8 h-8 text-white" />}
+                    </div>
+                    <div className="text-lg font-medium text-pink-800">
+                      {isPlaying ? 'Playing' : 'Play'}
+                    </div>
+                    <div className="text-sm text-pink-600 mt-2">
+                      0:00 / 12 minutes
+                    </div>
+                  </div>
+                </div>
+
+                {/* Video Script Content */}
+                <div className="space-y-6">
+                  <div className="bg-white rounded-lg p-6 border border-pink-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Badge variant="secondary" className="bg-pink-100 text-pink-800">INTRO - 0:00-0:30</Badge>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {videoScript.intro.content}
+                    </p>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 border border-pink-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Badge variant="secondary" className="bg-pink-100 text-pink-800">MAIN CONTENT - 0:30-10:00</Badge>
+                    </div>
+                    <div className="prose max-w-none">
+                      <div className="whitespace-pre-line text-gray-700 leading-relaxed">
+                        {videoScript.main.content}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 border border-pink-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Badge variant="secondary" className="bg-pink-100 text-pink-800">PRACTICAL SECTION - 10:00-11:30</Badge>
+                    </div>
+                    <div className="whitespace-pre-line text-gray-700 leading-relaxed">
+                      {videoScript.practical.content}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 border border-pink-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Badge variant="secondary" className="bg-pink-100 text-pink-800">CLOSING - 11:30-12:00</Badge>
+                    </div>
+                    <div className="whitespace-pre-line text-gray-700 leading-relaxed">
+                      {videoScript.closing.content}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex justify-center">
+                  <Button 
+                    onClick={() => setCurrentSection('assessment')}
+                    className="bg-pink-600 hover:bg-pink-700"
+                  >
+                    Continue to Symptom Assessment
+                  </Button>
+                </div>
+              </div>
+            ) : currentSection === 'assessment' ? (
               <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-pink-800 mb-4">Your Personal Symptom Assessment</h3>
-                
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <Label className="text-sm font-medium mb-3 block">Select symptoms you're currently experiencing:</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {perimenopauseSymptoms.map(symptom => (
-                        <div key={symptom} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={symptom}
-                            checked={hormoneKnowledge.currentSymptoms.includes(symptom)}
-                            onChange={(e) => {
-                              const newSymptoms = e.target.checked
-                                ? [...hormoneKnowledge.currentSymptoms, symptom]
-                                : hormoneKnowledge.currentSymptoms.filter(s => s !== symptom);
-                              const updated = { ...hormoneKnowledge, currentSymptoms: newSymptoms };
-                              setHormoneKnowledge(updated);
-                              updateResponses({ hormoneKnowledge: updated });
-                            }}
-                            className="rounded border-pink-300 text-pink-600 focus:ring-pink-500"
-                          />
-                          <Label htmlFor={symptom} className="text-sm text-pink-700">{symptom}</Label>
+                <h3 className="text-xl font-bold text-pink-800 mb-2">Understanding Your Hormonal Symphony</h3>
+                <p className="text-pink-600 mb-6">Track your daily symptoms and get personalized insights about your hormonal health.</p>
+
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">Today's Symptom Assessment</h4>
+                  <p className="text-gray-600 mb-6">Rate each symptom from 1 (barely noticeable) to 5 (very severe)</p>
+
+                  {/* Physical Symptoms */}
+                  <div className="mb-8">
+                    <h5 className="text-md font-medium text-gray-700 mb-4">Physical Symptoms</h5>
+                    <div className="space-y-4">
+                      {physicalSymptoms.map(symptom => (
+                        <div key={symptom.id} className="flex items-center justify-between">
+                          <span className="text-gray-700 font-medium">{symptom.name}</span>
+                          <div className="flex gap-2">
+                            {[1, 2, 3, 4, 5].map(rating => (
+                              <Button
+                                key={rating}
+                                variant={symptomRatings[symptom.id] === rating ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => updateSymptomRating(symptom.id, rating)}
+                                className={`w-8 h-8 p-0 ${
+                                  symptomRatings[symptom.id] === rating 
+                                    ? 'bg-pink-600 hover:bg-pink-700' 
+                                    : 'border-gray-300 hover:border-pink-400'
+                                }`}
+                              >
+                                {rating}
+                              </Button>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {hormoneKnowledge.currentSymptoms.length > 0 && (
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Rate the severity of your top symptoms:</Label>
-                      <div className="space-y-3">
-                        {hormoneKnowledge.currentSymptoms.slice(0, 5).map(symptom => (
-                          <div key={symptom} className="flex items-center justify-between">
-                            <span className="text-sm text-pink-700">{symptom}</span>
-                            <div className="flex gap-2">
-                              {symptomSeverity.map(severity => (
-                                <Button
-                                  key={severity}
-                                  variant={hormoneKnowledge.severityRatings[symptom] === severity ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => {
-                                    const updated = { 
-                                      ...hormoneKnowledge, 
-                                      severityRatings: { ...hormoneKnowledge.severityRatings, [symptom]: severity }
-                                    };
-                                    setHormoneKnowledge(updated);
-                                    updateResponses({ hormoneKnowledge: updated });
-                                  }}
-                                  className="text-xs"
-                                >
-                                  {severity}
-                                </Button>
-                              ))}
-                            </div>
+                  {/* Emotional Symptoms */}
+                  <div className="mb-8">
+                    <h5 className="text-md font-medium text-gray-700 mb-4">Emotional Symptoms</h5>
+                    <div className="space-y-4">
+                      {emotionalSymptoms.map(symptom => (
+                        <div key={symptom.id} className="flex items-center justify-between">
+                          <span className="text-gray-700 font-medium">{symptom.name}</span>
+                          <div className="flex gap-2">
+                            {[1, 2, 3, 4, 5].map(rating => (
+                              <Button
+                                key={rating}
+                                variant={symptomRatings[symptom.id] === rating ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => updateSymptomRating(symptom.id, rating)}
+                                className={`w-8 h-8 p-0 ${
+                                  symptomRatings[symptom.id] === rating 
+                                    ? 'bg-pink-600 hover:bg-pink-700' 
+                                    : 'border-gray-300 hover:border-pink-400'
+                                }`}
+                              >
+                                {rating}
+                              </Button>
+                            ))}
                           </div>
-                        ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Cognitive Symptoms */}
+                  <div className="mb-8">
+                    <h5 className="text-md font-medium text-gray-700 mb-4">Cognitive Symptoms</h5>
+                    <div className="space-y-4">
+                      {cognitiveSymptoms.map(symptom => (
+                        <div key={symptom.id} className="flex items-center justify-between">
+                          <span className="text-gray-700 font-medium">{symptom.name}</span>
+                          <div className="flex gap-2">
+                            {[1, 2, 3, 4, 5].map(rating => (
+                              <Button
+                                key={rating}
+                                variant={symptomRatings[symptom.id] === rating ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => updateSymptomRating(symptom.id, rating)}
+                                className={`w-8 h-8 p-0 ${
+                                  symptomRatings[symptom.id] === rating 
+                                    ? 'bg-pink-600 hover:bg-pink-700' 
+                                    : 'border-gray-300 hover:border-pink-400'
+                                }`}
+                              >
+                                {rating}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hormonal Health Score */}
+                  <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-6">
+                    <h5 className="text-lg font-semibold text-gray-800 mb-2">Your Hormonal Health Score</h5>
+                    <div className="text-4xl font-bold text-pink-600 mb-2">{hormonalScore}</div>
+                    <div className="text-sm text-gray-600 mb-3">out of 100</div>
+                    <div className="text-md font-medium text-gray-700 mb-4">
+                      Symptom Severity Level: {Object.keys(symptomRatings).length > 0 ? getSymptomSeverityText() : "Not Rated"}
+                    </div>
+                    {Object.keys(symptomRatings).length === 0 && (
+                      <p className="text-sm text-gray-500">Please rate your symptoms to see your score</p>
+                    )}
+                  </div>
+
+                  {/* Tracking Tip */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                    <div className="flex items-start gap-3">
+                      <div className="text-blue-600 text-lg">💡</div>
+                      <div>
+                        <h6 className="font-semibold text-blue-800 mb-1">Tracking Tip</h6>
+                        <p className="text-blue-700 text-sm">
+                          Track your symptoms daily for 2-4 weeks to identify patterns. Your hormonal symphony changes 
+                          throughout the month, and understanding these patterns helps you anticipate and manage symptoms more effectively.
+                        </p>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                <div className="mt-6 flex justify-between">
+                <div className="flex justify-between">
                   <Button 
-                    onClick={() => setCurrentSection('brain-changes')}
+                    onClick={() => setCurrentSection('video')}
                     variant="outline"
                   >
-                    Previous
+                    Back to Video
                   </Button>
                   <Button 
-                    onClick={() => setCurrentSection('optimization')}
-                    disabled={hormoneKnowledge.currentSymptoms.length === 0}
+                    onClick={() => onComplete('hormone-video', { 
+                      symptomRatings,
+                      hormonalScore,
+                      severityLevel: getSymptomSeverityText(),
+                      completedAt: new Date().toISOString()
+                    })}
+                    disabled={Object.keys(symptomRatings).length === 0}
+                    className="bg-pink-600 hover:bg-pink-700"
                   >
-                    Continue
+                    Complete Session
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
-                <div className="text-center mb-6">
-                  <div className="w-12 h-12 bg-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Play className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-pink-800 mb-4">
-                    {videoSections.find(s => s.id === currentSection)?.title}
-                  </h3>
-                  <p className="text-pink-700 text-lg leading-relaxed mb-6">
-                    {videoSections.find(s => s.id === currentSection)?.content}
-                  </p>
-                  <div className="text-sm text-pink-600 mb-6">
-                    Duration: {videoSections.find(s => s.id === currentSection)?.duration} minutes
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-between">
-                  <Button 
-                    onClick={() => {
-                      const currentIndex = videoSections.findIndex(s => s.id === currentSection);
-                      if (currentIndex > 0) {
-                        setCurrentSection(videoSections[currentIndex - 1].id);
-                      }
-                    }}
-                    variant="outline"
-                    disabled={videoSections.findIndex(s => s.id === currentSection) === 0}
-                  >
-                    Previous
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      const currentIndex = videoSections.findIndex(s => s.id === currentSection);
-                      if (currentIndex < videoSections.length - 1) {
-                        setCurrentSection(videoSections[currentIndex + 1].id);
-                      } else {
-                        onComplete('hormone-video', { 
-                          hormoneKnowledge,
-                          completedSections: videoSections.map(s => s.id),
-                          completedAt: new Date().toISOString()
-                        });
-                      }
-                    }}
-                  >
-                    {videoSections.findIndex(s => s.id === currentSection) === videoSections.length - 1 ? 'Complete' : 'Next'}
-                  </Button>
-                </div>
+              <div className="text-center py-8">
+                <h3 className="text-xl font-semibold text-pink-800 mb-4">Ready to get started?</h3>
+                <p className="text-pink-600 mb-6">
+                  You'll watch a comprehensive 12-minute video about your hormonal symphony, then complete a symptom assessment.
+                </p>
+                <Button 
+                  onClick={() => setCurrentSection('video')}
+                  className="bg-pink-600 hover:bg-pink-700"
+                >
+                  Start Video Session
+                </Button>
               </div>
             )}
           </div>
