@@ -1684,6 +1684,1073 @@ function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: strin
   );
 }
 
+// CBT Reframing Techniques Component
+function CBTReframingTechniques({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [thoughtData, setThoughtData] = useState({
+    situation: '',
+    automaticThought: '',
+    emotions: [] as string[],
+    evidenceFor: '',
+    evidenceAgainst: '',
+    balancedThought: '',
+    newEmotions: [] as string[],
+    actionPlan: ''
+  });
+
+  const emotionOptions = [
+    'Anxious', 'Sad', 'Angry', 'Frustrated', 'Overwhelmed', 'Guilty', 
+    'Ashamed', 'Disappointed', 'Hopeless', 'Confused', 'Calm', 'Hopeful', 
+    'Confident', 'Peaceful', 'Motivated', 'Grateful', 'Excited', 'Content'
+  ];
+
+  const cbtSteps = [
+    {
+      title: 'Identify the Situation',
+      description: 'What specific situation triggered your negative thoughts?',
+      field: 'situation'
+    },
+    {
+      title: 'Capture Automatic Thoughts',
+      description: 'What thoughts immediately came to mind? Write them exactly as they occurred.',
+      field: 'automaticThought'
+    },
+    {
+      title: 'Identify Emotions',
+      description: 'What emotions did these thoughts create? Select all that apply.',
+      field: 'emotions'
+    },
+    {
+      title: 'Evidence For',
+      description: 'What evidence supports this thought? Be specific and factual.',
+      field: 'evidenceFor'
+    },
+    {
+      title: 'Evidence Against',
+      description: 'What evidence contradicts this thought? Look for alternative perspectives.',
+      field: 'evidenceAgainst'
+    },
+    {
+      title: 'Create Balanced Thought',
+      description: 'Based on the evidence, what\'s a more balanced, realistic thought?',
+      field: 'balancedThought'
+    },
+    {
+      title: 'New Emotions',
+      description: 'How do you feel with this new balanced thought?',
+      field: 'newEmotions'
+    },
+    {
+      title: 'Action Plan',
+      description: 'What specific actions will you take based on this new perspective?',
+      field: 'actionPlan'
+    }
+  ];
+
+  const handleEmotionToggle = (emotion: string, field: 'emotions' | 'newEmotions') => {
+    setThoughtData(prev => ({
+      ...prev,
+      [field]: prev[field].includes(emotion) 
+        ? prev[field].filter(e => e !== emotion)
+        : [...prev[field], emotion]
+    }));
+  };
+
+  const canProceed = (step: number) => {
+    const currentField = cbtSteps[step].field;
+    if (currentField === 'emotions' || currentField === 'newEmotions') {
+      return thoughtData[currentField].length > 0;
+    }
+    return thoughtData[currentField as keyof typeof thoughtData] !== '';
+  };
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-blue-600" />
+          CBT Reframing Techniques
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / cbtSteps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {cbtSteps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{cbtSteps[currentStep].title}</h3>
+            <p className="text-gray-600">{cbtSteps[currentStep].description}</p>
+          </div>
+
+          {(cbtSteps[currentStep].field === 'emotions' || cbtSteps[currentStep].field === 'newEmotions') ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {emotionOptions.map(emotion => (
+                  <Button
+                    key={emotion}
+                    variant={thoughtData[cbtSteps[currentStep].field as 'emotions' | 'newEmotions'].includes(emotion) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleEmotionToggle(emotion, cbtSteps[currentStep].field as 'emotions' | 'newEmotions')}
+                    className="text-sm"
+                  >
+                    {emotion}
+                  </Button>
+                ))}
+              </div>
+              <div className="text-sm text-gray-600">
+                Selected: {thoughtData[cbtSteps[currentStep].field as 'emotions' | 'newEmotions'].join(', ')}
+              </div>
+            </div>
+          ) : (
+            <Textarea
+              value={thoughtData[cbtSteps[currentStep].field as keyof typeof thoughtData] as string}
+              onChange={(e) => setThoughtData(prev => ({
+                ...prev,
+                [cbtSteps[currentStep].field]: e.target.value
+              }))}
+              placeholder="Type your response here..."
+              rows={4}
+              className="w-full"
+            />
+          )}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < cbtSteps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                disabled={!canProceed(currentStep)}
+                className="ml-auto"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w2-cbt', thoughtData)}
+                disabled={!canProceed(currentStep)}
+                className="ml-auto"
+              >
+                Complete CBT Exercise
+              </Button>
+            )}
+          </div>
+
+          {currentStep === cbtSteps.length - 1 && (
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">Your CBT Journey Summary</h4>
+              <div className="space-y-2 text-sm">
+                <div><strong>Situation:</strong> {thoughtData.situation}</div>
+                <div><strong>Original Thought:</strong> {thoughtData.automaticThought}</div>
+                <div><strong>Original Emotions:</strong> {thoughtData.emotions.join(', ')}</div>
+                <div><strong>Balanced Thought:</strong> {thoughtData.balancedThought}</div>
+                <div><strong>New Emotions:</strong> {thoughtData.newEmotions.join(', ')}</div>
+                <div><strong>Action Plan:</strong> {thoughtData.actionPlan}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Mirror Work & Affirmations Component
+function MirrorWorkAffirmations({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
+  const [customAffirmation, setCustomAffirmation] = useState('');
+  const [reflectionNotes, setReflectionNotes] = useState('');
+
+  const affirmationCategories = {
+    'Self-Worth': [
+      'I am worthy of love and respect exactly as I am',
+      'I honor my journey and celebrate my growth',
+      'I am enough, right here, right now',
+      'I trust in my inner wisdom and strength'
+    ],
+    'Midlife Transition': [
+      'I embrace this powerful phase of my life',
+      'I am becoming who I was meant to be',
+      'My experience and wisdom are valuable gifts',
+      'I create my own definition of success and happiness'
+    ],
+    'Body & Health': [
+      'I appreciate my body for all it has done for me',
+      'I nourish myself with kindness and compassion',
+      'My body is wise and knows how to heal',
+      'I treat myself with the same love I give others'
+    ],
+    'Confidence': [
+      'I trust my decisions and honor my choices',
+      'I speak my truth with courage and grace',
+      'I am capable of handling whatever comes my way',
+      'I shine my light brightly and inspire others'
+    ]
+  };
+
+  const steps = [
+    {
+      title: 'Choose Your Affirmations',
+      description: 'Select affirmations that resonate with you from each category'
+    },
+    {
+      title: 'Mirror Practice',
+      description: 'Stand in front of a mirror and practice saying your chosen affirmations'
+    },
+    {
+      title: 'Reflection',
+      description: 'Reflect on your experience and any insights that came up'
+    }
+  ];
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-pink-600" />
+          Mirror Work & Affirmations
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-pink-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep].title}</h3>
+            <p className="text-gray-600">{steps[currentStep].description}</p>
+          </div>
+
+          {currentStep === 0 && (
+            <div className="space-y-6">
+              {Object.entries(affirmationCategories).map(([category, affirmations]) => (
+                <div key={category} className="space-y-3">
+                  <h4 className="font-semibold text-lg text-pink-700">{category}</h4>
+                  <div className="space-y-2">
+                    {affirmations.map(affirmation => (
+                      <div key={affirmation} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-pink-50">
+                        <input
+                          type="checkbox"
+                          checked={selectedAffirmations.includes(affirmation)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedAffirmations([...selectedAffirmations, affirmation]);
+                            } else {
+                              setSelectedAffirmations(selectedAffirmations.filter(a => a !== affirmation));
+                            }
+                          }}
+                          className="rounded mt-1"
+                        />
+                        <span className="text-sm">{affirmation}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              
+              <div className="space-y-3">
+                <h4 className="font-semibold text-lg text-pink-700">Create Your Own</h4>
+                <Textarea
+                  value={customAffirmation}
+                  onChange={(e) => setCustomAffirmation(e.target.value)}
+                  placeholder="Write a personal affirmation that speaks to your heart..."
+                  rows={3}
+                />
+                {customAffirmation && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setSelectedAffirmations([...selectedAffirmations, customAffirmation]);
+                      setCustomAffirmation('');
+                    }}
+                  >
+                    Add Custom Affirmation
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <div className="bg-pink-50 p-6 rounded-lg">
+                <h4 className="font-semibold text-pink-900 mb-3">Mirror Practice Instructions</h4>
+                <ol className="space-y-2 text-sm text-pink-800">
+                  <li>1. Stand in front of a mirror where you can see your face clearly</li>
+                  <li>2. Take three deep breaths and connect with yourself</li>
+                  <li>3. Look into your own eyes with kindness and compassion</li>
+                  <li>4. Say each affirmation slowly and with intention</li>
+                  <li>5. Notice any resistance or emotions that come up</li>
+                  <li>6. Be patient and gentle with yourself</li>
+                </ol>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="font-semibold">Your Selected Affirmations:</h4>
+                <div className="space-y-2">
+                  {selectedAffirmations.map((affirmation, index) => (
+                    <div key={index} className="p-3 bg-white border rounded-lg">
+                      <p className="text-center font-medium text-pink-700">"{affirmation}"</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-4">Take your time with this practice. When you're ready, move to the next step.</p>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">Reflection Notes</label>
+                <Textarea
+                  value={reflectionNotes}
+                  onChange={(e) => setReflectionNotes(e.target.value)}
+                  placeholder="How did that feel? What came up for you during the mirror work? Any insights or resistance you noticed?"
+                  rows={6}
+                />
+              </div>
+
+              <div className="bg-pink-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-pink-900 mb-2">Daily Practice Tips</h4>
+                <ul className="text-sm text-pink-800 space-y-1">
+                  <li>• Practice mirror work for 2-3 minutes each morning</li>
+                  <li>• Start with one affirmation and build up over time</li>
+                  <li>• Notice which affirmations feel most challenging</li>
+                  <li>• Be patient - this practice gets easier with time</li>
+                  <li>• Celebrate small shifts in how you feel</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                disabled={currentStep === 0 && selectedAffirmations.length === 0}
+                className="ml-auto"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w2-mirror', {
+                  selectedAffirmations,
+                  customAffirmation,
+                  reflectionNotes
+                })}
+                disabled={!reflectionNotes.trim()}
+                className="ml-auto"
+              >
+                Complete Mirror Work
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Thought Audit Tracker Component
+function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [thoughts, setThoughts] = useState<{
+    time: string;
+    trigger: string;
+    thought: string;
+    distortion: string;
+    replacement: string;
+    intensity: number;
+    newIntensity: number;
+  }[]>([]);
+
+  const [currentThought, setCurrentThought] = useState({
+    time: '',
+    trigger: '',
+    thought: '',
+    distortion: '',
+    replacement: '',
+    intensity: 5,
+    newIntensity: 5
+  });
+
+  const cognitiveDistortions = [
+    'All-or-Nothing Thinking',
+    'Overgeneralization',
+    'Mental Filter',
+    'Disqualifying the Positive',
+    'Jumping to Conclusions',
+    'Magnification/Minimization',
+    'Emotional Reasoning',
+    'Should Statements',
+    'Labeling',
+    'Personalization'
+  ];
+
+  const addThought = () => {
+    if (currentThought.thought && currentThought.replacement) {
+      setThoughts([...thoughts, { ...currentThought, time: new Date().toLocaleTimeString() }]);
+      setCurrentThought({
+        time: '',
+        trigger: '',
+        thought: '',
+        distortion: '',
+        replacement: '',
+        intensity: 5,
+        newIntensity: 5
+      });
+    }
+  };
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <FileText className="w-6 h-6 text-green-600" />
+          Thought Audit Tracker
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-green-900 mb-2">How to Use This Tool</h4>
+            <p className="text-sm text-green-800">
+              Throughout your day, when you notice a negative or self-critical thought, use this tracker to identify 
+              the pattern and create a more balanced alternative. The goal is awareness and gentle reframing.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Trigger/Situation</label>
+                <input
+                  type="text"
+                  value={currentThought.trigger}
+                  onChange={(e) => setCurrentThought(prev => ({...prev, trigger: e.target.value}))}
+                  placeholder="What happened?"
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Cognitive Distortion</label>
+                <select
+                  value={currentThought.distortion}
+                  onChange={(e) => setCurrentThought(prev => ({...prev, distortion: e.target.value}))}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="">Select a pattern...</option>
+                  {cognitiveDistortions.map(distortion => (
+                    <option key={distortion} value={distortion}>{distortion}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Negative Thought</label>
+              <Textarea
+                value={currentThought.thought}
+                onChange={(e) => setCurrentThought(prev => ({...prev, thought: e.target.value}))}
+                placeholder="What self-critical thought came up?"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Intensity (1-10)</label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">1</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={currentThought.intensity}
+                  onChange={(e) => setCurrentThought(prev => ({...prev, intensity: parseInt(e.target.value)}))}
+                  className="flex-1"
+                />
+                <span className="text-sm">10</span>
+                <span className="w-8 text-center font-medium">{currentThought.intensity}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Balanced Replacement Thought</label>
+              <Textarea
+                value={currentThought.replacement}
+                onChange={(e) => setCurrentThought(prev => ({...prev, replacement: e.target.value}))}
+                placeholder="What's a more balanced, compassionate way to think about this?"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">New Intensity (1-10)</label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">1</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={currentThought.newIntensity}
+                  onChange={(e) => setCurrentThought(prev => ({...prev, newIntensity: parseInt(e.target.value)}))}
+                  className="flex-1"
+                />
+                <span className="text-sm">10</span>
+                <span className="w-8 text-center font-medium">{currentThought.newIntensity}</span>
+              </div>
+            </div>
+
+            <Button 
+              onClick={addThought}
+              disabled={!currentThought.thought || !currentThought.replacement}
+              className="w-full"
+            >
+              Add Thought Entry
+            </Button>
+          </div>
+
+          {thoughts.length > 0 && (
+            <div className="space-y-4">
+              <h4 className="font-semibold">Tracked Thoughts ({thoughts.length})</h4>
+              <div className="space-y-3">
+                {thoughts.map((thought, idx) => (
+                  <div key={idx} className="border rounded-lg p-4 bg-gray-50">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-sm font-medium">{thought.time}</span>
+                      <span className="text-sm bg-blue-100 px-2 py-1 rounded">{thought.distortion}</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div><strong>Trigger:</strong> {thought.trigger}</div>
+                      <div><strong>Negative:</strong> {thought.thought} (Intensity: {thought.intensity})</div>
+                      <div><strong>Balanced:</strong> {thought.replacement} (Intensity: {thought.newIntensity})</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h5 className="font-semibold text-green-900 mb-2">Pattern Insights</h5>
+                <div className="text-sm text-green-800">
+                  <p>Most common distortion: {
+                    thoughts.reduce((acc, curr) => {
+                      acc[curr.distortion] = (acc[curr.distortion] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>)[
+                      Object.keys(thoughts.reduce((acc, curr) => {
+                        acc[curr.distortion] = (acc[curr.distortion] || 0) + 1;
+                        return acc;
+                      }, {} as Record<string, number>)).reduce((a, b) => 
+                        thoughts.reduce((acc, curr) => {
+                          acc[curr.distortion] = (acc[curr.distortion] || 0) + 1;
+                          return acc;
+                        }, {} as Record<string, number>)[a] > thoughts.reduce((acc, curr) => {
+                          acc[curr.distortion] = (acc[curr.distortion] || 0) + 1;
+                          return acc;
+                        }, {} as Record<string, number>)[b] ? a : b
+                      )
+                    ] || 'None yet'
+                  }</p>
+                  <p>Average intensity reduction: {
+                    thoughts.length > 0 
+                      ? ((thoughts.reduce((sum, t) => sum + t.intensity, 0) / thoughts.length) - 
+                         (thoughts.reduce((sum, t) => sum + t.newIntensity, 0) / thoughts.length)).toFixed(1)
+                      : '0'
+                  } points</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button 
+            onClick={() => onComplete('w2-audit', { thoughts })}
+            className="w-full"
+            disabled={thoughts.length === 0}
+          >
+            Complete Thought Audit
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// NLP Reframing Practice Component
+function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentTechnique, setCurrentTechnique] = useState(0);
+  const [practiceData, setPracticeData] = useState({
+    anchoringResults: { trigger: '', positiveState: '', effectiveness: 0 },
+    reframingResults: { challenge: '', perspectives: [] as string[], chosenFrame: '', confidence: 0 },
+    visualizationResults: { goal: '', obstacles: [] as string[], solutions: [] as string[], clarity: 0 },
+    languageResults: { limitingBeliefs: [] as string[], empoweringBeliefs: [] as string[], integration: '' }
+  });
+
+  const techniques = [
+    {
+      title: 'Anchoring Positive States',
+      description: 'Create a physical anchor for accessing confident, calm states',
+      component: 'anchoring'
+    },
+    {
+      title: 'Perspective Reframing',
+      description: 'View challenges from multiple empowering perspectives',
+      component: 'reframing'
+    },
+    {
+      title: 'Future Visualization',
+      description: 'Create clear mental movies of your desired outcomes',
+      component: 'visualization'
+    },
+    {
+      title: 'Language Patterns',
+      description: 'Transform limiting language into empowering statements',
+      component: 'language'
+    }
+  ];
+
+  const renderAnchoringPractice = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-2">Anchoring Instructions</h4>
+        <ol className="text-sm text-blue-800 space-y-1">
+          <li>1. Think of a time when you felt completely confident and capable</li>
+          <li>2. Relive that memory - see what you saw, hear what you heard</li>
+          <li>3. As the feeling peaks, press your thumb and forefinger together</li>
+          <li>4. Hold for 10 seconds, then release</li>
+          <li>5. Repeat 3-5 times to strengthen the anchor</li>
+        </ol>
+      </div>
+      
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Describe your confident memory</label>
+          <Textarea
+            value={practiceData.anchoringResults.trigger}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              anchoringResults: { ...prev.anchoringResults, trigger: e.target.value }
+            }))}
+            placeholder="What memory did you use for anchoring?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How did it feel to access that state?</label>
+          <Textarea
+            value={practiceData.anchoringResults.positiveState}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              anchoringResults: { ...prev.anchoringResults, positiveState: e.target.value }
+            }))}
+            placeholder="Describe the feelings and sensations you experienced..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Effectiveness (1-10)</label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">1</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={practiceData.anchoringResults.effectiveness}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                anchoringResults: { ...prev.anchoringResults, effectiveness: parseInt(e.target.value) }
+              }))}
+              className="flex-1"
+            />
+            <span className="text-sm">10</span>
+            <span className="w-8 text-center font-medium">{practiceData.anchoringResults.effectiveness}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderReframingPractice = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-2">Perspective Reframing</h4>
+        <p className="text-sm text-green-800">
+          Think of a current challenge and view it from at least 3 different perspectives:
+          the optimist, the pragmatist, and the wise mentor.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Current Challenge</label>
+          <Textarea
+            value={practiceData.reframingResults.challenge}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              reframingResults: { ...prev.reframingResults, challenge: e.target.value }
+            }))}
+            placeholder="What challenge would you like to reframe?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Different Perspectives</label>
+          <div className="space-y-3">
+            {['Optimist Perspective', 'Pragmatist Perspective', 'Wise Mentor Perspective'].map((perspective, idx) => (
+              <div key={idx}>
+                <label className="block text-sm font-medium mb-1">{perspective}</label>
+                <Textarea
+                  value={practiceData.reframingResults.perspectives[idx] || ''}
+                  onChange={(e) => {
+                    const newPerspectives = [...practiceData.reframingResults.perspectives];
+                    newPerspectives[idx] = e.target.value;
+                    setPracticeData(prev => ({
+                      ...prev,
+                      reframingResults: { ...prev.reframingResults, perspectives: newPerspectives }
+                    }));
+                  }}
+                  placeholder={`How would the ${perspective.toLowerCase()} view this challenge?`}
+                  rows={2}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Chosen Empowering Frame</label>
+          <Textarea
+            value={practiceData.reframingResults.chosenFrame}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              reframingResults: { ...prev.reframingResults, chosenFrame: e.target.value }
+            }))}
+            placeholder="Which perspective feels most empowering and why?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Confidence Level (1-10)</label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">1</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={practiceData.reframingResults.confidence}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                reframingResults: { ...prev.reframingResults, confidence: parseInt(e.target.value) }
+              }))}
+              className="flex-1"
+            />
+            <span className="text-sm">10</span>
+            <span className="w-8 text-center font-medium">{practiceData.reframingResults.confidence}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderVisualizationPractice = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-2">Future Visualization</h4>
+        <p className="text-sm text-purple-800">
+          Create a detailed mental movie of achieving a goal, including potential obstacles and how you'll overcome them.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Goal/Desired Outcome</label>
+          <Textarea
+            value={practiceData.visualizationResults.goal}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              visualizationResults: { ...prev.visualizationResults, goal: e.target.value }
+            }))}
+            placeholder="What do you want to achieve? Be specific and detailed."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Potential Obstacles</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(idx => (
+              <input
+                key={idx}
+                type="text"
+                value={practiceData.visualizationResults.obstacles[idx] || ''}
+                onChange={(e) => {
+                  const newObstacles = [...practiceData.visualizationResults.obstacles];
+                  newObstacles[idx] = e.target.value;
+                  setPracticeData(prev => ({
+                    ...prev,
+                    visualizationResults: { ...prev.visualizationResults, obstacles: newObstacles }
+                  }));
+                }}
+                placeholder={`Potential obstacle ${idx + 1}`}
+                className="w-full p-2 border rounded-md"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Solutions & Strategies</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(idx => (
+              <input
+                key={idx}
+                type="text"
+                value={practiceData.visualizationResults.solutions[idx] || ''}
+                onChange={(e) => {
+                  const newSolutions = [...practiceData.visualizationResults.solutions];
+                  newSolutions[idx] = e.target.value;
+                  setPracticeData(prev => ({
+                    ...prev,
+                    visualizationResults: { ...prev.visualizationResults, solutions: newSolutions }
+                  }));
+                }}
+                placeholder={`Solution for obstacle ${idx + 1}`}
+                className="w-full p-2 border rounded-md"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Visualization Clarity (1-10)</label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">1</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={practiceData.visualizationResults.clarity}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                visualizationResults: { ...prev.visualizationResults, clarity: parseInt(e.target.value) }
+              }))}
+              className="flex-1"
+            />
+            <span className="text-sm">10</span>
+            <span className="w-8 text-center font-medium">{practiceData.visualizationResults.clarity}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLanguagePractice = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-2">Language Pattern Transformation</h4>
+        <p className="text-sm text-orange-800">
+          Transform limiting language patterns into empowering ones. Notice how changing your language changes your mindset.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Limiting Beliefs/Statements</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(idx => (
+              <input
+                key={idx}
+                type="text"
+                value={practiceData.languageResults.limitingBeliefs[idx] || ''}
+                onChange={(e) => {
+                  const newBeliefs = [...practiceData.languageResults.limitingBeliefs];
+                  newBeliefs[idx] = e.target.value;
+                  setPracticeData(prev => ({
+                    ...prev,
+                    languageResults: { ...prev.languageResults, limitingBeliefs: newBeliefs }
+                  }));
+                }}
+                placeholder={`Limiting belief ${idx + 1} (e.g., "I'm too old to...")`}
+                className="w-full p-2 border rounded-md"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Empowering Alternatives</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(idx => (
+              <input
+                key={idx}
+                type="text"
+                value={practiceData.languageResults.empoweringBeliefs[idx] || ''}
+                onChange={(e) => {
+                  const newBeliefs = [...practiceData.languageResults.empoweringBeliefs];
+                  newBeliefs[idx] = e.target.value;
+                  setPracticeData(prev => ({
+                    ...prev,
+                    languageResults: { ...prev.languageResults, empoweringBeliefs: newBeliefs }
+                  }));
+                }}
+                placeholder={`Empowering version of belief ${idx + 1}`}
+                className="w-full p-2 border rounded-md"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Integration Plan</label>
+          <Textarea
+            value={practiceData.languageResults.integration}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              languageResults: { ...prev.languageResults, integration: e.target.value }
+            }))}
+            placeholder="How will you integrate these new empowering language patterns into your daily life?"
+            rows={4}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const getCurrentComponent = () => {
+    switch (techniques[currentTechnique].component) {
+      case 'anchoring': return renderAnchoringPractice();
+      case 'reframing': return renderReframingPractice();
+      case 'visualization': return renderVisualizationPractice();
+      case 'language': return renderLanguagePractice();
+      default: return null;
+    }
+  };
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="w-6 h-6 text-purple-600" />
+          NLP Reframing Practice
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentTechnique + 1) / techniques.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            {currentTechnique + 1} of {techniques.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{techniques[currentTechnique].title}</h3>
+            <p className="text-gray-600">{techniques[currentTechnique].description}</p>
+          </div>
+
+          {getCurrentComponent()}
+
+          <div className="flex justify-between pt-4">
+            {currentTechnique > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentTechnique(prev => prev - 1)}
+              >
+                Previous Technique
+              </Button>
+            )}
+            
+            {currentTechnique < techniques.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentTechnique(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Technique
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w2-nlp', practiceData)}
+                className="ml-auto"
+              >
+                Complete NLP Practice
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Understanding Your Hormonal Symphony Component
 function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const [currentSection, setCurrentSection] = useState('intro');
@@ -1910,6 +2977,23 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'evening-wind-down') {
     return <EveningRoutineCreator onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 2 Components
+  if (component.id === 'w2-cbt') {
+    return <CBTReframingTechniques onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w2-mirror') {
+    return <MirrorWorkAffirmations onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w2-audit') {
+    return <ThoughtAuditTracker onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w2-nlp') {
+    return <NLPReframingPractice onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
