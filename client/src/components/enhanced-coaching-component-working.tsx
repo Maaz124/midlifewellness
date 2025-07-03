@@ -4015,6 +4015,1437 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     );
   }
 
+  // WEEK 1 COMPONENTS
+  
+  // Week 1: Hormone Video - Understanding Your Hormonal Symphony
+  if (component.id === 'hormone-video') {
+    const [currentSection, setCurrentSection] = useState(responses.currentSection || 'intro');
+    const [videoProgress, setVideoProgress] = useState(responses.videoProgress || 0);
+    const [notes, setNotes] = useState(responses.notes || '');
+    const [keyInsights, setKeyInsights] = useState(responses.keyInsights || []);
+    const [personalReflections, setPersonalReflections] = useState(responses.personalReflections || '');
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const videoSections = [
+      {
+        id: 'intro',
+        title: 'Introduction: Your Hormonal Symphony',
+        duration: 2,
+        content: "Welcome to understanding your unique hormonal symphony. During perimenopause, your hormones don't just decline - they fluctuate dramatically, creating what many women describe as feeling like a completely different person."
+      },
+      {
+        id: 'estrogen',
+        title: 'Estrogen: The Conductor',
+        duration: 3,
+        content: "Estrogen is like the conductor of your hormonal orchestra. When it fluctuates, everything else follows. It affects your brain's neurotransmitters, particularly serotonin and dopamine, which control mood, motivation, and cognitive function."
+      },
+      {
+        id: 'progesterone',
+        title: 'Progesterone: The Calming Force',
+        duration: 2,
+        content: "Progesterone is your body's natural anxiety medication. When it drops, you may experience increased anxiety, racing thoughts, and difficulty sleeping. This is why many women feel 'wired but tired' during perimenopause."
+      },
+      {
+        id: 'cortisol',
+        title: 'Cortisol: The Stress Response',
+        duration: 3,
+        content: "Cortisol, your stress hormone, becomes dysregulated during perimenopause. Chronic stress keeps cortisol elevated, which interferes with other hormones and can lead to weight gain, brain fog, and exhaustion."
+      },
+      {
+        id: 'brain-impact',
+        title: 'Brain Changes and Cognitive Impact',
+        duration: 2,
+        content: "Your brain has estrogen receptors throughout, especially in areas controlling memory, mood, and executive function. Hormonal fluctuations literally change how your brain works, affecting concentration, word recall, and emotional regulation."
+      }
+    ];
+
+    const addInsight = (insight: string) => {
+      if (insight.trim()) {
+        const newInsights = [...keyInsights, insight.trim()];
+        setKeyInsights(newInsights);
+        updateResponses({ keyInsights: newInsights });
+      }
+    };
+
+    if (currentSection === 'reflection') {
+      return (
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-rose-600" />
+              Personal Hormone Insights
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="bg-rose-50 border border-rose-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-rose-800 mb-4">Your Key Insights</h3>
+                <div className="space-y-2 mb-4">
+                  {keyInsights.map((insight, index) => (
+                    <div key={index} className="bg-white border border-rose-200 rounded-lg p-3">
+                      <p className="text-rose-700">{insight}</p>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label>Reflect on your hormone journey:</Label>
+                    <Textarea
+                      placeholder="Which hormone changes resonate most with your experience? What symptoms make more sense now?"
+                      value={personalReflections}
+                      onChange={(e) => {
+                        setPersonalReflections(e.target.value);
+                        updateResponses({ personalReflections: e.target.value });
+                      }}
+                      rows={4}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-between">
+                  <Button variant="outline" onClick={() => setCurrentSection('brain-impact')}>
+                    Back to Video
+                  </Button>
+                  <Button 
+                    onClick={() => onComplete('hormone-video', { 
+                      keyInsights, 
+                      personalReflections, 
+                      videoProgress: 100,
+                      completedAt: new Date().toISOString()
+                    })}
+                    disabled={!personalReflections.trim()}
+                    className="bg-rose-600 hover:bg-rose-700"
+                  >
+                    Complete Video Session
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    const currentSectionData = videoSections.find(s => s.id === currentSection);
+    const sectionIndex = videoSections.findIndex(s => s.id === currentSection);
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Play className="w-5 h-5 text-rose-600" />
+            Understanding Your Hormonal Symphony
+          </CardTitle>
+          <div className="flex items-center gap-4 mt-4">
+            <Progress value={(sectionIndex + 1) / videoSections.length * 100} className="flex-1" />
+            <span className="text-sm text-gray-600">{sectionIndex + 1} of {videoSections.length}</span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="bg-rose-50 border border-rose-200 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-rose-800 mb-4">{currentSectionData?.title}</h3>
+              <p className="text-rose-700 text-lg leading-relaxed mb-6">{currentSectionData?.content}</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label>Capture your insights from this section:</Label>
+                  <div className="flex gap-2 mt-2">
+                    <Input 
+                      placeholder="What resonates with your experience?"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          addInsight(e.currentTarget.value);
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                    <Button 
+                      onClick={(e) => {
+                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                        addInsight(input.value);
+                        input.value = '';
+                      }}
+                      size="sm"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+
+                {keyInsights.length > 0 && (
+                  <div className="bg-white border border-rose-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-rose-800 mb-2">Your Insights So Far:</h4>
+                    <div className="space-y-1">
+                      {keyInsights.map((insight, index) => (
+                        <p key={index} className="text-sm text-rose-700">• {insight}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-between">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    const prevIndex = Math.max(0, sectionIndex - 1);
+                    setCurrentSection(videoSections[prevIndex].id);
+                  }}
+                  disabled={sectionIndex === 0}
+                >
+                  Previous
+                </Button>
+                <Button 
+                  onClick={() => {
+                    if (sectionIndex < videoSections.length - 1) {
+                      const nextIndex = sectionIndex + 1;
+                      setCurrentSection(videoSections[nextIndex].id);
+                      setVideoProgress((nextIndex + 1) / videoSections.length * 100);
+                      updateResponses({ 
+                        currentSection: videoSections[nextIndex].id,
+                        videoProgress: (nextIndex + 1) / videoSections.length * 100
+                      });
+                    } else {
+                      setCurrentSection('reflection');
+                      updateResponses({ currentSection: 'reflection' });
+                    }
+                  }}
+                  className="bg-rose-600 hover:bg-rose-700"
+                >
+                  {sectionIndex === videoSections.length - 1 ? 'Reflect & Complete' : 'Next Section'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 1: Symptom Tracker
+  if (component.id === 'symptom-tracker') {
+    const [trackingData, setTrackingData] = useState(responses.trackingData || {
+      hotFlashes: { frequency: 3, intensity: 5, triggers: '' },
+      moodSwings: { frequency: 4, intensity: 6, patterns: '' },
+      sleepQuality: { hours: 6, quality: 4, issues: '' },
+      energyLevels: { morning: 5, afternoon: 4, evening: 6 },
+      cognitiveSymptoms: { fogFrequency: 4, memoryIssues: 3, concentration: 4 },
+      physicalSymptoms: { jointPain: 3, headaches: 2, weightChanges: 4 }
+    });
+    const [insights, setInsights] = useState(responses.insights || '');
+    const [actionPlan, setActionPlan] = useState(responses.actionPlan || '');
+
+    const updateSymptom = (category: string, field: string, value: any) => {
+      const newData = {
+        ...trackingData,
+        [category]: { ...trackingData[category], [field]: value }
+      };
+      setTrackingData(newData);
+      setResponses((prev: any) => ({ ...prev, trackingData: newData }));
+    };
+
+    const getScoreColor = (score: number) => {
+      if (score <= 3) return 'text-green-600';
+      if (score <= 6) return 'text-yellow-600';
+      return 'text-red-600';
+    };
+
+    const getOverallScore = () => {
+      const scores = [
+        trackingData.hotFlashes.frequency,
+        trackingData.moodSwings.frequency,
+        10 - trackingData.sleepQuality.quality,
+        10 - (trackingData.energyLevels.morning + trackingData.energyLevels.afternoon + trackingData.energyLevels.evening) / 3,
+        trackingData.cognitiveSymptoms.fogFrequency,
+        trackingData.physicalSymptoms.jointPain
+      ];
+      return Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+    };
+
+    return (
+      <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-rose-600" />
+            Daily Hormone Harmony Tracker
+          </CardTitle>
+          <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 mt-4">
+            <div className="flex items-center justify-between">
+              <span className="text-rose-800">Overall Symptom Score:</span>
+              <span className={`text-xl font-bold ${getScoreColor(getOverallScore())}`}>
+                {getOverallScore()}/10
+              </span>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Hot Flashes */}
+            <Card className="border-rose-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-rose-800">🔥 Hot Flashes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Frequency per day (0-10)</Label>
+                    <Slider
+                      value={[trackingData.hotFlashes.frequency]}
+                      onValueChange={([value]) => updateSymptom('hotFlashes', 'frequency', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">{trackingData.hotFlashes.frequency} times per day</span>
+                  </div>
+                  <div>
+                    <Label>Intensity (1-10)</Label>
+                    <Slider
+                      value={[trackingData.hotFlashes.intensity]}
+                      onValueChange={([value]) => updateSymptom('hotFlashes', 'intensity', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">Level {trackingData.hotFlashes.intensity}</span>
+                  </div>
+                  <div>
+                    <Label>Triggers or patterns</Label>
+                    <Input
+                      placeholder="Stress, spicy food, warm rooms..."
+                      value={trackingData.hotFlashes.triggers}
+                      onChange={(e) => updateSymptom('hotFlashes', 'triggers', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Mood Swings */}
+            <Card className="border-blue-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-blue-800">😊 Mood Changes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Frequency of mood swings (0-10)</Label>
+                    <Slider
+                      value={[trackingData.moodSwings.frequency]}
+                      onValueChange={([value]) => updateSymptom('moodSwings', 'frequency', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">{trackingData.moodSwings.frequency}/10</span>
+                  </div>
+                  <div>
+                    <Label>Intensity when they occur (1-10)</Label>
+                    <Slider
+                      value={[trackingData.moodSwings.intensity]}
+                      onValueChange={([value]) => updateSymptom('moodSwings', 'intensity', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">Level {trackingData.moodSwings.intensity}</span>
+                  </div>
+                  <div>
+                    <Label>Emotional patterns</Label>
+                    <Input
+                      placeholder="Irritability, sadness, anxiety..."
+                      value={trackingData.moodSwings.patterns}
+                      onChange={(e) => updateSymptom('moodSwings', 'patterns', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Sleep Quality */}
+            <Card className="border-purple-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-purple-800">😴 Sleep Quality</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Hours of sleep</Label>
+                    <Slider
+                      value={[trackingData.sleepQuality.hours]}
+                      onValueChange={([value]) => updateSymptom('sleepQuality', 'hours', value)}
+                      max={12}
+                      min={3}
+                      step={0.5}
+                    />
+                    <span className="text-sm text-gray-600">{trackingData.sleepQuality.hours} hours</span>
+                  </div>
+                  <div>
+                    <Label>Quality of sleep (1-10)</Label>
+                    <Slider
+                      value={[trackingData.sleepQuality.quality]}
+                      onValueChange={([value]) => updateSymptom('sleepQuality', 'quality', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">Quality: {trackingData.sleepQuality.quality}/10</span>
+                  </div>
+                  <div>
+                    <Label>Sleep issues</Label>
+                    <Input
+                      placeholder="Waking up, hot flashes, racing thoughts..."
+                      value={trackingData.sleepQuality.issues}
+                      onChange={(e) => updateSymptom('sleepQuality', 'issues', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Energy Levels */}
+            <Card className="border-yellow-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-yellow-800">⚡ Energy Levels</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Morning energy (1-10)</Label>
+                    <Slider
+                      value={[trackingData.energyLevels.morning]}
+                      onValueChange={([value]) => updateSymptom('energyLevels', 'morning', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">Level {trackingData.energyLevels.morning}</span>
+                  </div>
+                  <div>
+                    <Label>Afternoon energy (1-10)</Label>
+                    <Slider
+                      value={[trackingData.energyLevels.afternoon]}
+                      onValueChange={([value]) => updateSymptom('energyLevels', 'afternoon', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">Level {trackingData.energyLevels.afternoon}</span>
+                  </div>
+                  <div>
+                    <Label>Evening energy (1-10)</Label>
+                    <Slider
+                      value={[trackingData.energyLevels.evening]}
+                      onValueChange={([value]) => updateSymptom('energyLevels', 'evening', value)}
+                      max={10}
+                      step={1}
+                    />
+                    <span className="text-sm text-gray-600">Level {trackingData.energyLevels.evening}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-8 space-y-6">
+            <Card className="border-green-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-green-800">📝 Personal Insights</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>What patterns do you notice?</Label>
+                    <Textarea
+                      placeholder="Describe any connections between symptoms, timing, triggers, or emotional states..."
+                      value={insights}
+                      onChange={(e) => setInsights(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <Label>Your action plan for tomorrow</Label>
+                    <Textarea
+                      placeholder="What will you try differently? What worked today that you want to continue?"
+                      value={actionPlan}
+                      onChange={(e) => setActionPlan(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-center">
+              <Button 
+                onClick={() => onComplete('symptom-tracker', { 
+                  trackingData, 
+                  insights, 
+                  actionPlan,
+                  overallScore: getOverallScore(),
+                  completedAt: new Date().toISOString()
+                })}
+                disabled={!insights.trim() || !actionPlan.trim()}
+                className="bg-rose-600 hover:bg-rose-700"
+                size="lg"
+              >
+                Complete Daily Tracking
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // WEEK 2 COMPONENTS
+
+  // Week 2: CBT Reframing Video
+  if (component.id === 'w2-cbt') {
+    const [currentSection, setCurrentSection] = useState(responses.currentSection || 'intro');
+    const [practiceExercises, setPracticeExercises] = useState(responses.practiceExercises || []);
+    const [personalExamples, setPersonalExamples] = useState(responses.personalExamples || []);
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const cbtSections = [
+      {
+        id: 'intro',
+        title: 'Introduction to CBT for Midlife',
+        content: "Cognitive Behavioral Therapy techniques are especially powerful during midlife transitions. Your changing brain chemistry makes you more susceptible to negative thought patterns, but also more capable of creating positive change."
+      },
+      {
+        id: 'thought-awareness',
+        title: 'Thought Awareness',
+        content: "The first step is noticing your thoughts without judgment. Most women in perimenopause experience 2-3x more negative self-talk. We'll learn to catch these thoughts before they spiral."
+      },
+      {
+        id: 'cognitive-distortions',
+        title: 'Common Cognitive Distortions',
+        content: "Learn to identify all-or-nothing thinking, catastrophizing, mind reading, and other distortions that are amplified during hormonal changes."
+      },
+      {
+        id: 'reframing-techniques',
+        title: 'Reframing Techniques',
+        content: "Practical methods to transform negative thoughts into balanced, realistic ones. This isn't about toxic positivity - it's about accuracy and compassion."
+      },
+      {
+        id: 'practice',
+        title: 'Practice Session',
+        content: "Let's practice reframing real thoughts you've had recently."
+      }
+    ];
+
+    if (currentSection === 'practice') {
+      return (
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-indigo-600" />
+              CBT Practice Session
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-indigo-800 mb-4">Practice Reframing</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label>Write a negative thought you've had recently:</Label>
+                    <Textarea
+                      placeholder="Example: 'I'm failing at everything since turning 50'"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && e.shiftKey === false) {
+                          e.preventDefault();
+                          const value = e.currentTarget.value.trim();
+                          if (value) {
+                            const newExercise = {
+                              id: Date.now(),
+                              originalThought: value,
+                              reframedThought: '',
+                              distortions: []
+                            };
+                            const updated = [...practiceExercises, newExercise];
+                            setPracticeExercises(updated);
+                            updateResponses({ practiceExercises: updated });
+                            e.currentTarget.value = '';
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {practiceExercises.map((exercise, index) => (
+                    <Card key={exercise.id} className="border-indigo-200">
+                      <CardContent className="p-4">
+                        <div className="space-y-4">
+                          <div>
+                            <Label className="text-red-700">Original Thought:</Label>
+                            <p className="bg-red-50 border border-red-200 rounded p-3 text-red-800">
+                              {exercise.originalThought}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <Label>Reframe this thought more balanced and compassionately:</Label>
+                            <Textarea
+                              placeholder="Example: 'I'm adjusting to changes in my life. Some areas are challenging while others show growth.'"
+                              value={exercise.reframedThought}
+                              onChange={(e) => {
+                                const updated = practiceExercises.map(ex => 
+                                  ex.id === exercise.id ? { ...ex, reframedThought: e.target.value } : ex
+                                );
+                                setPracticeExercises(updated);
+                                updateResponses({ practiceExercises: updated });
+                              }}
+                              rows={3}
+                            />
+                          </div>
+
+                          {exercise.reframedThought && (
+                            <div className="bg-green-50 border border-green-200 rounded p-3">
+                              <Label className="text-green-700">Reframed:</Label>
+                              <p className="text-green-800 mt-1">{exercise.reframedThought}</p>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex justify-between">
+                  <Button variant="outline" onClick={() => setCurrentSection('reframing-techniques')}>
+                    Back to Techniques
+                  </Button>
+                  <Button 
+                    onClick={() => onComplete('w2-cbt', { 
+                      practiceExercises, 
+                      personalExamples,
+                      completedAt: new Date().toISOString()
+                    })}
+                    disabled={practiceExercises.length === 0}
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Complete CBT Session
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    const currentSectionData = cbtSections.find(s => s.id === currentSection);
+    const sectionIndex = cbtSections.findIndex(s => s.id === currentSection);
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="w-5 h-5 text-indigo-600" />
+            CBT Reframing Techniques
+          </CardTitle>
+          <Progress value={(sectionIndex + 1) / cbtSections.length * 100} className="mt-4" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-indigo-800 mb-4">{currentSectionData?.title}</h3>
+              <p className="text-indigo-700 text-lg leading-relaxed mb-6">{currentSectionData?.content}</p>
+              
+              <div className="mt-6 flex justify-between">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    const prevIndex = Math.max(0, sectionIndex - 1);
+                    setCurrentSection(cbtSections[prevIndex].id);
+                  }}
+                  disabled={sectionIndex === 0}
+                >
+                  Previous
+                </Button>
+                <Button 
+                  onClick={() => {
+                    if (sectionIndex < cbtSections.length - 1) {
+                      const nextIndex = sectionIndex + 1;
+                      setCurrentSection(cbtSections[nextIndex].id);
+                      updateResponses({ currentSection: cbtSections[nextIndex].id });
+                    }
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                >
+                  {sectionIndex === cbtSections.length - 1 ? 'Start Practice' : 'Next Section'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 2: Thought Audit Tracker
+  if (component.id === 'w2-audit') {
+    const [thoughtEntries, setThoughtEntries] = useState(responses.thoughtEntries || []);
+    const [dailyPatterns, setDailyPatterns] = useState(responses.dailyPatterns || '');
+    const [actionCommitments, setActionCommitments] = useState(responses.actionCommitments || []);
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const addThoughtEntry = () => {
+      const newEntry = {
+        id: Date.now(),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        trigger: '',
+        automaticThought: '',
+        emotion: '',
+        intensity: 5,
+        reframedThought: '',
+        newEmotion: '',
+        newIntensity: 5
+      };
+      const updated = [...thoughtEntries, newEntry];
+      setThoughtEntries(updated);
+      updateResponses({ thoughtEntries: updated });
+    };
+
+    const updateThoughtEntry = (id: number, field: string, value: any) => {
+      const updated = thoughtEntries.map(entry => 
+        entry.id === id ? { ...entry, [field]: value } : entry
+      );
+      setThoughtEntries(updated);
+      updateResponses({ thoughtEntries: updated });
+    };
+
+    return (
+      <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-purple-600" />
+            Daily Thought Audit Tracker
+          </CardTitle>
+          <CardDescription>
+            Track your automatic thoughts and practice reframing them throughout the day
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Today's Thought Entries</h3>
+              <Button onClick={addThoughtEntry} className="bg-purple-600 hover:bg-purple-700">
+                Add New Entry
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {thoughtEntries.map((entry) => (
+                <Card key={entry.id} className="border-purple-200">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary">{entry.time}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Before Section */}
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-red-700 border-b border-red-200 pb-2">Before Reframing</h4>
+                        
+                        <div>
+                          <Label>What triggered this thought?</Label>
+                          <Input
+                            placeholder="Situation, person, memory..."
+                            value={entry.trigger}
+                            onChange={(e) => updateThoughtEntry(entry.id, 'trigger', e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Automatic thought</Label>
+                          <Textarea
+                            placeholder="What went through your mind?"
+                            value={entry.automaticThought}
+                            onChange={(e) => updateThoughtEntry(entry.id, 'automaticThought', e.target.value)}
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Emotion felt</Label>
+                          <Input
+                            placeholder="Anxious, sad, angry, overwhelmed..."
+                            value={entry.emotion}
+                            onChange={(e) => updateThoughtEntry(entry.id, 'emotion', e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Intensity (1-10): {entry.intensity}</Label>
+                          <Slider
+                            value={[entry.intensity]}
+                            onValueChange={([value]) => updateThoughtEntry(entry.id, 'intensity', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                      </div>
+
+                      {/* After Section */}
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-green-700 border-b border-green-200 pb-2">After Reframing</h4>
+                        
+                        <div>
+                          <Label>Balanced, realistic thought</Label>
+                          <Textarea
+                            placeholder="How can you reframe this more accurately and compassionately?"
+                            value={entry.reframedThought}
+                            onChange={(e) => updateThoughtEntry(entry.id, 'reframedThought', e.target.value)}
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>New emotion</Label>
+                          <Input
+                            placeholder="Calmer, hopeful, neutral..."
+                            value={entry.newEmotion}
+                            onChange={(e) => updateThoughtEntry(entry.id, 'newEmotion', e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>New intensity (1-10): {entry.newIntensity}</Label>
+                          <Slider
+                            value={[entry.newIntensity]}
+                            onValueChange={([value]) => updateThoughtEntry(entry.id, 'newIntensity', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {thoughtEntries.length > 0 && (
+              <Card className="border-blue-200">
+                <CardHeader>
+                  <CardTitle className="text-blue-800">Daily Reflection</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>What patterns do you notice in your thoughts today?</Label>
+                      <Textarea
+                        placeholder="Common triggers, themes, or emotional reactions..."
+                        value={dailyPatterns}
+                        onChange={(e) => {
+                          setDailyPatterns(e.target.value);
+                          updateResponses({ dailyPatterns: e.target.value });
+                        }}
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-blue-800 mb-2">Today's Progress</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-blue-700">Thoughts tracked:</span>
+                          <span className="font-bold ml-2">{thoughtEntries.length}</span>
+                        </div>
+                        <div>
+                          <span className="text-blue-700">Average intensity reduction:</span>
+                          <span className="font-bold ml-2">
+                            {thoughtEntries.length > 0 
+                              ? (thoughtEntries.reduce((sum, entry) => sum + (entry.intensity - entry.newIntensity), 0) / thoughtEntries.length).toFixed(1)
+                              : 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center pt-4">
+                      <Button 
+                        onClick={() => onComplete('w2-audit', { 
+                          thoughtEntries, 
+                          dailyPatterns,
+                          totalEntries: thoughtEntries.length,
+                          averageReduction: thoughtEntries.length > 0 
+                            ? thoughtEntries.reduce((sum, entry) => sum + (entry.intensity - entry.newIntensity), 0) / thoughtEntries.length
+                            : 0,
+                          completedAt: new Date().toISOString()
+                        })}
+                        disabled={thoughtEntries.length === 0 || !dailyPatterns.trim()}
+                        className="bg-purple-600 hover:bg-purple-700"
+                        size="lg"
+                      >
+                        Complete Thought Audit
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 1: Morning Ritual Creator
+  if (component.id === 'morning-ritual') {
+    const [ritualElements, setRitualElements] = useState(responses.ritualElements || []);
+    const [customRitual, setCustomRitual] = useState(responses.customRitual || '');
+    const [practiceCommitment, setPracticeCommitment] = useState(responses.practiceCommitment || '');
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const availableElements = [
+      { id: 'hydration', name: 'Morning Hydration', description: 'Glass of water with lemon to support cortisol regulation', time: '2 min' },
+      { id: 'breathing', name: '4-7-8 Breathing', description: 'Calming breath work to reset nervous system', time: '3 min' },
+      { id: 'sunlight', name: 'Natural Light Exposure', description: 'Support circadian rhythm and hormone production', time: '5 min' },
+      { id: 'movement', name: 'Gentle Movement', description: 'Stretching or yoga to awaken the body', time: '5 min' },
+      { id: 'meditation', name: 'Brief Meditation', description: 'Mindfulness practice for mental clarity', time: '5 min' },
+      { id: 'affirmations', name: 'Hormone Affirmations', description: 'Positive statements about your changing body', time: '2 min' },
+      { id: 'journaling', name: 'Gratitude Journaling', description: 'Three things you appreciate about your body today', time: '3 min' },
+      { id: 'nutrition', name: 'Hormone-Supporting Breakfast', description: 'Protein and healthy fats for stable energy', time: '10 min' }
+    ];
+
+    const toggleElement = (elementId: string) => {
+      const updated = ritualElements.includes(elementId)
+        ? ritualElements.filter(id => id !== elementId)
+        : [...ritualElements, elementId];
+      setRitualElements(updated);
+      updateResponses({ ritualElements: updated });
+    };
+
+    const getTotalTime = () => {
+      return ritualElements.reduce((total, elementId) => {
+        const element = availableElements.find(el => el.id === elementId);
+        return total + parseInt(element?.time || '0');
+      }, 0);
+    };
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sun className="w-5 h-5 text-amber-600" />
+            Create Your Sunrise Hormone Reset Ritual
+          </CardTitle>
+          <CardDescription>
+            Design a personalized morning routine to support hormone regulation and energy
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-amber-800 mb-4">Choose Your Ritual Elements</h3>
+              <p className="text-amber-700 mb-6">Select 3-5 elements that feel sustainable for your lifestyle:</p>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                {availableElements.map(element => (
+                  <div
+                    key={element.id}
+                    onClick={() => toggleElement(element.id)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      ritualElements.includes(element.id)
+                        ? 'border-amber-500 bg-amber-100'
+                        : 'border-gray-200 hover:border-amber-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-800">{element.name}</h4>
+                      <Badge variant={ritualElements.includes(element.id) ? 'default' : 'secondary'}>
+                        {element.time}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600">{element.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              {ritualElements.length > 0 && (
+                <div className="mt-6 p-4 bg-white border border-amber-200 rounded-lg">
+                  <h4 className="font-semibold text-amber-800 mb-2">Your Morning Ritual ({getTotalTime()} minutes)</h4>
+                  <div className="space-y-2">
+                    {ritualElements.map((elementId, index) => {
+                      const element = availableElements.find(el => el.id === elementId);
+                      return (
+                        <div key={elementId} className="flex items-center gap-3">
+                          <Badge variant="outline">{index + 1}</Badge>
+                          <span className="flex-1">{element?.name}</span>
+                          <span className="text-sm text-gray-600">{element?.time}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label>Customize your ritual with personal touches:</Label>
+                <Textarea
+                  placeholder="Add any personal elements, specific affirmations, favorite movements, etc."
+                  value={customRitual}
+                  onChange={(e) => {
+                    setCustomRitual(e.target.value);
+                    updateResponses({ customRitual: e.target.value });
+                  }}
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label>How will you commit to this practice?</Label>
+                <Textarea
+                  placeholder="What time will you start? How will you remember? What obstacles might arise and how will you handle them?"
+                  value={practiceCommitment}
+                  onChange={(e) => {
+                    setPracticeCommitment(e.target.value);
+                    updateResponses({ practiceCommitment: e.target.value });
+                  }}
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <Button 
+                onClick={() => onComplete('morning-ritual', { 
+                  ritualElements, 
+                  customRitual, 
+                  practiceCommitment,
+                  totalTime: getTotalTime(),
+                  selectedElements: ritualElements.map(id => availableElements.find(el => el.id === id)?.name),
+                  completedAt: new Date().toISOString()
+                })}
+                disabled={ritualElements.length === 0 || !practiceCommitment.trim()}
+                className="bg-amber-600 hover:bg-amber-700"
+                size="lg"
+              >
+                Create My Morning Ritual
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 1: Energy Mapping Exercise
+  if (component.id === 'energy-mapping') {
+    const [energyData, setEnergyData] = useState(responses.energyData || {
+      weekdays: Array(5).fill(null).map(() => ({
+        morning: 5, afternoon: 5, evening: 5, activities: '', drains: '', boosts: ''
+      })),
+      weekend: Array(2).fill(null).map(() => ({
+        morning: 5, afternoon: 5, evening: 5, activities: '', drains: '', boosts: ''
+      }))
+    });
+    const [patterns, setPatterns] = useState(responses.patterns || '');
+    const [energyPlan, setEnergyPlan] = useState(responses.energyPlan || '');
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const updateEnergyData = (type: 'weekdays' | 'weekend', index: number, field: string, value: any) => {
+      const newData = { ...energyData };
+      newData[type][index] = { ...newData[type][index], [field]: value };
+      setEnergyData(newData);
+      updateResponses({ energyData: newData });
+    };
+
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    return (
+      <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="w-5 h-5 text-yellow-600" />
+            Personal Energy Pattern Discovery
+          </CardTitle>
+          <CardDescription>
+            Track your energy patterns to understand your natural rhythms and optimize your daily schedule
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-8">
+            {/* Weekdays */}
+            <div>
+              <h3 className="text-lg font-semibold text-yellow-800 mb-4">Weekday Energy Patterns</h3>
+              <div className="space-y-4">
+                {energyData.weekdays.map((day, index) => (
+                  <Card key={index} className="border-yellow-200">
+                    <CardHeader>
+                      <CardTitle className="text-base">{dayNames[index]}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <Label>Morning Energy (1-10): {day.morning}</Label>
+                          <Slider
+                            value={[day.morning]}
+                            onValueChange={([value]) => updateEnergyData('weekdays', index, 'morning', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                        <div>
+                          <Label>Afternoon Energy (1-10): {day.afternoon}</Label>
+                          <Slider
+                            value={[day.afternoon]}
+                            onValueChange={([value]) => updateEnergyData('weekdays', index, 'afternoon', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                        <div>
+                          <Label>Evening Energy (1-10): {day.evening}</Label>
+                          <Slider
+                            value={[day.evening]}
+                            onValueChange={([value]) => updateEnergyData('weekdays', index, 'evening', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div>
+                          <Label>Main activities</Label>
+                          <Input
+                            placeholder="Work, meetings, errands..."
+                            value={day.activities}
+                            onChange={(e) => updateEnergyData('weekdays', index, 'activities', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Energy drains</Label>
+                          <Input
+                            placeholder="Stress, conflict, multitasking..."
+                            value={day.drains}
+                            onChange={(e) => updateEnergyData('weekdays', index, 'drains', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Energy boosts</Label>
+                          <Input
+                            placeholder="Exercise, nature, laughter..."
+                            value={day.boosts}
+                            onChange={(e) => updateEnergyData('weekdays', index, 'boosts', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Weekend */}
+            <div>
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">Weekend Energy Patterns</h3>
+              <div className="space-y-4">
+                {energyData.weekend.map((day, index) => (
+                  <Card key={index} className="border-blue-200">
+                    <CardHeader>
+                      <CardTitle className="text-base">{dayNames[index + 5]}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <Label>Morning Energy (1-10): {day.morning}</Label>
+                          <Slider
+                            value={[day.morning]}
+                            onValueChange={([value]) => updateEnergyData('weekend', index, 'morning', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                        <div>
+                          <Label>Afternoon Energy (1-10): {day.afternoon}</Label>
+                          <Slider
+                            value={[day.afternoon]}
+                            onValueChange={([value]) => updateEnergyData('weekend', index, 'afternoon', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                        <div>
+                          <Label>Evening Energy (1-10): {day.evening}</Label>
+                          <Slider
+                            value={[day.evening]}
+                            onValueChange={([value]) => updateEnergyData('weekend', index, 'evening', value)}
+                            max={10}
+                            step={1}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div>
+                          <Label>Main activities</Label>
+                          <Input
+                            placeholder="Rest, family, hobbies..."
+                            value={day.activities}
+                            onChange={(e) => updateEnergyData('weekend', index, 'activities', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Energy drains</Label>
+                          <Input
+                            placeholder="Chores, social obligations..."
+                            value={day.drains}
+                            onChange={(e) => updateEnergyData('weekend', index, 'drains', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Energy boosts</Label>
+                          <Input
+                            placeholder="Sleep, nature, creativity..."
+                            value={day.boosts}
+                            onChange={(e) => updateEnergyData('weekend', index, 'boosts', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Analysis */}
+            <Card className="border-green-200">
+              <CardHeader>
+                <CardTitle className="text-green-800">Energy Pattern Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label>What patterns do you notice in your energy levels?</Label>
+                    <Textarea
+                      placeholder="When are you highest/lowest energy? What affects your patterns? How do weekdays compare to weekends?"
+                      value={patterns}
+                      onChange={(e) => {
+                        setPatterns(e.target.value);
+                        updateResponses({ patterns: e.target.value });
+                      }}
+                      rows={4}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Based on your patterns, how will you optimize your energy?</Label>
+                    <Textarea
+                      placeholder="What changes will you make to your schedule, activities, or habits to work with your natural energy rhythms?"
+                      value={energyPlan}
+                      onChange={(e) => {
+                        setEnergyPlan(e.target.value);
+                        updateResponses({ energyPlan: e.target.value });
+                      }}
+                      rows={4}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-center">
+                  <Button 
+                    onClick={() => onComplete('energy-mapping', { 
+                      energyData, 
+                      patterns, 
+                      energyPlan,
+                      averageWeekdayEnergy: (energyData.weekdays.reduce((sum, day) => sum + day.morning + day.afternoon + day.evening, 0) / 15).toFixed(1),
+                      averageWeekendEnergy: (energyData.weekend.reduce((sum, day) => sum + day.morning + day.afternoon + day.evening, 0) / 6).toFixed(1),
+                      completedAt: new Date().toISOString()
+                    })}
+                    disabled={!patterns.trim() || !energyPlan.trim()}
+                    className="bg-green-600 hover:bg-green-700"
+                    size="lg"
+                  >
+                    Complete Energy Mapping
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 2: Mirror Work & Affirmations
+  if (component.id === 'w2-mirror') {
+    const [affirmations, setAffirmations] = useState(responses.affirmations || []);
+    const [personalAffirmations, setPersonalAffirmations] = useState(responses.personalAffirmations || '');
+    const [mirrorPractice, setMirrorPractice] = useState(responses.mirrorPractice || '');
+    const [commitmentPlan, setCommitmentPlan] = useState(responses.commitmentPlan || '');
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const suggestedAffirmations = [
+      "I am worthy of love and respect during this life transition",
+      "My changing body is wise and deserves compassion",
+      "I embrace my evolving identity with curiosity and kindness",
+      "I have the strength to navigate this transformative time",
+      "My experience and wisdom are valuable gifts",
+      "I choose to speak to myself with the same kindness I show my best friend",
+      "I am learning and growing through every challenge",
+      "My hormonal changes are a natural part of my journey",
+      "I trust my body's wisdom and my ability to adapt",
+      "I deserve to prioritize my well-being and happiness"
+    ];
+
+    const toggleAffirmation = (affirmation: string) => {
+      const updated = affirmations.includes(affirmation)
+        ? affirmations.filter(a => a !== affirmation)
+        : [...affirmations, affirmation];
+      setAffirmations(updated);
+      updateResponses({ affirmations: updated });
+    };
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Heart className="w-5 h-5 text-pink-600" />
+            Mirror Work & Self-Compassion Affirmations
+          </CardTitle>
+          <CardDescription>
+            Create a daily practice of speaking kindly to yourself and building self-compassion
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-pink-800 mb-4">Choose Your Daily Affirmations</h3>
+              <p className="text-pink-700 mb-6">Select 3-5 affirmations that resonate with you:</p>
+              
+              <div className="space-y-3">
+                {suggestedAffirmations.map(affirmation => (
+                  <div
+                    key={affirmation}
+                    onClick={() => toggleAffirmation(affirmation)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      affirmations.includes(affirmation)
+                        ? 'border-pink-500 bg-pink-100'
+                        : 'border-gray-200 hover:border-pink-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        checked={affirmations.includes(affirmation)}
+                        onChange={() => toggleAffirmation(affirmation)}
+                      />
+                      <p className="text-gray-800">{affirmation}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {affirmations.length > 0 && (
+                <div className="mt-6 p-4 bg-white border border-pink-200 rounded-lg">
+                  <h4 className="font-semibold text-pink-800 mb-2">Your Selected Affirmations:</h4>
+                  <div className="space-y-2">
+                    {affirmations.map((affirmation, index) => (
+                      <p key={index} className="text-pink-700">• {affirmation}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label>Write your own personal affirmations:</Label>
+                <Textarea
+                  placeholder="Create affirmations specific to your situation, goals, or areas where you need more self-compassion..."
+                  value={personalAffirmations}
+                  onChange={(e) => {
+                    setPersonalAffirmations(e.target.value);
+                    updateResponses({ personalAffirmations: e.target.value });
+                  }}
+                  rows={4}
+                />
+              </div>
+
+              <div>
+                <Label>Describe your mirror work practice:</Label>
+                <Textarea
+                  placeholder="How will you practice saying these affirmations? What time of day? How will you make eye contact with yourself? What challenges might arise?"
+                  value={mirrorPractice}
+                  onChange={(e) => {
+                    setMirrorPractice(e.target.value);
+                    updateResponses({ mirrorPractice: e.target.value });
+                  }}
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label>Your commitment to daily practice:</Label>
+                <Textarea
+                  placeholder="How will you remember to do this daily? What time works best? How will you track your progress?"
+                  value={commitmentPlan}
+                  onChange={(e) => {
+                    setCommitmentPlan(e.target.value);
+                    updateResponses({ commitmentPlan: e.target.value });
+                  }}
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="bg-pink-100 border border-pink-300 rounded-lg p-4">
+              <h4 className="font-semibold text-pink-800 mb-2">💡 Mirror Work Tips:</h4>
+              <ul className="space-y-1 text-pink-700 text-sm">
+                <li>• Start with just 1-2 minutes daily</li>
+                <li>• Make eye contact with yourself in the mirror</li>
+                <li>• Speak slowly and with intention</li>
+                <li>• Notice any resistance or negative self-talk</li>
+                <li>• Be patient - this practice takes time to feel natural</li>
+                <li>• Consider starting with "I am willing to..."</li>
+              </ul>
+            </div>
+
+            <div className="flex justify-center">
+              <Button 
+                onClick={() => onComplete('w2-mirror', { 
+                  affirmations, 
+                  personalAffirmations, 
+                  mirrorPractice, 
+                  commitmentPlan,
+                  totalAffirmations: affirmations.length,
+                  completedAt: new Date().toISOString()
+                })}
+                disabled={affirmations.length === 0 || !mirrorPractice.trim() || !commitmentPlan.trim()}
+                className="bg-pink-600 hover:bg-pink-700"
+                size="lg"
+              >
+                Create Mirror Work Practice
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Week 5: Enhanced Cognitive Clarity Assessment - Using Fresh Component
   if (component.id === 'w5-assessment') {
     console.log('Loading Fresh Cognitive Assessment Component');
