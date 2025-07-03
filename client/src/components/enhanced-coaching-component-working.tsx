@@ -2692,7 +2692,11 @@ import {
   Heart,
   Target,
   Zap,
-  BarChart
+  BarChart,
+  Star,
+  Calendar,
+  Flag,
+  Repeat
 } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { videoScripts, audioScripts, detailedExercises } from '@/lib/hormone-headspace-content';
