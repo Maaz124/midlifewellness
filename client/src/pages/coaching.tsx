@@ -241,8 +241,8 @@ export default function Coaching() {
   if (activeComponent && activeModuleId) {
     console.log('Coaching Page - Active Component:', activeComponent.id, 'Module:', activeModuleId);
     
-    // Use enhanced component for Week 1, Week 2, Week 3, Week 4, and Week 5 with detailed content
-    if (activeModuleId === 'week-1' || activeModuleId === 'week-2' || activeModuleId === 'week-3' || activeModuleId === 'week-4' || activeModuleId === 'week-5') {
+    // Use enhanced component for Week 1, Week 2, Week 3, Week 4, Week 5, and Week 6 with detailed content
+    if (activeModuleId === 'week-1' || activeModuleId === 'week-2' || activeModuleId === 'week-3' || activeModuleId === 'week-4' || activeModuleId === 'week-5' || activeModuleId === 'week-6') {
       return (
         <EnhancedCoachingComponentMinimal
           component={activeComponent}

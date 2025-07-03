@@ -1225,6 +1225,1441 @@ function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string
   );
 }
 
+// Week 6: Digital Vision Board Component
+function DigitalVisionBoard({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [activeSection, setActiveSection] = useState('overview');
+  const [visionData, setVisionData] = useState({
+    futureVision: '',
+    coreValues: [] as string[],
+    lifeAreas: {
+      health: { vision: '', priority: 5 },
+      relationships: { vision: '', priority: 5 },
+      career: { vision: '', priority: 5 },
+      personal: { vision: '', priority: 5 },
+      financial: { vision: '', priority: 5 },
+      spiritual: { vision: '', priority: 5 }
+    },
+    visualElements: [] as string[],
+    actionSteps: [] as string[]
+  });
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [completedSections, setCompletedSections] = useState<string[]>([]);
+
+  const coreValuesList = [
+    'Authenticity', 'Adventure', 'Balance', 'Beauty', 'Compassion', 'Connection',
+    'Creativity', 'Excellence', 'Faith', 'Family', 'Freedom', 'Growth',
+    'Health', 'Independence', 'Integrity', 'Joy', 'Justice', 'Knowledge',
+    'Leadership', 'Love', 'Peace', 'Purpose', 'Security', 'Service',
+    'Spirituality', 'Success', 'Tradition', 'Wisdom'
+  ];
+
+  const lifeAreaIcons = {
+    health: '🌱',
+    relationships: '❤️',
+    career: '💼',
+    personal: '✨',
+    financial: '💰',
+    spiritual: '🙏'
+  };
+
+  const toggleValue = (value: string) => {
+    if (selectedValues.includes(value)) {
+      setSelectedValues(selectedValues.filter(v => v !== value));
+    } else if (selectedValues.length < 5) {
+      setSelectedValues([...selectedValues, value]);
+    }
+  };
+
+  const updateLifeArea = (area: keyof typeof visionData.lifeAreas, field: 'vision' | 'priority', value: string | number) => {
+    setVisionData(prev => ({
+      ...prev,
+      lifeAreas: {
+        ...prev.lifeAreas,
+        [area]: {
+          ...prev.lifeAreas[area],
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  const progressPercentage = (completedSections.length / 4) * 100;
+
+  if (activeSection === 'values') {
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Heart className="w-5 h-5 text-red-500" />
+            Core Values Discovery
+          </CardTitle>
+          <CardDescription>
+            Select up to 5 values that will guide your future self
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="text-center">
+              <Badge variant="secondary" className="text-lg px-4 py-2">
+                {selectedValues.length}/5 Selected
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {coreValuesList.map((value) => (
+                <Button
+                  key={value}
+                  variant={selectedValues.includes(value) ? "default" : "outline"}
+                  onClick={() => toggleValue(value)}
+                  disabled={!selectedValues.includes(value) && selectedValues.length >= 5}
+                  className="h-auto p-3 text-sm"
+                >
+                  {value}
+                </Button>
+              ))}
+            </div>
+
+            {selectedValues.length > 0 && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-2">Your Selected Values:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedValues.map((value) => (
+                      <Badge key={value} variant="default" className="px-3 py-1">
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveSection('overview')}>
+                Back
+              </Button>
+              <Button 
+                onClick={() => {
+                  setVisionData(prev => ({ ...prev, coreValues: selectedValues }));
+                  if (!completedSections.includes('values')) {
+                    setCompletedSections([...completedSections, 'values']);
+                  }
+                  setActiveSection('life-areas');
+                }}
+                disabled={selectedValues.length === 0}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Continue to Life Areas
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (activeSection === 'life-areas') {
+    return (
+      <Card className="max-w-5xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-purple-600" />
+            Life Areas Vision
+          </CardTitle>
+          <CardDescription>
+            Define your vision and priorities for each area of your life
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {Object.entries(visionData.lifeAreas).map(([area, data]) => (
+              <Card key={area} className="border-2">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg capitalize">
+                    <span className="text-2xl">{lifeAreaIcons[area as keyof typeof lifeAreaIcons]}</span>
+                    {area}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor={`${area}-vision`}>Your vision for this area:</Label>
+                    <Textarea
+                      id={`${area}-vision`}
+                      placeholder={`Describe your ideal ${area} in your future...`}
+                      value={data.vision}
+                      onChange={(e) => updateLifeArea(area as keyof typeof visionData.lifeAreas, 'vision', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor={`${area}-priority`}>Priority Level: {data.priority}/10</Label>
+                    <Slider
+                      value={[data.priority]}
+                      onValueChange={([value]) => updateLifeArea(area as keyof typeof visionData.lifeAreas, 'priority', value)}
+                      max={10}
+                      min={1}
+                      step={1}
+                      className="mt-2"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveSection('values')}>
+                Back to Values
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (!completedSections.includes('life-areas')) {
+                    setCompletedSections([...completedSections, 'life-areas']);
+                  }
+                  setActiveSection('action-plan');
+                }}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                Create Action Plan
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (activeSection === 'action-plan') {
+    const [newAction, setNewAction] = useState('');
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            Action Plan Creation
+          </CardTitle>
+          <CardDescription>
+            Break down your vision into actionable steps
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Add an action step toward your vision..."
+                value={newAction}
+                onChange={(e) => setNewAction(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && newAction.trim()) {
+                    setVisionData(prev => ({
+                      ...prev,
+                      actionSteps: [...prev.actionSteps, newAction.trim()]
+                    }));
+                    setNewAction('');
+                  }
+                }}
+              />
+              <Button 
+                onClick={() => {
+                  if (newAction.trim()) {
+                    setVisionData(prev => ({
+                      ...prev,
+                      actionSteps: [...prev.actionSteps, newAction.trim()]
+                    }));
+                    setNewAction('');
+                  }
+                }}
+              >
+                Add
+              </Button>
+            </div>
+
+            <div className="space-y-3">
+              {visionData.actionSteps.map((step, index) => (
+                <Card key={index} className="bg-green-50 border-green-200">
+                  <CardContent className="p-3 flex justify-between items-center">
+                    <span>{step}</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setVisionData(prev => ({
+                          ...prev,
+                          actionSteps: prev.actionSteps.filter((_, i) => i !== index)
+                        }));
+                      }}
+                    >
+                      ✕
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveSection('life-areas')}>
+                Back
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (!completedSections.includes('action-plan')) {
+                    setCompletedSections([...completedSections, 'action-plan']);
+                  }
+                  setActiveSection('overview');
+                }}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Complete Vision Board
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Main Overview
+  return (
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Star className="w-5 h-5 text-yellow-600" />
+          Digital Vision Board
+        </CardTitle>
+        <CardDescription>
+          Create a comprehensive vision of your future self and the life you want to build
+        </CardDescription>
+        
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Progress: {completedSections.length} of 4 sections</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
+          <Progress value={progressPercentage} className="h-2" />
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="border-2 border-red-200 hover:border-red-300 transition-colors">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                ❤️ Core Values Discovery
+                {completedSections.includes('values') && <CheckCircle className="w-5 h-5 text-green-600" />}
+              </CardTitle>
+              <CardDescription>
+                Identify the values that will guide your future decisions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => setActiveSection('values')}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                {completedSections.includes('values') ? 'Review Values' : 'Start Values Discovery'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-purple-200 hover:border-purple-300 transition-colors">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                🎯 Life Areas Vision
+                {completedSections.includes('life-areas') && <CheckCircle className="w-5 h-5 text-green-600" />}
+              </CardTitle>
+              <CardDescription>
+                Define your vision for health, relationships, career, and more
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => setActiveSection('life-areas')}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+                disabled={!completedSections.includes('values')}
+              >
+                {completedSections.includes('life-areas') ? 'Review Life Areas' : 'Design Life Vision'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-green-200 hover:border-green-300 transition-colors">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                ✅ Action Plan
+                {completedSections.includes('action-plan') && <CheckCircle className="w-5 h-5 text-green-600" />}
+              </CardTitle>
+              <CardDescription>
+                Break down your vision into actionable steps
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => setActiveSection('action-plan')}
+                className="w-full bg-green-600 hover:bg-green-700"
+                disabled={!completedSections.includes('life-areas')}
+              >
+                {completedSections.includes('action-plan') ? 'Review Action Plan' : 'Create Action Plan'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-yellow-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                ⭐ Vision Summary
+              </CardTitle>
+              <CardDescription>
+                Your complete vision board overview
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {completedSections.length === 3 ? (
+                <div className="space-y-3">
+                  <Badge className="bg-yellow-600">Vision Complete!</Badge>
+                  <p className="text-sm text-gray-600">
+                    Your vision board is ready. Use it as your north star for goal setting.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Complete the sections above to see your vision summary
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="flex justify-between pt-6 border-t mt-6">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button 
+            onClick={() => onComplete('w6-vision', { 
+              visionData: { ...visionData, coreValues: selectedValues },
+              completedSections,
+              progressPercentage: Math.round(progressPercentage)
+            })}
+            disabled={completedSections.length === 0}
+            className="bg-yellow-600 hover:bg-yellow-700"
+          >
+            Save Vision Board ({completedSections.length} sections completed)
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 6: SMART Goal Setting Component
+function SmartGoalSetting({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [activeGoal, setActiveGoal] = useState<number | null>(null);
+  const [goals, setGoals] = useState<Array<{
+    id: number;
+    title: string;
+    category: string;
+    specific: string;
+    measurable: string;
+    achievable: string;
+    relevant: string;
+    timeBound: string;
+    completed: boolean;
+  }>>([]);
+  const [newGoal, setNewGoal] = useState({
+    title: '',
+    category: '',
+    specific: '',
+    measurable: '',
+    achievable: '',
+    relevant: '',
+    timeBound: ''
+  });
+
+  const goalCategories = [
+    { id: 'health', name: 'Health & Wellness', icon: '🌱', color: 'green' },
+    { id: 'career', name: 'Career & Purpose', icon: '💼', color: 'blue' },
+    { id: 'relationships', name: 'Relationships', icon: '❤️', color: 'red' },
+    { id: 'personal', name: 'Personal Growth', icon: '✨', color: 'purple' },
+    { id: 'financial', name: 'Financial', icon: '💰', color: 'yellow' },
+    { id: 'creative', name: 'Creative & Hobbies', icon: '🎨', color: 'orange' }
+  ];
+
+  const addGoal = () => {
+    if (newGoal.title && newGoal.category) {
+      const goal = {
+        ...newGoal,
+        id: Date.now(),
+        completed: false
+      };
+      setGoals([...goals, goal]);
+      setNewGoal({
+        title: '',
+        category: '',
+        specific: '',
+        measurable: '',
+        achievable: '',
+        relevant: '',
+        timeBound: ''
+      });
+      setActiveGoal(goal.id);
+    }
+  };
+
+  const updateGoal = (goalId: number, field: string, value: string) => {
+    setGoals(goals.map(goal => 
+      goal.id === goalId ? { ...goal, [field]: value } : goal
+    ));
+  };
+
+  const getSmartScore = (goal: any) => {
+    const fields = ['specific', 'measurable', 'achievable', 'relevant', 'timeBound'];
+    const completed = fields.filter(field => goal[field] && goal[field].trim().length > 10).length;
+    return (completed / fields.length) * 100;
+  };
+
+  if (activeGoal !== null) {
+    const goal = goals.find(g => g.id === activeGoal);
+    if (!goal) return null;
+
+    const smartScore = getSmartScore(goal);
+    const category = goalCategories.find(c => c.id === goal.category);
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">{category?.icon}</span>
+            SMART Goal: {goal.title}
+          </CardTitle>
+          <CardDescription>
+            Complete each SMART criteria to create a well-defined, achievable goal
+          </CardDescription>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>SMART Score: {Math.round(smartScore)}%</span>
+              <span>{smartScore === 100 ? 'Complete!' : 'In Progress'}</span>
+            </div>
+            <Progress value={smartScore} className="h-2" />
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="specific">Specific - What exactly do you want to achieve?</Label>
+              <Textarea
+                id="specific"
+                placeholder="Be very specific about what you want to accomplish. Avoid vague terms."
+                value={goal.specific}
+                onChange={(e) => updateGoal(goal.id, 'specific', e.target.value)}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="measurable">Measurable - How will you track progress?</Label>
+              <Textarea
+                id="measurable"
+                placeholder="Define specific metrics, numbers, or criteria to measure success."
+                value={goal.measurable}
+                onChange={(e) => updateGoal(goal.id, 'measurable', e.target.value)}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="achievable">Achievable - Is this goal realistic?</Label>
+              <Textarea
+                id="achievable"
+                placeholder="Explain why this goal is challenging yet attainable given your resources and constraints."
+                value={goal.achievable}
+                onChange={(e) => updateGoal(goal.id, 'achievable', e.target.value)}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="relevant">Relevant - Why is this goal important to you?</Label>
+              <Textarea
+                id="relevant"
+                placeholder="Connect this goal to your values, long-term vision, and current life priorities."
+                value={goal.relevant}
+                onChange={(e) => updateGoal(goal.id, 'relevant', e.target.value)}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="timeBound">Time-Bound - When will you achieve this?</Label>
+              <Textarea
+                id="timeBound"
+                placeholder="Set a specific deadline and key milestones along the way."
+                value={goal.timeBound}
+                onChange={(e) => updateGoal(goal.id, 'timeBound', e.target.value)}
+                className="mt-2"
+              />
+            </div>
+
+            {smartScore === 100 && (
+              <Card className="bg-green-50 border-green-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <h4 className="font-semibold text-green-800">Goal Complete!</h4>
+                  </div>
+                  <p className="text-green-700 text-sm">
+                    Excellent! Your goal meets all SMART criteria and is ready for action.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveGoal(null)}>
+                Back to Goals List
+              </Button>
+              <Button 
+                onClick={() => {
+                  updateGoal(goal.id, 'completed', 'true');
+                  setActiveGoal(null);
+                }}
+                disabled={smartScore < 100}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Mark Goal Complete
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="w-5 h-5 text-blue-600" />
+          SMART Goal Setting
+        </CardTitle>
+        <CardDescription>
+          Create Specific, Measurable, Achievable, Relevant, and Time-bound goals aligned with your vision
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <div className="space-y-6">
+          {/* Add New Goal */}
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardHeader>
+              <CardTitle className="text-lg">Create New Goal</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="goal-title">Goal Title</Label>
+                <Input
+                  id="goal-title"
+                  placeholder="Enter a clear, concise goal title"
+                  value={newGoal.title}
+                  onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="goal-category">Category</Label>
+                <Select value={newGoal.category} onValueChange={(value) => setNewGoal({ ...newGoal, category: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a goal category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {goalCategories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        <span className="flex items-center gap-2">
+                          {category.icon} {category.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button onClick={addGoal} disabled={!newGoal.title || !newGoal.category}>
+                Create Goal
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Goals List */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {goals.map((goal) => {
+              const category = goalCategories.find(c => c.id === goal.category);
+              const smartScore = getSmartScore(goal);
+              
+              return (
+                <Card key={goal.id} className={`border-2 border-${category?.color}-200 hover:border-${category?.color}-300 transition-colors`}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-xl">{category?.icon}</span>
+                      {goal.title}
+                    </CardTitle>
+                    <CardDescription>{category?.name}</CardDescription>
+                    
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span>SMART Score</span>
+                        <span>{Math.round(smartScore)}%</span>
+                      </div>
+                      <Progress value={smartScore} className="h-1" />
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <Button 
+                      onClick={() => setActiveGoal(goal.id)}
+                      className={`w-full bg-${category?.color}-600 hover:bg-${category?.color}-700`}
+                    >
+                      {smartScore === 100 ? 'Review Goal' : 'Complete SMART Criteria'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {goals.length === 0 && (
+            <Card className="bg-gray-50">
+              <CardContent className="p-8 text-center">
+                <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">No Goals Yet</h3>
+                <p className="text-gray-500">Create your first SMART goal using the form above</p>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex justify-between pt-6 border-t">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button 
+              onClick={() => onComplete('w6-goals', { 
+                goals,
+                completedGoals: goals.filter(g => getSmartScore(g) === 100).length,
+                totalGoals: goals.length
+              })}
+              disabled={goals.length === 0}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Save Goals ({goals.filter(g => getSmartScore(g) === 100).length} complete)
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 6: Reverse Engineer Method Component  
+function ReverseEngineerMethod({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [selectedGoal, setSelectedGoal] = useState('');
+  const [targetDate, setTargetDate] = useState('');
+  const [milestones, setMilestones] = useState<Array<{ id: number; title: string; date: string; completed: boolean }>>([]);
+  const [weeklyActions, setWeeklyActions] = useState<Array<{ id: number; week: string; actions: string[]; completed: boolean }>>([]);
+  const [activePhase, setActivePhase] = useState('goal-selection');
+
+  const addMilestone = () => {
+    const newMilestone = {
+      id: Date.now(),
+      title: '',
+      date: '',
+      completed: false
+    };
+    setMilestones([...milestones, newMilestone]);
+  };
+
+  const updateMilestone = (id: number, field: string, value: string) => {
+    setMilestones(milestones.map(m => 
+      m.id === id ? { ...m, [field]: value } : m
+    ));
+  };
+
+  const generateWeeklyPlan = () => {
+    if (!targetDate) return;
+
+    const target = new Date(targetDate);
+    const now = new Date();
+    const weeksUntilTarget = Math.ceil((target.getTime() - now.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    
+    const weeks = [];
+    for (let i = 1; i <= Math.min(weeksUntilTarget, 12); i++) {
+      const weekDate = new Date(now.getTime() + (i * 7 * 24 * 60 * 60 * 1000));
+      weeks.push({
+        id: i,
+        week: `Week ${i} (${weekDate.toLocaleDateString()})`,
+        actions: [],
+        completed: false
+      });
+    }
+    setWeeklyActions(weeks);
+    setActivePhase('weekly-planning');
+  };
+
+  const addAction = (weekId: number, action: string) => {
+    if (!action.trim()) return;
+    
+    setWeeklyActions(weeklyActions.map(week => 
+      week.id === weekId 
+        ? { ...week, actions: [...week.actions, action.trim()] }
+        : week
+    ));
+  };
+
+  const removeAction = (weekId: number, actionIndex: number) => {
+    setWeeklyActions(weeklyActions.map(week => 
+      week.id === weekId 
+        ? { ...week, actions: week.actions.filter((_, i) => i !== actionIndex) }
+        : week
+    ));
+  };
+
+  if (activePhase === 'weekly-planning') {
+    const [newAction, setNewAction] = useState<{[key: number]: string}>({});
+
+    return (
+      <Card className="max-w-5xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-blue-600" />
+            Weekly Action Plan
+          </CardTitle>
+          <CardDescription>
+            Break down your goal into weekly actionable steps
+          </CardDescription>
+          
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-semibold">Goal: {selectedGoal}</h4>
+            <p className="text-sm text-blue-700">Target Date: {new Date(targetDate).toLocaleDateString()}</p>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {weeklyActions.map((week) => (
+              <Card key={week.id} className="border-l-4 border-l-blue-500">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">{week.week}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add a specific action for this week..."
+                        value={newAction[week.id] || ''}
+                        onChange={(e) => setNewAction({ ...newAction, [week.id]: e.target.value })}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            addAction(week.id, newAction[week.id] || '');
+                            setNewAction({ ...newAction, [week.id]: '' });
+                          }
+                        }}
+                      />
+                      <Button 
+                        size="sm"
+                        onClick={() => {
+                          addAction(week.id, newAction[week.id] || '');
+                          setNewAction({ ...newAction, [week.id]: '' });
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {week.actions.map((action, actionIndex) => (
+                        <div key={actionIndex} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                          <Checkbox />
+                          <span className="flex-1 text-sm">{action}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeAction(week.id, actionIndex)}
+                          >
+                            ✕
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+
+                    {week.actions.length === 0 && (
+                      <p className="text-sm text-gray-500 italic">No actions planned for this week yet</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="flex justify-between pt-6 border-t mt-6">
+            <Button variant="outline" onClick={() => setActivePhase('milestones')}>
+              Back to Milestones
+            </Button>
+            <Button 
+              onClick={() => onComplete('w6-reverse', { 
+                selectedGoal,
+                targetDate,
+                milestones,
+                weeklyActions,
+                totalWeeks: weeklyActions.length,
+                totalActions: weeklyActions.reduce((sum, week) => sum + week.actions.length, 0)
+              })}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Complete Reverse Engineering
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (activePhase === 'milestones') {
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Flag className="w-5 h-5 text-green-600" />
+            Key Milestones
+          </CardTitle>
+          <CardDescription>
+            Define 3-5 key milestones between now and your target date
+          </CardDescription>
+          
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-semibold">Goal: {selectedGoal}</h4>
+            <p className="text-sm text-green-700">Target Date: {new Date(targetDate).toLocaleDateString()}</p>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="space-y-4">
+            {milestones.map((milestone, index) => (
+              <Card key={milestone.id} className="border-l-4 border-l-green-500">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">Milestone {index + 1}</Badge>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor={`milestone-${milestone.id}`}>Milestone Description</Label>
+                      <Input
+                        id={`milestone-${milestone.id}`}
+                        placeholder="What significant progress point will you reach?"
+                        value={milestone.title}
+                        onChange={(e) => updateMilestone(milestone.id, 'title', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor={`date-${milestone.id}`}>Target Date</Label>
+                      <Input
+                        id={`date-${milestone.id}`}
+                        type="date"
+                        value={milestone.date}
+                        onChange={(e) => updateMilestone(milestone.id, 'date', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            <Button 
+              onClick={addMilestone}
+              variant="outline"
+              className="w-full border-dashed"
+              disabled={milestones.length >= 5}
+            >
+              + Add Milestone ({milestones.length}/5)
+            </Button>
+          </div>
+
+          <div className="flex justify-between pt-6 border-t mt-6">
+            <Button variant="outline" onClick={() => setActivePhase('goal-selection')}>
+              Back to Goal
+            </Button>
+            <Button 
+              onClick={generateWeeklyPlan}
+              disabled={milestones.filter(m => m.title && m.date).length === 0}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Generate Weekly Plan
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Goal Selection Phase
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ArrowLeft className="w-5 h-5 text-purple-600" />
+          Reverse Engineer Method
+        </CardTitle>
+        <CardDescription>
+          Start with your end goal and work backwards to create a step-by-step plan
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <div className="space-y-6">
+          <div>
+            <Label htmlFor="goal-input">What is your specific goal?</Label>
+            <Textarea
+              id="goal-input"
+              placeholder="Be specific about what you want to achieve (e.g., 'Launch my coaching practice and have 5 paying clients')"
+              value={selectedGoal}
+              onChange={(e) => setSelectedGoal(e.target.value)}
+              className="mt-2"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="target-date">By when do you want to achieve this goal?</Label>
+            <Input
+              id="target-date"
+              type="date"
+              value={targetDate}
+              onChange={(e) => setTargetDate(e.target.value)}
+              className="mt-2"
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+
+          {selectedGoal && targetDate && (
+            <Card className="bg-purple-50 border-purple-200">
+              <CardContent className="p-4">
+                <h4 className="font-semibold text-purple-800 mb-2">Goal Summary</h4>
+                <p className="text-purple-700 mb-1"><strong>What:</strong> {selectedGoal}</p>
+                <p className="text-purple-700"><strong>When:</strong> {new Date(targetDate).toLocaleDateString()}</p>
+                <p className="text-sm text-purple-600 mt-2">
+                  Time available: {Math.ceil((new Date(targetDate).getTime() - new Date().getTime()) / (7 * 24 * 60 * 60 * 1000))} weeks
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex justify-between pt-6 border-t">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button 
+              onClick={() => setActivePhase('milestones')}
+              disabled={!selectedGoal || !targetDate}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              Continue to Milestones
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 6: Habit Loop Creator Component
+function HabitLoopCreator({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [habits, setHabits] = useState<Array<{
+    id: number;
+    name: string;
+    cue: string;
+    routine: string;
+    reward: string;
+    frequency: string;
+    timeOfDay: string;
+    location: string;
+    completed: boolean;
+  }>>([]);
+  const [activeHabit, setActiveHabit] = useState<number | null>(null);
+  const [newHabit, setNewHabit] = useState({
+    name: '',
+    cue: '',
+    routine: '',
+    reward: '',
+    frequency: 'daily',
+    timeOfDay: '',
+    location: ''
+  });
+
+  const habitTemplates = [
+    {
+      name: 'Morning Movement',
+      cue: 'Feet touch the floor when getting out of bed',
+      routine: '10 minutes of stretching or light exercise',
+      reward: 'Feel energized and accomplished',
+      timeOfDay: 'morning',
+      frequency: 'daily'
+    },
+    {
+      name: 'Mindful Moments',
+      cue: 'Sit down with my morning coffee',
+      routine: '5 minutes of deep breathing or meditation',
+      reward: 'Sense of calm and centeredness',
+      timeOfDay: 'morning',
+      frequency: 'daily'
+    },
+    {
+      name: 'Evening Reflection',
+      cue: 'Change into pajamas',
+      routine: 'Write 3 things I\'m grateful for',
+      reward: 'Positive mindset for better sleep',
+      timeOfDay: 'evening',
+      frequency: 'daily'
+    },
+    {
+      name: 'Weekend Planning',
+      cue: 'Friday evening dinner is finished',
+      routine: 'Review week and plan weekend priorities',
+      reward: 'Feel organized and intentional',
+      timeOfDay: 'evening',
+      frequency: 'weekly'
+    }
+  ];
+
+  const addHabit = (template?: any) => {
+    const habitData = template || newHabit;
+    const habit = {
+      ...habitData,
+      id: Date.now(),
+      completed: false
+    };
+    setHabits([...habits, habit]);
+    if (!template) {
+      setNewHabit({
+        name: '',
+        cue: '',
+        routine: '',
+        reward: '',
+        frequency: 'daily',
+        timeOfDay: '',
+        location: ''
+      });
+    }
+    setActiveHabit(habit.id);
+  };
+
+  const updateHabit = (habitId: number, field: string, value: string) => {
+    setHabits(habits.map(habit => 
+      habit.id === habitId ? { ...habit, [field]: value } : habit
+    ));
+  };
+
+  const getHabitScore = (habit: any) => {
+    const requiredFields = ['name', 'cue', 'routine', 'reward'];
+    const completed = requiredFields.filter(field => habit[field] && habit[field].trim().length > 0).length;
+    return (completed / requiredFields.length) * 100;
+  };
+
+  if (activeHabit !== null) {
+    const habit = habits.find(h => h.id === activeHabit);
+    if (!habit) return null;
+
+    const habitScore = getHabitScore(habit);
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Repeat className="w-5 h-5 text-green-600" />
+            Habit Loop: {habit.name || 'New Habit'}
+          </CardTitle>
+          <CardDescription>
+            Design your habit using the proven Cue → Routine → Reward loop
+          </CardDescription>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>Habit Completeness: {Math.round(habitScore)}%</span>
+              <span>{habitScore === 100 ? 'Ready to implement!' : 'Complete all fields'}</span>
+            </div>
+            <Progress value={habitScore} className="h-2" />
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="habit-name">Habit Name</Label>
+              <Input
+                id="habit-name"
+                placeholder="Give your habit a clear, motivating name"
+                value={habit.name}
+                onChange={(e) => updateHabit(habit.id, 'name', e.target.value)}
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="frequency">Frequency</Label>
+                <Select value={habit.frequency} onValueChange={(value) => updateHabit(habit.id, 'frequency', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="3x-week">3x per week</SelectItem>
+                    <SelectItem value="weekdays">Weekdays only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="time-of-day">Time of Day</Label>
+                <Select value={habit.timeOfDay} onValueChange={(value) => updateHabit(habit.id, 'timeOfDay', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="When will you do this?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="morning">Morning</SelectItem>
+                    <SelectItem value="afternoon">Afternoon</SelectItem>
+                    <SelectItem value="evening">Evening</SelectItem>
+                    <SelectItem value="flexible">Flexible</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="location">Location/Context</Label>
+              <Input
+                id="location"
+                placeholder="Where will you perform this habit?"
+                value={habit.location}
+                onChange={(e) => updateHabit(habit.id, 'location', e.target.value)}
+              />
+            </div>
+
+            <Card className="bg-yellow-50 border-yellow-200">
+              <CardHeader>
+                <CardTitle className="text-lg">The Habit Loop</CardTitle>
+                <CardDescription>Complete each part of the loop for maximum success</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="cue" className="flex items-center gap-2">
+                    🔔 Cue (Trigger) - What will remind you to do this habit?
+                  </Label>
+                  <Textarea
+                    id="cue"
+                    placeholder="Be very specific about your trigger (e.g., 'After I pour my morning coffee')"
+                    value={habit.cue}
+                    onChange={(e) => updateHabit(habit.id, 'cue', e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="routine" className="flex items-center gap-2">
+                    🔄 Routine - What exactly will you do?
+                  </Label>
+                  <Textarea
+                    id="routine"
+                    placeholder="Describe the specific action steps (e.g., '5 deep breaths while looking out the window')"
+                    value={habit.routine}
+                    onChange={(e) => updateHabit(habit.id, 'routine', e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="reward" className="flex items-center gap-2">
+                    🏆 Reward - How will you celebrate or benefit?
+                  </Label>
+                  <Textarea
+                    id="reward"
+                    placeholder="What positive feeling or benefit will you get? (e.g., 'Feel proud and energized')"
+                    value={habit.reward}
+                    onChange={(e) => updateHabit(habit.id, 'reward', e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {habitScore === 100 && (
+              <Card className="bg-green-50 border-green-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <h4 className="font-semibold text-green-800">Habit Loop Complete!</h4>
+                  </div>
+                  <p className="text-green-700 text-sm mb-3">
+                    Your habit has all the elements for success. Ready to start your new routine!
+                  </p>
+                  <div className="text-sm text-green-600">
+                    <strong>Your loop:</strong> {habit.cue} → {habit.routine} → {habit.reward}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex justify-between pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveHabit(null)}>
+                Back to Habits List
+              </Button>
+              <Button 
+                onClick={() => {
+                  updateHabit(habit.id, 'completed', 'true');
+                  setActiveHabit(null);
+                }}
+                disabled={habitScore < 100}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Save Habit Loop
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="max-w-5xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Repeat className="w-5 h-5 text-green-600" />
+          Habit Loop Creator
+        </CardTitle>
+        <CardDescription>
+          Design sustainable habits using the scientifically-proven Cue → Routine → Reward framework
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <div className="space-y-6">
+          {/* Habit Templates */}
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardHeader>
+              <CardTitle className="text-lg">Quick Start Templates</CardTitle>
+              <CardDescription>Choose a template or create your own from scratch</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 md:grid-cols-2">
+                {habitTemplates.map((template, index) => (
+                  <Card key={index} className="border border-gray-200 hover:border-green-300 transition-colors">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold mb-2">{template.name}</h4>
+                      <p className="text-xs text-gray-600 mb-3">
+                        <strong>Cue:</strong> {template.cue}
+                      </p>
+                      <Button 
+                        size="sm"
+                        onClick={() => addHabit(template)}
+                        className="w-full"
+                      >
+                        Use This Template
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="mt-4 pt-4 border-t">
+                <Button 
+                  onClick={() => addHabit()}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Create Custom Habit from Scratch
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Current Habits */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Your Habit Loops</h3>
+            
+            {habits.length === 0 ? (
+              <Card className="bg-gray-50">
+                <CardContent className="p-8 text-center">
+                  <Repeat className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No Habits Yet</h3>
+                  <p className="text-gray-500">Use a template above or create your first custom habit</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {habits.map((habit) => {
+                  const habitScore = getHabitScore(habit);
+                  
+                  return (
+                    <Card key={habit.id} className="border-2 border-green-200 hover:border-green-300 transition-colors">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                          <span className="text-xl">🔄</span>
+                          {habit.name || 'Unnamed Habit'}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {habit.frequency} • {habit.timeOfDay}
+                        </CardDescription>
+                        
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span>Completeness</span>
+                            <span>{Math.round(habitScore)}%</span>
+                          </div>
+                          <Progress value={habitScore} className="h-1" />
+                        </div>
+                      </CardHeader>
+                      
+                      <CardContent>
+                        {habit.cue && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            <strong>Trigger:</strong> {habit.cue}
+                          </p>
+                        )}
+                        
+                        <Button 
+                          onClick={() => setActiveHabit(habit.id)}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          {habitScore === 100 ? 'Review Habit Loop' : 'Complete Habit Loop'}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between pt-6 border-t">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button 
+              onClick={() => onComplete('w6-habits', { 
+                habits,
+                completedHabits: habits.filter(h => getHabitScore(h) === 100).length,
+                totalHabits: habits.length
+              })}
+              disabled={habits.length === 0}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Save Habit Loops ({habits.filter(h => getHabitScore(h) === 100).length} complete)
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Main Enhanced Coaching Component
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -2595,6 +4030,26 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 5: Mind Management System
   if (component.id === 'w5-mind-management') {
     return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 6: Digital Vision Board
+  if (component.id === 'w6-vision') {
+    return <DigitalVisionBoard onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 6: SMART Goal Setting
+  if (component.id === 'w6-goals') {
+    return <SmartGoalSetting onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 6: Reverse Engineer Method
+  if (component.id === 'w6-reverse') {
+    return <ReverseEngineerMethod onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 6: Habit Loop Creator
+  if (component.id === 'w6-habits') {
+    return <HabitLoopCreator onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components

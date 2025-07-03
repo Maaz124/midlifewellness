@@ -259,7 +259,7 @@ export const coachingModules: CoachingModule[] = [
     description: 'Vision creation, SMART goal setting, and sustainable habit formation',
     completed: false,
     progress: 0,
-    locked: true,
+    locked: false,
     components: [
       {
         id: 'w6-vision',
