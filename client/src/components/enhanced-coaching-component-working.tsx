@@ -5504,6 +5504,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       return (
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Coaching
+              </Button>
+            </div>
             <CardTitle className="flex items-center gap-2">
               <Brain className="w-5 h-5 text-blue-600" />
               Mental Clarity Practice Session
@@ -5633,6 +5639,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-blue-600" />
             Resetting Your Mental Space
@@ -5722,6 +5734,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       return (
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Coaching
+              </Button>
+            </div>
             <CardTitle className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-purple-600" />
               Clarity Techniques Practice
@@ -5796,6 +5814,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-purple-600" />
             Mental Clarity Power Practice
@@ -5937,6 +5961,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-teal-600" />
             Hormonal Thought Awareness Practice
@@ -6131,6 +6161,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-violet-600" />
             NLP Reframing Practice
