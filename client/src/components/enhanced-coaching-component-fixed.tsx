@@ -1083,6 +1083,607 @@ function ResettingYourMentalSpace({ onComplete, onClose }: { onComplete: (id: st
   );
 }
 
+// Interactive Symptom Tracker Component
+function InteractiveSymptomTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [symptoms, setSymptoms] = useState({
+    hotFlashes: 0,
+    brainFog: 0,
+    moodSwings: 0,
+    sleepQuality: 0,
+    energyLevel: 0,
+    anxiety: 0
+  });
+  const [insights, setInsights] = useState('');
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-pink-600" />
+          Daily Hormone Harmony Tracker
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <p className="text-gray-600">Rate how you're feeling today in each area (0-10 scale)</p>
+          
+          {Object.entries(symptoms).map(([key, value]) => (
+            <div key={key} className="space-y-2">
+              <label className="block text-sm font-medium capitalize">
+                {key.replace(/([A-Z])/g, ' $1').trim()}
+              </label>
+              <div className="flex gap-2">
+                {[0,1,2,3,4,5,6,7,8,9,10].map(level => (
+                  <Button
+                    key={level}
+                    variant={value === level ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSymptoms(prev => ({...prev, [key]: level}))}
+                    className="w-10 h-10 p-0"
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Daily Insights</label>
+            <Textarea
+              value={insights}
+              onChange={(e) => setInsights(e.target.value)}
+              placeholder="What patterns do you notice? Any triggers or helpful strategies?"
+            />
+          </div>
+
+          <Button onClick={() => onComplete('symptom-tracker', {symptoms, insights})} className="w-full">
+            Save Daily Tracking
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Morning Ritual Creator Component
+function MorningRitualCreator({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [selectedPractices, setSelectedPractices] = useState<string[]>([]);
+  const [customRitual, setCustomRitual] = useState('');
+
+  const ritualOptions = [
+    'Morning sunlight exposure (5 min)',
+    'Gratitude practice (3 min)',
+    'Gentle stretching (5 min)',
+    'Deep breathing (2 min)',
+    'Hormone-supporting breakfast',
+    'Hydration with lemon water',
+    'Intention setting (2 min)'
+  ];
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Clock className="w-6 h-6 text-orange-600" />
+          Sunrise Hormone Reset Ritual
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <p className="text-gray-600">Choose practices for your personalized morning ritual:</p>
+          
+          <div className="grid gap-3">
+            {ritualOptions.map(option => (
+              <div key={option} className="flex items-center gap-3 p-3 border rounded-lg">
+                <input
+                  type="checkbox"
+                  checked={selectedPractices.includes(option)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedPractices([...selectedPractices, option]);
+                    } else {
+                      setSelectedPractices(selectedPractices.filter(p => p !== option));
+                    }
+                  }}
+                  className="rounded"
+                />
+                <span>{option}</span>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Add Custom Practice</label>
+            <Textarea
+              value={customRitual}
+              onChange={(e) => setCustomRitual(e.target.value)}
+              placeholder="Any other morning practices you'd like to include?"
+            />
+          </div>
+
+          <Button 
+            onClick={() => onComplete('morning-ritual', {selectedPractices, customRitual})}
+            className="w-full"
+            disabled={selectedPractices.length === 0}
+          >
+            Create My Morning Ritual
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Brain Fog Clearing Practice Component
+function BrainFogClearingPractice({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [practiceData, setPracticeData] = useState({
+    preFogLevel: 0,
+    postFogLevel: 0,
+    completedTechniques: [] as string[],
+    effectiveness: 0
+  });
+
+  const techniques = [
+    'Cold water on wrists (30 seconds)',
+    'Deep breathing with counting (2 minutes)',
+    'Quick physical movement (1 minute)',
+    'Brain dump writing (3 minutes)',
+    'Mindful focus exercise (2 minutes)'
+  ];
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-purple-600" />
+          Mental Clarity Power Practice
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          {currentStep === 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Pre-Practice Assessment</h3>
+              <p className="text-gray-600 mb-4">Rate your current brain fog level (0-10):</p>
+              <div className="flex gap-2 mb-6">
+                {[0,1,2,3,4,5,6,7,8,9,10].map(level => (
+                  <Button
+                    key={level}
+                    variant={practiceData.preFogLevel === level ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setPracticeData(prev => ({...prev, preFogLevel: level}))}
+                    className="w-10 h-10 p-0"
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
+              <Button 
+                onClick={() => setCurrentStep(1)}
+                disabled={practiceData.preFogLevel === 0}
+              >
+                Start Clearing Practice
+              </Button>
+            </div>
+          )}
+
+          {currentStep === 1 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">10-Minute Clearing Session</h3>
+              <div className="space-y-4">
+                {techniques.map((technique, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        const completed = e.target.checked
+                          ? [...practiceData.completedTechniques, technique]
+                          : practiceData.completedTechniques.filter(t => t !== technique);
+                        setPracticeData(prev => ({...prev, completedTechniques: completed}));
+                      }}
+                      className="rounded"
+                    />
+                    <span>{technique}</span>
+                  </div>
+                ))}
+              </div>
+              <Button 
+                onClick={() => setCurrentStep(2)}
+                className="mt-6"
+                disabled={practiceData.completedTechniques.length === 0}
+              >
+                Complete Practice
+              </Button>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Post-Practice Assessment</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-gray-600 mb-2">Brain fog level now (0-10):</p>
+                  <div className="flex gap-2">
+                    {[0,1,2,3,4,5,6,7,8,9,10].map(level => (
+                      <Button
+                        key={level}
+                        variant={practiceData.postFogLevel === level ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setPracticeData(prev => ({...prev, postFogLevel: level}))}
+                        className="w-10 h-10 p-0"
+                      >
+                        {level}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-gray-600 mb-2">Overall effectiveness (0-10):</p>
+                  <div className="flex gap-2">
+                    {[0,1,2,3,4,5,6,7,8,9,10].map(level => (
+                      <Button
+                        key={level}
+                        variant={practiceData.effectiveness === level ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setPracticeData(prev => ({...prev, effectiveness: level}))}
+                        className="w-10 h-10 p-0"
+                      >
+                        {level}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Button 
+                onClick={() => onComplete('brain-fog-exercise', practiceData)}
+                className="w-full mt-6"
+                disabled={practiceData.postFogLevel === 0 || practiceData.effectiveness === 0}
+              >
+                Save Practice Results
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Energy Pattern Mapper Component
+function EnergyPatternMapper({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [energyLevels, setEnergyLevels] = useState({
+    morning: 0,
+    midday: 0,
+    afternoon: 0,
+    evening: 0
+  });
+  const [patterns, setPatterns] = useState('');
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="w-6 h-6 text-yellow-600" />
+          Personal Energy Pattern Discovery
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <p className="text-gray-600">Track your energy levels throughout the day:</p>
+          
+          {Object.entries(energyLevels).map(([time, level]) => (
+            <div key={time} className="space-y-2">
+              <label className="block text-sm font-medium capitalize">{time} Energy</label>
+              <div className="flex gap-2">
+                {[1,2,3,4,5,6,7,8,9,10].map(energyLevel => (
+                  <Button
+                    key={energyLevel}
+                    variant={level === energyLevel ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setEnergyLevels(prev => ({...prev, [time]: energyLevel}))}
+                    className="w-10 h-10 p-0"
+                  >
+                    {energyLevel}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Observed Patterns</label>
+            <Textarea
+              value={patterns}
+              onChange={(e) => setPatterns(e.target.value)}
+              placeholder="What patterns do you notice? When do you feel most/least energized?"
+            />
+          </div>
+
+          <Button 
+            onClick={() => onComplete('energy-mapping', {energyLevels, patterns})}
+            className="w-full"
+          >
+            Save Energy Pattern
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Thought Pattern Tracker Component
+function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [thoughts, setThoughts] = useState<{trigger: string, thought: string, reframe: string}[]>([]);
+  const [currentThought, setCurrentThought] = useState({trigger: '', thought: '', reframe: ''});
+
+  const addThought = () => {
+    if (currentThought.trigger && currentThought.thought) {
+      setThoughts([...thoughts, currentThought]);
+      setCurrentThought({trigger: '', thought: '', reframe: ''});
+    }
+  };
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-blue-600" />
+          Hormonal Thought Awareness Practice
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Trigger/Situation</label>
+              <Textarea
+                value={currentThought.trigger}
+                onChange={(e) => setCurrentThought(prev => ({...prev, trigger: e.target.value}))}
+                placeholder="What happened that triggered this thought?"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Negative Thought</label>
+              <Textarea
+                value={currentThought.thought}
+                onChange={(e) => setCurrentThought(prev => ({...prev, thought: e.target.value}))}
+                placeholder="What negative thought came up?"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Helpful Reframe</label>
+              <Textarea
+                value={currentThought.reframe}
+                onChange={(e) => setCurrentThought(prev => ({...prev, reframe: e.target.value}))}
+                placeholder="How can you reframe this more positively?"
+              />
+            </div>
+
+            <Button onClick={addThought} disabled={!currentThought.trigger || !currentThought.thought}>
+              Add Thought Pattern
+            </Button>
+          </div>
+
+          {thoughts.length > 0 && (
+            <div>
+              <h4 className="font-semibold mb-3">Tracked Patterns ({thoughts.length})</h4>
+              <div className="space-y-3">
+                {thoughts.map((thought, idx) => (
+                  <div key={idx} className="border rounded-lg p-3">
+                    <div className="text-sm">
+                      <strong>Trigger:</strong> {thought.trigger}
+                    </div>
+                    <div className="text-sm text-red-600">
+                      <strong>Thought:</strong> {thought.thought}
+                    </div>
+                    {thought.reframe && (
+                      <div className="text-sm text-green-600">
+                        <strong>Reframe:</strong> {thought.reframe}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Button 
+            onClick={() => onComplete('thought-awareness', {thoughts})}
+            className="w-full"
+            disabled={thoughts.length === 0}
+          >
+            Complete Thought Tracking
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Nutrition Planning Tool Component
+function NutritionPlanningTool({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
+  const [mealPlan, setMealPlan] = useState('');
+
+  const hormoneFoods = [
+    'Wild salmon', 'Avocados', 'Leafy greens', 'Berries', 'Nuts and seeds',
+    'Sweet potatoes', 'Cruciferous vegetables', 'Lean proteins', 'Whole grains',
+    'Greek yogurt', 'Green tea', 'Dark chocolate'
+  ];
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="w-6 h-6 text-green-600" />
+          Hormone-Supporting Meal Planning
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <p className="text-gray-600">Select hormone-supporting foods to include in your weekly plan:</p>
+          
+          <div className="grid md:grid-cols-2 gap-3">
+            {hormoneFoods.map(food => (
+              <div key={food} className="flex items-center gap-3 p-3 border rounded-lg">
+                <input
+                  type="checkbox"
+                  checked={selectedFoods.includes(food)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedFoods([...selectedFoods, food]);
+                    } else {
+                      setSelectedFoods(selectedFoods.filter(f => f !== food));
+                    }
+                  }}
+                  className="rounded"
+                />
+                <span>{food}</span>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Weekly Meal Ideas</label>
+            <Textarea
+              value={mealPlan}
+              onChange={(e) => setMealPlan(e.target.value)}
+              placeholder="Plan some specific meals using your selected foods..."
+              rows={5}
+            />
+          </div>
+
+          <Button 
+            onClick={() => onComplete('nutrition-planning', {selectedFoods, mealPlan})}
+            className="w-full"
+            disabled={selectedFoods.length === 0}
+          >
+            Save Nutrition Plan
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Evening Routine Creator Component
+function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [routineSteps, setRoutineSteps] = useState<string[]>([]);
+  const [customSteps, setCustomSteps] = useState('');
+
+  const routineOptions = [
+    'Dim lights 1 hour before bed',
+    'No screens 30 minutes before sleep',
+    'Gentle stretching or yoga',
+    'Gratitude journaling',
+    'Herbal tea (chamomile or passionflower)',
+    'Reading or meditation',
+    'Essential oils (lavender)',
+    'Progressive muscle relaxation'
+  ];
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Clock className="w-6 h-6 text-indigo-600" />
+          Evening Wind-Down Routine Creation
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <p className="text-gray-600">Design your progesterone-supporting evening ritual:</p>
+          
+          <div className="grid gap-3">
+            {routineOptions.map(option => (
+              <div key={option} className="flex items-center gap-3 p-3 border rounded-lg">
+                <input
+                  type="checkbox"
+                  checked={routineSteps.includes(option)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setRoutineSteps([...routineSteps, option]);
+                    } else {
+                      setRoutineSteps(routineSteps.filter(s => s !== option));
+                    }
+                  }}
+                  className="rounded"
+                />
+                <span>{option}</span>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Additional Custom Steps</label>
+            <Textarea
+              value={customSteps}
+              onChange={(e) => setCustomSteps(e.target.value)}
+              placeholder="Any other evening practices that help you wind down?"
+            />
+          </div>
+
+          <Button 
+            onClick={() => onComplete('evening-wind-down', {routineSteps, customSteps})}
+            className="w-full"
+            disabled={routineSteps.length === 0}
+          >
+            Create Evening Routine
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Understanding Your Hormonal Symphony Component
 function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const [currentSection, setCurrentSection] = useState('intro');
@@ -1280,6 +1881,35 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'mental-space-reset') {
     return <ResettingYourMentalSpace onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Add handlers for Week 1 interactive components
+  if (component.id === 'symptom-tracker') {
+    return <InteractiveSymptomTracker onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'morning-ritual') {
+    return <MorningRitualCreator onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'brain-fog-exercise') {
+    return <BrainFogClearingPractice onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'energy-mapping') {
+    return <EnergyPatternMapper onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'thought-awareness') {
+    return <ThoughtPatternTracker onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'nutrition-planning') {
+    return <NutritionPlanningTool onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'evening-wind-down') {
+    return <EveningRoutineCreator onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
