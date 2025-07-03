@@ -1965,6 +1965,7 @@ function ReverseEngineerMethod({ onComplete, onClose }: { onComplete: (id: strin
   const [milestones, setMilestones] = useState<Array<{ id: number; title: string; date: string; completed: boolean }>>([]);
   const [weeklyActions, setWeeklyActions] = useState<Array<{ id: number; week: string; actions: string[]; completed: boolean }>>([]);
   const [activePhase, setActivePhase] = useState('goal-selection');
+  const [newAction, setNewAction] = useState<{[key: number]: string}>({});
 
   const addMilestone = () => {
     const newMilestone = {
@@ -2022,7 +2023,6 @@ function ReverseEngineerMethod({ onComplete, onClose }: { onComplete: (id: strin
   };
 
   if (activePhase === 'weekly-planning') {
-    const [newAction, setNewAction] = useState<{[key: number]: string}>({});
 
     return (
       <Card className="max-w-5xl mx-auto">
