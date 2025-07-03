@@ -5282,6 +5282,455 @@ Key Takeaways:
     );
   }
 
+  // Week 1: Cortisol Reset Breathwork
+  if (component.id === 'breathwork') {
+    const [currentPhase, setCurrentPhase] = useState(responses.currentPhase || 'intro');
+    const [sessionTime, setSessionTime] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+    const [breathCount, setBreathCount] = useState(0);
+    const [currentCycle, setCurrentCycle] = useState(1);
+    const [breathingPattern, setBreathingPattern] = useState('4-7-8');
+    const [stressLevel, setStressLevel] = useState(responses.stressLevel || 5);
+    const [completedSessions, setCompletedSessions] = useState(responses.completedSessions || []);
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    // Timer for session tracking
+    useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isActive) {
+        interval = setInterval(() => {
+          setSessionTime(prev => prev + 1);
+          setBreathCount(prev => prev + 1);
+          
+          // Auto-advance cycles
+          if (breathingPattern === '4-7-8' && breathCount > 0 && breathCount % 19 === 0) {
+            setCurrentCycle(prev => prev + 1);
+          } else if (breathingPattern === 'box' && breathCount > 0 && breathCount % 16 === 0) {
+            setCurrentCycle(prev => prev + 1);
+          }
+        }, 1000);
+      }
+      return () => clearInterval(interval);
+    }, [isActive, breathCount, breathingPattern]);
+
+    const breathingPatterns = {
+      '4-7-8': {
+        name: '4-7-8 Technique',
+        description: 'Perfect for cortisol reduction and nervous system regulation',
+        inhale: 4,
+        hold: 7,
+        exhale: 8,
+        benefits: ['Reduces cortisol', 'Activates parasympathetic nervous system', 'Improves sleep quality'],
+        instructions: [
+          'Inhale quietly through your nose for 4 counts',
+          'Hold your breath for 7 counts',
+          'Exhale completely through your mouth for 8 counts',
+          'This completes one cycle'
+        ]
+      },
+      'box': {
+        name: 'Box Breathing',
+        description: 'Military-used technique for stress management and focus',
+        inhale: 4,
+        hold: 4,
+        exhale: 4,
+        pause: 4,
+        benefits: ['Balances nervous system', 'Improves focus', 'Reduces anxiety'],
+        instructions: [
+          'Inhale for 4 counts',
+          'Hold for 4 counts',
+          'Exhale for 4 counts',
+          'Pause for 4 counts'
+        ]
+      }
+    };
+
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const startBreathingSession = () => {
+      setCurrentPhase('breathing');
+      setIsActive(true);
+      setSessionTime(0);
+      setBreathCount(0);
+      setCurrentCycle(1);
+    };
+
+    const completeSession = () => {
+      const sessionData = {
+        date: new Date().toISOString(),
+        duration: sessionTime,
+        pattern: breathingPattern,
+        cycles: currentCycle,
+        preStressLevel: stressLevel,
+        postStressLevel: responses.postStressLevel || stressLevel - 1
+      };
+      
+      const updated = [...completedSessions, sessionData];
+      setCompletedSessions(updated);
+      updateResponses({ 
+        completedSessions: updated,
+        currentPhase: 'complete',
+        totalSessionTime: (responses.totalSessionTime || 0) + sessionTime
+      });
+      setIsActive(false);
+      setCurrentPhase('complete');
+    };
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-blue-600" />
+            Cortisol Reset Breathwork
+          </CardTitle>
+          <CardDescription>
+            8-minute breathing practice to lower stress hormones and regulate your nervous system
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {currentPhase === 'intro' && (
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Activity className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-blue-800 mb-2">Reset Your Stress Response</h3>
+                  <p className="text-blue-600 text-lg">
+                    Breathwork is one of the fastest ways to signal safety to your nervous system and reduce cortisol levels.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">How stressed do you feel right now?</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Calm</span>
+                      <span className="text-sm text-gray-600">Highly Stressed</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
+                        <Button
+                          key={level}
+                          variant={stressLevel === level ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => {
+                            setStressLevel(level);
+                            updateResponses({ stressLevel: level });
+                          }}
+                          className={`w-10 h-10 p-0 ${
+                            stressLevel === level 
+                              ? 'bg-blue-600 hover:bg-blue-700' 
+                              : 'border-gray-300 hover:border-blue-400'
+                          }`}
+                        >
+                          {level}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="text-center text-sm text-gray-600">
+                      Current level: {stressLevel}/10
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  {Object.entries(breathingPatterns).map(([key, pattern]) => (
+                    <Card 
+                      key={key} 
+                      className={`cursor-pointer transition-all border-2 ${
+                        breathingPattern === key 
+                          ? 'border-blue-500 bg-blue-50' 
+                          : 'border-gray-200 hover:border-blue-300'
+                      }`}
+                      onClick={() => setBreathingPattern(key)}
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-lg">{pattern.name}</CardTitle>
+                        <CardDescription>{pattern.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="text-sm text-gray-600">
+                            <strong>Pattern:</strong> {pattern.inhale}-{pattern.hold}-{pattern.exhale}{pattern.pause ? `-${pattern.pause}` : ''}
+                          </div>
+                          <div className="space-y-1">
+                            <div className="text-sm font-medium text-gray-700">Benefits:</div>
+                            <ul className="text-xs text-gray-600 space-y-1">
+                              {pattern.benefits.map((benefit, idx) => (
+                                <li key={idx}>• {benefit}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="text-center">
+                  <Button 
+                    onClick={() => setCurrentPhase('instructions')}
+                    className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
+                  >
+                    Continue to Instructions
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'instructions' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-blue-800 mb-4">
+                  {breathingPatterns[breathingPattern].name} Instructions
+                </h3>
+                
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <h4 className="font-semibold text-blue-700 mb-3">How to Practice:</h4>
+                    <ol className="space-y-2">
+                      {breathingPatterns[breathingPattern].instructions.map((instruction, idx) => (
+                        <li key={idx} className="flex gap-3">
+                          <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            {idx + 1}
+                          </span>
+                          <span className="text-blue-700">{instruction}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-blue-700 mb-3">Session Guidelines:</h4>
+                    <ul className="space-y-2 text-blue-700">
+                      <li>• Find a comfortable seated position</li>
+                      <li>• Keep your eyes closed or softly focused</li>
+                      <li>• Don't strain - breathe naturally within the counts</li>
+                      <li>• We'll complete 8-10 cycles (about 8 minutes)</li>
+                      <li>• You can pause anytime if you feel dizzy</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Why This Works</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Controlled breathing activates your parasympathetic nervous system, which tells your body it's safe to rest and repair. 
+                    This naturally lowers cortisol production and helps reset your stress response.
+                  </p>
+                </div>
+
+                <div className="flex justify-between">
+                  <Button 
+                    onClick={() => setCurrentPhase('intro')}
+                    variant="outline"
+                  >
+                    Back
+                  </Button>
+                  <Button 
+                    onClick={startBreathingSession}
+                    className="bg-blue-600 hover:bg-blue-700 px-8"
+                  >
+                    Start Breathing Session
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'breathing' && (
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8">
+                <div className="text-center mb-8">
+                  <h3 className="text-xl font-bold text-blue-800 mb-2">
+                    {breathingPatterns[breathingPattern].name}
+                  </h3>
+                  <div className="text-blue-600 mb-4">
+                    Session Time: {formatTime(sessionTime)} | Cycle: {currentCycle}/10
+                  </div>
+                </div>
+
+                <div className="flex justify-center mb-8">
+                  <div className="relative">
+                    <div className="w-32 h-32 border-4 border-blue-300 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center animate-pulse">
+                        <span className="text-white font-bold text-lg">
+                          {breathingPattern === '4-7-8' ? 
+                            (breathCount % 19 < 4 ? 'Inhale' :
+                             breathCount % 19 < 11 ? 'Hold' : 'Exhale') :
+                            (breathCount % 16 < 4 ? 'Inhale' :
+                             breathCount % 16 < 8 ? 'Hold' :
+                             breathCount % 16 < 12 ? 'Exhale' : 'Pause')
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center mb-8">
+                  <div className="text-4xl font-bold text-blue-700 mb-2">
+                    {breathingPattern === '4-7-8' ? 
+                      (breathCount % 19 < 4 ? `${(breathCount % 19) + 1}` :
+                       breathCount % 19 < 11 ? `${(breathCount % 19) - 3}` : 
+                       `${19 - (breathCount % 19)}`) :
+                      `${(breathCount % 16) % 4 + 1}`
+                    }
+                  </div>
+                  <div className="text-blue-600">
+                    {breathingPattern === '4-7-8' ? 
+                      (breathCount % 19 < 4 ? 'Inhale through nose' :
+                       breathCount % 19 < 11 ? 'Hold breath' : 
+                       'Exhale through mouth') :
+                      (breathCount % 16 < 4 ? 'Inhale' :
+                       breathCount % 16 < 8 ? 'Hold' :
+                       breathCount % 16 < 12 ? 'Exhale' : 'Pause')
+                    }
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <div className="flex justify-between text-sm text-blue-600 mb-2">
+                    <span>Cycle Progress</span>
+                    <span>{currentCycle}/10 cycles</span>
+                  </div>
+                  <Progress value={(currentCycle / 10) * 100} className="h-2" />
+                </div>
+
+                <div className="flex justify-center gap-4">
+                  <Button 
+                    onClick={() => setIsActive(!isActive)}
+                    variant="outline"
+                    className="px-8"
+                  >
+                    {isActive ? 'Pause' : 'Resume'}
+                  </Button>
+                  <Button 
+                    onClick={completeSession}
+                    className="bg-green-600 hover:bg-green-700 px-8"
+                  >
+                    Complete Session
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'complete' && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-green-800 mb-2">Session Complete!</h3>
+                  <p className="text-green-600">
+                    You've successfully completed {formatTime(sessionTime)} of cortisol-reset breathwork.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">How do you feel now?</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Much calmer</span>
+                      <span className="text-sm text-gray-600">Same/More stressed</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
+                        <Button
+                          key={level}
+                          variant={responses.postStressLevel === level ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => updateResponses({ postStressLevel: level })}
+                          className={`w-10 h-10 p-0 ${
+                            responses.postStressLevel === level 
+                              ? 'bg-green-600 hover:bg-green-700' 
+                              : 'border-gray-300 hover:border-green-400'
+                          }`}
+                        >
+                          {level}
+                        </Button>
+                      ))}
+                    </div>
+                    {responses.postStressLevel && (
+                      <div className="text-center text-sm text-gray-600">
+                        Stress reduction: {stressLevel - responses.postStressLevel} points
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{formatTime(sessionTime)}</div>
+                    <div className="text-sm text-gray-600">Session Duration</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{currentCycle}</div>
+                    <div className="text-sm text-gray-600">Breath Cycles</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{completedSessions.length}</div>
+                    <div className="text-sm text-gray-600">Total Sessions</div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <h5 className="font-semibold text-blue-800 mb-2">💡 Integration Tips</h5>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Practice this technique whenever you feel cortisol rising</li>
+                    <li>• Use it before stressful situations as prevention</li>
+                    <li>• Try 3 cycles before sleep to improve rest quality</li>
+                    <li>• Morning practice helps set a calm tone for the day</li>
+                  </ul>
+                </div>
+
+                <div className="flex justify-between">
+                  <Button 
+                    onClick={() => {
+                      setCurrentPhase('intro');
+                      setSessionTime(0);
+                      setCurrentCycle(1);
+                      setBreathCount(0);
+                    }}
+                    variant="outline"
+                  >
+                    Practice Again
+                  </Button>
+                  <Button 
+                    onClick={() => onComplete('breathwork', { 
+                      completedSessions,
+                      totalSessionTime: (responses.totalSessionTime || 0) + sessionTime,
+                      stressReduction: stressLevel - (responses.postStressLevel || stressLevel),
+                      preferredPattern: breathingPattern,
+                      completedAt: new Date().toISOString()
+                    })}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Complete Breathwork Session
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Week 1: Symptom Tracker
   if (component.id === 'symptom-tracker') {
     const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
