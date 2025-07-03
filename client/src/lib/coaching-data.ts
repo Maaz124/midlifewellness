@@ -11,7 +11,7 @@ export const coachingModules: CoachingModule[] = [
     locked: false,
     components: [
       {
-        id: 'hormone-video',
+        id: 'hormone-symphony',
         type: 'video',
         title: 'Understanding Your Hormonal Symphony',
         description: 'Complete 12-minute video script about hormones and brain changes',
@@ -19,7 +19,7 @@ export const coachingModules: CoachingModule[] = [
         completed: false
       },
       {
-        id: 'headspace-video',
+        id: 'mental-space-reset',
         type: 'video',
         title: 'Resetting Your Mental Space',
         description: '10-minute guided lesson on brain fog and mental clarity',
@@ -35,7 +35,7 @@ export const coachingModules: CoachingModule[] = [
         completed: false
       },
       {
-        id: 'breathwork',
+        id: 'cortisol-breathwork',
         type: 'audio',
         title: 'Cortisol Reset Breathwork',
         description: '8-minute breathing practice to lower stress hormones',
