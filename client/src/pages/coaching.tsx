@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-working';
+import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-fixed';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules } from '@/lib/coaching-data';
 import { 
