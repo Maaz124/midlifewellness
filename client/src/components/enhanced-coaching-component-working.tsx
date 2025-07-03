@@ -6404,365 +6404,216 @@ Key Takeaways:
 
   // Week 1: Headspace Video - Resetting Your Mental Space
   if (component.id === 'headspace-video') {
-    const [currentSection, setCurrentSection] = useState(responses.currentSection || 'intro');
-    const [mentalFogTracker, setMentalFogTracker] = useState(responses.mentalFogTracker || {
-      morningClarity: 5,
-      afternoonClarity: 5,
-      eveningClarity: 5,
-      triggers: [],
-      strategies: []
+    const [currentPhase, setCurrentPhase] = useState(responses.currentPhase || 'intro');
+    const [lessonProgress, setLessonProgress] = useState(responses.lessonProgress || 0);
+    const [clarityAssessment, setClarityAssessment] = useState(responses.clarityAssessment || {
+      preMentalClarity: 5,
+      postMentalClarity: 5,
+      fogSymptoms: [],
+      dailyTriggers: [],
+      preferredTechniques: []
     });
-    const [insights, setInsights] = useState(responses.insights || []);
+    const [practiceSession, setPracticeSession] = useState(responses.practiceSession || {
+      technique: '',
+      duration: 0,
+      effectiveness: 0,
+      notes: ''
+    });
+    const [completedTechniques, setCompletedTechniques] = useState(responses.completedTechniques || []);
 
     const updateResponses = (newData: any) => {
       setResponses((prev: any) => ({ ...prev, ...newData }));
     };
 
-    const videoSections = [
+    const lessonSections = [
       {
         id: 'intro',
-        title: 'Understanding Mental Fog',
-        content: "Mental fog isn't a sign of aging or decline - it's a temporary state caused by hormonal fluctuations. Your brain is literally changing its wiring patterns during perimenopause, which can affect processing speed, word recall, and concentration."
+        title: 'Understanding Brain Fog',
+        duration: '2 minutes',
+        content: `Welcome to your mental space reset session. Today we're going to demystify brain fog and give you practical tools to reclaim your mental clarity.
+
+Brain fog isn't a medical diagnosis - it's a collection of symptoms that make you feel mentally cloudy, unfocused, or "not quite yourself." During perimenopause, this is incredibly common and completely normal.`,
+        keyPoints: [
+          'Brain fog affects 60% of women during perimenopause',
+          'It\'s temporary and manageable with the right techniques',
+          'Your brain is adapting, not declining',
+          'Small changes can create significant improvements'
+        ]
       },
       {
         id: 'science',
-        title: 'The Science Behind Brain Changes',
-        content: "Estrogen acts as a neuroprotective hormone, supporting synaptic function and neuroplasticity. When levels fluctuate, your brain must adapt, temporarily affecting cognitive performance while it builds new neural pathways."
+        title: 'The Hormonal Brain Connection',
+        duration: '3 minutes',
+        content: `Let's understand what's happening in your brain during this transition.
+
+Estrogen is like fertilizer for your brain. It supports:
+• Memory formation and recall
+• Focus and concentration
+• Processing speed
+• Mood regulation
+
+When estrogen fluctuates during perimenopause, your brain has to work harder to maintain the same level of function. This extra effort can manifest as brain fog.`,
+        keyPoints: [
+          'Estrogen receptors are found throughout the brain',
+          'Fluctuating hormones affect neurotransmitter production',
+          'Your brain is building new neural pathways',
+          'This process takes energy, causing temporary fog'
+        ]
       },
       {
-        id: 'strategies',
-        title: 'Immediate Clarity Strategies',
-        content: "Learn evidence-based techniques to clear mental fog instantly: the 2-minute brain reset, strategic caffeine timing, optimal hydration protocols, and the power of single-tasking for cognitive restoration."
+        id: 'techniques',
+        title: 'Instant Clarity Techniques',
+        duration: '4 minutes',
+        content: `Here are four powerful techniques you can use immediately when brain fog strikes:
+
+1. THE 2-MINUTE BRAIN RESET
+   • Stand up and take 5 deep breaths
+   • Do 10 gentle neck rolls
+   • Drink a glass of water
+   • Set one clear intention
+
+2. SINGLE-TASK FOCUS
+   • Close all browser tabs except one
+   • Put phone in another room
+   • Set a timer for 25 minutes
+   • Focus on ONE task only
+
+3. STRATEGIC MOVEMENT
+   • 2-minute walk outdoors
+   • 10 jumping jacks
+   • Gentle stretching
+   • Improves blood flow to brain
+
+4. COGNITIVE ANCHORING
+   • Say your task out loud
+   • Write down next 3 steps
+   • Use visual reminders
+   • Engage multiple senses`,
+        keyPoints: [
+          'Movement increases brain blood flow',
+          'Single-tasking reduces cognitive load',
+          'Hydration directly affects brain function',
+          'External anchors support working memory'
+        ]
       },
       {
         id: 'practice',
-        title: 'Interactive Practice Session',
-        content: "Let's practice real-time fog-clearing techniques and track your clarity levels throughout different times of day."
+        title: 'Guided Practice Session',
+        duration: '1 minute',
+        content: `Now let's practice these techniques together and track your mental clarity improvements.`,
+        keyPoints: [
+          'Practice builds neural pathways',
+          'Tracking helps identify what works',
+          'Consistency creates lasting change',
+          'Small wins build confidence'
+        ]
       }
     ];
 
-    const fogTriggers = [
-      'Stress or overwhelm', 'Poor sleep', 'Multitasking', 'Blood sugar fluctuations',
-      'Dehydration', 'Information overload', 'Emotional upset', 'Physical fatigue',
-      'Hormonal fluctuations', 'Decision fatigue'
-    ];
-
-    const clarityStrategies = [
-      'Single-tasking focus', 'Strategic breaks', 'Deep breathing', 'Hydration reset',
-      'Movement breaks', 'Brain dump writing', 'Priority setting', 'Environment changes',
-      'Mindfulness practice', 'Energy snacks'
-    ];
-
-    if (currentSection === 'practice') {
-      return (
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-4">
-              <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Coaching
-              </Button>
-            </div>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-blue-600" />
-              Mental Clarity Practice Session
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-800 mb-4">Track Your Clarity Levels</h3>
-                
-                <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  <div>
-                    <Label>Morning Clarity (1-10): {mentalFogTracker.morningClarity}</Label>
-                    <Slider
-                      value={[mentalFogTracker.morningClarity]}
-                      onValueChange={([value]) => {
-                        const updated = { ...mentalFogTracker, morningClarity: value };
-                        setMentalFogTracker(updated);
-                        updateResponses({ mentalFogTracker: updated });
-                      }}
-                      max={10}
-                      step={1}
-                    />
-                  </div>
-                  <div>
-                    <Label>Afternoon Clarity (1-10): {mentalFogTracker.afternoonClarity}</Label>
-                    <Slider
-                      value={[mentalFogTracker.afternoonClarity]}
-                      onValueChange={([value]) => {
-                        const updated = { ...mentalFogTracker, afternoonClarity: value };
-                        setMentalFogTracker(updated);
-                        updateResponses({ mentalFogTracker: updated });
-                      }}
-                      max={10}
-                      step={1}
-                    />
-                  </div>
-                  <div>
-                    <Label>Evening Clarity (1-10): {mentalFogTracker.eveningClarity}</Label>
-                    <Slider
-                      value={[mentalFogTracker.eveningClarity]}
-                      onValueChange={([value]) => {
-                        const updated = { ...mentalFogTracker, eveningClarity: value };
-                        setMentalFogTracker(updated);
-                        updateResponses({ mentalFogTracker: updated });
-                      }}
-                      max={10}
-                      step={1}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold text-blue-800 mb-3">Your Fog Triggers</h4>
-                    <div className="space-y-2">
-                      {fogTriggers.map(trigger => (
-                        <div key={trigger} className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={mentalFogTracker.triggers.includes(trigger)}
-                            onChange={(e) => {
-                              const triggers = e.target.checked
-                                ? [...mentalFogTracker.triggers, trigger]
-                                : mentalFogTracker.triggers.filter(t => t !== trigger);
-                              const updated = { ...mentalFogTracker, triggers };
-                              setMentalFogTracker(updated);
-                              updateResponses({ mentalFogTracker: updated });
-                            }}
-                          />
-                          <span className="text-sm">{trigger}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-blue-800 mb-3">Effective Strategies</h4>
-                    <div className="space-y-2">
-                      {clarityStrategies.map(strategy => (
-                        <div key={strategy} className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={mentalFogTracker.strategies.includes(strategy)}
-                            onChange={(e) => {
-                              const strategies = e.target.checked
-                                ? [...mentalFogTracker.strategies, strategy]
-                                : mentalFogTracker.strategies.filter(s => s !== strategy);
-                              const updated = { ...mentalFogTracker, strategies };
-                              setMentalFogTracker(updated);
-                              updateResponses({ mentalFogTracker: updated });
-                            }}
-                          />
-                          <span className="text-sm">{strategy}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-between">
-                  <Button variant="outline" onClick={() => setCurrentSection('strategies')}>
-                    Back to Strategies
-                  </Button>
-                  <Button 
-                    onClick={() => onComplete('headspace-video', { 
-                      mentalFogTracker, 
-                      insights,
-                      averageClarity: (mentalFogTracker.morningClarity + mentalFogTracker.afternoonClarity + mentalFogTracker.eveningClarity) / 3,
-                      completedAt: new Date().toISOString()
-                    })}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    Complete Mental Space Reset
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-
-    const currentSectionData = videoSections.find(s => s.id === currentSection);
-    const sectionIndex = videoSections.findIndex(s => s.id === currentSection);
-
-    return (
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Coaching
-            </Button>
-          </div>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-blue-600" />
-            Resetting Your Mental Space
-          </CardTitle>
-          <Progress value={(sectionIndex + 1) / videoSections.length * 100} className="mt-4" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-blue-800 mb-4">{currentSectionData?.title}</h3>
-              <p className="text-blue-700 text-lg leading-relaxed mb-6">{currentSectionData?.content}</p>
-              
-              <div className="mt-6 flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    const prevIndex = Math.max(0, sectionIndex - 1);
-                    setCurrentSection(videoSections[prevIndex].id);
-                  }}
-                  disabled={sectionIndex === 0}
-                >
-                  Previous
-                </Button>
-                <Button 
-                  onClick={() => {
-                    if (sectionIndex < videoSections.length - 1) {
-                      const nextIndex = sectionIndex + 1;
-                      setCurrentSection(videoSections[nextIndex].id);
-                      updateResponses({ currentSection: videoSections[nextIndex].id });
-                    }
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {sectionIndex === videoSections.length - 1 ? 'Start Practice' : 'Next Section'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Week 1: Brain Fog Exercise - Mental Clarity Power Practice
-  if (component.id === 'brain-fog-exercise') {
-    const [exerciseStep, setExerciseStep] = useState(responses.exerciseStep || 'assessment');
-    const [fogAssessment, setFogAssessment] = useState(responses.fogAssessment || {
-      currentLevel: 5,
-      symptoms: [],
-      duration: '',
-      triggers: ''
-    });
-    const [techniques, setTechniques] = useState(responses.techniques || []);
-    const [practiceResults, setPracticeResults] = useState(responses.practiceResults || {});
-
-    const updateResponses = (newData: any) => {
-      setResponses((prev: any) => ({ ...prev, ...newData }));
-    };
-
     const fogSymptoms = [
-      'Difficulty finding words', 'Trouble concentrating', 'Memory lapses', 'Slower processing',
-      'Difficulty making decisions', 'Feeling mentally tired', 'Trouble multitasking', 'Losing train of thought'
+      { id: 'focus', name: 'Difficulty focusing', description: 'Hard to concentrate on tasks' },
+      { id: 'memory', name: 'Memory lapses', description: 'Forgetting words, names, or tasks' },
+      { id: 'processing', name: 'Slow processing', description: 'Taking longer to understand information' },
+      { id: 'multitask', name: 'Multitasking struggles', description: 'Overwhelming when juggling tasks' },
+      { id: 'decisions', name: 'Decision fatigue', description: 'Even simple choices feel difficult' },
+      { id: 'overwhelm', name: 'Mental overwhelm', description: 'Feeling mentally "full" or cloudy' }
     ];
 
     const clarityTechniques = [
       {
         id: 'brain-reset',
         name: '2-Minute Brain Reset',
-        description: 'Quick technique to clear mental fog instantly',
-        steps: ['Take 5 deep breaths', 'Splash cold water on wrists', 'Look at something 20 feet away for 20 seconds', 'Do 10 gentle neck rolls']
+        duration: 2,
+        description: 'Quick physical and mental reset',
+        steps: [
+          'Stand up and take 5 deep breaths',
+          'Do 10 gentle neck rolls each direction',
+          'Drink 8oz of water slowly',
+          'Set one clear intention for next task'
+        ]
       },
       {
-        id: 'cognitive-load',
-        name: 'Cognitive Load Reduction',
-        description: 'Simplify mental processing for clarity',
-        steps: ['Write down everything on your mind', 'Choose only 3 priorities', 'Close unnecessary browser tabs', 'Set phone to do not disturb']
+        id: 'single-task',
+        name: 'Single-Task Focus',
+        duration: 5,
+        description: 'Eliminate distractions for clear thinking',
+        steps: [
+          'Close all unnecessary apps/tabs',
+          'Put phone in another room',
+          'Write down your ONE focus task',
+          'Set timer for 25 minutes',
+          'Work on that task only'
+        ]
       },
       {
-        id: 'energy-boost',
-        name: 'Natural Energy Boost',
-        description: 'Increase alertness without caffeine',
-        steps: ['Drink 16oz of water', 'Do 20 jumping jacks', 'Eat a protein-rich snack', 'Step outside for fresh air']
+        id: 'movement-boost',
+        name: 'Movement Brain Boost',
+        duration: 3,
+        description: 'Physical movement to increase brain blood flow',
+        steps: [
+          'Step outside for 2 minutes if possible',
+          'Do 10-15 jumping jacks or march in place',
+          'Gentle neck and shoulder stretches',
+          'Take 3 deep breaths before returning to task'
+        ]
+      },
+      {
+        id: 'cognitive-anchor',
+        name: 'Cognitive Anchoring',
+        duration: 2,
+        description: 'External memory supports for foggy moments',
+        steps: [
+          'Say your task out loud',
+          'Write down the next 3 specific steps',
+          'Set visual reminders (sticky notes, alarms)',
+          'Use multiple senses (say, see, write)'
+        ]
       }
     ];
 
-    if (exerciseStep === 'practice') {
-      return (
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-4">
-              <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Coaching
-              </Button>
-            </div>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-purple-600" />
-              Clarity Techniques Practice
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {clarityTechniques.map((technique, index) => (
-                <Card key={technique.id} className="border-purple-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg text-purple-800">{technique.name}</CardTitle>
-                    <CardDescription>{technique.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <h4 className="font-semibold">Steps to follow:</h4>
-                      <ol className="space-y-2">
-                        {technique.steps.map((step, stepIndex) => (
-                          <li key={stepIndex} className="flex items-center gap-2">
-                            <Badge variant="outline">{stepIndex + 1}</Badge>
-                            <span>{step}</span>
-                          </li>
-                        ))}
-                      </ol>
-                      
-                      <div className="mt-4 p-4 bg-purple-50 rounded-lg">
-                        <Label>Rate effectiveness after trying (1-10):</Label>
-                        <Slider
-                          value={[practiceResults[technique.id] || 5]}
-                          onValueChange={([value]) => {
-                            const updated = { ...practiceResults, [technique.id]: value };
-                            setPracticeResults(updated);
-                            updateResponses({ practiceResults: updated });
-                          }}
-                          max={10}
-                          step={1}
-                        />
-                        <span className="text-sm text-purple-700">
-                          Level {practiceResults[technique.id] || 5} - {practiceResults[technique.id] >= 8 ? 'Very Effective' : practiceResults[technique.id] >= 6 ? 'Moderately Effective' : practiceResults[technique.id] >= 4 ? 'Somewhat Effective' : 'Not Very Effective'}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+    const getCurrentLesson = () => {
+      return lessonSections.find(section => section.id === currentPhase) || lessonSections[0];
+    };
 
-              <div className="flex justify-between mt-6">
-                <Button variant="outline" onClick={() => setExerciseStep('assessment')}>
-                  Back to Assessment
-                </Button>
-                <Button 
-                  onClick={() => onComplete('brain-fog-exercise', { 
-                    fogAssessment, 
-                    practiceResults,
-                    completedTechniques: Object.keys(practiceResults).length,
-                    averageEffectiveness: Object.values(practiceResults).length > 0 
-                      ? Object.values(practiceResults).reduce((sum: number, val: any) => sum + val, 0) / Object.values(practiceResults).length 
-                      : 0,
-                    completedAt: new Date().toISOString()
-                  })}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  Complete Clarity Practice
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
+    const getTechniqueById = (id: string) => {
+      return clarityTechniques.find(technique => technique.id === id);
+    };
+
+    const updateClarityAssessment = (field: string, value: any) => {
+      const updated = { ...clarityAssessment, [field]: value };
+      setClarityAssessment(updated);
+      updateResponses({ clarityAssessment: updated });
+    };
+
+    const startTechniquePractice = (techniqueId: string) => {
+      const technique = getTechniqueById(techniqueId);
+      if (technique) {
+        setPracticeSession({
+          technique: techniqueId,
+          duration: 0,
+          effectiveness: 0,
+          notes: ''
+        });
+        setCurrentPhase('technique-practice');
+      }
+    };
+
+    const completeTechnique = (effectiveness: number, notes: string) => {
+      const completed = {
+        id: practiceSession.technique,
+        completedAt: new Date().toISOString(),
+        effectiveness,
+        notes,
+        duration: practiceSession.duration
+      };
+      const updated = [...completedTechniques, completed];
+      setCompletedTechniques(updated);
+      updateResponses({ 
+        completedTechniques: updated,
+        practiceSession: { ...practiceSession, effectiveness, notes }
+      });
+      setCurrentPhase('practice-complete');
+    };
 
     return (
       <Card className="max-w-4xl mx-auto">
@@ -6775,552 +6626,397 @@ Key Takeaways:
           </div>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-purple-600" />
-            Mental Clarity Power Practice
+            Resetting Your Mental Space
           </CardTitle>
           <CardDescription>
-            Assess your current brain fog and learn techniques to restore mental clarity
+            10-minute guided lesson on brain fog and mental clarity
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-purple-800 mb-4">Current Brain Fog Assessment</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label>Current mental clarity level (1-10): {fogAssessment.currentLevel}</Label>
-                  <Slider
-                    value={[fogAssessment.currentLevel]}
-                    onValueChange={([value]) => {
-                      const updated = { ...fogAssessment, currentLevel: value };
-                      setFogAssessment(updated);
-                      updateResponses({ fogAssessment: updated });
-                    }}
-                    max={10}
-                    step={1}
-                  />
-                  <span className="text-sm text-purple-700">
-                    {fogAssessment.currentLevel >= 8 ? 'Very Clear' : fogAssessment.currentLevel >= 6 ? 'Moderately Clear' : fogAssessment.currentLevel >= 4 ? 'Somewhat Foggy' : 'Very Foggy'}
-                  </span>
-                </div>
-
-                <div>
-                  <Label>Which symptoms are you experiencing? (Select all that apply)</Label>
-                  <div className="grid md:grid-cols-2 gap-2 mt-2">
-                    {fogSymptoms.map(symptom => (
-                      <div key={symptom} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={fogAssessment.symptoms.includes(symptom)}
-                          onChange={(e) => {
-                            const symptoms = e.target.checked
-                              ? [...fogAssessment.symptoms, symptom]
-                              : fogAssessment.symptoms.filter(s => s !== symptom);
-                            const updated = { ...fogAssessment, symptoms };
-                            setFogAssessment(updated);
-                            updateResponses({ fogAssessment: updated });
-                          }}
-                        />
-                        <span className="text-sm">{symptom}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <Label>How long have you been experiencing this level of fog?</Label>
-                  <Input
-                    placeholder="e.g., A few hours, all day, several days..."
-                    value={fogAssessment.duration}
-                    onChange={(e) => {
-                      const updated = { ...fogAssessment, duration: e.target.value };
-                      setFogAssessment(updated);
-                      updateResponses({ fogAssessment: updated });
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <Label>What might have triggered this brain fog?</Label>
-                  <Textarea
-                    placeholder="Stress, poor sleep, busy schedule, emotional upset, physical fatigue..."
-                    value={fogAssessment.triggers}
-                    onChange={(e) => {
-                      const updated = { ...fogAssessment, triggers: e.target.value };
-                      setFogAssessment(updated);
-                      updateResponses({ fogAssessment: updated });
-                    }}
-                    rows={3}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-center">
-                <Button 
-                  onClick={() => {
-                    setExerciseStep('practice');
-                    updateResponses({ exerciseStep: 'practice' });
-                  }}
-                  disabled={fogAssessment.symptoms.length === 0}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  Practice Clarity Techniques
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Week 1: Thought Awareness Practice
-  if (component.id === 'thought-awareness') {
-    const [awarenessLog, setAwarenessLog] = useState(responses.awarenessLog || []);
-    const [currentThought, setCurrentThought] = useState('');
-    const [dailyPatterns, setDailyPatterns] = useState(responses.dailyPatterns || '');
-
-    const updateResponses = (newData: any) => {
-      setResponses((prev: any) => ({ ...prev, ...newData }));
-    };
-
-    const addThoughtEntry = () => {
-      if (currentThought.trim()) {
-        const entry = {
-          id: Date.now(),
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          thought: currentThought.trim(),
-          category: '',
-          emotional_tone: 'neutral'
-        };
-        const updated = [...awarenessLog, entry];
-        setAwarenessLog(updated);
-        updateResponses({ awarenessLog: updated });
-        setCurrentThought('');
-      }
-    };
-
-    const thoughtCategories = ['Self-doubt', 'Worry/Anxiety', 'Self-criticism', 'Future planning', 'Past events', 'Physical symptoms', 'Relationships', 'Work/Tasks', 'Positive/Gratitude', 'Other'];
-    const emotionalTones = ['negative', 'neutral', 'positive'];
-
-    const updateThoughtEntry = (id: number, field: string, value: string) => {
-      const updated = awarenessLog.map(entry => 
-        entry.id === id ? { ...entry, [field]: value } : entry
-      );
-      setAwarenessLog(updated);
-      updateResponses({ awarenessLog: updated });
-    };
-
-    return (
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Coaching
-            </Button>
-          </div>
-          <CardTitle className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-teal-600" />
-            Hormonal Thought Awareness Practice
-          </CardTitle>
-          <CardDescription>
-            Track your automatic thoughts throughout the day to build awareness of mental patterns
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-teal-800 mb-4">Capture Your Thoughts</h3>
-              
-              <div className="flex gap-2 mb-4">
-                <Input
-                  placeholder="What thought just went through your mind?"
-                  value={currentThought}
-                  onChange={(e) => setCurrentThought(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      addThoughtEntry();
-                    }
-                  }}
-                />
-                <Button onClick={addThoughtEntry} disabled={!currentThought.trim()}>
-                  Add
-                </Button>
-              </div>
-
-              <div className="space-y-3">
-                {awarenessLog.map((entry) => (
-                  <Card key={entry.id} className="border-teal-200">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Badge variant="secondary">{entry.time}</Badge>
-                          <div className="flex gap-2">
-                            <select
-                              value={entry.category}
-                              onChange={(e) => updateThoughtEntry(entry.id, 'category', e.target.value)}
-                              className="text-xs border rounded px-2 py-1"
-                            >
-                              <option value="">Category...</option>
-                              {thoughtCategories.map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
-                              ))}
-                            </select>
-                            <select
-                              value={entry.emotional_tone}
-                              onChange={(e) => updateThoughtEntry(entry.id, 'emotional_tone', e.target.value)}
-                              className="text-xs border rounded px-2 py-1"
-                            >
-                              {emotionalTones.map(tone => (
-                                <option key={tone} value={tone}>{tone}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <p className="text-gray-700">{entry.thought}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {awarenessLog.length === 0 && (
-                <div className="text-center py-8 text-teal-600">
-                  <p>Start capturing your thoughts as they arise throughout the day.</p>
-                  <p className="text-sm mt-2">Remember: observe without judgment</p>
-                </div>
-              )}
-            </div>
-
-            {awarenessLog.length > 0 && (
-              <Card className="border-green-200">
-                <CardHeader>
-                  <CardTitle className="text-green-800">Daily Reflection</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{awarenessLog.length}</div>
-                        <div>Thoughts Captured</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">
-                          {awarenessLog.filter(t => t.emotional_tone === 'positive').length}
-                        </div>
-                        <div>Positive Thoughts</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-red-600">
-                          {awarenessLog.filter(t => t.emotional_tone === 'negative').length}
-                        </div>
-                        <div>Negative Thoughts</div>
-                      </div>
+            {currentPhase === 'intro' || currentPhase === 'science' || currentPhase === 'techniques' ? (
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                      {lessonSections.findIndex(s => s.id === currentPhase) + 1}
                     </div>
-                    
                     <div>
-                      <Label>What patterns do you notice in your thoughts today?</Label>
-                      <Textarea
-                        placeholder="Common themes, emotional patterns, timing of certain thoughts..."
-                        value={dailyPatterns}
-                        onChange={(e) => {
-                          setDailyPatterns(e.target.value);
-                          updateResponses({ dailyPatterns: e.target.value });
-                        }}
-                        rows={4}
-                      />
-                    </div>
-
-                    <div className="flex justify-center pt-4">
-                      <Button 
-                        onClick={() => onComplete('thought-awareness', { 
-                          awarenessLog, 
-                          dailyPatterns,
-                          totalThoughts: awarenessLog.length,
-                          positiveRatio: awarenessLog.length > 0 ? awarenessLog.filter(t => t.emotional_tone === 'positive').length / awarenessLog.length : 0,
-                          completedAt: new Date().toISOString()
-                        })}
-                        disabled={awarenessLog.length === 0 || !dailyPatterns.trim()}
-                        className="bg-teal-600 hover:bg-teal-700"
-                        size="lg"
-                      >
-                        Complete Awareness Practice
-                      </Button>
+                      <h3 className="text-xl font-bold text-purple-800">{getCurrentLesson().title}</h3>
+                      <div className="text-sm text-purple-600">{getCurrentLesson().duration}</div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+                  <div className="text-sm text-purple-600">
+                    {lessonSections.findIndex(s => s.id === currentPhase) + 1} of {lessonSections.length - 1}
+                  </div>
+                </div>
 
-  // Week 2: NLP Reframing Practice
-  if (component.id === 'w2-nlp') {
-    const [selectedTechnique, setSelectedTechnique] = useState(responses.selectedTechnique || '');
-    const [practiceExercises, setPracticeExercises] = useState(responses.practiceExercises || []);
-    const [personalReframes, setPersonalReframes] = useState(responses.personalReframes || '');
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <div className="prose max-w-none">
+                    <div className="whitespace-pre-line text-gray-700 leading-relaxed mb-6">
+                      {getCurrentLesson().content}
+                    </div>
+                  </div>
 
-    const updateResponses = (newData: any) => {
-      setResponses((prev: any) => ({ ...prev, ...newData }));
-    };
+                  <div className="bg-purple-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-purple-800 mb-2">Key Takeaways:</h4>
+                    <ul className="space-y-1">
+                      {getCurrentLesson().keyPoints.map((point, idx) => (
+                        <li key={idx} className="text-purple-700 text-sm flex items-start gap-2">
+                          <span className="text-purple-600 mt-1">•</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
-    const nlpTechniques = [
-      {
-        id: 'anchoring',
-        name: 'Positive Anchoring',
-        description: 'Create a physical anchor to access confident, calm states instantly',
-        steps: ['Recall a time you felt completely confident and calm', 'Relive that moment fully - see, hear, feel everything', 'At the peak of that feeling, press thumb and forefinger together', 'Repeat 5 times to strengthen the anchor', 'Test by pressing the anchor and noticing the state change']
-      },
-      {
-        id: 'swish',
-        name: 'Swish Pattern',
-        description: 'Replace negative mental images with empowering ones',
-        steps: ['Identify the negative image that triggers unwanted feelings', 'Create a positive image of your desired state', 'Make the negative image big and bright in your mind', 'Put the positive image small in the corner', 'Quickly "swish" - make negative small/dark, positive big/bright', 'Repeat 5 times rapidly']
-      },
-      {
-        id: 'reframing',
-        name: 'Perspective Reframing',
-        description: 'Change the meaning of challenging situations',
-        steps: ['Identify a current challenge or worry', 'Ask: "What else could this mean?"', 'Find 3 alternative perspectives', 'Choose the most empowering perspective', 'Practice thinking from this new viewpoint']
-      }
-    ];
-
-    const addPracticeExercise = (technique: any) => {
-      const exercise = {
-        id: Date.now(),
-        technique: technique.name,
-        situation: '',
-        before_state: '',
-        after_state: '',
-        effectiveness: 5
-      };
-      const updated = [...practiceExercises, exercise];
-      setPracticeExercises(updated);
-      updateResponses({ practiceExercises: updated });
-    };
-
-    const updateExercise = (id: number, field: string, value: any) => {
-      const updated = practiceExercises.map(ex => 
-        ex.id === id ? { ...ex, [field]: value } : ex
-      );
-      setPracticeExercises(updated);
-      updateResponses({ practiceExercises: updated });
-    };
-
-    return (
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Coaching
-            </Button>
-          </div>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-violet-600" />
-            NLP Reframing Practice
-          </CardTitle>
-          <CardDescription>
-            Learn neuro-linguistic programming techniques to transform your mental state and perspective
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="bg-violet-50 border border-violet-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-violet-800 mb-4">Choose an NLP Technique to Practice</h3>
-              
-              <div className="grid gap-4">
-                {nlpTechniques.map(technique => (
-                  <Card 
-                    key={technique.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedTechnique === technique.id ? 'border-violet-500 bg-violet-100' : 'border-gray-200'
-                    }`}
+                <div className="flex justify-between">
+                  <Button 
                     onClick={() => {
-                      setSelectedTechnique(technique.id);
-                      updateResponses({ selectedTechnique: technique.id });
+                      const currentIndex = lessonSections.findIndex(s => s.id === currentPhase);
+                      if (currentIndex > 0) {
+                        setCurrentPhase(lessonSections[currentIndex - 1].id);
+                      }
                     }}
+                    variant="outline"
+                    disabled={currentPhase === 'intro'}
                   >
-                    <CardHeader>
-                      <CardTitle className="text-base">{technique.name}</CardTitle>
-                      <CardDescription>{technique.description}</CardDescription>
-                    </CardHeader>
-                    {selectedTechnique === technique.id && (
-                      <CardContent>
-                        <h4 className="font-semibold mb-2">Practice Steps:</h4>
-                        <ol className="space-y-2">
-                          {technique.steps.map((step, index) => (
-                            <li key={index} className="flex gap-2">
-                              <Badge variant="outline">{index + 1}</Badge>
-                              <span className="text-sm">{step}</span>
-                            </li>
-                          ))}
-                        </ol>
-                        
-                        <Button
-                          onClick={() => addPracticeExercise(technique)}
-                          className="mt-4 bg-violet-600 hover:bg-violet-700"
-                        >
-                          Practice This Technique
-                        </Button>
-                      </CardContent>
-                    )}
-                  </Card>
-                ))}
+                    Previous
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      const currentIndex = lessonSections.findIndex(s => s.id === currentPhase);
+                      if (currentIndex < lessonSections.length - 2) {
+                        setCurrentPhase(lessonSections[currentIndex + 1].id);
+                      } else {
+                        setCurrentPhase('assessment');
+                      }
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {currentPhase === 'techniques' ? 'Start Assessment' : 'Next Section'}
+                  </Button>
+                </div>
               </div>
-            </div>
+            ) : currentPhase === 'assessment' ? (
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-purple-800 mb-4">Your Mental Clarity Assessment</h3>
+                <p className="text-purple-600 mb-6">
+                  Let's assess your current mental state so we can track improvement after practicing the techniques.
+                </p>
 
-            {practiceExercises.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-violet-800">Practice Sessions</h3>
-                
-                {practiceExercises.map((exercise) => (
-                  <Card key={exercise.id} className="border-violet-200">
-                    <CardHeader>
-                      <CardTitle className="text-base">{exercise.technique}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div>
-                          <Label>Situation or challenge you applied this to:</Label>
-                          <Input
-                            placeholder="Describe the situation..."
-                            value={exercise.situation}
-                            onChange={(e) => updateExercise(exercise.id, 'situation', e.target.value)}
-                          />
-                        </div>
-                        
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <Label>How you felt before:</Label>
-                            <Input
-                              placeholder="Anxious, overwhelmed, frustrated..."
-                              value={exercise.before_state}
-                              onChange={(e) => updateExercise(exercise.id, 'before_state', e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <Label>How you felt after:</Label>
-                            <Input
-                              placeholder="Calm, confident, clear..."
-                              value={exercise.after_state}
-                              onChange={(e) => updateExercise(exercise.id, 'after_state', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <Label>Effectiveness (1-10): {exercise.effectiveness}</Label>
-                          <Slider
-                            value={[exercise.effectiveness]}
-                            onValueChange={([value]) => updateExercise(exercise.id, 'effectiveness', value)}
-                            max={10}
-                            step={1}
-                          />
-                        </div>
+                <div className="space-y-6">
+                  <div className="bg-white rounded-lg p-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4">How clear is your thinking right now?</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Very foggy</span>
+                        <span className="text-sm text-gray-600">Crystal clear</span>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
+                          <Button
+                            key={level}
+                            variant={clarityAssessment.preMentalClarity === level ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => updateClarityAssessment('preMentalClarity', level)}
+                            className={`w-10 h-10 p-0 ${
+                              clarityAssessment.preMentalClarity === level 
+                                ? 'bg-purple-600 hover:bg-purple-700' 
+                                : 'border-gray-300 hover:border-purple-400'
+                            }`}
+                          >
+                            {level}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="text-center text-sm text-gray-600">
+                        Current clarity: {clarityAssessment.preMentalClarity}/10
+                      </div>
+                    </div>
+                  </div>
 
-            <Card className="border-green-200">
-              <CardHeader>
-                <CardTitle className="text-green-800">Personal Integration</CardTitle>
-              </CardHeader>
-              <CardContent>
+                  <div className="bg-white rounded-lg p-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4">Which symptoms are you experiencing today?</h4>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {fogSymptoms.map(symptom => (
+                        <div
+                          key={symptom.id}
+                          onClick={() => {
+                            const isSelected = clarityAssessment.fogSymptoms.includes(symptom.id);
+                            const updated = isSelected
+                              ? clarityAssessment.fogSymptoms.filter(id => id !== symptom.id)
+                              : [...clarityAssessment.fogSymptoms, symptom.id];
+                            updateClarityAssessment('fogSymptoms', updated);
+                          }}
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            clarityAssessment.fogSymptoms.includes(symptom.id)
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="font-medium text-gray-800">{symptom.name}</div>
+                          <div className="text-sm text-gray-600">{symptom.description}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between mt-6">
+                  <Button 
+                    onClick={() => setCurrentPhase('techniques')}
+                    variant="outline"
+                  >
+                    Back to Lesson
+                  </Button>
+                  <Button 
+                    onClick={() => setCurrentPhase('practice')}
+                    disabled={clarityAssessment.fogSymptoms.length === 0}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    Choose Practice Technique
+                  </Button>
+                </div>
+              </div>
+            ) : currentPhase === 'practice' ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-blue-800 mb-4">Choose Your Clarity Technique</h3>
+                <p className="text-blue-600 mb-6">
+                  Based on your symptoms, here are techniques you can practice right now. Choose one that appeals to you most.
+                </p>
+
+                <div className="grid gap-4">
+                  {clarityTechniques.map(technique => (
+                    <Card 
+                      key={technique.id}
+                      className="cursor-pointer transition-all border-2 hover:border-blue-400"
+                      onClick={() => startTechniquePractice(technique.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">{technique.name}</CardTitle>
+                          <Badge variant="secondary">{technique.duration} min</Badge>
+                        </div>
+                        <CardDescription>{technique.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-700">Steps:</div>
+                          <ol className="text-sm text-gray-600 space-y-1">
+                            {technique.steps.map((step, idx) => (
+                              <li key={idx} className="flex gap-2">
+                                <span className="font-medium">{idx + 1}.</span>
+                                <span>{step}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="flex justify-between mt-6">
+                  <Button 
+                    onClick={() => setCurrentPhase('assessment')}
+                    variant="outline"
+                  >
+                    Back to Assessment
+                  </Button>
+                </div>
+              </div>
+            ) : currentPhase === 'technique-practice' ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-green-800 mb-4">
+                  Practice: {getTechniqueById(practiceSession.technique)?.name}
+                </h3>
+                
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <h4 className="font-semibold text-green-700 mb-3">Follow these steps:</h4>
+                  <ol className="space-y-3">
+                    {getTechniqueById(practiceSession.technique)?.steps.map((step, idx) => (
+                      <li key={idx} className="flex gap-3">
+                        <span className="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                          {idx + 1}
+                        </span>
+                        <span className="text-green-700">{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                    <span className="font-medium text-yellow-800">Practice Time</span>
+                  </div>
+                  <p className="text-yellow-700 text-sm">
+                    Take your time with each step. Focus on the process rather than rushing to complete it.
+                    Notice any changes in how you feel mentally.
+                  </p>
+                </div>
+
                 <div className="space-y-4">
                   <div>
-                    <Label>How will you use these NLP techniques in your daily life?</Label>
-                    <Textarea
-                      placeholder="When will you practice? Which situations will you apply them to? How will you remember to use them?"
-                      value={personalReframes}
-                      onChange={(e) => {
-                        setPersonalReframes(e.target.value);
-                        updateResponses({ personalReframes: e.target.value });
-                      }}
-                      rows={4}
-                    />
+                    <Label className="text-sm font-medium mb-2 block">How effective was this technique?</Label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
+                        <Button
+                          key={rating}
+                          variant={practiceSession.effectiveness === rating ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setPracticeSession(prev => ({ ...prev, effectiveness: rating }))}
+                          className={`w-10 h-10 p-0 ${
+                            practiceSession.effectiveness === rating 
+                              ? 'bg-green-600 hover:bg-green-700' 
+                              : 'border-gray-300 hover:border-green-400'
+                          }`}
+                        >
+                          {rating}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">1 = Not helpful, 10 = Very helpful</div>
                   </div>
 
-                  <div className="flex justify-center pt-4">
-                    <Button 
-                      onClick={() => onComplete('w2-nlp', { 
-                        selectedTechnique,
-                        practiceExercises, 
-                        personalReframes,
-                        techniquesUsed: practiceExercises.length,
-                        averageEffectiveness: practiceExercises.length > 0 
-                          ? practiceExercises.reduce((sum, ex) => sum + ex.effectiveness, 0) / practiceExercises.length 
-                          : 0,
-                        completedAt: new Date().toISOString()
-                      })}
-                      disabled={practiceExercises.length === 0 || !personalReframes.trim()}
-                      className="bg-violet-600 hover:bg-violet-700"
-                      size="lg"
-                    >
-                      Complete NLP Practice
-                    </Button>
+                  <div>
+                    <Label htmlFor="practice-notes" className="text-sm font-medium mb-2 block">
+                      Notes (optional)
+                    </Label>
+                    <textarea
+                      id="practice-notes"
+                      className="w-full p-3 border border-gray-300 rounded-lg text-sm"
+                      rows={3}
+                      placeholder="How did you feel? What did you notice? Any insights?"
+                      value={practiceSession.notes}
+                      onChange={(e) => setPracticeSession(prev => ({ ...prev, notes: e.target.value }))}
+                    />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="flex justify-between mt-6">
+                  <Button 
+                    onClick={() => setCurrentPhase('practice')}
+                    variant="outline"
+                  >
+                    Choose Different Technique
+                  </Button>
+                  <Button 
+                    onClick={() => completeTechnique(practiceSession.effectiveness, practiceSession.notes)}
+                    disabled={practiceSession.effectiveness === 0}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Complete Practice
+                  </Button>
+                </div>
+              </div>
+            ) : currentPhase === 'practice-complete' ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-green-800 mb-2">Practice Complete!</h3>
+                  <p className="text-green-600">
+                    You've completed the {getTechniqueById(practiceSession.technique)?.name} technique.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">How clear is your thinking now?</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Much clearer</span>
+                      <span className="text-sm text-gray-600">Same/Worse</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
+                        <Button
+                          key={level}
+                          variant={clarityAssessment.postMentalClarity === level ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => updateClarityAssessment('postMentalClarity', level)}
+                          className={`w-10 h-10 p-0 ${
+                            clarityAssessment.postMentalClarity === level 
+                              ? 'bg-green-600 hover:bg-green-700' 
+                              : 'border-gray-300 hover:border-green-400'
+                          }`}
+                        >
+                          {level}
+                        </Button>
+                      ))}
+                    </div>
+                    {clarityAssessment.postMentalClarity > 0 && (
+                      <div className="text-center text-sm text-gray-600">
+                        Clarity improvement: {clarityAssessment.postMentalClarity - clarityAssessment.preMentalClarity} points
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{practiceSession.effectiveness}/10</div>
+                    <div className="text-sm text-gray-600">Technique Effectiveness</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{completedTechniques.length}</div>
+                    <div className="text-sm text-gray-600">Techniques Practiced</div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <h5 className="font-semibold text-blue-800 mb-2">💡 Integration Tips</h5>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Use this technique whenever you notice brain fog starting</li>
+                    <li>• Practice during your typical "fog times" of day</li>
+                    <li>• Keep a note on your phone with the steps</li>
+                    <li>• Stack with other healthy habits (after coffee, before meetings)</li>
+                  </ul>
+                </div>
+
+                <div className="flex justify-between">
+                  <Button 
+                    onClick={() => {
+                      setCurrentPhase('practice');
+                      setPracticeSession({ technique: '', duration: 0, effectiveness: 0, notes: '' });
+                    }}
+                    variant="outline"
+                  >
+                    Try Another Technique
+                  </Button>
+                  <Button 
+                    onClick={() => onComplete('headspace-video', { 
+                      clarityAssessment,
+                      completedTechniques,
+                      practiceSession,
+                      completedAt: new Date().toISOString()
+                    })}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Complete Mental Space Reset
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
     );
-  }
-
-  // Week 5: Enhanced Cognitive Clarity Assessment - Using Fresh Component
-  if (component.id === 'w5-assessment') {
-    console.log('Loading Fresh Cognitive Assessment Component');
-    return <CognitiveAssessmentFresh onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 5: Interactive Focus & Memory Rituals
-  if (component.id === 'w5-rituals') {
-    return <InteractiveFocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 5: Brain-Boosting Nutrition Plan
-  if (component.id === 'w5-nutrition') {
-    return <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 5: Mind Management System
-  if (component.id === 'w5-mind-management') {
-    return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 6: Digital Vision Board
-  if (component.id === 'w6-vision') {
-    return <DigitalVisionBoard onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 6: SMART Goal Setting
-  if (component.id === 'w6-goals') {
-    return <SmartGoalSetting onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 6: Reverse Engineer Method
-  if (component.id === 'w6-reverse') {
-    return <ReverseEngineerMethod onComplete={onComplete} onClose={onClose} />;
-  }
-
-  // Week 6: Habit Loop Creator
-  if (component.id === 'w6-habits') {
-    return <HabitLoopCreator onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
         <CardTitle className="flex items-center gap-2">
           {component.title}
         </CardTitle>
@@ -7341,4 +7037,4 @@ Key Takeaways:
     </Card>
   );
 }
-
+                
