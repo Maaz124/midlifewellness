@@ -4543,6 +4543,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       return (
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Coaching
+              </Button>
+            </div>
             <CardTitle className="flex items-center gap-2">
               <Brain className="w-5 h-5 text-indigo-600" />
               CBT Practice Session
@@ -4647,6 +4653,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-indigo-600" />
             CBT Reframing Techniques
@@ -4728,6 +4740,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-6xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-purple-600" />
             Daily Thought Audit Tracker
@@ -4897,6 +4915,331 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                 </CardContent>
               </Card>
             )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 1: Understanding Your Hormonal Symphony
+  if (component.id === 'hormone-video') {
+    const [currentSection, setCurrentSection] = useState(responses.currentSection || 'intro');
+    const [hormoneKnowledge, setHormoneKnowledge] = useState(responses.hormoneKnowledge || {
+      currentSymptoms: [],
+      severityRatings: {},
+      lifestageAwareness: '',
+      keyInsights: []
+    });
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const videoSections = [
+      {
+        id: 'intro',
+        title: 'Your Hormonal Symphony Introduction',
+        content: 'Welcome to understanding your unique hormonal journey. Perimenopause is not just about hot flashes - it\'s a complete transformation affecting your brain, emotions, and energy levels.',
+        duration: 2
+      },
+      {
+        id: 'brain-changes',
+        title: 'How Hormones Reshape Your Brain',
+        content: 'Estrogen acts like fertilizer for your brain. As levels fluctuate during perimenopause, you may experience memory changes, mood shifts, and processing differences. This is neuroplasticity in action - your brain is literally rewiring itself.',
+        duration: 3
+      },
+      {
+        id: 'symptoms-map',
+        title: 'Mapping Your Symptom Landscape',
+        content: 'Every woman\'s hormonal journey is unique. Understanding your specific pattern of symptoms helps you work WITH your body rather than against it. Let\'s identify your current experience.',
+        duration: 2
+      },
+      {
+        id: 'optimization',
+        title: 'Brain Optimization Strategies',
+        content: 'Your changing brain is incredibly adaptable. Through targeted nutrition, movement, stress management, and cognitive practices, you can enhance your mental clarity and emotional resilience.',
+        duration: 3
+      },
+      {
+        id: 'integration',
+        title: 'Integrating Your New Understanding',
+        content: 'Knowledge becomes power when applied. Let\'s create your personalized plan for working harmoniously with your changing hormones to optimize your brain function.',
+        duration: 2
+      }
+    ];
+
+    const perimenopauseSymptoms = [
+      'Brain fog', 'Memory issues', 'Difficulty concentrating', 'Mood swings', 'Anxiety', 'Depression',
+      'Hot flashes', 'Night sweats', 'Sleep disruption', 'Irregular periods', 'Low libido', 'Weight gain',
+      'Joint aches', 'Fatigue', 'Irritability', 'Emotional sensitivity'
+    ];
+
+    const symptomSeverity = ['Mild', 'Moderate', 'Significant', 'Severe'];
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
+          <CardTitle className="flex items-center gap-2">
+            <Heart className="w-5 h-5 text-pink-600" />
+            Understanding Your Hormonal Symphony
+          </CardTitle>
+          <Progress value={(videoSections.findIndex(s => s.id === currentSection) + 1) / videoSections.length * 100} className="mt-4" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {currentSection === 'symptoms-map' ? (
+              <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-pink-800 mb-4">Your Personal Symptom Assessment</h3>
+                
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Select symptoms you're currently experiencing:</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {perimenopauseSymptoms.map(symptom => (
+                        <div key={symptom} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={symptom}
+                            checked={hormoneKnowledge.currentSymptoms.includes(symptom)}
+                            onChange={(e) => {
+                              const newSymptoms = e.target.checked
+                                ? [...hormoneKnowledge.currentSymptoms, symptom]
+                                : hormoneKnowledge.currentSymptoms.filter(s => s !== symptom);
+                              const updated = { ...hormoneKnowledge, currentSymptoms: newSymptoms };
+                              setHormoneKnowledge(updated);
+                              updateResponses({ hormoneKnowledge: updated });
+                            }}
+                            className="rounded border-pink-300 text-pink-600 focus:ring-pink-500"
+                          />
+                          <Label htmlFor={symptom} className="text-sm text-pink-700">{symptom}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {hormoneKnowledge.currentSymptoms.length > 0 && (
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">Rate the severity of your top symptoms:</Label>
+                      <div className="space-y-3">
+                        {hormoneKnowledge.currentSymptoms.slice(0, 5).map(symptom => (
+                          <div key={symptom} className="flex items-center justify-between">
+                            <span className="text-sm text-pink-700">{symptom}</span>
+                            <div className="flex gap-2">
+                              {symptomSeverity.map(severity => (
+                                <Button
+                                  key={severity}
+                                  variant={hormoneKnowledge.severityRatings[symptom] === severity ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => {
+                                    const updated = { 
+                                      ...hormoneKnowledge, 
+                                      severityRatings: { ...hormoneKnowledge.severityRatings, [symptom]: severity }
+                                    };
+                                    setHormoneKnowledge(updated);
+                                    updateResponses({ hormoneKnowledge: updated });
+                                  }}
+                                  className="text-xs"
+                                >
+                                  {severity}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-6 flex justify-between">
+                  <Button 
+                    onClick={() => setCurrentSection('brain-changes')}
+                    variant="outline"
+                  >
+                    Previous
+                  </Button>
+                  <Button 
+                    onClick={() => setCurrentSection('optimization')}
+                    disabled={hormoneKnowledge.currentSymptoms.length === 0}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <div className="w-12 h-12 bg-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Play className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-pink-800 mb-4">
+                    {videoSections.find(s => s.id === currentSection)?.title}
+                  </h3>
+                  <p className="text-pink-700 text-lg leading-relaxed mb-6">
+                    {videoSections.find(s => s.id === currentSection)?.content}
+                  </p>
+                  <div className="text-sm text-pink-600 mb-6">
+                    Duration: {videoSections.find(s => s.id === currentSection)?.duration} minutes
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-between">
+                  <Button 
+                    onClick={() => {
+                      const currentIndex = videoSections.findIndex(s => s.id === currentSection);
+                      if (currentIndex > 0) {
+                        setCurrentSection(videoSections[currentIndex - 1].id);
+                      }
+                    }}
+                    variant="outline"
+                    disabled={videoSections.findIndex(s => s.id === currentSection) === 0}
+                  >
+                    Previous
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      const currentIndex = videoSections.findIndex(s => s.id === currentSection);
+                      if (currentIndex < videoSections.length - 1) {
+                        setCurrentSection(videoSections[currentIndex + 1].id);
+                      } else {
+                        onComplete('hormone-video', { 
+                          hormoneKnowledge,
+                          completedSections: videoSections.map(s => s.id),
+                          completedAt: new Date().toISOString()
+                        });
+                      }
+                    }}
+                  >
+                    {videoSections.findIndex(s => s.id === currentSection) === videoSections.length - 1 ? 'Complete' : 'Next'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Week 1: Symptom Tracker
+  if (component.id === 'symptom-tracker') {
+    const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
+    const [dailyTracking, setDailyTracking] = useState(responses.dailyTracking || {});
+    const [weeklyInsights, setWeeklyInsights] = useState(responses.weeklyInsights || '');
+
+    const updateResponses = (newData: any) => {
+      setResponses((prev: any) => ({ ...prev, ...newData }));
+    };
+
+    const trackingCategories = [
+      { id: 'energy', name: 'Energy Level', icon: '⚡', scale: 'Low to High' },
+      { id: 'mood', name: 'Mood Stability', icon: '😊', scale: 'Unstable to Stable' },
+      { id: 'sleep', name: 'Sleep Quality', icon: '😴', scale: 'Poor to Excellent' },
+      { id: 'focus', name: 'Mental Clarity', icon: '🧠', scale: 'Foggy to Clear' },
+      { id: 'hot-flashes', name: 'Hot Flash Intensity', icon: '🔥', scale: 'None to Severe' },
+      { id: 'anxiety', name: 'Anxiety Level', icon: '😰', scale: 'Calm to High' }
+    ];
+
+    const getCurrentTracking = () => {
+      return dailyTracking[currentDate] || {};
+    };
+
+    const updateDailyValue = (category: string, value: number) => {
+      const updated = {
+        ...dailyTracking,
+        [currentDate]: {
+          ...getCurrentTracking(),
+          [category]: value
+        }
+      };
+      setDailyTracking(updated);
+      updateResponses({ dailyTracking: updated });
+    };
+
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart className="w-5 h-5 text-blue-600" />
+            Daily Hormone Harmony Tracker
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-blue-800">Track Today's Symptoms</h3>
+                <input
+                  type="date"
+                  value={currentDate}
+                  onChange={(e) => setCurrentDate(e.target.value)}
+                  className="border border-blue-300 rounded px-3 py-1 text-sm"
+                />
+              </div>
+
+              <div className="grid gap-6">
+                {trackingCategories.map(category => (
+                  <div key={category.id} className="space-y-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">{category.icon}</span>
+                      <Label className="font-medium text-blue-800">{category.name}</Label>
+                      <span className="text-xs text-blue-600">({category.scale})</span>
+                      <span className="ml-auto font-semibold text-blue-700">
+                        {getCurrentTracking()[category.id] || 5}/10
+                      </span>
+                    </div>
+                    <Slider
+                      value={[getCurrentTracking()[category.id] || 5]}
+                      onValueChange={([value]) => updateDailyValue(category.id, value)}
+                      max={10}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-green-800 mb-4">Weekly Patterns & Insights</h3>
+              <textarea
+                placeholder="What patterns are you noticing? How do you feel overall this week?"
+                value={weeklyInsights}
+                onChange={(e) => {
+                  setWeeklyInsights(e.target.value);
+                  updateResponses({ weeklyInsights: e.target.value });
+                }}
+                className="w-full h-24 p-3 border border-green-300 rounded-lg resize-none"
+              />
+            </div>
+
+            <div className="flex justify-center">
+              <Button 
+                onClick={() => onComplete('symptom-tracker', { 
+                  dailyTracking,
+                  weeklyInsights,
+                  totalDaysTracked: Object.keys(dailyTracking).length,
+                  completedAt: new Date().toISOString()
+                })}
+                disabled={Object.keys(getCurrentTracking()).length === 0}
+                className="bg-blue-600 hover:bg-blue-700"
+                size="lg"
+              >
+                Save Tracking Data
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -5325,6 +5668,12 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Coaching
+            </Button>
+          </div>
           <CardTitle className="flex items-center gap-2">
             <Heart className="w-5 h-5 text-pink-600" />
             Mirror Work & Self-Compassion Affirmations
