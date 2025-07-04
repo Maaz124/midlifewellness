@@ -6446,27 +6446,1141 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
 }
 
 // Main Enhanced Coaching Component
-// Breathwork & Vagus Nerve Reset Component (Stub)
+// Breathwork & Vagus Nerve Reset Component
 function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isBreathingActive, setIsBreathingActive] = useState(false);
+  const [breathingTimer, setBreathingTimer] = useState(0);
+  const [currentBreathPhase, setCurrentBreathPhase] = useState('inhale');
+  const [breathingData, setBreathingData] = useState({
+    vagusNerveAssessment: {
+      currentStress: 5,
+      breathingQuality: 5,
+      vagusSymptoms: [] as string[],
+      heartRateVariability: 5,
+      recoveryGoals: ''
+    },
+    techniqueProgress: {} as Record<string, {
+      practiced: boolean;
+      effectiveness: number;
+      duration: number;
+      experience: string;
+      physiologicalResponse: string;
+      confidence: number;
+    }>,
+    personalProtocol: {
+      dailyBreathwork: [] as string[],
+      stressInterventions: [] as string[],
+      vagusActivation: [] as string[],
+      practiceSchedule: '',
+      emergencyProtocol: '',
+      progressTracking: ''
+    }
+  });
+
+  const steps = [
+    'Vagus Nerve Assessment',
+    'Box Breathing Mastery',
+    'Heart Rate Variability',
+    'Cold Exposure Breathing',
+    'Humming & Toning Techniques',
+    'Personal Breathwork Protocol'
+  ];
+
+  const vagusSymptoms = [
+    'Difficulty recovering from stress', 'Poor digestion', 'Irregular heart rate', 
+    'Shallow breathing', 'Tension in neck/shoulders', 'Difficulty sleeping',
+    'Emotional volatility', 'Brain fog', 'Chronic fatigue', 'Anxiety',
+    'Inflammation issues', 'Poor stress resilience'
+  ];
+
+  const breathingTechniques = [
+    {
+      id: 'box-breathing',
+      name: 'Box Breathing (4-4-4-4)',
+      description: 'Military-grade technique for instant calm and focus',
+      pattern: 'Inhale 4 → Hold 4 → Exhale 4 → Hold 4',
+      benefits: 'Activates parasympathetic nervous system, reduces cortisol',
+      duration: '5-10 minutes'
+    },
+    {
+      id: 'coherent-breathing',
+      name: 'Heart Coherence Breathing',
+      description: 'Optimize heart rate variability for emotional regulation',
+      pattern: 'Inhale 5 → Exhale 5 (with heart focus)',
+      benefits: 'Balances autonomic nervous system, improves HRV',
+      duration: '10-15 minutes'
+    },
+    {
+      id: 'cold-exposure',
+      name: 'Cold Exposure Breathing',
+      description: 'Wim Hof inspired technique for stress resilience',
+      pattern: '30 power breaths → Hold → Cold exposure',
+      benefits: 'Builds stress tolerance, activates brown fat',
+      duration: '15-20 minutes'
+    },
+    {
+      id: 'humming-toning',
+      name: 'Humming & Vagal Toning',
+      description: 'Vibrational therapy for vagus nerve stimulation',
+      pattern: 'Inhale → Long humming exhale (Om, Ahh, Mmm)',
+      benefits: 'Direct vagus nerve stimulation, reduces inflammation',
+      duration: '5-10 minutes'
+    }
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isBreathingActive) {
+      interval = setInterval(() => {
+        setBreathingTimer(prev => {
+          const newTime = prev + 1;
+          const cycle = Math.floor(newTime / 16); // 16 seconds per cycle
+          const phase = newTime % 16;
+          
+          if (phase <= 4) setCurrentBreathPhase('inhale');
+          else if (phase <= 8) setCurrentBreathPhase('hold');
+          else if (phase <= 12) setCurrentBreathPhase('exhale');
+          else setCurrentBreathPhase('hold');
+          
+          return newTime;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isBreathingActive]);
+
+  const renderAssessmentStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Understanding Your Vagus Nerve</h4>
+        <p className="text-sm text-blue-800">
+          Your vagus nerve is the longest cranial nerve, connecting your brain to major organs. 
+          It's your body's "reset button" - when activated, it triggers the rest-and-digest response, 
+          reducing stress hormones and promoting healing.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-3">Current stress level (1-10)</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Calm</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={breathingData.vagusNerveAssessment.currentStress}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  vagusNerveAssessment: { 
+                    ...prev.vagusNerveAssessment, 
+                    currentStress: parseInt(e.target.value) 
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Stressed</span>
+              <span className="w-8 text-center font-medium bg-blue-100 rounded px-2 py-1">
+                {breathingData.vagusNerveAssessment.currentStress}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-3">Breathing quality (1-10)</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Shallow</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={breathingData.vagusNerveAssessment.breathingQuality}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  vagusNerveAssessment: { 
+                    ...prev.vagusNerveAssessment, 
+                    breathingQuality: parseInt(e.target.value) 
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Deep</span>
+              <span className="w-8 text-center font-medium bg-blue-100 rounded px-2 py-1">
+                {breathingData.vagusNerveAssessment.breathingQuality}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-3">Stress recovery ability (1-10)</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Poor</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={breathingData.vagusNerveAssessment.heartRateVariability}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  vagusNerveAssessment: { 
+                    ...prev.vagusNerveAssessment, 
+                    heartRateVariability: parseInt(e.target.value) 
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Excellent</span>
+              <span className="w-8 text-center font-medium bg-blue-100 rounded px-2 py-1">
+                {breathingData.vagusNerveAssessment.heartRateVariability}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Vagus nerve dysfunction signs:</h5>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {vagusSymptoms.map((symptom) => (
+              <label key={symptom} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={breathingData.vagusNerveAssessment.vagusSymptoms.includes(symptom)}
+                  onChange={(e) => {
+                    const current = breathingData.vagusNerveAssessment.vagusSymptoms;
+                    setBreathingData(prev => ({
+                      ...prev,
+                      vagusNerveAssessment: {
+                        ...prev.vagusNerveAssessment,
+                        vagusSymptoms: e.target.checked 
+                          ? [...current, symptom]
+                          : current.filter(s => s !== symptom)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{symptom}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Your breathwork and stress recovery goals:</label>
+        <Textarea
+          value={breathingData.vagusNerveAssessment.recoveryGoals}
+          onChange={(e) => setBreathingData(prev => ({
+            ...prev,
+            vagusNerveAssessment: { 
+              ...prev.vagusNerveAssessment, 
+              recoveryGoals: e.target.value 
+            }
+          }))}
+          placeholder="e.g., Recover faster from stressful meetings, improve sleep quality, reduce anxiety during family conflicts, build resilience for daily challenges..."
+          rows={3}
+        />
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Your Vagus Nerve Health Score</h5>
+        <div className="flex items-center gap-4">
+          <div className="flex-1 bg-blue-200 rounded-full h-3">
+            <div 
+              className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+              style={{ 
+                width: `${(
+                  (breathingData.vagusNerveAssessment.breathingQuality + 
+                   breathingData.vagusNerveAssessment.heartRateVariability + 
+                   (10 - breathingData.vagusNerveAssessment.currentStress) + 
+                   (12 - breathingData.vagusNerveAssessment.vagusSymptoms.length)) / 35
+                ) * 100}%` 
+              }}
+            />
+          </div>
+          <span className="text-sm font-medium">
+            {Math.round((
+              (breathingData.vagusNerveAssessment.breathingQuality + 
+               breathingData.vagusNerveAssessment.heartRateVariability + 
+               (10 - breathingData.vagusNerveAssessment.currentStress) + 
+               (12 - breathingData.vagusNerveAssessment.vagusSymptoms.length)) / 35
+            ) * 100)}%
+          </span>
+        </div>
+        <p className="text-sm text-blue-800 mt-2">
+          {Math.round((
+            (breathingData.vagusNerveAssessment.breathingQuality + 
+             breathingData.vagusNerveAssessment.heartRateVariability + 
+             (10 - breathingData.vagusNerveAssessment.currentStress) + 
+             (12 - breathingData.vagusNerveAssessment.vagusSymptoms.length)) / 35
+          ) * 100) >= 70 ? "Excellent vagus nerve health!" : 
+          Math.round((
+            (breathingData.vagusNerveAssessment.breathingQuality + 
+             breathingData.vagusNerveAssessment.heartRateVariability + 
+             (10 - breathingData.vagusNerveAssessment.currentStress) + 
+             (12 - breathingData.vagusNerveAssessment.vagusSymptoms.length)) / 35
+          ) * 100) >= 50 ? "Good foundation - room for improvement" : "Significant opportunity for vagus nerve strengthening"}
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderBoxBreathingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Box Breathing Mastery</h4>
+        <p className="text-sm text-green-800">
+          Box breathing (4-4-4-4) is used by Navy SEALs, elite athletes, and emergency responders. 
+          It instantly activates your parasympathetic nervous system, reducing cortisol and promoting clarity.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="bg-white border-2 border-green-200 rounded-lg p-6">
+            <h5 className="font-semibold text-lg mb-4">Interactive Box Breathing Guide</h5>
+            
+            <div className="relative w-48 h-48 mx-auto mb-6">
+              <div className="absolute inset-0 border-4 border-green-300 rounded-lg"></div>
+              <div 
+                className={`absolute w-4 h-4 bg-green-600 rounded-full transition-all duration-1000 ${
+                  currentBreathPhase === 'inhale' ? 'top-0 left-0' :
+                  currentBreathPhase === 'hold' && Math.floor(breathingTimer / 4) % 4 === 1 ? 'top-0 right-0' :
+                  currentBreathPhase === 'exhale' ? 'bottom-0 right-0' : 'bottom-0 left-0'
+                }`}
+              ></div>
+              
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-700 capitalize">{currentBreathPhase}</div>
+                  <div className="text-sm text-green-600">
+                    {currentBreathPhase === 'inhale' ? 'Breathe in slowly' :
+                     currentBreathPhase === 'exhale' ? 'Breathe out slowly' : 'Hold your breath'}
+                  </div>
+                  <div className="text-lg font-mono text-green-800 mt-2">
+                    {Math.floor(breathingTimer / 60)}:{(breathingTimer % 60).toString().padStart(2, '0')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center space-y-4">
+              <Button 
+                onClick={() => {
+                  setIsBreathingActive(!isBreathingActive);
+                  if (!isBreathingActive) {
+                    setBreathingTimer(0);
+                    setCurrentBreathPhase('inhale');
+                  }
+                }}
+                variant={isBreathingActive ? "destructive" : "default"}
+                className="w-full"
+              >
+                {isBreathingActive ? 'Stop Practice' : 'Start Box Breathing'}
+              </Button>
+              
+              {breathingTimer > 0 && (
+                <div className="text-sm text-green-700">
+                  Completed cycles: {Math.floor(breathingTimer / 16)}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h6 className="font-medium text-green-900 mb-2">Step-by-Step Instructions:</h6>
+            <ol className="text-sm text-green-800 space-y-2">
+              <li><strong>1. Inhale (4 counts):</strong> Breathe in slowly through your nose, expanding your belly</li>
+              <li><strong>2. Hold (4 counts):</strong> Keep the air in your lungs, stay relaxed</li>
+              <li><strong>3. Exhale (4 counts):</strong> Slowly release through your mouth, like blowing out a candle</li>
+              <li><strong>4. Hold (4 counts):</strong> Empty lungs, pause before the next inhale</li>
+            </ol>
+          </div>
+
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h6 className="font-medium text-yellow-900 mb-2">Pro Tips:</h6>
+            <ul className="text-sm text-yellow-800 space-y-1">
+              <li>• Start with 5-10 cycles, build up to 20</li>
+              <li>• If dizzy, slow down or take a break</li>
+              <li>• Focus on smooth, even breathing</li>
+              <li>• Practice daily for maximum benefit</li>
+              <li>• Use during stressful moments for instant calm</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">Box breathing effectiveness (1-10):</label>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Not helpful</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={breathingData.techniqueProgress['box-breathing']?.effectiveness || 5}
+                  onChange={(e) => setBreathingData(prev => ({
+                    ...prev,
+                    techniqueProgress: {
+                      ...prev.techniqueProgress,
+                      'box-breathing': {
+                        ...prev.techniqueProgress['box-breathing'],
+                        effectiveness: parseInt(e.target.value),
+                        practiced: true
+                      }
+                    }
+                  }))}
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-500">Very helpful</span>
+                <span className="w-8 text-center font-medium bg-green-100 rounded px-2 py-1">
+                  {breathingData.techniqueProgress['box-breathing']?.effectiveness || 5}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">How long did you practice?</label>
+              <input
+                type="number"
+                min="1"
+                max="60"
+                value={breathingData.techniqueProgress['box-breathing']?.duration || 5}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'box-breathing': {
+                      ...prev.techniqueProgress['box-breathing'],
+                      duration: parseInt(e.target.value),
+                      practiced: true
+                    }
+                  }
+                }))}
+                className="w-full p-2 border rounded"
+                placeholder="Minutes"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Describe your experience:</label>
+              <Textarea
+                value={breathingData.techniqueProgress['box-breathing']?.experience || ''}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'box-breathing': {
+                      ...prev.techniqueProgress['box-breathing'],
+                      experience: e.target.value,
+                      practiced: true
+                    }
+                  }
+                }))}
+                placeholder="How did you feel before vs after? What was challenging? What felt natural?"
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderHeartCoherenceStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Heart Rate Variability & Coherence</h4>
+        <p className="text-sm text-purple-800">
+          Heart Rate Variability (HRV) measures your autonomic nervous system's flexibility. 
+          Higher HRV indicates better stress resilience and emotional regulation. This breathing 
+          technique optimizes your heart-brain connection.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="bg-white border-2 border-purple-200 rounded-lg p-6">
+            <h5 className="font-semibold text-lg mb-4">Heart-Focused Breathing</h5>
+            
+            <div className="space-y-4">
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-6xl mb-2">💜</div>
+                <div className="text-sm text-purple-700">Place one hand on your heart</div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <h6 className="font-medium">Step 1: Heart Focus</h6>
+                  <p className="text-sm text-gray-600">Direct your attention to your heart area. Feel the physical sensation of your heartbeat.</p>
+                </div>
+
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <h6 className="font-medium">Step 2: Slow Breathing</h6>
+                  <p className="text-sm text-gray-600">Breathe slowly and deeply: 5 seconds in, 5 seconds out (6 breaths per minute).</p>
+                </div>
+
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <h6 className="font-medium">Step 3: Positive Emotion</h6>
+                  <p className="text-sm text-gray-600">Activate appreciation, compassion, or care while breathing. Feel it in your heart.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h6 className="font-medium text-purple-900 mb-2">Why This Works:</h6>
+            <ul className="text-sm text-purple-800 space-y-1">
+              <li>• Your heart has 40,000 neurons - it's a "little brain"</li>
+              <li>• Heart rhythm affects brain function and emotions</li>
+              <li>• Coherent heart rhythm = coherent mind</li>
+              <li>• Positive emotions increase heart coherence</li>
+              <li>• Regular practice builds emotional resilience</li>
+            </ul>
+          </div>
+
+          <div className="bg-white border rounded-lg p-4">
+            <h6 className="font-medium mb-3">Practice Session:</h6>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span>Target: 6 breaths/minute</span>
+                <span>Duration: 10-15 minutes</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>Inhale: 5 seconds</span>
+                <span>Exhale: 5 seconds</span>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {isBreathingActive ? (currentBreathPhase === 'inhale' ? 'Breathe In' : 'Breathe Out') : 'Ready to Begin'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">Heart coherence effectiveness (1-10):</label>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Not helpful</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={breathingData.techniqueProgress['coherent-breathing']?.effectiveness || 5}
+                  onChange={(e) => setBreathingData(prev => ({
+                    ...prev,
+                    techniqueProgress: {
+                      ...prev.techniqueProgress,
+                      'coherent-breathing': {
+                        ...prev.techniqueProgress['coherent-breathing'],
+                        effectiveness: parseInt(e.target.value),
+                        practiced: true
+                      }
+                    }
+                  }))}
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-500">Very helpful</span>
+                <span className="w-8 text-center font-medium bg-purple-100 rounded px-2 py-1">
+                  {breathingData.techniqueProgress['coherent-breathing']?.effectiveness || 5}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Physical sensations noticed:</label>
+              <Textarea
+                value={breathingData.techniqueProgress['coherent-breathing']?.physiologicalResponse || ''}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'coherent-breathing': {
+                      ...prev.techniqueProgress['coherent-breathing'],
+                      physiologicalResponse: e.target.value,
+                      practiced: true
+                    }
+                  }
+                }))}
+                placeholder="e.g., Heart rate slowed, felt calmer, chest felt warm, breathing became easier..."
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderColdExposureStep = () => (
+    <div className="space-y-6">
+      <div className="bg-cyan-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-cyan-900 mb-3">Cold Exposure Breathing</h4>
+        <p className="text-sm text-cyan-800">
+          Inspired by Wim Hof's method, this technique builds stress resilience by training your 
+          nervous system to stay calm under physical stress. It strengthens your vagus nerve and 
+          improves your ability to handle life's challenges.
+        </p>
+      </div>
+
+      <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+        <h5 className="font-medium text-red-900 mb-2">⚠️ Important Safety Guidelines</h5>
+        <ul className="text-sm text-red-800 space-y-1">
+          <li>• Never practice in water or while driving</li>
+          <li>• Stop if you feel dizzy or uncomfortable</li>
+          <li>• Start with warm water, gradually decrease temperature</li>
+          <li>• Pregnant women should consult healthcare provider</li>
+          <li>• Those with heart conditions should seek medical approval</li>
+        </ul>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="bg-white border-2 border-cyan-200 rounded-lg p-6">
+            <h5 className="font-semibold text-lg mb-4">Power Breathing Protocol</h5>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-cyan-50 rounded-lg">
+                <h6 className="font-medium text-cyan-900 mb-2">Phase 1: Power Breaths (30 rounds)</h6>
+                <ul className="text-sm text-cyan-800 space-y-1">
+                  <li>1. Deep inhale through nose (fill belly, then chest)</li>
+                  <li>2. Quick exhale through mouth (don't force it)</li>
+                  <li>3. Repeat 30 times rhythmically</li>
+                  <li>4. You may feel tingling - this is normal</li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h6 className="font-medium text-blue-900 mb-2">Phase 2: Retention Hold</h6>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>1. After 30th exhale, take deep breath</li>
+                  <li>2. Exhale completely and hold (empty lungs)</li>
+                  <li>3. Hold until you feel urge to breathe</li>
+                  <li>4. Take recovery breath and hold 10-15 seconds</li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h6 className="font-medium text-green-900 mb-2">Phase 3: Cold Exposure</h6>
+                <ul className="text-sm text-green-800 space-y-1">
+                  <li>1. After breathing, apply cold (shower/ice)</li>
+                  <li>2. Start with 30 seconds, build up gradually</li>
+                  <li>3. Breathe calmly and steadily during cold</li>
+                  <li>4. Focus on staying relaxed</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-cyan-50 p-4 rounded-lg">
+            <h6 className="font-medium text-cyan-900 mb-2">Progression Schedule:</h6>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>Week 1:</span>
+                <span>Warm-cool water, 30 seconds</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Week 2:</span>
+                <span>Cool water, 1 minute</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Week 3:</span>
+                <span>Cold water, 1-2 minutes</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Week 4+:</span>
+                <span>Very cold, 2+ minutes</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h6 className="font-medium text-yellow-900 mb-2">Benefits You'll Experience:</h6>
+            <ul className="text-sm text-yellow-800 space-y-1">
+              <li>• Increased stress resilience</li>
+              <li>• Better immune function</li>
+              <li>• Enhanced focus and energy</li>
+              <li>• Improved mood regulation</li>
+              <li>• Greater confidence in handling challenges</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">Cold exposure confidence (1-10):</label>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Anxious</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={breathingData.techniqueProgress['cold-exposure']?.confidence || 5}
+                  onChange={(e) => setBreathingData(prev => ({
+                    ...prev,
+                    techniqueProgress: {
+                      ...prev.techniqueProgress,
+                      'cold-exposure': {
+                        ...prev.techniqueProgress['cold-exposure'],
+                        confidence: parseInt(e.target.value),
+                        practiced: true
+                      }
+                    }
+                  }))}
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-500">Confident</span>
+                <span className="w-8 text-center font-medium bg-cyan-100 rounded px-2 py-1">
+                  {breathingData.techniqueProgress['cold-exposure']?.confidence || 5}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Your cold exposure experience:</label>
+              <Textarea
+                value={breathingData.techniqueProgress['cold-exposure']?.experience || ''}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'cold-exposure': {
+                      ...prev.techniqueProgress['cold-exposure'],
+                      experience: e.target.value,
+                      practiced: true
+                    }
+                  }
+                }))}
+                placeholder="How did the breathing feel? What happened during cold exposure? What did you notice about your stress response?"
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderHummingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-amber-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-amber-900 mb-3">Humming & Vagal Toning</h4>
+        <p className="text-sm text-amber-800">
+          Humming creates vibrations that directly stimulate your vagus nerve. This ancient practice 
+          (found in yoga, meditation, and sound healing) is one of the most effective ways to activate 
+          your parasympathetic nervous system and reduce inflammation.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="bg-white border-2 border-amber-200 rounded-lg p-6">
+            <h5 className="font-semibold text-lg mb-4">Vagal Toning Techniques</h5>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-amber-50 rounded-lg">
+                <h6 className="font-medium text-amber-900 mb-2">Om Humming</h6>
+                <p className="text-sm text-amber-800 mb-2">The classic "Om" sound creates maximum vagal stimulation.</p>
+                <div className="text-sm text-gray-600">
+                  <strong>Practice:</strong> Inhale deeply → Long "Oooommmmm" exhale → Repeat 10-20 times
+                </div>
+              </div>
+
+              <div className="p-4 bg-orange-50 rounded-lg">
+                <h6 className="font-medium text-orange-900 mb-2">Bee Breath (Bhramari)</h6>
+                <p className="text-sm text-orange-800 mb-2">Sounds like a bee buzzing. Excellent for anxiety.</p>
+                <div className="text-sm text-gray-600">
+                  <strong>Practice:</strong> Block ears with thumbs → Inhale → Hum like a bee on exhale
+                </div>
+              </div>
+
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h6 className="font-medium text-yellow-900 mb-2">Ahh Toning</h6>
+                <p className="text-sm text-yellow-800 mb-2">Heart-opening sound that releases tension.</p>
+                <div className="text-sm text-gray-600">
+                  <strong>Practice:</strong> Inhale → Long "Ahhhhh" with open mouth → Feel chest vibration
+                </div>
+              </div>
+
+              <div className="p-4 bg-red-50 rounded-lg">
+                <h6 className="font-medium text-red-900 mb-2">Mmm Humming</h6>
+                <p className="text-sm text-red-800 mb-2">Simple mouth-closed humming. Great for beginners.</p>
+                <div className="text-sm text-gray-600">
+                  <strong>Practice:</strong> Lips closed → Inhale → Hum "Mmmmm" → Feel head vibration
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-amber-50 p-4 rounded-lg">
+            <h6 className="font-medium text-amber-900 mb-2">The Science Behind Humming:</h6>
+            <ul className="text-sm text-amber-800 space-y-1">
+              <li>• Vibrations stimulate vagus nerve directly</li>
+              <li>• Increases nitric oxide production</li>
+              <li>• Reduces stress hormones and inflammation</li>
+              <li>• Activates parasympathetic nervous system</li>
+              <li>• Improves heart rate variability</li>
+              <li>• Enhances mood and reduces anxiety</li>
+            </ul>
+          </div>
+
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h6 className="font-medium text-green-900 mb-2">Practice Guidelines:</h6>
+            <ul className="text-sm text-green-800 space-y-1">
+              <li>• Start with 5-10 minutes daily</li>
+              <li>• Practice in private space initially</li>
+              <li>• Focus on the vibrations, not the sound</li>
+              <li>• Longer exhales = more vagal stimulation</li>
+              <li>• Can be done silently in public</li>
+              <li>• Combine with breathing for maximum effect</li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h6 className="font-medium text-blue-900 mb-2">When to Use Humming:</h6>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>• Before stressful meetings or events</li>
+              <li>• When feeling anxious or overwhelmed</li>
+              <li>• After difficult conversations</li>
+              <li>• As part of morning or evening routine</li>
+              <li>• During meditation or mindfulness practice</li>
+              <li>• When you need to calm down quickly</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">Humming technique effectiveness (1-10):</label>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Not helpful</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={breathingData.techniqueProgress['humming-toning']?.effectiveness || 5}
+                  onChange={(e) => setBreathingData(prev => ({
+                    ...prev,
+                    techniqueProgress: {
+                      ...prev.techniqueProgress,
+                      'humming-toning': {
+                        ...prev.techniqueProgress['humming-toning'],
+                        effectiveness: parseInt(e.target.value),
+                        practiced: true
+                      }
+                    }
+                  }))}
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-500">Very helpful</span>
+                <span className="w-8 text-center font-medium bg-amber-100 rounded px-2 py-1">
+                  {breathingData.techniqueProgress['humming-toning']?.effectiveness || 5}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Which humming technique felt most natural?</label>
+              <Textarea
+                value={breathingData.techniqueProgress['humming-toning']?.experience || ''}
+                onChange={(e) => setBreathingData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'humming-toning': {
+                      ...prev.techniqueProgress['humming-toning'],
+                      experience: e.target.value,
+                      practiced: true
+                    }
+                  }
+                }))}
+                placeholder="Which sound felt best? What vibrations did you feel? How did your stress level change?"
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProtocolStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Personal Breathwork Protocol</h4>
+        <p className="text-sm text-indigo-800">
+          Create your personalized breathwork system based on your goals, schedule, and preferences. 
+          This protocol will be your go-to toolkit for stress management, energy regulation, and 
+          nervous system optimization.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Your Daily Breathwork Foundation:</h5>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              'Box breathing (5-10 minutes morning)',
+              'Heart coherence breathing (10-15 minutes)',
+              'Quick box breathing during stress',
+              'Humming practice (5-10 minutes)',
+              'Cold exposure breathing (2-3x weekly)',
+              'Bedtime breathing for sleep',
+              'Breathing breaks every 2 hours',
+              'Mini-breathing resets between tasks'
+            ].map((practice) => (
+              <label key={practice} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={breathingData.personalProtocol.dailyBreathwork.includes(practice)}
+                  onChange={(e) => {
+                    const current = breathingData.personalProtocol.dailyBreathwork;
+                    setBreathingData(prev => ({
+                      ...prev,
+                      personalProtocol: {
+                        ...prev.personalProtocol,
+                        dailyBreathwork: e.target.checked 
+                          ? [...current, practice]
+                          : current.filter(p => p !== practice)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{practice}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Stress Intervention Techniques:</h5>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              'Box breathing for immediate calm',
+              'Heart coherence for emotional regulation',
+              'Humming for quick nervous system reset',
+              'Cold water on wrists for activation',
+              'Power breathing for energy boost',
+              'Long exhales for anxiety relief',
+              'Breath holding for panic attacks',
+              'Vagal toning for overwhelm'
+            ].map((technique) => (
+              <label key={technique} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={breathingData.personalProtocol.stressInterventions.includes(technique)}
+                  onChange={(e) => {
+                    const current = breathingData.personalProtocol.stressInterventions;
+                    setBreathingData(prev => ({
+                      ...prev,
+                      personalProtocol: {
+                        ...prev.personalProtocol,
+                        stressInterventions: e.target.checked 
+                          ? [...current, technique]
+                          : current.filter(t => t !== technique)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{technique}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Vagus Nerve Activation Plan:</h5>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              'Daily humming practice',
+              'Cold shower endings',
+              'Gargling with salt water',
+              'Singing or chanting',
+              'Diaphragmatic breathing',
+              'Yoga with breath awareness',
+              'Meditation with Om chanting',
+              'Laughter and social connection'
+            ].map((activity) => (
+              <label key={activity} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={breathingData.personalProtocol.vagusActivation.includes(activity)}
+                  onChange={(e) => {
+                    const current = breathingData.personalProtocol.vagusActivation;
+                    setBreathingData(prev => ({
+                      ...prev,
+                      personalProtocol: {
+                        ...prev.personalProtocol,
+                        vagusActivation: e.target.checked 
+                          ? [...current, activity]
+                          : current.filter(a => a !== activity)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{activity}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Your weekly breathwork schedule:</label>
+          <Textarea
+            value={breathingData.personalProtocol.practiceSchedule}
+            onChange={(e) => setBreathingData(prev => ({
+              ...prev,
+              personalProtocol: { ...prev.personalProtocol, practiceSchedule: e.target.value }
+            }))}
+            placeholder="e.g., Morning: 10 min box breathing. Lunch: 5 min heart coherence. Evening: 5 min humming. Weekend: Cold exposure breathing..."
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Emergency stress protocol:</label>
+          <Textarea
+            value={breathingData.personalProtocol.emergencyProtocol}
+            onChange={(e) => setBreathingData(prev => ({
+              ...prev,
+              personalProtocol: { ...prev.personalProtocol, emergencyProtocol: e.target.value }
+            }))}
+            placeholder="e.g., Step 1: 5 rounds box breathing. Step 2: Heart coherence with gratitude. Step 3: Humming if still stressed. Step 4: Cold water on wrists..."
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How will you track your breathwork progress?</label>
+          <Textarea
+            value={breathingData.personalProtocol.progressTracking}
+            onChange={(e) => setBreathingData(prev => ({
+              ...prev,
+              personalProtocol: { ...prev.personalProtocol, progressTracking: e.target.value }
+            }))}
+            placeholder="e.g., Rate stress before/after practice, track HRV with app, weekly reflection on emotional regulation, notice sleep quality changes..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-indigo-50 p-4 rounded-lg">
+        <h5 className="font-semibold text-indigo-900 mb-2">Your Breathwork Success Plan</h5>
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h6 className="font-medium text-indigo-800 mb-1">Week 1-2: Foundation</h6>
+            <ul className="text-indigo-700 space-y-1">
+              <li>• Master box breathing technique</li>
+              <li>• Practice 5-10 minutes daily</li>
+              <li>• Use during minor stress</li>
+            </ul>
+          </div>
+          <div>
+            <h6 className="font-medium text-indigo-800 mb-1">Week 3-4: Expansion</h6>
+            <ul className="text-indigo-700 space-y-1">
+              <li>• Add heart coherence practice</li>
+              <li>• Begin humming techniques</li>
+              <li>• Extend practice time</li>
+            </ul>
+          </div>
+          <div>
+            <h6 className="font-medium text-indigo-800 mb-1">Week 5-6: Integration</h6>
+            <ul className="text-indigo-700 space-y-1">
+              <li>• Try cold exposure breathing</li>
+              <li>• Use techniques preventively</li>
+              <li>• Develop personal protocols</li>
+            </ul>
+          </div>
+          <div>
+            <h6 className="font-medium text-indigo-800 mb-1">Week 7+: Mastery</h6>
+            <ul className="text-indigo-700 space-y-1">
+              <li>• Automatic stress responses</li>
+              <li>• Teach others techniques</li>
+              <li>• Continue refining practice</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
-        <Button variant="outline" onClick={onClose} className="flex items-center gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Coaching
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
         <CardTitle className="flex items-center gap-2">
           <Heart className="w-6 h-6 text-blue-600" />
           Breathwork & Vagus Nerve Reset
         </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="bg-blue-50 rounded-lg p-6">
-          <p className="text-blue-800">Coming soon: Learn box breathing, heart coherence, cold exposure breathing, and humming techniques for instant calm</p>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Master powerful breathing techniques for instant calm and nervous system optimization</p>
+          </div>
+
+          {currentStep === 0 && renderAssessmentStep()}
+          {currentStep === 1 && renderBoxBreathingStep()}
+          {currentStep === 2 && renderHeartCoherenceStep()}
+          {currentStep === 3 && renderColdExposureStep()}
+          {currentStep === 4 && renderHummingStep()}
+          {currentStep === 5 && renderProtocolStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w4-breathwork', breathingData)}
+                className="ml-auto"
+              >
+                Complete Breathwork Training
+              </Button>
+            )}
+          </div>
         </div>
-        <Button onClick={() => onComplete('w4-breathwork')} className="w-full mt-6">
-          Complete Breathwork Training
-        </Button>
       </CardContent>
     </Card>
   );
