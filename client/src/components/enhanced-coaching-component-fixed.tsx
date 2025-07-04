@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Play, Pause, CheckCircle, Calendar, Clock, Heart, Brain, Sparkles, FileText } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ArrowLeft, Play, Pause, CheckCircle, Calendar, Clock, Heart, Brain, Sparkles, FileText, Target, Eye, ChevronDown } from 'lucide-react';
 // Hormone content - inline data for now
 const hormoneContent = {
   intro: "Your body is experiencing a complex symphony of hormonal changes during this phase of life. Understanding these changes is the first step toward reclaiming your vitality and mental clarity.",
@@ -7194,6 +7195,692 @@ function EnhancedCognitiveAssessment({ onComplete, onClose }: { onComplete: (id:
   );
 }
 
+// Week 5 Component 2: Focus & Memory Rituals
+function FocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedRituals, setSelectedRituals] = useState<string[]>([]);
+  const [customRituals, setCustomRituals] = useState<string[]>([]);
+  const [activeTimer, setActiveTimer] = useState<string | null>(null);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [ritualData, setRitualData] = useState({
+    currentChallenges: [] as string[],
+    preferredTimes: [] as string[],
+    selectedTechniques: [] as string[],
+    personalRoutine: {
+      morning: [] as string[],
+      midday: [] as string[],
+      evening: [] as string[],
+      emergency: [] as string[]
+    },
+    practiceSchedule: {
+      frequency: 'daily',
+      duration: '15-30 minutes',
+      bestTime: '',
+      consistency: 'beginner'
+    }
+  });
+
+  const steps = [
+    'Cognitive Challenge Assessment',
+    'Ritual Technique Selection',
+    'Personalized Routine Design',
+    'Practice Schedule & Implementation'
+  ];
+
+  const cognitiveRituals = {
+    memory: [
+      {
+        id: 'memory-palace',
+        name: 'Memory Palace Technique',
+        description: 'Create vivid mental maps to store and retrieve information',
+        duration: '10-15 min',
+        difficulty: 'Intermediate',
+        benefits: ['Enhances spatial memory', 'Improves recall by 60%', 'Builds long-term retention'],
+        instructions: [
+          'Choose a familiar location (your home, office, or favorite place)',
+          'Mentally walk through this space, noting specific landmarks',
+          'Assign information to specific locations along your route',
+          'Create vivid, unusual mental images for each piece of information',
+          'Practice walking through your palace to retrieve the information'
+        ],
+        science: 'Utilizes the brain\'s natural spatial memory system, engaging the hippocampus and parietal cortex for superior retention.'
+      },
+      {
+        id: 'spaced-repetition',
+        name: 'Spaced Repetition System',
+        description: 'Review information at increasing intervals for optimal retention',
+        duration: '5-10 min',
+        difficulty: 'Beginner',
+        benefits: ['Increases retention by 80%', 'Reduces study time', 'Builds long-term memory'],
+        instructions: [
+          'Review new information immediately after learning',
+          'Review again after 1 day, then 3 days, then 1 week',
+          'Continue extending intervals: 2 weeks, 1 month, 3 months',
+          'Focus extra attention on information you struggle to recall',
+          'Use flashcards or digital apps to track your progress'
+        ],
+        science: 'Leverages the forgetting curve and strengthens neural pathways through repeated activation at optimal intervals.'
+      },
+      {
+        id: 'chunking',
+        name: 'Information Chunking',
+        description: 'Break complex information into manageable, memorable units',
+        duration: '5-10 min',
+        difficulty: 'Beginner',
+        benefits: ['Reduces cognitive load', 'Improves working memory', 'Enhances comprehension'],
+        instructions: [
+          'Identify patterns or categories in the information',
+          'Group related items together (typically 3-7 items per chunk)',
+          'Create meaningful connections between chunks',
+          'Use acronyms, rhymes, or stories to link chunks',
+          'Practice recalling entire chunks as single units'
+        ],
+        science: 'Works with working memory limitations by organizing information into meaningful units that can be processed more efficiently.'
+      }
+    ],
+    focus: [
+      {
+        id: 'pomodoro-plus',
+        name: 'Enhanced Pomodoro Technique',
+        description: 'Structured work intervals with cognitive optimization',
+        duration: '25-50 min',
+        difficulty: 'Beginner',
+        benefits: ['Improves sustained attention', 'Reduces mental fatigue', 'Increases productivity'],
+        instructions: [
+          'Set timer for 25 minutes of focused work',
+          'During work: single-task, minimize distractions, maintain posture',
+          'Take 5-minute break: stretch, hydrate, or do breathing exercises',
+          'After 4 cycles, take 15-30 minute break',
+          'Use break time for activities that restore mental energy'
+        ],
+        science: 'Aligns with natural attention cycles and prevents cognitive overload while maintaining peak performance.'
+      },
+      {
+        id: 'attention-restoration',
+        name: 'Attention Restoration Practice',
+        description: 'Restore mental focus through nature-based exercises',
+        duration: '10-20 min',
+        difficulty: 'Beginner',
+        benefits: ['Restores directed attention', 'Reduces mental fatigue', 'Enhances creativity'],
+        instructions: [
+          'Find a natural environment (park, garden, even a single plant)',
+          'Spend 10 minutes observing without trying to analyze or judge',
+          'Notice colors, textures, movements, sounds naturally',
+          'Allow your mind to wander freely without forcing focus',
+          'Return to work tasks with renewed attention capacity'
+        ],
+        science: 'Activates involuntary attention networks, allowing directed attention systems to rest and restore.'
+      },
+      {
+        id: 'mindful-transitions',
+        name: 'Mindful Task Transitions',
+        description: 'Create mental clarity between activities',
+        duration: '2-5 min',
+        difficulty: 'Beginner',
+        benefits: ['Reduces task-switching costs', 'Improves mental clarity', 'Enhances presence'],
+        instructions: [
+          'Pause completely between finishing one task and starting another',
+          'Take 3 deep breaths, releasing the previous task mentally',
+          'Set clear intention for the next task',
+          'Visualize successful completion of the upcoming activity',
+          'Begin with full attention and awareness'
+        ],
+        science: 'Reduces cognitive residue and attention switching penalties by creating clear mental boundaries between activities.'
+      }
+    ],
+    clarity: [
+      {
+        id: 'brain-dump',
+        name: 'Strategic Brain Dump',
+        description: 'Clear mental clutter for enhanced cognitive clarity',
+        duration: '10-15 min',
+        difficulty: 'Beginner',
+        benefits: ['Reduces cognitive load', 'Improves decision-making', 'Enhances mental clarity'],
+        instructions: [
+          'Set timer for 10 minutes',
+          'Write down every thought, worry, or task on your mind',
+          'Don\'t organize or prioritize - just dump everything',
+          'After 10 minutes, categorize items: urgent, important, someday',
+          'Choose 1-3 items to focus on immediately'
+        ],
+        science: 'Frees up working memory by externalizing mental load, allowing for clearer thinking and better decision-making.'
+      },
+      {
+        id: 'cognitive-defrag',
+        name: 'Mental Defragmentation',
+        description: 'Organize scattered thoughts for improved mental performance',
+        duration: '15-20 min',
+        difficulty: 'Intermediate',
+        benefits: ['Improves mental organization', 'Enhances problem-solving', 'Reduces overwhelm'],
+        instructions: [
+          'Identify areas of mental clutter or confusion',
+          'Create visual maps or lists of related concepts',
+          'Look for patterns, connections, and themes',
+          'Eliminate or delegate non-essential mental tasks',
+          'Create simple systems for recurring decisions'
+        ],
+        science: 'Mimics computer defragmentation by organizing mental resources more efficiently, reducing cognitive processing time.'
+      },
+      {
+        id: 'clarity-meditation',
+        name: 'Clarity-Focused Meditation',
+        description: 'Meditation specifically designed for mental clarity',
+        duration: '10-15 min',
+        difficulty: 'Beginner',
+        benefits: ['Enhances mental clarity', 'Improves focus', 'Reduces mental fog'],
+        instructions: [
+          'Sit comfortably with eyes closed or softly focused',
+          'Begin with 5 minutes of breath awareness',
+          'Visualize your mind as a clear, still lake',
+          'When thoughts arise, see them as passing clouds',
+          'Return attention to the clarity and stillness beneath'
+        ],
+        science: 'Activates the default mode network while training attention regulation, leading to improved cognitive clarity.'
+      }
+    ]
+  };
+
+  const practiceSchedules = {
+    beginner: {
+      frequency: 'Daily',
+      duration: '10-15 minutes',
+      techniques: 2,
+      progression: 'Start with 2 techniques, master them before adding more'
+    },
+    intermediate: {
+      frequency: 'Daily',
+      duration: '20-30 minutes',
+      techniques: 4,
+      progression: 'Combine techniques and create custom routines'
+    },
+    advanced: {
+      frequency: 'Multiple times daily',
+      duration: '30-45 minutes',
+      techniques: 6,
+      progression: 'Integrate techniques seamlessly into daily life'
+    }
+  };
+
+  const emergencyTechniques = [
+    {
+      name: '3-Minute Focus Reset',
+      steps: ['Deep breathing for 1 minute', 'Brain dump for 2 minutes', 'Set single priority']
+    },
+    {
+      name: '5-Minute Memory Boost',
+      steps: ['Hydrate with water', 'Do 10 jumping jacks', 'Practice chunking technique']
+    },
+    {
+      name: '2-Minute Clarity Break',
+      steps: ['Look at something natural', 'Take 5 deep breaths', 'Set clear intention']
+    }
+  ];
+
+  const renderChallengeStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Cognitive Challenge Assessment</h4>
+        <p className="text-sm text-blue-800">
+          Understanding your specific cognitive challenges helps us select the most effective rituals and techniques 
+          for your unique needs and lifestyle.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What are your primary cognitive challenges? (Select all that apply)</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Difficulty remembering names and faces',
+            'Forgetting where I put things',
+            'Trouble concentrating on complex tasks',
+            'Mental fatigue by afternoon',
+            'Difficulty learning new information',
+            'Overwhelm from too many tasks',
+            'Procrastination on important projects',
+            'Difficulty making decisions',
+            'Feeling mentally "foggy" or unclear',
+            'Trouble staying organized',
+            'Difficulty following conversations',
+            'Taking longer to process information'
+          ].map((challenge) => (
+            <label key={challenge} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={ritualData.currentChallenges.includes(challenge)}
+                onChange={(e) => {
+                  const current = ritualData.currentChallenges;
+                  setRitualData(prev => ({
+                    ...prev,
+                    currentChallenges: e.target.checked 
+                      ? [...current, challenge]
+                      : current.filter(c => c !== challenge)
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{challenge}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">When do you prefer to practice cognitive enhancement? (Select all that apply)</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'First thing in the morning',
+            'Mid-morning coffee break',
+            'Before lunch',
+            'After lunch energy dip',
+            'Late afternoon',
+            'Early evening',
+            'Before bed',
+            'During work breaks',
+            'Weekend mornings',
+            'When feeling mentally foggy',
+            'Before important meetings',
+            'During commute or travel'
+          ].map((time) => (
+            <label key={time} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={ritualData.preferredTimes.includes(time)}
+                onChange={(e) => {
+                  const current = ritualData.preferredTimes;
+                  setRitualData(prev => ({
+                    ...prev,
+                    preferredTimes: e.target.checked 
+                      ? [...current, time]
+                      : current.filter(t => t !== time)
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{time}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 p-4 rounded-lg">
+        <h5 className="font-medium text-yellow-900 mb-2">Personalized Insight</h5>
+        <p className="text-sm text-yellow-800">
+          {ritualData.currentChallenges.length > 0 && ritualData.preferredTimes.length > 0
+            ? `Based on your ${ritualData.currentChallenges.length} selected challenges and ${ritualData.preferredTimes.length} preferred practice times, we'll recommend the most effective cognitive enhancement techniques for your specific needs.`
+            : 'Please select your challenges and preferred times to receive personalized recommendations.'}
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderTechniqueStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Cognitive Enhancement Techniques</h4>
+        <p className="text-sm text-green-800">
+          These evidence-based techniques are specifically designed to address the cognitive challenges 
+          common during midlife transitions. Each technique includes the science behind why it works.
+        </p>
+      </div>
+
+      {Object.entries(cognitiveRituals).map(([category, techniques]) => (
+        <div key={category} className="space-y-4">
+          <h5 className="font-semibold text-lg capitalize flex items-center gap-2">
+            {category === 'memory' && <Brain className="w-5 h-5 text-blue-600" />}
+            {category === 'focus' && <Target className="w-5 h-5 text-green-600" />}
+            {category === 'clarity' && <Eye className="w-5 h-5 text-purple-600" />}
+            {category} Enhancement Techniques
+          </h5>
+          
+          <div className="grid gap-4">
+            {techniques.map((technique) => (
+              <div key={technique.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h6 className="font-medium text-lg">{technique.name}</h6>
+                    <p className="text-sm text-gray-600">{technique.description}</p>
+                  </div>
+                  <div className="text-right text-sm text-gray-500">
+                    <div>{technique.duration}</div>
+                    <div className={`px-2 py-1 rounded text-xs ${
+                      technique.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
+                      technique.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {technique.difficulty}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <h6 className="font-medium text-sm text-gray-700 mb-2">Benefits:</h6>
+                    <div className="flex flex-wrap gap-1">
+                      {technique.benefits.map((benefit, index) => (
+                        <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {benefit}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                      <ChevronDown className="w-4 h-4" />
+                      View Instructions & Science
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-3 space-y-3">
+                      <div>
+                        <h6 className="font-medium text-sm text-gray-700 mb-2">Step-by-step instructions:</h6>
+                        <ol className="text-sm space-y-1">
+                          {technique.instructions.map((step, index) => (
+                            <li key={index} className="flex gap-2">
+                              <span className="text-blue-600 font-medium">{index + 1}.</span>
+                              <span>{step}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded">
+                        <h6 className="font-medium text-sm text-gray-700 mb-1">The Science:</h6>
+                        <p className="text-sm text-gray-600">{technique.science}</p>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  <div className="pt-2">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={ritualData.selectedTechniques.includes(technique.id)}
+                        onChange={(e) => {
+                          const current = ritualData.selectedTechniques;
+                          setRitualData(prev => ({
+                            ...prev,
+                            selectedTechniques: e.target.checked 
+                              ? [...current, technique.id]
+                              : current.filter(t => t !== technique.id)
+                          }));
+                        }}
+                        className="rounded"
+                      />
+                      <span className="text-sm font-medium">Add to my personal routine</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Selection Summary</h5>
+        <p className="text-sm text-blue-800">
+          You've selected {ritualData.selectedTechniques.length} techniques for your personal routine. 
+          We recommend starting with 2-3 techniques and mastering them before adding more.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderRoutineStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Personalized Routine Design</h4>
+        <p className="text-sm text-purple-800">
+          Create a customized daily routine that fits your schedule and addresses your specific cognitive goals. 
+          We'll organize your selected techniques into an optimal daily practice.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {[
+          { key: 'morning', label: 'Morning Routine', icon: '🌅', description: 'Start your day with cognitive clarity' },
+          { key: 'midday', label: 'Midday Boost', icon: '☀️', description: 'Overcome afternoon mental fatigue' },
+          { key: 'evening', label: 'Evening Practice', icon: '🌙', description: 'Process the day and prepare for rest' },
+          { key: 'emergency', label: 'Emergency Techniques', icon: '🚨', description: 'Quick fixes for mental blocks' }
+        ].map((timeSlot) => (
+          <div key={timeSlot.key} className="border rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-2xl">{timeSlot.icon}</span>
+              <div>
+                <h6 className="font-medium">{timeSlot.label}</h6>
+                <p className="text-sm text-gray-600">{timeSlot.description}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {ritualData.selectedTechniques.length > 0 ? (
+                ritualData.selectedTechniques.map((techniqueId) => {
+                  const technique = Object.values(cognitiveRituals).flat().find(t => t.id === techniqueId);
+                  return technique ? (
+                    <label key={techniqueId} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={ritualData.personalRoutine[timeSlot.key as keyof typeof ritualData.personalRoutine].includes(techniqueId)}
+                        onChange={(e) => {
+                          const current = ritualData.personalRoutine[timeSlot.key as keyof typeof ritualData.personalRoutine];
+                          setRitualData(prev => ({
+                            ...prev,
+                            personalRoutine: {
+                              ...prev.personalRoutine,
+                              [timeSlot.key]: e.target.checked 
+                                ? [...current, techniqueId]
+                                : current.filter(t => t !== techniqueId)
+                            }
+                          }));
+                        }}
+                        className="rounded"
+                      />
+                      <span className="text-sm">{technique.name}</span>
+                      <span className="text-xs text-gray-500">({technique.duration})</span>
+                    </label>
+                  ) : null;
+                })
+              ) : (
+                <p className="text-sm text-gray-500 italic">Select techniques in the previous step to build your routine</p>
+              )}
+            </div>
+
+            {timeSlot.key === 'emergency' && (
+              <div className="mt-3 pt-3 border-t">
+                <h6 className="text-sm font-medium text-gray-700 mb-2">Quick Emergency Techniques:</h6>
+                {emergencyTechniques.map((technique, index) => (
+                  <div key={index} className="text-xs bg-red-50 p-2 rounded mb-2">
+                    <div className="font-medium text-red-800">{technique.name}</div>
+                    <div className="text-red-700">{technique.steps.join(' → ')}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h5 className="font-medium text-green-900 mb-2">Your Routine Summary</h5>
+        <div className="text-sm text-green-800 space-y-1">
+          <div>Morning: {ritualData.personalRoutine.morning.length} techniques selected</div>
+          <div>Midday: {ritualData.personalRoutine.midday.length} techniques selected</div>
+          <div>Evening: {ritualData.personalRoutine.evening.length} techniques selected</div>
+          <div>Emergency: {ritualData.personalRoutine.emergency.length} techniques selected</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderScheduleStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Practice Schedule & Implementation</h4>
+        <p className="text-sm text-indigo-800">
+          Create a sustainable practice schedule that fits your lifestyle and ensures consistent cognitive enhancement. 
+          Consistency is more important than perfection.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Choose your practice level:</h5>
+          <div className="grid gap-4">
+            {Object.entries(practiceSchedules).map(([level, details]) => (
+              <div key={level} className="border rounded-lg p-4">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="consistency"
+                    value={level}
+                    checked={ritualData.practiceSchedule.consistency === level}
+                    onChange={(e) => setRitualData(prev => ({
+                      ...prev,
+                      practiceSchedule: { ...prev.practiceSchedule, consistency: e.target.value }
+                    }))}
+                    className="rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium capitalize">{level}</div>
+                    <div className="text-sm text-gray-600">
+                      {details.frequency} • {details.duration} • {details.techniques} techniques
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">{details.progression}</div>
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">What's your optimal practice time?</label>
+          <Textarea
+            value={ritualData.practiceSchedule.bestTime}
+            onChange={(e) => setRitualData(prev => ({
+              ...prev,
+              practiceSchedule: { ...prev.practiceSchedule, bestTime: e.target.value }
+            }))}
+            placeholder="e.g., 7:00 AM before work, during lunch break, 8:00 PM after dinner..."
+            rows={2}
+          />
+        </div>
+
+        <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+          <h5 className="font-semibold text-lg mb-4">Your Complete Cognitive Enhancement Plan</h5>
+          
+          <div className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h6 className="font-medium text-blue-900 mb-2">Selected Techniques</h6>
+                <div className="text-sm text-blue-800">
+                  {ritualData.selectedTechniques.length > 0 ? (
+                    ritualData.selectedTechniques.map((techniqueId) => {
+                      const technique = Object.values(cognitiveRituals).flat().find(t => t.id === techniqueId);
+                      return technique ? (
+                        <div key={techniqueId} className="mb-1">• {technique.name}</div>
+                      ) : null;
+                    })
+                  ) : (
+                    <div className="italic">None selected</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h6 className="font-medium text-green-900 mb-2">Practice Schedule</h6>
+                <div className="text-sm text-green-800">
+                  <div>Level: {ritualData.practiceSchedule.consistency}</div>
+                  <div>Frequency: {practiceSchedules[ritualData.practiceSchedule.consistency as keyof typeof practiceSchedules]?.frequency}</div>
+                  <div>Duration: {practiceSchedules[ritualData.practiceSchedule.consistency as keyof typeof practiceSchedules]?.duration}</div>
+                  <div>Best Time: {ritualData.practiceSchedule.bestTime || 'Not specified'}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h6 className="font-medium text-purple-900 mb-2">Implementation Tips</h6>
+              <div className="text-sm text-purple-800 space-y-1">
+                <div>• Start with just 2-3 techniques and practice them consistently</div>
+                <div>• Use your selected best time for maximum effectiveness</div>
+                <div>• Track your progress and adjust techniques as needed</div>
+                <div>• Be patient - cognitive improvements typically show within 2-4 weeks</div>
+                <div>• Focus on consistency over perfection</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="w-6 h-6 text-green-600" />
+          Focus & Memory Rituals
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Design personalized cognitive enhancement routines with evidence-based techniques</p>
+          </div>
+
+          {currentStep === 0 && renderChallengeStep()}
+          {currentStep === 1 && renderTechniqueStep()}
+          {currentStep === 2 && renderRoutineStep()}
+          {currentStep === 3 && renderScheduleStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w5-rituals', ritualData)}
+                className="ml-auto"
+              >
+                Complete Ritual Design
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Main Enhanced Coaching Component
 // Breathwork & Vagus Nerve Reset Component
 function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
@@ -10195,6 +10882,10 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   // Week 5 Components
   if (component.id === 'w5-assessment') {
     return <EnhancedCognitiveAssessment onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w5-rituals') {
+    return <FocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
