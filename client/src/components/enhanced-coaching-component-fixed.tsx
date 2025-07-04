@@ -181,212 +181,9 @@ function InteractiveFocusMemoryRituals({ onComplete, onClose }: { onComplete: (i
   );
 }
 
-// Brain-Boosting Nutrition Plan Component
-function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
-  const [selectedMeals, setSelectedMeals] = useState<string[]>([]);
-  const [nutritionGoals, setNutritionGoals] = useState({
-    omega3: false,
-    antioxidants: false,
-    proteins: false,
-    hydration: false
-  });
 
-  const brainFoods = [
-    { category: 'Omega-3 Rich', foods: ['Salmon', 'Walnuts', 'Chia seeds', 'Flaxseeds'] },
-    { category: 'Antioxidant Power', foods: ['Blueberries', 'Dark chocolate', 'Green tea', 'Spinach'] },
-    { category: 'Protein Sources', foods: ['Eggs', 'Greek yogurt', 'Quinoa', 'Lentils'] },
-    { category: 'Brain Beverages', foods: ['Water', 'Green tea', 'Herbal teas', 'Bone broth'] }
-  ];
 
-  return (
-    <Card className="max-w-4xl mx-auto">
-      <CardHeader>
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Coaching
-          </Button>
-        </div>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-green-600" />
-          Brain-Boosting Nutrition Plan
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Build Your Brain-Healthy Menu</h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              {brainFoods.map((category, idx) => (
-                <div key={idx} className="border rounded-lg p-4">
-                  <h4 className="font-semibold mb-3">{category.category}</h4>
-                  <div className="space-y-2">
-                    {category.foods.map(food => (
-                      <div key={food} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedMeals.includes(food)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedMeals([...selectedMeals, food]);
-                            } else {
-                              setSelectedMeals(selectedMeals.filter(m => m !== food));
-                            }
-                          }}
-                          className="rounded"
-                        />
-                        <span className="text-sm">{food}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Weekly Nutrition Goals</h3>
-            <div className="space-y-3">
-              {Object.entries(nutritionGoals).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={value}
-                    onChange={(e) => setNutritionGoals({...nutritionGoals, [key]: e.target.checked})}
-                    className="rounded"
-                  />
-                  <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Button 
-            onClick={() => onComplete('nutrition-plan', { selectedMeals, nutritionGoals })}
-            className="w-full"
-            disabled={selectedMeals.length === 0}
-          >
-            Save My Nutrition Plan
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Mind Management System Component
-function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
-  const [currentTechnique, setCurrentTechnique] = useState('');
-  const [practiceData, setPracticeData] = useState({
-    techniques: [] as string[],
-    duration: 0,
-    effectiveness: 0,
-    insights: ''
-  });
-
-  const techniques = [
-    { id: 'thought-stopping', name: 'Thought Stopping', description: 'Interrupt negative thought patterns' },
-    { id: 'cognitive-reframing', name: 'Cognitive Reframing', description: 'Transform limiting beliefs' },
-    { id: 'mindful-observation', name: 'Mindful Observation', description: 'Notice thoughts without judgment' },
-    { id: 'worry-time', name: 'Designated Worry Time', description: 'Schedule time for concerns' }
-  ];
-
-  return (
-    <Card className="max-w-4xl mx-auto">
-      <CardHeader>
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Coaching
-          </Button>
-        </div>
-        <CardTitle className="flex items-center gap-2">
-          <Brain className="w-6 h-6 text-blue-600" />
-          Mind Management System
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {!currentTechnique && (
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Choose a Technique to Practice</h3>
-              <div className="grid gap-4">
-                {techniques.map(technique => (
-                  <div key={technique.id} 
-                       className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50"
-                       onClick={() => setCurrentTechnique(technique.id)}>
-                    <h4 className="font-semibold">{technique.name}</h4>
-                    <p className="text-sm text-gray-600">{technique.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {currentTechnique && (
-            <div>
-              <h3 className="text-xl font-semibold mb-4">
-                Practicing: {techniques.find(t => t.id === currentTechnique)?.name}
-              </h3>
-              <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                <p className="text-blue-800">
-                  Practice this technique for 5-10 minutes. Focus on the process, not perfection.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">How effective was this? (1-10)</label>
-                  <div className="flex gap-2">
-                    {[1,2,3,4,5,6,7,8,9,10].map(num => (
-                      <Button
-                        key={num}
-                        variant={practiceData.effectiveness === num ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setPracticeData({...practiceData, effectiveness: num})}
-                      >
-                        {num}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Insights & Observations</label>
-                  <Textarea
-                    value={practiceData.insights}
-                    onChange={(e) => setPracticeData({...practiceData, insights: e.target.value})}
-                    placeholder="What did you notice? Any insights or challenges?"
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      setCurrentTechnique('');
-                      setPracticeData({...practiceData, techniques: [...practiceData.techniques, currentTechnique]});
-                    }}
-                  >
-                    Practice Another
-                  </Button>
-                  <Button 
-                    onClick={() => onComplete('mind-management', {
-                      ...practiceData,
-                      techniques: [...practiceData.techniques, currentTechnique]
-                    })}
-                  >
-                    Complete Session
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 // Cortisol Reset Breathwork Component
 function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
@@ -7881,6 +7678,1435 @@ function FocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, 
   );
 }
 
+// Week 5 Component 3: Brain-Boosting Nutrition Plan
+function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [nutritionData, setNutritionData] = useState({
+    currentDiet: {
+      eatingPattern: '',
+      commonFoods: [] as string[],
+      challenges: [] as string[],
+      hydration: '',
+      supplements: [] as string[],
+      restrictions: [] as string[]
+    },
+    cognitiveGoals: [] as string[],
+    mealPlan: {
+      breakfast: [] as string[],
+      lunch: [] as string[],
+      dinner: [] as string[],
+      snacks: [] as string[],
+      hydrationPlan: '',
+      supplementPlan: [] as string[]
+    },
+    implementation: {
+      shoppingList: [] as string[],
+      mealPrepTips: [] as string[],
+      timeline: '',
+      successMetrics: ''
+    }
+  });
+
+  const steps = [
+    'Current Diet Assessment',
+    'Cognitive Nutrition Goals',
+    'Personalized Meal Planning',
+    'Implementation Strategy'
+  ];
+
+  const brainFoods = {
+    omega3: {
+      category: 'Omega-3 Fatty Acids',
+      benefits: ['Improves memory', 'Reduces inflammation', 'Supports brain structure'],
+      foods: ['Wild salmon', 'Sardines', 'Walnuts', 'Chia seeds', 'Flax seeds', 'Hemp seeds'],
+      science: 'DHA and EPA support brain cell membrane health and reduce neuroinflammation, crucial for cognitive function during hormonal changes.',
+      dailyTarget: '1-2 servings of fatty fish or 1 tbsp seeds/nuts'
+    },
+    antioxidants: {
+      category: 'Antioxidant-Rich Foods',
+      benefits: ['Protects against cognitive decline', 'Reduces oxidative stress', 'Supports memory'],
+      foods: ['Blueberries', 'Dark chocolate (70%+)', 'Green tea', 'Spinach', 'Broccoli', 'Pomegranate'],
+      science: 'Antioxidants like anthocyanins and flavonoids cross the blood-brain barrier to protect neurons from oxidative damage.',
+      dailyTarget: '2-3 servings of colorful fruits/vegetables'
+    },
+    bVitamins: {
+      category: 'B-Vitamin Complex',
+      benefits: ['Supports neurotransmitter production', 'Improves energy metabolism', 'Reduces brain fog'],
+      foods: ['Eggs', 'Leafy greens', 'Avocado', 'Legumes', 'Nutritional yeast', 'Grass-fed beef'],
+      science: 'B vitamins (especially B6, B12, folate) are essential for neurotransmitter synthesis and methylation pathways affecting mood and cognition.',
+      dailyTarget: '1-2 servings of B-vitamin rich foods'
+    },
+    choline: {
+      category: 'Choline Sources',
+      benefits: ['Enhances memory formation', 'Supports brain development', 'Improves focus'],
+      foods: ['Eggs', 'Salmon', 'Chicken liver', 'Brussels sprouts', 'Cauliflower', 'Soybeans'],
+      science: 'Choline is a precursor to acetylcholine, a neurotransmitter crucial for memory and attention, especially important during menopause.',
+      dailyTarget: '1-2 eggs or equivalent choline source daily'
+    },
+    magnesium: {
+      category: 'Magnesium-Rich Foods',
+      benefits: ['Reduces stress and anxiety', 'Improves sleep quality', 'Supports nerve function'],
+      foods: ['Dark chocolate', 'Almonds', 'Spinach', 'Pumpkin seeds', 'Black beans', 'Quinoa'],
+      science: 'Magnesium regulates GABA receptors and supports the HPA axis, crucial for stress management and sleep during midlife transitions.',
+      dailyTarget: '200-300mg through food sources'
+    },
+    probiotics: {
+      category: 'Gut-Brain Connection',
+      benefits: ['Improves mood', 'Reduces inflammation', 'Supports cognitive function'],
+      foods: ['Kefir', 'Sauerkraut', 'Kimchi', 'Greek yogurt', 'Miso', 'Kombucha'],
+      science: 'The gut-brain axis influences neurotransmitter production; 90% of serotonin is produced in the gut.',
+      dailyTarget: '1 serving of fermented food or probiotic supplement'
+    }
+  };
+
+  const mealTemplates = {
+    breakfast: [
+      {
+        name: 'Brain-Boosting Smoothie Bowl',
+        ingredients: ['Blueberries', 'Spinach', 'Chia seeds', 'Almond butter', 'Coconut milk'],
+        nutrients: ['Omega-3', 'Antioxidants', 'B-vitamins'],
+        prep: '5 minutes'
+      },
+      {
+        name: 'Cognitive Clarity Eggs',
+        ingredients: ['Pastured eggs', 'Avocado', 'Sauerkraut', 'Hemp seeds'],
+        nutrients: ['Choline', 'B-vitamins', 'Probiotics'],
+        prep: '10 minutes'
+      },
+      {
+        name: 'Memory-Supporting Oatmeal',
+        ingredients: ['Steel-cut oats', 'Walnuts', 'Blueberries', 'Cinnamon'],
+        nutrients: ['Omega-3', 'Antioxidants', 'Fiber'],
+        prep: '15 minutes'
+      }
+    ],
+    lunch: [
+      {
+        name: 'Mediterranean Brain Bowl',
+        ingredients: ['Wild salmon', 'Quinoa', 'Spinach', 'Olives', 'Lemon'],
+        nutrients: ['Omega-3', 'B-vitamins', 'Antioxidants'],
+        prep: '20 minutes'
+      },
+      {
+        name: 'Cognitive Power Salad',
+        ingredients: ['Mixed greens', 'Walnuts', 'Avocado', 'Eggs', 'Pumpkin seeds'],
+        nutrients: ['Choline', 'Omega-3', 'Magnesium'],
+        prep: '10 minutes'
+      },
+      {
+        name: 'Focus-Enhancing Soup',
+        ingredients: ['Bone broth', 'Broccoli', 'Sweet potato', 'Turmeric'],
+        nutrients: ['Collagen', 'Antioxidants', 'Anti-inflammatory'],
+        prep: '30 minutes'
+      }
+    ],
+    dinner: [
+      {
+        name: 'Neuroprotective Stir-Fry',
+        ingredients: ['Wild-caught fish', 'Broccoli', 'Bell peppers', 'Ginger', 'Coconut oil'],
+        nutrients: ['Omega-3', 'Antioxidants', 'MCTs'],
+        prep: '25 minutes'
+      },
+      {
+        name: 'Memory-Boosting Curry',
+        ingredients: ['Chicken', 'Cauliflower', 'Spinach', 'Turmeric', 'Coconut milk'],
+        nutrients: ['Choline', 'Anti-inflammatory', 'B-vitamins'],
+        prep: '35 minutes'
+      },
+      {
+        name: 'Brain-Healthy Pasta',
+        ingredients: ['Lentil pasta', 'Sardines', 'Kale', 'Pine nuts', 'Olive oil'],
+        nutrients: ['Omega-3', 'B-vitamins', 'Antioxidants'],
+        prep: '20 minutes'
+      }
+    ],
+    snacks: [
+      {
+        name: 'Cognitive Trail Mix',
+        ingredients: ['Walnuts', 'Almonds', 'Dark chocolate chips', 'Goji berries'],
+        nutrients: ['Omega-3', 'Magnesium', 'Antioxidants'],
+        prep: '2 minutes'
+      },
+      {
+        name: 'Memory-Supporting Smoothie',
+        ingredients: ['Greek yogurt', 'Berries', 'Spinach', 'Flax seeds'],
+        nutrients: ['Probiotics', 'Antioxidants', 'Omega-3'],
+        prep: '5 minutes'
+      },
+      {
+        name: 'Focus-Enhancing Hummus',
+        ingredients: ['Chickpeas', 'Tahini', 'Vegetables', 'Olive oil'],
+        nutrients: ['B-vitamins', 'Healthy fats', 'Fiber'],
+        prep: '10 minutes'
+      }
+    ]
+  };
+
+  const supplements = [
+    {
+      name: 'Omega-3 Fish Oil',
+      dosage: '1000-2000mg EPA/DHA daily',
+      benefits: 'Memory, mood, inflammation',
+      timing: 'With meals',
+      considerations: 'Choose molecularly distilled, third-party tested'
+    },
+    {
+      name: 'Magnesium Glycinate',
+      dosage: '200-400mg daily',
+      benefits: 'Sleep, stress, muscle relaxation',
+      timing: 'Evening',
+      considerations: 'Glycinate form is well-absorbed and gentle'
+    },
+    {
+      name: 'B-Complex',
+      dosage: 'As directed on label',
+      benefits: 'Energy, mood, cognitive function',
+      timing: 'Morning with breakfast',
+      considerations: 'Look for methylated forms (methylfolate, methylcobalamin)'
+    },
+    {
+      name: 'Vitamin D3',
+      dosage: '2000-4000 IU daily',
+      benefits: 'Mood, bone health, immune function',
+      timing: 'With fat-containing meal',
+      considerations: 'Test levels first; take with K2 for optimal absorption'
+    }
+  ];
+
+  const renderCurrentDietStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Current Diet Assessment</h4>
+        <p className="text-sm text-blue-800">
+          Understanding your current eating patterns helps us identify opportunities to optimize your nutrition 
+          for cognitive health and energy during this life stage.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Describe your typical eating pattern:</label>
+          <Textarea
+            value={nutritionData.currentDiet.eatingPattern}
+            onChange={(e) => setNutritionData(prev => ({
+              ...prev,
+              currentDiet: { ...prev.currentDiet, eatingPattern: e.target.value }
+            }))}
+            placeholder="e.g., Skip breakfast, grab coffee, light lunch, heavy dinner, snack at night..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">What foods do you eat most regularly? (Select all that apply)</h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              'Processed foods (packaged, convenience)',
+              'Fast food or takeout',
+              'Fresh fruits and vegetables',
+              'Whole grains (oats, quinoa, brown rice)',
+              'Lean proteins (fish, chicken, legumes)',
+              'Dairy products',
+              'Nuts and seeds',
+              'Refined carbs (white bread, pasta)',
+              'Sugary snacks or desserts',
+              'Fried foods',
+              'Fermented foods (yogurt, sauerkraut)',
+              'Dark leafy greens'
+            ].map((food) => (
+              <label key={food} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={nutritionData.currentDiet.commonFoods.includes(food)}
+                  onChange={(e) => {
+                    const current = nutritionData.currentDiet.commonFoods;
+                    setNutritionData(prev => ({
+                      ...prev,
+                      currentDiet: {
+                        ...prev.currentDiet,
+                        commonFoods: e.target.checked 
+                          ? [...current, food]
+                          : current.filter(f => f !== food)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{food}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Current eating challenges:</h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              'Emotional eating or stress eating',
+              'Irregular meal times',
+              'Skipping meals',
+              'Sugar cravings',
+              'Afternoon energy crashes',
+              'Difficulty cooking or meal planning',
+              'Eating out frequently',
+              'Limited time for food preparation',
+              'Food allergies or sensitivities',
+              'Digestive issues',
+              'Lack of appetite',
+              'Portion control challenges'
+            ].map((challenge) => (
+              <label key={challenge} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={nutritionData.currentDiet.challenges.includes(challenge)}
+                  onChange={(e) => {
+                    const current = nutritionData.currentDiet.challenges;
+                    setNutritionData(prev => ({
+                      ...prev,
+                      currentDiet: {
+                        ...prev.currentDiet,
+                        challenges: e.target.checked 
+                          ? [...current, challenge]
+                          : current.filter(c => c !== challenge)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{challenge}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How well do you stay hydrated?</label>
+          <Textarea
+            value={nutritionData.currentDiet.hydration}
+            onChange={(e) => setNutritionData(prev => ({
+              ...prev,
+              currentDiet: { ...prev.currentDiet, hydration: e.target.value }
+            }))}
+            placeholder="e.g., 2-3 glasses water daily, mainly coffee/tea, forget to drink until evening..."
+            rows={2}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderGoalsStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Cognitive Nutrition Goals</h4>
+        <p className="text-sm text-green-800">
+          Identify your specific cognitive health goals to create a targeted nutrition plan 
+          that addresses your unique needs during this life transition.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What cognitive improvements would you like to see from better nutrition?</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Improved memory and recall',
+            'Better focus and concentration',
+            'Reduced brain fog',
+            'More stable energy throughout day',
+            'Better mood and emotional balance',
+            'Improved sleep quality',
+            'Reduced stress and anxiety',
+            'Enhanced mental clarity',
+            'Better decision-making abilities',
+            'Increased motivation and drive',
+            'Improved learning capacity',
+            'Better stress resilience'
+          ].map((goal) => (
+            <label key={goal} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={nutritionData.cognitiveGoals.includes(goal)}
+                onChange={(e) => {
+                  const current = nutritionData.cognitiveGoals;
+                  setNutritionData(prev => ({
+                    ...prev,
+                    cognitiveGoals: e.target.checked 
+                      ? [...current, goal]
+                      : current.filter(g => g !== goal)
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{goal}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {Object.entries(brainFoods).map(([key, category]) => (
+          <div key={key} className="border rounded-lg p-4">
+            <h6 className="font-medium text-lg mb-2">{category.category}</h6>
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium text-green-700">Benefits: </span>
+                {category.benefits.join(', ')}
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">Best Sources: </span>
+                {category.foods.slice(0, 3).join(', ')}
+              </div>
+              <div>
+                <span className="font-medium text-purple-700">Daily Target: </span>
+                {category.dailyTarget}
+              </div>
+              <div className="bg-gray-50 p-2 rounded text-xs">
+                <span className="font-medium">Science: </span>
+                {category.science}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderMealPlanStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Personalized Meal Planning</h4>
+        <p className="text-sm text-purple-800">
+          Choose from brain-optimized meal templates that align with your goals and preferences. 
+          Each option is designed to support cognitive function with targeted nutrients.
+        </p>
+      </div>
+
+      {Object.entries(mealTemplates).map(([mealType, options]) => (
+        <div key={mealType} className="space-y-4">
+          <h5 className="font-semibold text-lg capitalize flex items-center gap-2">
+            {mealType === 'breakfast' && '🌅'}
+            {mealType === 'lunch' && '☀️'}
+            {mealType === 'dinner' && '🌙'}
+            {mealType === 'snacks' && '🥜'}
+            {mealType} Options
+          </h5>
+          
+          <div className="grid md:grid-cols-3 gap-4">
+            {options.map((meal, index) => (
+              <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="mb-3">
+                  <h6 className="font-medium">{meal.name}</h6>
+                  <div className="text-xs text-gray-500">Prep time: {meal.prep}</div>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-700">Ingredients:</span>
+                    <div className="text-gray-600">{meal.ingredients.join(', ')}</div>
+                  </div>
+                  
+                  <div>
+                    <span className="font-medium text-gray-700">Key Nutrients:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {meal.nutrients.map((nutrient, idx) => (
+                        <span key={idx} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {nutrient}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={nutritionData.mealPlan[mealType as keyof typeof nutritionData.mealPlan].includes(meal.name)}
+                      onChange={(e) => {
+                        const current = nutritionData.mealPlan[mealType as keyof typeof nutritionData.mealPlan] as string[];
+                        setNutritionData(prev => ({
+                          ...prev,
+                          mealPlan: {
+                            ...prev.mealPlan,
+                            [mealType]: e.target.checked 
+                              ? [...current, meal.name]
+                              : current.filter(m => m !== meal.name)
+                          }
+                        }));
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-sm font-medium">Add to my meal plan</span>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="space-y-4">
+        <h5 className="font-semibold text-lg">💊 Cognitive Support Supplements</h5>
+        <div className="grid md:grid-cols-2 gap-4">
+          {supplements.map((supplement, index) => (
+            <div key={index} className="border rounded-lg p-4">
+              <h6 className="font-medium">{supplement.name}</h6>
+              <div className="space-y-1 text-sm text-gray-600">
+                <div><span className="font-medium">Dosage:</span> {supplement.dosage}</div>
+                <div><span className="font-medium">Benefits:</span> {supplement.benefits}</div>
+                <div><span className="font-medium">Timing:</span> {supplement.timing}</div>
+                <div className="text-xs bg-yellow-50 p-2 rounded">{supplement.considerations}</div>
+              </div>
+              
+              <div className="pt-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={nutritionData.mealPlan.supplementPlan.includes(supplement.name)}
+                    onChange={(e) => {
+                      const current = nutritionData.mealPlan.supplementPlan;
+                      setNutritionData(prev => ({
+                        ...prev,
+                        mealPlan: {
+                          ...prev.mealPlan,
+                          supplementPlan: e.target.checked 
+                            ? [...current, supplement.name]
+                            : current.filter(s => s !== supplement.name)
+                        }
+                      }));
+                    }}
+                    className="rounded"
+                  />
+                  <span className="text-sm font-medium">Consider for my plan</span>
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderImplementationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Implementation Strategy</h4>
+        <p className="text-sm text-indigo-800">
+          Transform your nutrition plan into action with practical shopping lists, meal prep strategies, 
+          and success tracking methods.
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+        <h5 className="font-semibold text-lg mb-4">Your Brain-Boosting Nutrition Plan Summary</h5>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Selected Meals</h6>
+              <div className="text-sm space-y-1">
+                <div><span className="font-medium">Breakfast:</span> {nutritionData.mealPlan.breakfast.join(', ') || 'None selected'}</div>
+                <div><span className="font-medium">Lunch:</span> {nutritionData.mealPlan.lunch.join(', ') || 'None selected'}</div>
+                <div><span className="font-medium">Dinner:</span> {nutritionData.mealPlan.dinner.join(', ') || 'None selected'}</div>
+                <div><span className="font-medium">Snacks:</span> {nutritionData.mealPlan.snacks.join(', ') || 'None selected'}</div>
+              </div>
+            </div>
+
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Cognitive Goals</h6>
+              <div className="text-sm">
+                {nutritionData.cognitiveGoals.length > 0 ? (
+                  nutritionData.cognitiveGoals.slice(0, 3).map((goal, index) => (
+                    <div key={index}>• {goal}</div>
+                  ))
+                ) : (
+                  <div className="italic text-gray-500">None selected</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Supplement Considerations</h6>
+              <div className="text-sm">
+                {nutritionData.mealPlan.supplementPlan.length > 0 ? (
+                  nutritionData.mealPlan.supplementPlan.map((supplement, index) => (
+                    <div key={index}>• {supplement}</div>
+                  ))
+                ) : (
+                  <div className="italic text-gray-500">None selected</div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Current Challenges</h6>
+              <div className="text-sm">
+                {nutritionData.currentDiet.challenges.length > 0 ? (
+                  nutritionData.currentDiet.challenges.slice(0, 3).map((challenge, index) => (
+                    <div key={index}>• {challenge}</div>
+                  ))
+                ) : (
+                  <div className="italic text-gray-500">None identified</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">What's your preferred timeline for implementing these changes?</label>
+          <Textarea
+            value={nutritionData.implementation.timeline}
+            onChange={(e) => setNutritionData(prev => ({
+              ...prev,
+              implementation: { ...prev.implementation, timeline: e.target.value }
+            }))}
+            placeholder="e.g., Start with breakfast changes this week, add lunch next week, gradual transition over 1 month..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How will you measure success with your nutrition changes?</label>
+          <Textarea
+            value={nutritionData.implementation.successMetrics}
+            onChange={(e) => setNutritionData(prev => ({
+              ...prev,
+              implementation: { ...prev.implementation, successMetrics: e.target.value }
+            }))}
+            placeholder="e.g., Better focus by afternoon, improved energy levels, less brain fog, better mood stability..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h5 className="font-medium text-green-900 mb-2">Implementation Tips</h5>
+        <div className="text-sm text-green-800 space-y-1">
+          <div>• Start with one meal change at a time for sustainable progress</div>
+          <div>• Batch cook brain-healthy meals on weekends</div>
+          <div>• Keep healthy snacks visible and convenient</div>
+          <div>• Track how different foods affect your energy and mood</div>
+          <div>• Consult healthcare providers before starting new supplements</div>
+          <div>• Stay hydrated - even mild dehydration affects cognition</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-red-500" />
+          Brain-Boosting Nutrition Plan
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-red-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Create customized meal plans with cognitive-supporting foods and supplements</p>
+          </div>
+
+          {currentStep === 0 && renderCurrentDietStep()}
+          {currentStep === 1 && renderGoalsStep()}
+          {currentStep === 2 && renderMealPlanStep()}
+          {currentStep === 3 && renderImplementationStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w5-nutrition', nutritionData)}
+                className="ml-auto"
+              >
+                Complete Nutrition Plan
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 5 Component 4: Mind Management System
+function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [systemData, setSystemData] = useState({
+    currentChallenges: [] as string[],
+    organizationStyle: '',
+    digitalTools: [] as string[],
+    mindManagementGoals: [] as string[],
+    selectedSystems: {
+      brainDump: false,
+      priorityMatrix: false,
+      timeBlocking: false,
+      cognitiveOffloading: false,
+      decisionFramework: false,
+      energyManagement: false
+    },
+    customSystems: [] as string[],
+    implementation: {
+      schedule: '',
+      environment: '',
+      successMetrics: '',
+      barriers: [] as string[]
+    }
+  });
+
+  const steps = [
+    'Mental Load Assessment',
+    'Mind Management Techniques',
+    'System Design & Customization',
+    'Implementation & Maintenance'
+  ];
+
+  const mindManagementTechniques = {
+    capture: [
+      {
+        id: 'strategic-brain-dump',
+        name: 'Strategic Brain Dump System',
+        description: 'Systematically capture and organize all mental clutter',
+        timeRequired: '15-20 minutes',
+        frequency: 'Daily morning + weekly deep dive',
+        difficulty: 'Beginner',
+        cognitiveLoad: 'High relief',
+        steps: [
+          'Set timer for 10 minutes for rapid brain dump',
+          'Write every thought, worry, task, or idea without filtering',
+          'Categorize items: Action Required, Someday/Maybe, Reference, Trash',
+          'Identify top 3 priorities for immediate action',
+          'Schedule specific times for other actionable items',
+          'Archive or delegate non-essential items'
+        ],
+        benefits: ['Reduces mental clutter by 70%', 'Improves decision clarity', 'Decreases anxiety', 'Frees working memory'],
+        science: 'Externalizing thoughts reduces cognitive load on working memory, allowing for clearer thinking and reduced rumination.'
+      },
+      {
+        id: 'capture-everything',
+        name: 'Universal Capture System',
+        description: 'Never lose an idea or forget a commitment again',
+        timeRequired: '2-5 minutes per capture',
+        frequency: 'Ongoing throughout day',
+        difficulty: 'Beginner',
+        cognitiveLoad: 'Medium relief',
+        steps: [
+          'Choose one primary capture tool (phone app, notebook, voice recorder)',
+          'Capture every task, idea, or commitment immediately',
+          'Use consistent format: What + When + Where if applicable',
+          'Process captured items within 24 hours',
+          'Sort into appropriate systems (calendar, task list, reference)',
+          'Archive completed captures'
+        ],
+        benefits: ['Eliminates mental rehearsal', 'Prevents task forgetting', 'Reduces decision fatigue', 'Builds trust in system'],
+        science: 'The Zeigarnik effect shows we remember incomplete tasks; capturing them externally stops this mental loop.'
+      }
+    ],
+    organize: [
+      {
+        id: 'eisenhower-matrix',
+        name: 'Enhanced Priority Matrix',
+        description: 'Make better decisions about what deserves your attention',
+        timeRequired: '10-15 minutes',
+        frequency: 'Weekly planning + daily review',
+        difficulty: 'Intermediate',
+        cognitiveLoad: 'High relief',
+        steps: [
+          'Create four quadrants: Urgent+Important, Important+Not Urgent, Urgent+Not Important, Neither',
+          'Place all tasks and commitments in appropriate quadrant',
+          'Quadrant 1: Do immediately with full focus',
+          'Quadrant 2: Schedule dedicated time blocks',
+          'Quadrant 3: Delegate or batch process',
+          'Quadrant 4: Eliminate or minimize'
+        ],
+        benefits: ['Clarifies priorities', 'Reduces overwhelm', 'Improves time allocation', 'Prevents urgent from hijacking important'],
+        science: 'Reduces decision fatigue by pre-categorizing choices and aligns actions with values rather than just urgency.'
+      },
+      {
+        id: 'energy-based-scheduling',
+        name: 'Cognitive Energy Management',
+        description: 'Align tasks with your natural energy rhythms',
+        timeRequired: '20 minutes setup + daily adjustments',
+        frequency: 'Weekly energy mapping + daily scheduling',
+        difficulty: 'Intermediate',
+        cognitiveLoad: 'High relief',
+        steps: [
+          'Track energy levels hourly for one week',
+          'Identify peak cognitive energy times (usually morning)',
+          'Map task types to energy requirements: High (creative work), Medium (communication), Low (admin)',
+          'Schedule high-cognitive tasks during peak energy',
+          'Batch similar tasks to reduce task-switching',
+          'Protect peak energy from meetings and interruptions'
+        ],
+        benefits: ['Optimizes cognitive performance', 'Reduces mental fatigue', 'Improves work quality', 'Creates sustainable rhythms'],
+        science: 'Chronobiology shows cognitive performance varies predictably; aligning tasks with natural rhythms maximizes efficiency.'
+      }
+    ],
+    simplify: [
+      {
+        id: 'decision-framework',
+        name: 'Automated Decision Framework',
+        description: 'Reduce decision fatigue with pre-made decision rules',
+        timeRequired: '30 minutes setup + ongoing refinement',
+        frequency: 'One-time setup with monthly reviews',
+        difficulty: 'Advanced',
+        cognitiveLoad: 'Extreme relief',
+        steps: [
+          'Identify recurring decisions that drain mental energy',
+          'Create "if-then" rules for common scenarios',
+          'Set decision deadlines to prevent overthinking',
+          'Establish decision criteria and weightings',
+          'Create standard responses for common requests',
+          'Automate or eliminate low-impact decisions'
+        ],
+        benefits: ['Eliminates decision fatigue', 'Speeds up choices', 'Reduces overthinking', 'Creates consistency'],
+        science: 'Decision fatigue depletes glucose in the prefrontal cortex; pre-made frameworks preserve cognitive resources for important choices.'
+      },
+      {
+        id: 'cognitive-offloading',
+        name: 'Strategic Cognitive Offloading',
+        description: 'Let technology and systems handle routine mental tasks',
+        timeRequired: '1-2 hours setup per system',
+        frequency: 'One-time setup with quarterly optimization',
+        difficulty: 'Intermediate',
+        cognitiveLoad: 'Extreme relief',
+        steps: [
+          'Identify mental tasks that can be automated or systematized',
+          'Set up calendar automation for recurring events',
+          'Create checklists for complex but routine processes',
+          'Use reminder systems for regular reviews',
+          'Delegate routine decisions to trusted criteria',
+          'Create templates for common communications'
+        ],
+        benefits: ['Frees mental bandwidth', 'Reduces errors', 'Creates consistency', 'Enables focus on high-value activities'],
+        science: 'External memory aids reduce working memory load, allowing more capacity for complex thinking and creativity.'
+      }
+    ]
+  };
+
+  const digitalTools = {
+    capture: ['Voice memos', 'Phone notes app', 'Physical notebook', 'Task management app', 'Email to self'],
+    organize: ['Digital calendar', 'Task management software', 'Spreadsheets', 'Mind mapping tools', 'Project management apps'],
+    review: ['Weekly review templates', 'Daily standup questions', 'Monthly reflection prompts', 'Quarterly goal reviews']
+  };
+
+  const environmentOptimizations = [
+    {
+      category: 'Physical Space',
+      optimizations: [
+        'Clear desk policy - only current task materials visible',
+        'Dedicated zones for different types of work',
+        'Visual cues for important information',
+        'Easy access to capture tools',
+        'Minimal visual distractions'
+      ]
+    },
+    {
+      category: 'Digital Environment',
+      optimizations: [
+        'Organized desktop and file structure',
+        'Notification management and batching',
+        'Browser bookmark organization',
+        'App organization on devices',
+        'Automated backup systems'
+      ]
+    },
+    {
+      category: 'Mental Environment',
+      optimizations: [
+        'Regular mental space clearing routines',
+        'Boundary setting for mental availability',
+        'Transition rituals between activities',
+        'Regular system maintenance time',
+        'Reflection and optimization practices'
+      ]
+    }
+  ];
+
+  const renderAssessmentStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Mental Load Assessment</h4>
+        <p className="text-sm text-blue-800">
+          Understanding your current mental load and organization challenges helps create a personalized 
+          mind management system that actually works for your lifestyle and thinking patterns.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What mental load challenges do you experience? (Select all that apply)</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Feeling overwhelmed by too many things to remember',
+            'Forgetting important tasks or commitments',
+            'Difficulty prioritizing when everything feels urgent',
+            'Mental clutter affecting focus and clarity',
+            'Decision fatigue from too many choices',
+            'Constantly thinking about work or tasks',
+            'Feeling scattered or disorganized',
+            'Procrastination on important projects',
+            'Difficulty saying no to new commitments',
+            'Overthinking decisions, both big and small',
+            'Feeling like there\'s never enough time',
+            'Stress from managing multiple life areas'
+          ].map((challenge) => (
+            <label key={challenge} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={systemData.currentChallenges.includes(challenge)}
+                onChange={(e) => {
+                  const current = systemData.currentChallenges;
+                  setSystemData(prev => ({
+                    ...prev,
+                    currentChallenges: e.target.checked 
+                      ? [...current, challenge]
+                      : current.filter(c => c !== challenge)
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{challenge}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Describe your current organization approach:</label>
+        <Textarea
+          value={systemData.organizationStyle}
+          onChange={(e) => setSystemData(prev => ({ ...prev, organizationStyle: e.target.value }))}
+          placeholder="e.g., Keep everything in my head, use phone reminders, have lists everywhere, wing it day by day..."
+          rows={3}
+        />
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What digital tools do you currently use? (Select all that apply)</h5>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {[
+            'Phone calendar app',
+            'Paper planner or notebook',
+            'Sticky notes',
+            'Task management app',
+            'Email reminders',
+            'Phone voice memos',
+            'Spreadsheets',
+            'Notes app',
+            'Project management software',
+            'Mind mapping tools',
+            'No formal system',
+            'Multiple disconnected systems'
+          ].map((tool) => (
+            <label key={tool} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={systemData.digitalTools.includes(tool)}
+                onChange={(e) => {
+                  const current = systemData.digitalTools;
+                  setSystemData(prev => ({
+                    ...prev,
+                    digitalTools: e.target.checked 
+                      ? [...current, tool]
+                      : current.filter(t => t !== tool)
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{tool}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 p-4 rounded-lg">
+        <h5 className="font-medium text-yellow-900 mb-2">Mental Load Analysis</h5>
+        <div className="text-sm text-yellow-800">
+          <div><strong>Challenges identified:</strong> {systemData.currentChallenges.length}/12</div>
+          <div><strong>Current tools:</strong> {systemData.digitalTools.length > 0 ? systemData.digitalTools.length : 'No formal system'}</div>
+          <div><strong>Organization style:</strong> {systemData.organizationStyle ? 'Described' : 'Not yet described'}</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTechniquesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Mind Management Techniques</h4>
+        <p className="text-sm text-green-800">
+          These evidence-based techniques help reduce cognitive load, improve mental clarity, and create 
+          sustainable systems for managing the complexity of midlife responsibilities.
+        </p>
+      </div>
+
+      {Object.entries(mindManagementTechniques).map(([category, techniques]) => (
+        <div key={category} className="space-y-4">
+          <h5 className="font-semibold text-lg capitalize flex items-center gap-2">
+            {category === 'capture' && <Brain className="w-5 h-5 text-blue-600" />}
+            {category === 'organize' && <Calendar className="w-5 h-5 text-green-600" />}
+            {category === 'simplify' && <Sparkles className="w-5 h-5 text-purple-600" />}
+            {category} Systems
+          </h5>
+          
+          <div className="grid gap-4">
+            {techniques.map((technique) => (
+              <div key={technique.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h6 className="font-medium text-lg">{technique.name}</h6>
+                    <p className="text-sm text-gray-600">{technique.description}</p>
+                  </div>
+                  <div className="text-right text-sm text-gray-500">
+                    <div>{technique.timeRequired}</div>
+                    <div className={`px-2 py-1 rounded text-xs ${
+                      technique.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
+                      technique.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {technique.difficulty}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium text-gray-700">Frequency:</span> {technique.frequency}
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Cognitive Relief:</span> {technique.cognitiveLoad}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h6 className="font-medium text-sm text-gray-700 mb-2">Benefits:</h6>
+                    <div className="flex flex-wrap gap-1">
+                      {technique.benefits.map((benefit, index) => (
+                        <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {benefit}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                      <ChevronDown className="w-4 h-4" />
+                      View Step-by-Step Process & Science
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-3 space-y-3">
+                      <div>
+                        <h6 className="font-medium text-sm text-gray-700 mb-2">Implementation steps:</h6>
+                        <ol className="text-sm space-y-1">
+                          {technique.steps.map((step, index) => (
+                            <li key={index} className="flex gap-2">
+                              <span className="text-green-600 font-medium">{index + 1}.</span>
+                              <span>{step}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded">
+                        <h6 className="font-medium text-sm text-gray-700 mb-1">The Science:</h6>
+                        <p className="text-sm text-gray-600">{technique.science}</p>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  <div className="pt-2">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={systemData.selectedSystems[technique.id as keyof typeof systemData.selectedSystems]}
+                        onChange={(e) => {
+                          setSystemData(prev => ({
+                            ...prev,
+                            selectedSystems: {
+                              ...prev.selectedSystems,
+                              [technique.id]: e.target.checked
+                            }
+                          }));
+                        }}
+                        className="rounded"
+                      />
+                      <span className="text-sm font-medium">Include in my mind management system</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Selection Summary</h5>
+        <p className="text-sm text-blue-800">
+          You've selected {Object.values(systemData.selectedSystems).filter(Boolean).length} techniques for your mind management system.
+          Starting with 2-3 core techniques and gradually adding more ensures sustainable implementation.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderSystemDesignStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">System Design & Customization</h4>
+        <p className="text-sm text-purple-800">
+          Customize your selected techniques into an integrated system that fits your lifestyle, 
+          preferences, and the specific challenges you're facing.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What are your primary mind management goals?</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Reduce mental clutter and overwhelm',
+            'Never forget important tasks or commitments',
+            'Make decisions more quickly and confidently',
+            'Prioritize effectively when everything feels urgent',
+            'Create sustainable organization systems',
+            'Reduce stress from mental load',
+            'Improve focus and concentration',
+            'Stop overthinking and ruminating',
+            'Feel more in control of daily life',
+            'Create better work-life boundaries',
+            'Spend less mental energy on routine decisions',
+            'Have more mental space for what matters most'
+          ].map((goal) => (
+            <label key={goal} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={systemData.mindManagementGoals.includes(goal)}
+                onChange={(e) => {
+                  const current = systemData.mindManagementGoals;
+                  setSystemData(prev => ({
+                    ...prev,
+                    mindManagementGoals: e.target.checked 
+                      ? [...current, goal]
+                      : current.filter(g => g !== goal)
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{goal}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <h5 className="font-semibold text-lg">Environment Optimization</h5>
+        {environmentOptimizations.map((env, index) => (
+          <div key={index} className="border rounded-lg p-4">
+            <h6 className="font-medium text-lg mb-3">{env.category}</h6>
+            <div className="space-y-2">
+              {env.optimizations.map((optimization, idx) => (
+                <div key={idx} className="text-sm bg-gray-50 p-2 rounded">
+                  {optimization}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h5 className="font-medium text-green-900 mb-2">Your Integrated System Overview</h5>
+        <div className="text-sm text-green-800 space-y-2">
+          <div><strong>Selected techniques:</strong> {Object.values(systemData.selectedSystems).filter(Boolean).length}/6</div>
+          <div><strong>Primary goals:</strong> {systemData.mindManagementGoals.length} identified</div>
+          <div><strong>Current challenges:</strong> {systemData.currentChallenges.length} to address</div>
+          <div className="pt-2 text-xs">
+            <strong>Recommended focus areas:</strong> Start with capture and organize systems, then add simplification techniques as your foundation strengthens.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderImplementationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Implementation & Maintenance</h4>
+        <p className="text-sm text-indigo-800">
+          Create a realistic implementation plan that builds sustainable habits while avoiding 
+          the overwhelm that comes from trying to change everything at once.
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+        <h5 className="font-semibold text-lg mb-4">Your Mind Management System Summary</h5>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Selected Techniques</h6>
+              <div className="text-sm text-gray-700">
+                {Object.entries(systemData.selectedSystems).filter(([_, selected]) => selected).length > 0 ? (
+                  Object.entries(systemData.selectedSystems)
+                    .filter(([_, selected]) => selected)
+                    .map(([technique, _], index) => (
+                      <div key={technique} className="mb-1">
+                        • {technique.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                      </div>
+                    ))
+                ) : (
+                  <div className="italic text-gray-500">No techniques selected</div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Primary Goals</h6>
+              <div className="text-sm text-gray-700">
+                {systemData.mindManagementGoals.length > 0 ? (
+                  systemData.mindManagementGoals.slice(0, 3).map((goal, index) => (
+                    <div key={index} className="mb-1">• {goal}</div>
+                  ))
+                ) : (
+                  <div className="italic text-gray-500">No goals selected</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Current Tools</h6>
+              <div className="text-sm text-gray-700">
+                {systemData.digitalTools.length > 0 ? (
+                  systemData.digitalTools.slice(0, 4).map((tool, index) => (
+                    <div key={index} className="mb-1">• {tool}</div>
+                  ))
+                ) : (
+                  <div className="italic text-gray-500">No tools specified</div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h6 className="font-medium text-gray-900 mb-2">Main Challenges</h6>
+              <div className="text-sm text-gray-700">
+                {systemData.currentChallenges.length > 0 ? (
+                  systemData.currentChallenges.slice(0, 3).map((challenge, index) => (
+                    <div key={index} className="mb-1">• {challenge}</div>
+                  ))
+                ) : (
+                  <div className="italic text-gray-500">No challenges identified</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Implementation schedule and timeline:</label>
+          <Textarea
+            value={systemData.implementation.schedule}
+            onChange={(e) => setSystemData(prev => ({
+              ...prev,
+              implementation: { ...prev.implementation, schedule: e.target.value }
+            }))}
+            placeholder="e.g., Week 1: Set up brain dump system, Week 2: Add priority matrix, Week 3: Implement time blocking..."
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Environment setup and optimization needs:</label>
+          <Textarea
+            value={systemData.implementation.environment}
+            onChange={(e) => setSystemData(prev => ({
+              ...prev,
+              implementation: { ...prev.implementation, environment: e.target.value }
+            }))}
+            placeholder="e.g., Clear desk setup, phone apps organized, notebook for capture, dedicated review time..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How will you measure success?</label>
+          <Textarea
+            value={systemData.implementation.successMetrics}
+            onChange={(e) => setSystemData(prev => ({
+              ...prev,
+              implementation: { ...prev.implementation, successMetrics: e.target.value }
+            }))}
+            placeholder="e.g., Feeling less overwhelmed, remembering commitments, making decisions faster, less mental clutter..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Potential implementation barriers to watch for:</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Trying to implement everything at once',
+            'Perfectionism preventing getting started',
+            'Forgetting to use the new system',
+            'Old habits pulling you back',
+            'Lack of time for system maintenance',
+            'Technology learning curves',
+            'Inconsistent implementation',
+            'System becoming too complex',
+            'Not adapting system to changing needs',
+            'Comparing your system to others',
+            'Giving up after initial struggles',
+            'Not celebrating small wins'
+          ].map((barrier) => (
+            <label key={barrier} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={systemData.implementation.barriers.includes(barrier)}
+                onChange={(e) => {
+                  const current = systemData.implementation.barriers;
+                  setSystemData(prev => ({
+                    ...prev,
+                    implementation: {
+                      ...prev.implementation,
+                      barriers: e.target.checked 
+                        ? [...current, barrier]
+                        : current.filter(b => b !== barrier)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{barrier}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h5 className="font-medium text-green-900 mb-2">Implementation Success Tips</h5>
+        <div className="text-sm text-green-800 space-y-1">
+          <div>• Start with one technique and practice for 2 weeks before adding another</div>
+          <div>• Set up your environment to make the new system easier than the old way</div>
+          <div>• Schedule weekly reviews to adjust and optimize your system</div>
+          <div>• Focus on consistency over perfection - imperfect action beats perfect planning</div>
+          <div>• Celebrate small wins and be patient with the learning process</div>
+          <div>• Adjust the system based on what you learn about your patterns and preferences</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-purple-600" />
+          Mind Management System
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Master cognitive load management with evidence-based mind organization techniques</p>
+          </div>
+
+          {currentStep === 0 && renderAssessmentStep()}
+          {currentStep === 1 && renderTechniquesStep()}
+          {currentStep === 2 && renderSystemDesignStep()}
+          {currentStep === 3 && renderImplementationStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w5-mind-management', systemData)}
+                className="ml-auto"
+              >
+                Complete Mind Management System
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Main Enhanced Coaching Component
 // Breathwork & Vagus Nerve Reset Component
 function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
@@ -10886,6 +12112,14 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'w5-rituals') {
     return <FocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w5-nutrition') {
+    return <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w5-mind-management') {
+    return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
