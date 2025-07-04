@@ -98,38 +98,37 @@ export const coachingModules: CoachingModule[] = [
     id: 'week-2',
     weekNumber: 2,
     title: 'Rewiring Thoughts',
-    description: 'CBT & NLP reframing techniques to transform negative thinking patterns',
+    description: 'Transform limiting beliefs using evidence-based CBT & NLP techniques specifically designed for midlife cognitive transformation',
     completed: false,
     progress: 0,
     locked: false,
     components: [
       {
-        id: 'w2-cbt',
-        type: 'video',
-        title: 'CBT Reframing Techniques',
-        description: 'Learn cognitive behavioral therapy methods for thought transformation',
-        duration: 18,
-        completed: false
-      },
-      {
-        id: 'w2-mirror',
+        id: 'w2-cbt-reframing',
         type: 'exercise',
-        title: 'Mirror Work & Affirmations',
-        description: 'Practice self-compassion through mirror work and affirmation scripting',
+        title: 'CBT Thought Transformation System',
+        description: 'Master the 5-step cognitive behavioral therapy framework to identify, challenge, and reframe automatic negative thoughts with real-time practice scenarios',
         completed: false
       },
       {
-        id: 'w2-audit',
+        id: 'w2-mirror-affirmations',
+        type: 'exercise',
+        title: 'Mirror Work & Empowerment Affirmations',
+        description: 'Design personalized affirmation scripts and practice self-compassion techniques through guided mirror work sessions',
+        completed: false
+      },
+      {
+        id: 'w2-thought-audit',
         type: 'worksheet',
-        title: 'Thought Audit Tracker',
-        description: 'Tool to identify and replace self-critical thoughts',
+        title: 'Comprehensive Thought Pattern Audit',
+        description: 'Complete 7-day thought tracking system to identify negative patterns, triggers, and replacement strategies with scoring analysis',
         completed: false
       },
       {
-        id: 'w2-nlp',
+        id: 'w2-nlp-reframing',
         type: 'exercise',
-        title: 'NLP Reframing Practice',
-        description: 'Neuro-linguistic programming techniques for positive thinking',
+        title: 'NLP Language Pattern Mastery',
+        description: 'Learn advanced neuro-linguistic programming techniques including anchoring, reframing, and submodality shifts for lasting thought transformation',
         completed: false
       }
     ]
