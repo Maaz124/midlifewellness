@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Calendar, Target, BookOpen, RefreshCw } from 'lucide-react';
+import { TrendingUp, Calendar, Target, BookOpen, RefreshCw, Sparkles, CreditCard, CheckCircle } from 'lucide-react';
 import { Link } from 'wouter';
 import { Logo } from '@/components/logo';
 
@@ -239,6 +239,64 @@ export default function Dashboard() {
                   </div>
                 </>
               )}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Coaching Program Promotion */}
+      <section>
+        <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="grid md:grid-cols-2 items-center">
+              <div className="p-6 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  <Badge className="bg-purple-600 text-white">Premium Program</Badge>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Ready for Deep Transformation?
+                </h3>
+                <p className="text-gray-700">
+                  Unlock Dr. Sidra Bukhari's complete 6-week Mind-Body Reset program with 24 interactive components designed specifically for midlife women.
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-600">
+                    <span className="line-through">$297</span>
+                    <span className="text-2xl font-bold text-purple-700 ml-2">$97</span>
+                  </div>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">67% OFF</Badge>
+                </div>
+                <Link href="/coaching">
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Unlock Full Program
+                  </Button>
+                </Link>
+              </div>
+              <div className="p-6 bg-white/50">
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>24 Interactive Coaching Components</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>CBT & NLP Therapeutic Techniques</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Hormone & Nervous System Focus</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Lifetime Access to All Content</span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-4 italic">
+                    *Health Assessment dashboard always stays FREE
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
