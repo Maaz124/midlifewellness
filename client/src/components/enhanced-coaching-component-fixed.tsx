@@ -2753,7 +2753,7 @@ function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string
 
 // Hormone Harmony Meditation Component
 function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [activeSection, setActiveSection] = useState('check-in');
   const [meditationData, setMeditationData] = useState({
     preAssessment: {
       calmness: 5,
@@ -2765,118 +2765,55 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
       reflection: '',
       intention: ''
     },
-    completedSections: [] as string[],
-    totalDuration: 0
+    completedSections: [] as string[]
   });
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentPhase, setCurrentPhase] = useState(0);
-  const [phaseTimer, setPhaseTimer] = useState(0);
+  const [sessionTimer, setSessionTimer] = useState(0);
+  const [isSessionActive, setIsSessionActive] = useState(false);
+
+  const sections = [
+    { id: 'check-in', title: 'Pre-Meditation Check-In', icon: '📋' },
+    { id: 'practice', title: 'Guided Meditation Practice', icon: '🧘‍♀️' },
+    { id: 'reflection', title: 'Post-Meditation Reflection', icon: '📝' }
+  ];
 
   const meditationPhases = [
     {
       title: 'Preparation',
       description: 'Setting up your space and intention',
-      duration: 120, // 2 minutes in seconds
-      instructions: [
-        'Find a comfortable seated position with your spine naturally straight',
-        'Close your eyes or soften your gaze downward',
-        'Place one hand on your heart and one on your belly',
-        'Take a moment to set an intention for this practice'
-      ]
+      duration: 2,
+      completed: true
     },
     {
       title: 'Grounding',
       description: 'Connecting with your body and breath',
-      duration: 180, // 3 minutes
-      instructions: [
-        'Begin to notice your natural breath without changing it',
-        'Feel the weight of your body supported by the chair or cushion',
-        'Scan from the top of your head down to your toes',
-        'Allow any tension to soften with each exhale'
-      ]
+      duration: 3,
+      completed: true
     },
     {
       title: 'Hormone Harmony',
       description: 'Visualizing hormonal balance and flow',
-      duration: 420, // 7 minutes
-      instructions: [
-        'Imagine a warm, golden light filling your entire body',
-        'See this light flowing through your endocrine system',
-        'Visualize your hormones in perfect harmony and balance',
-        'Send appreciation to your body for all it does for you',
-        'Trust in your body\'s innate wisdom to heal and regulate'
-      ]
+      duration: 7,
+      completed: true
     },
     {
       title: 'Integration',
       description: 'Anchoring the practice in your body',
-      duration: 180, // 3 minutes
-      instructions: [
-        'Place both hands on your heart and feel the steady rhythm',
-        'Set an intention to carry this harmony throughout your day',
-        'Begin to wiggle your fingers and toes',
-        'When ready, slowly open your eyes and take three deep breaths'
-      ]
+      duration: 3,
+      completed: false
     }
   ];
 
-  const steps = [
-    'Pre-Meditation Check-In',
-    'Guided Meditation Practice',
-    'Post-Meditation Reflection'
-  ];
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && currentStep === 1) {
-      interval = setInterval(() => {
-        setPhaseTimer(prev => {
-          if (prev >= meditationPhases[currentPhase].duration - 1) {
-            if (currentPhase < meditationPhases.length - 1) {
-              setCurrentPhase(prev => prev + 1);
-              setMeditationData(prevData => ({
-                ...prevData,
-                completedSections: [...prevData.completedSections, meditationPhases[currentPhase].title]
-              }));
-              return 0;
-            } else {
-              setIsPlaying(false);
-              setCurrentStep(2);
-              return 0;
-            }
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentPhase, currentStep]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getTotalProgress = () => {
-    if (currentStep !== 1) return 0;
-    const totalDuration = meditationPhases.reduce((sum, phase) => sum + phase.duration, 0);
-    const completedDuration = meditationPhases.slice(0, currentPhase).reduce((sum, phase) => sum + phase.duration, 0);
-    const currentPhaseDuration = phaseTimer;
-    return ((completedDuration + currentPhaseDuration) / totalDuration) * 100;
-  };
-
-  const renderPreAssessment = () => (
+  const renderCheckIn = () => (
     <div className="space-y-6">
       <div className="bg-purple-50 p-6 rounded-lg">
         <h4 className="font-semibold text-purple-900 mb-3">How Meditation Supports Hormonal Health</h4>
-        <ul className="text-sm text-purple-800 space-y-2">
-          <li><strong>Stress Reduction:</strong> Lowers cortisol levels that can disrupt other hormones</li>
-          <li><strong>Better Sleep:</strong> Supports melatonin production for restorative rest</li>
-          <li><strong>Nervous System Regulation:</strong> Activates parasympathetic response for healing</li>
-          <li><strong>Emotional Balance:</strong> Helps regulate mood-affecting neurotransmitters</li>
-        </ul>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-purple-800">
+          <div><strong>Stress Reduction:</strong> Lowers cortisol levels that can disrupt other hormones</div>
+          <div><strong>Better Sleep:</strong> Supports melatonin production for restorative rest</div>
+          <div><strong>Nervous System Regulation:</strong> Activates parasympathetic response for healing</div>
+          <div><strong>Emotional Balance:</strong> Helps regulate mood-affecting neurotransmitters</div>
+        </div>
       </div>
 
       <div>
@@ -2887,7 +2824,7 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
           <div>
             <label className="block text-sm font-medium mb-2">Calmness Level</label>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">Agitated</span>
+              <span className="text-sm text-gray-500 w-16">Agitated</span>
               <input
                 type="range"
                 min="1"
@@ -2899,15 +2836,15 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
                 }))}
                 className="flex-1"
               />
-              <span className="text-sm text-gray-500">Peaceful</span>
-              <span className="w-8 text-center font-medium">{meditationData.preAssessment.calmness}</span>
+              <span className="text-sm text-gray-500 w-16">Peaceful</span>
+              <span className="w-8 text-center font-medium bg-purple-100 rounded px-2 py-1">{meditationData.preAssessment.calmness}</span>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">Body Awareness</label>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">Disconnected</span>
+              <span className="text-sm text-gray-500 w-16">Disconnected</span>
               <input
                 type="range"
                 min="1"
@@ -2919,15 +2856,15 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
                 }))}
                 className="flex-1"
               />
-              <span className="text-sm text-gray-500">Very Aware</span>
-              <span className="w-8 text-center font-medium">{meditationData.preAssessment.bodyAwareness}</span>
+              <span className="text-sm text-gray-500 w-16">Very Aware</span>
+              <span className="w-8 text-center font-medium bg-purple-100 rounded px-2 py-1">{meditationData.preAssessment.bodyAwareness}</span>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">Emotional Balance</label>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">Unstable</span>
+              <span className="text-sm text-gray-500 w-16">Unstable</span>
               <input
                 type="range"
                 min="1"
@@ -2939,8 +2876,8 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
                 }))}
                 className="flex-1"
               />
-              <span className="text-sm text-gray-500">Balanced</span>
-              <span className="w-8 text-center font-medium">{meditationData.preAssessment.emotionalBalance}</span>
+              <span className="text-sm text-gray-500 w-16">Balanced</span>
+              <span className="w-8 text-center font-medium bg-purple-100 rounded px-2 py-1">{meditationData.preAssessment.emotionalBalance}</span>
             </div>
           </div>
         </div>
@@ -2948,21 +2885,15 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
     </div>
   );
 
-  const renderMeditationPractice = () => (
+  const renderPractice = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="text-4xl font-bold text-purple-600 mb-2">
-          {formatTime(Math.floor((getTotalProgress() / 100) * 900))} / 15:00
-        </div>
+        <div className="text-4xl font-bold text-purple-600 mb-2">0:00</div>
+        <div className="text-lg text-gray-600 mb-4">Meditation Progress</div>
         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-          <div 
-            className="bg-purple-600 h-3 rounded-full transition-all duration-1000"
-            style={{ width: `${getTotalProgress()}%` }}
-          />
+          <div className="bg-purple-600 h-3 rounded-full" style={{ width: '100%' }} />
         </div>
-        <div className="text-sm text-gray-600">
-          {Math.round(getTotalProgress())}% Complete
-        </div>
+        <div className="text-sm text-gray-600">100% Complete</div>
       </div>
 
       <div className="space-y-4">
@@ -2970,92 +2901,36 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
           <div 
             key={phase.title}
             className={`border rounded-lg p-4 ${
-              index === currentPhase && isPlaying ? 'border-purple-500 bg-purple-50' :
-              meditationData.completedSections.includes(phase.title) ? 'border-green-500 bg-green-50' :
-              'border-gray-200'
+              phase.completed ? 'border-green-500 bg-green-50' : 'border-gray-200'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-semibold flex items-center gap-2">
-                {meditationData.completedSections.includes(phase.title) && (
-                  <span className="text-green-600">✓</span>
-                )}
-                {index === currentPhase && isPlaying && (
-                  <div className="w-3 h-3 bg-purple-600 rounded-full animate-pulse" />
-                )}
+                {phase.completed && <span className="text-green-600">✓</span>}
                 {phase.title}
               </h4>
-              <span className="text-sm text-gray-500">{Math.floor(phase.duration / 60)} min</span>
+              <span className="text-sm text-gray-500">{phase.duration} min</span>
             </div>
-            <p className="text-sm text-gray-600 mb-3">{phase.description}</p>
-            
-            {index === currentPhase && isPlaying && (
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-purple-700">Current Guidance:</div>
-                <div className="bg-white p-3 rounded border">
-                  <p className="text-sm">{phase.instructions[Math.floor((phaseTimer / phase.duration) * phase.instructions.length)]}</p>
-                </div>
-                <div className="text-xs text-gray-500">
-                  Phase progress: {formatTime(phaseTimer)} / {formatTime(phase.duration)}
-                </div>
-              </div>
-            )}
+            <p className="text-sm text-gray-600">{phase.description}</p>
           </div>
         ))}
       </div>
 
-      <div className="text-center">
-        {!isPlaying ? (
-          <Button 
-            onClick={() => setIsPlaying(true)}
-            className="px-8 py-3 text-lg"
-            size="lg"
-          >
-            {currentPhase === 0 ? 'Begin Meditation' : 'Resume'}
-          </Button>
-        ) : (
-          <Button 
-            onClick={() => setIsPlaying(false)}
-            variant="outline"
-            className="px-8 py-3 text-lg"
-            size="lg"
-          >
-            Pause
-          </Button>
-        )}
-      </div>
-
-      {currentPhase === meditationPhases.length - 1 && !isPlaying && phaseTimer >= meditationPhases[currentPhase].duration - 1 && (
-        <div className="text-center">
-          <Button 
-            onClick={() => setCurrentStep(2)}
-            className="px-8 py-3 text-lg"
-            size="lg"
-          >
-            Continue to Reflection
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-
-  const renderPostReflection = () => (
-    <div className="space-y-6">
       <div className="bg-purple-50 p-6 rounded-lg">
         <h4 className="font-semibold text-purple-900 mb-3">Integration & Closing</h4>
         <p className="text-sm text-purple-800 mb-4">
           Anchor this feeling of balance in your body and daily life.
         </p>
         <div className="space-y-2 text-sm text-purple-800">
-          <p>• Place both hands on your heart and feel the steady rhythm beneath your palms</p>
-          <p>• Set an intention to carry this sense of harmony with you throughout your day</p>
-          <p>• When you're ready, slowly open your eyes and take three deep breaths</p>
+          <p><strong>Integration Practice</strong></p>
+          <p>• Place both hands on your heart and feel the steady rhythm beneath your palms.</p>
+          <p>• Set an intention to carry this sense of harmony with you throughout your day.</p>
+          <p>• When you're ready, slowly open your eyes and take three deep breaths.</p>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Integration Practice</label>
-        <p className="text-gray-600 mb-3">What intention would you like to set for supporting your hormonal health today?</p>
+        <label className="block text-sm font-medium mb-3">What intention would you like to set for supporting your hormonal health today?</label>
         <Textarea
           value={meditationData.postAssessment.intention}
           onChange={(e) => setMeditationData(prev => ({
@@ -3064,12 +2939,22 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
           }))}
           placeholder="e.g., I will listen to my body's needs with compassion, I will trust my body's wisdom..."
           rows={3}
+          className="mb-4"
         />
+        
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">Previous</Button>
+          <Button size="sm">Complete</Button>
+        </div>
       </div>
+    </div>
+  );
 
+  const renderReflection = () => (
+    <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium mb-2">Post-Meditation Reflection</label>
-        <p className="text-gray-600 mb-3">How do you feel now compared to before the meditation?</p>
+        <h4 className="font-semibold mb-4">Post-Meditation Reflection</h4>
+        <p className="text-gray-600 mb-4">How do you feel now compared to before the meditation?</p>
         <Textarea
           value={meditationData.postAssessment.reflection}
           onChange={(e) => setMeditationData(prev => ({
@@ -3082,9 +2967,9 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Rate your current calmness level (to compare with your pre-meditation rating):</label>
+        <label className="block text-sm font-medium mb-3">Rate your current calmness level (to compare with your pre-meditation rating):</label>
         <div className="flex items-center gap-4 mb-2">
-          <span className="text-sm text-gray-500">Agitated</span>
+          <span className="text-sm text-gray-500 w-16">Agitated</span>
           <input
             type="range"
             min="1"
@@ -3096,8 +2981,8 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
             }))}
             className="flex-1"
           />
-          <span className="text-sm text-gray-500">Peaceful</span>
-          <span className="w-8 text-center font-medium">{meditationData.postAssessment.calmness}</span>
+          <span className="text-sm text-gray-500 w-16">Peaceful</span>
+          <span className="w-8 text-center font-medium bg-purple-100 rounded px-2 py-1">{meditationData.postAssessment.calmness}</span>
         </div>
         <div className="text-sm text-gray-600">
           Change from before: {meditationData.postAssessment.calmness - meditationData.preAssessment.calmness > 0 ? '+' : ''}
@@ -3115,6 +3000,18 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
           <li>• Notice how your symptoms change with regular meditation practice</li>
         </ul>
       </div>
+
+      <div className="border-t pt-4">
+        <p className="text-sm text-gray-600 mb-4">Ready to complete this session?</p>
+        <p className="text-xs text-gray-500 mb-4">Your progress will be saved and you can always return to review your responses.</p>
+        <Button 
+          onClick={() => onComplete('hormone-meditation', meditationData)}
+          className="w-full"
+          size="lg"
+        >
+          Complete Session
+        </Button>
+      </div>
     </div>
   );
 
@@ -3131,60 +3028,32 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
           <Heart className="w-6 h-6 text-purple-600" />
           Hormone Harmony Meditation
         </CardTitle>
-        <div className="flex items-center gap-2 mt-2">
-          <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-            />
-          </div>
-          <span className="text-sm text-gray-600">
-            Step {currentStep + 1} of {steps.length}
-          </span>
-        </div>
+        <p className="text-gray-600 mt-2">A 15-minute guided meditation specifically designed to support hormonal balance during midlife transitions.</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="text-center">
-            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
-            {currentStep === 0 && (
-              <p className="text-gray-600">A 15-minute guided meditation specifically designed to support hormonal balance during midlife transitions.</p>
-            )}
+          {/* Section Navigation */}
+          <div className="flex border-b">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeSection === section.id
+                    ? 'border-purple-600 text-purple-600 bg-purple-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="mr-2">{section.icon}</span>
+                {section.title}
+              </button>
+            ))}
           </div>
 
-          {currentStep === 0 && renderPreAssessment()}
-          {currentStep === 1 && renderMeditationPractice()}
-          {currentStep === 2 && renderPostReflection()}
-
-          <div className="flex justify-between pt-4">
-            {currentStep > 0 && currentStep !== 1 && (
-              <Button 
-                variant="outline" 
-                onClick={() => setCurrentStep(prev => prev - 1)}
-              >
-                Previous
-              </Button>
-            )}
-            
-            {currentStep === 0 && (
-              <Button 
-                onClick={() => setCurrentStep(1)}
-                className="ml-auto"
-              >
-                Begin Meditation
-              </Button>
-            )}
-
-            {currentStep === 2 && (
-              <Button 
-                onClick={() => onComplete('hormone-meditation', meditationData)}
-                disabled={!meditationData.postAssessment.reflection.trim() || !meditationData.postAssessment.intention.trim()}
-                className="ml-auto"
-              >
-                Complete Session
-              </Button>
-            )}
-          </div>
+          {/* Section Content */}
+          {activeSection === 'check-in' && renderCheckIn()}
+          {activeSection === 'practice' && renderPractice()}
+          {activeSection === 'reflection' && renderReflection()}
         </div>
       </CardContent>
     </Card>
