@@ -4748,11 +4748,541 @@ function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string,
 
 // Weekly Mood Map Component
 function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
   const [moodData, setMoodData] = useState({
-    dailyMoods: {} as Record<string, number>,
-    patterns: '',
-    insights: ''
+    weeklyGoals: {
+      emotional: '',
+      stress: '',
+      selfCare: ''
+    },
+    dailyMoods: {} as Record<string, {
+      overall: number;
+      energy: number;
+      stress: number;
+      anxiety: number;
+      joy: number;
+      confidence: number;
+      triggers: string[];
+      highlights: string;
+      challenges: string;
+      copingStrategies: string[];
+    }>,
+    weeklyReflection: {
+      patterns: '',
+      triggers: '',
+      strengths: '',
+      improvements: '',
+      insights: '',
+      nextWeekGoals: ''
+    },
+    progressTracking: {
+      emotionRegulation: 5,
+      stressManagement: 5,
+      selfAwareness: 5,
+      boundarySuccess: 5
+    }
   });
+
+  const steps = [
+    'Set Weekly Intentions',
+    'Daily Mood Tracking',
+    'Pattern Recognition',
+    'Progress Review'
+  ];
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  
+  const emotionTriggers = [
+    'Work stress', 'Family tension', 'Health concerns', 'Financial worry',
+    'Social pressure', 'Hormonal changes', 'Sleep issues', 'Technology overload',
+    'Relationship conflict', 'Time pressure', 'Decision fatigue', 'Comparison'
+  ];
+
+  const copingStrategies = [
+    'Deep breathing', 'Physical exercise', 'Meditation', 'Journaling',
+    'Talk to friend', 'Time in nature', 'Creative activity', 'Rest/nap',
+    'Healthy boundaries', 'Professional help', 'Self-compassion', 'Problem-solving'
+  ];
+
+  const getMoodColor = (value: number) => {
+    if (value <= 2) return 'bg-red-500';
+    if (value <= 4) return 'bg-orange-500';
+    if (value <= 6) return 'bg-yellow-500';
+    if (value <= 8) return 'bg-green-500';
+    return 'bg-blue-500';
+  };
+
+  const getMoodLabel = (value: number) => {
+    if (value <= 2) return 'Very Low';
+    if (value <= 4) return 'Low';
+    if (value <= 6) return 'Moderate';
+    if (value <= 8) return 'Good';
+    return 'Excellent';
+  };
+
+  const renderWeeklyIntentionsStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Set Your Weekly Emotional Intentions</h4>
+        <p className="text-sm text-indigo-800">
+          Before tracking daily moods, set clear intentions for your emotional well-being this week. 
+          These will guide your awareness and help you recognize progress.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Emotional regulation goal for this week:</label>
+          <p className="text-xs text-gray-600 mb-2">What specific emotion or emotional pattern do you want to work on?</p>
+          <Textarea
+            value={moodData.weeklyGoals.emotional}
+            onChange={(e) => setMoodData(prev => ({
+              ...prev,
+              weeklyGoals: { ...prev.weeklyGoals, emotional: e.target.value }
+            }))}
+            placeholder="e.g., I want to notice when I feel overwhelmed and use my pause-label-shift technique..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Stress management intention:</label>
+          <p className="text-xs text-gray-600 mb-2">How do you want to handle stress differently this week?</p>
+          <Textarea
+            value={moodData.weeklyGoals.stress}
+            onChange={(e) => setMoodData(prev => ({
+              ...prev,
+              weeklyGoals: { ...prev.weeklyGoals, stress: e.target.value }
+            }))}
+            placeholder="e.g., I will take 5-minute breathing breaks when I notice stress building..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Self-care commitment:</label>
+          <p className="text-xs text-gray-600 mb-2">What specific self-care practice will you prioritize?</p>
+          <Textarea
+            value={moodData.weeklyGoals.selfCare}
+            onChange={(e) => setMoodData(prev => ({
+              ...prev,
+              weeklyGoals: { ...prev.weeklyGoals, selfCare: e.target.value }
+            }))}
+            placeholder="e.g., I will spend 15 minutes each morning in quiet reflection or gentle movement..."
+            rows={3}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDailyTrackingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Daily Mood & Emotion Tracking</h4>
+        <p className="text-sm text-purple-800">
+          Track multiple dimensions of your emotional experience each day. This comprehensive view 
+          helps identify patterns and celebrate progress.
+        </p>
+      </div>
+
+      <div className="space-y-8">
+        {daysOfWeek.map((day) => (
+          <div key={day} className="border rounded-lg p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <h5 className="font-semibold text-lg">{day}</h5>
+              <div className="text-sm text-gray-500">
+                Overall: <span className={`px-2 py-1 rounded text-white text-xs ${getMoodColor(moodData.dailyMoods[day]?.overall || 5)}`}>
+                  {getMoodLabel(moodData.dailyMoods[day]?.overall || 5)}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {[
+                { key: 'overall', label: 'Overall Mood' },
+                { key: 'energy', label: 'Energy Level' },
+                { key: 'stress', label: 'Stress Level' },
+                { key: 'anxiety', label: 'Anxiety Level' },
+                { key: 'joy', label: 'Joy/Contentment' },
+                { key: 'confidence', label: 'Confidence' }
+              ].map(({ key, label }) => (
+                <div key={key} className="space-y-2">
+                  <label className="text-sm font-medium">{label}</label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">1</span>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={moodData.dailyMoods[day]?.[key as keyof typeof moodData.dailyMoods[string]] || 5}
+                      onChange={(e) => setMoodData(prev => ({
+                        ...prev,
+                        dailyMoods: {
+                          ...prev.dailyMoods,
+                          [day]: {
+                            ...prev.dailyMoods[day],
+                            [key]: parseInt(e.target.value)
+                          }
+                        }
+                      }))}
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-gray-500">10</span>
+                    <span className="w-6 text-center text-sm font-medium">
+                      {moodData.dailyMoods[day]?.[key as keyof typeof moodData.dailyMoods[string]] || 5}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Main triggers or stressors:</label>
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mb-3">
+                {emotionTriggers.map((trigger) => (
+                  <label key={trigger} className="flex items-center space-x-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={moodData.dailyMoods[day]?.triggers?.includes(trigger) || false}
+                      onChange={(e) => {
+                        const currentTriggers = moodData.dailyMoods[day]?.triggers || [];
+                        const newTriggers = e.target.checked 
+                          ? [...currentTriggers, trigger]
+                          : currentTriggers.filter(t => t !== trigger);
+                        
+                        setMoodData(prev => ({
+                          ...prev,
+                          dailyMoods: {
+                            ...prev.dailyMoods,
+                            [day]: {
+                              ...prev.dailyMoods[day],
+                              triggers: newTriggers
+                            }
+                          }
+                        }));
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-xs">{trigger}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Highlights of the day:</label>
+                <Textarea
+                  value={moodData.dailyMoods[day]?.highlights || ''}
+                  onChange={(e) => setMoodData(prev => ({
+                    ...prev,
+                    dailyMoods: {
+                      ...prev.dailyMoods,
+                      [day]: {
+                        ...prev.dailyMoods[day],
+                        highlights: e.target.value
+                      }
+                    }
+                  }))}
+                  placeholder="What went well? What are you grateful for?"
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Challenges faced:</label>
+                <Textarea
+                  value={moodData.dailyMoods[day]?.challenges || ''}
+                  onChange={(e) => setMoodData(prev => ({
+                    ...prev,
+                    dailyMoods: {
+                      ...prev.dailyMoods,
+                      [day]: {
+                        ...prev.dailyMoods[day],
+                        challenges: e.target.value
+                      }
+                    }
+                  }))}
+                  placeholder="What was difficult? What drained your energy?"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Coping strategies used:</label>
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                {copingStrategies.map((strategy) => (
+                  <label key={strategy} className="flex items-center space-x-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={moodData.dailyMoods[day]?.copingStrategies?.includes(strategy) || false}
+                      onChange={(e) => {
+                        const currentStrategies = moodData.dailyMoods[day]?.copingStrategies || [];
+                        const newStrategies = e.target.checked 
+                          ? [...currentStrategies, strategy]
+                          : currentStrategies.filter(s => s !== strategy);
+                        
+                        setMoodData(prev => ({
+                          ...prev,
+                          dailyMoods: {
+                            ...prev.dailyMoods,
+                            [day]: {
+                              ...prev.dailyMoods[day],
+                              copingStrategies: newStrategies
+                            }
+                          }
+                        }));
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-xs">{strategy}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderPatternRecognitionStep = () => {
+    const getAverageScore = (metric: string) => {
+      const scores = Object.values(moodData.dailyMoods).map(day => {
+        const value = day[metric as keyof typeof day];
+        return typeof value === 'number' ? value : 5;
+      });
+      return scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '5.0';
+    };
+
+    const getMostCommonTriggers = () => {
+      const triggerCounts: Record<string, number> = {};
+      Object.values(moodData.dailyMoods).forEach(day => {
+        day.triggers?.forEach(trigger => {
+          triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
+        });
+      });
+      return Object.entries(triggerCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 3)
+        .map(([trigger, count]) => `${trigger} (${count} days)`);
+    };
+
+    const getMostUsedStrategies = () => {
+      const strategyCounts: Record<string, number> = {};
+      Object.values(moodData.dailyMoods).forEach(day => {
+        day.copingStrategies?.forEach(strategy => {
+          strategyCounts[strategy] = (strategyCounts[strategy] || 0) + 1;
+        });
+      });
+      return Object.entries(strategyCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 3)
+        .map(([strategy, count]) => `${strategy} (${count} days)`);
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-green-50 p-6 rounded-lg">
+          <h4 className="font-semibold text-green-900 mb-3">Weekly Pattern Analysis</h4>
+          <p className="text-sm text-green-800">
+            Review your week's emotional patterns to identify trends, strengths, and areas for growth.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="bg-white p-4 rounded-lg border">
+            <h5 className="font-medium text-sm text-gray-700">Average Overall Mood</h5>
+            <div className="text-2xl font-bold text-purple-600">{getAverageScore('overall')}/10</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg border">
+            <h5 className="font-medium text-sm text-gray-700">Average Energy</h5>
+            <div className="text-2xl font-bold text-blue-600">{getAverageScore('energy')}/10</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg border">
+            <h5 className="font-medium text-sm text-gray-700">Average Stress</h5>
+            <div className="text-2xl font-bold text-orange-600">{getAverageScore('stress')}/10</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg border">
+            <h5 className="font-medium text-sm text-gray-700">Average Anxiety</h5>
+            <div className="text-2xl font-bold text-red-600">{getAverageScore('anxiety')}/10</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg border">
+            <h5 className="font-medium text-sm text-gray-700">Average Joy</h5>
+            <div className="text-2xl font-bold text-green-600">{getAverageScore('joy')}/10</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg border">
+            <h5 className="font-medium text-sm text-gray-700">Average Confidence</h5>
+            <div className="text-2xl font-bold text-indigo-600">{getAverageScore('confidence')}/10</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-orange-50 p-4 rounded-lg">
+            <h5 className="font-medium text-orange-900 mb-3">Most Common Triggers</h5>
+            <ul className="text-sm text-orange-800 space-y-1">
+              {getMostCommonTriggers().map((trigger, index) => (
+                <li key={index}>• {trigger}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h5 className="font-medium text-blue-900 mb-3">Most Used Coping Strategies</h5>
+            <ul className="text-sm text-blue-800 space-y-1">
+              {getMostUsedStrategies().map((strategy, index) => (
+                <li key={index}>• {strategy}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Emotional patterns you noticed:</label>
+            <Textarea
+              value={moodData.weeklyReflection.patterns}
+              onChange={(e) => setMoodData(prev => ({
+                ...prev,
+                weeklyReflection: { ...prev.weeklyReflection, patterns: e.target.value }
+              }))}
+              placeholder="What patterns do you see in your moods? Any connections between events and emotions?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Main triggers and their impact:</label>
+            <Textarea
+              value={moodData.weeklyReflection.triggers}
+              onChange={(e) => setMoodData(prev => ({
+                ...prev,
+                weeklyReflection: { ...prev.weeklyReflection, triggers: e.target.value }
+              }))}
+              placeholder="Which triggers had the biggest impact? How did they affect your mood and energy?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Emotional strengths and wins:</label>
+            <Textarea
+              value={moodData.weeklyReflection.strengths}
+              onChange={(e) => setMoodData(prev => ({
+                ...prev,
+                weeklyReflection: { ...prev.weeklyReflection, strengths: e.target.value }
+              }))}
+              placeholder="When did you handle emotions well? What coping strategies worked best?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Areas for improvement:</label>
+            <Textarea
+              value={moodData.weeklyReflection.improvements}
+              onChange={(e) => setMoodData(prev => ({
+                ...prev,
+                weeklyReflection: { ...prev.weeklyReflection, improvements: e.target.value }
+              }))}
+              placeholder="What would you like to handle differently? What new strategies might help?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Key insights and discoveries:</label>
+            <Textarea
+              value={moodData.weeklyReflection.insights}
+              onChange={(e) => setMoodData(prev => ({
+                ...prev,
+                weeklyReflection: { ...prev.weeklyReflection, insights: e.target.value }
+              }))}
+              placeholder="What did you learn about yourself? Any surprising connections or realizations?"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderProgressReviewStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Weekly Progress Review</h4>
+        <p className="text-sm text-blue-800">
+          Assess your progress in key emotional regulation areas and set intentions for the coming week.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Rate your progress this week (1-10):</h5>
+          <div className="space-y-4">
+            {[
+              { key: 'emotionRegulation', label: 'Emotion Regulation Skills', description: 'Using pause-label-shift and other techniques' },
+              { key: 'stressManagement', label: 'Stress Management', description: 'Handling overwhelm and pressure effectively' },
+              { key: 'selfAwareness', label: 'Self-Awareness', description: 'Noticing emotions and triggers in the moment' },
+              { key: 'boundarySuccess', label: 'Boundary Success', description: 'Maintaining healthy boundaries with others' }
+            ].map(({ key, label, description }) => (
+              <div key={key} className="space-y-2">
+                <div>
+                  <label className="text-sm font-medium">{label}</label>
+                  <p className="text-xs text-gray-600">{description}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-500">Poor</span>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={moodData.progressTracking[key as keyof typeof moodData.progressTracking]}
+                    onChange={(e) => setMoodData(prev => ({
+                      ...prev,
+                      progressTracking: {
+                        ...prev.progressTracking,
+                        [key]: parseInt(e.target.value)
+                      }
+                    }))}
+                    className="flex-1"
+                  />
+                  <span className="text-sm text-gray-500">Excellent</span>
+                  <span className="w-8 text-center font-medium bg-blue-100 rounded px-2 py-1">
+                    {moodData.progressTracking[key as keyof typeof moodData.progressTracking]}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Goals for next week:</label>
+          <Textarea
+            value={moodData.weeklyReflection.nextWeekGoals}
+            onChange={(e) => setMoodData(prev => ({
+              ...prev,
+              weeklyReflection: { ...prev.weeklyReflection, nextWeekGoals: e.target.value }
+            }))}
+            placeholder="Based on this week's patterns, what do you want to focus on next week?"
+            rows={4}
+          />
+        </div>
+
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h5 className="font-semibold text-green-900 mb-2">Celebration & Acknowledgment</h5>
+          <p className="text-sm text-green-800">
+            You completed a full week of emotional awareness and tracking! This level of self-reflection 
+            is a powerful step toward emotional regulation and mental wellness. Acknowledge your commitment 
+            to growth and self-understanding.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -4767,22 +5297,56 @@ function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?
           <Calendar className="w-6 h-6 text-purple-600" />
           Weekly Mood Map
         </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="bg-purple-50 p-6 rounded-lg">
-            <h4 className="font-semibold text-purple-900 mb-3">Track Your Emotional Patterns</h4>
-            <p className="text-sm text-purple-800">
-              Visual tracking helps identify emotional patterns and regulation progress.
-            </p>
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Visual tracking helps identify emotional patterns and regulation progress</p>
           </div>
 
-          <Button 
-            onClick={() => onComplete('w3-mood-map', moodData)}
-            className="w-full"
-          >
-            Complete Mood Mapping
-          </Button>
+          {currentStep === 0 && renderWeeklyIntentionsStep()}
+          {currentStep === 1 && renderDailyTrackingStep()}
+          {currentStep === 2 && renderPatternRecognitionStep()}
+          {currentStep === 3 && renderProgressReviewStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w3-mood-map', moodData)}
+                className="ml-auto"
+              >
+                Complete Mood Map
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
