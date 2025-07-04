@@ -35,7 +35,7 @@ ChartJS.register(
 export default function ProgressPage() {
   const { data } = useWellnessData();
   const [timeRange, setTimeRange] = useState('30');
-  const [chartType, setChartType] = useState<'line' | 'bar'>('line');
+  const [chartType, setChartType] = useState<'line' | 'bar'>('bar');
   const [chartData, setChartData] = useState<any>(null);
 
   // Enhanced chart data with dynamic color coding
