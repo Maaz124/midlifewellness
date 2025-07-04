@@ -3034,8 +3034,19 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
         />
         
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">Previous</Button>
-          <Button size="sm">Complete</Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setActiveSection('check-in')}
+          >
+            Previous
+          </Button>
+          <Button 
+            size="sm"
+            onClick={() => setActiveSection('reflection')}
+          >
+            Continue to Reflection
+          </Button>
         </div>
       </div>
     </div>
@@ -3096,7 +3107,10 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
         <p className="text-sm text-gray-600 mb-4">Ready to complete this session?</p>
         <p className="text-xs text-gray-500 mb-4">Your progress will be saved and you can always return to review your responses.</p>
         <Button 
-          onClick={() => onComplete('hormone-meditation', meditationData)}
+          onClick={() => {
+            console.log('Complete button clicked!', meditationData);
+            onComplete('hormone-meditation', meditationData);
+          }}
           className="w-full"
           size="lg"
         >
