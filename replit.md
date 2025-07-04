@@ -159,3 +159,12 @@ The application is designed for easy deployment to platforms like Vercel, Netlif
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## PROTECTED WEEKS - DO NOT MODIFY
+**WEEKS 3, 4, 5, AND 6 ARE PERMANENTLY SAVED AND PROTECTED**
+- Week 3 "Emotion Regulation & Boundaries" - LOCKED
+- Week 4 "Nervous System Reset" - LOCKED  
+- Week 5 "Clarity & Cognitive Flow" - LOCKED
+- Week 6 "Future Self & Goal Mapping" - LOCKED
+
+These 16 components (4 per week) are complete and must not be changed under any circumstances. User has explicitly requested these weeks remain exactly as implemented.
