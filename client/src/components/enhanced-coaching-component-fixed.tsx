@@ -1483,7 +1483,7 @@ function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: strin
 }
 
 // CBT Reframing Techniques Component
-function CBTReframingTechniques({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [thoughtData, setThoughtData] = useState({
     situation: '',
@@ -14513,20 +14513,20 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   }
 
   // Week 2 Components
-  if (component.id === 'w2-cbt') {
-    return <CBTReframingTechniques onComplete={onComplete} onClose={onClose} />;
+  if (component.id === 'w2-cbt-reframing') {
+    return <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} />;
   }
 
-  if (component.id === 'w2-mirror') {
-    return <MirrorWorkAffirmations onComplete={onComplete} onClose={onClose} />;
+  if (component.id === 'w2-mirror-affirmations') {
+    return <MirrorWorkEmpowermentAffirmations onComplete={onComplete} onClose={onClose} />;
   }
 
-  if (component.id === 'w2-audit') {
-    return <ThoughtAuditTracker onComplete={onComplete} onClose={onClose} />;
+  if (component.id === 'w2-thought-audit') {
+    return <ComprehensiveThoughtPatternAudit onComplete={onComplete} onClose={onClose} />;
   }
 
-  if (component.id === 'w2-nlp') {
-    return <NLPReframingPractice onComplete={onComplete} onClose={onClose} />;
+  if (component.id === 'w2-nlp-reframing') {
+    return <NLPLanguagePatternMastery onComplete={onComplete} onClose={onClose} />;
   }
 
   // Week 3 Components
