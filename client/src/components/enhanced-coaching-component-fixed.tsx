@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowLeft, Play, Pause, CheckCircle, Calendar, Clock, Heart, Brain, Sparkles, FileText, Target, Eye, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Play, Pause, CheckCircle, Calendar, Clock, Heart, Brain, Sparkles, FileText, Target, Eye, ChevronDown, TrendingUp, RotateCcw } from 'lucide-react';
 // Hormone content - inline data for now
 const hormoneContent = {
   intro: "Your body is experiencing a complex symphony of hormonal changes during this phase of life. Understanding these changes is the first step toward reclaiming your vitality and mental clarity.",
@@ -11995,6 +11995,2464 @@ function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: s
   );
 }
 
+// Week 6 Component 1: Future Self Visualization & Values Mapping
+function FutureSelfVisualization({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [visionData, setVisionData] = useState({
+    coreValues: {
+      selectedValues: [] as string[],
+      valueDefinitions: {} as Record<string, string>,
+      priorityRanking: [] as string[],
+      livingValues: {} as Record<string, string>
+    },
+    lifeWheelAssessment: {
+      healthWellness: 5,
+      relationships: 5,
+      careerPurpose: 5,
+      personalGrowth: 5,
+      financialSecurity: 5,
+      funRecreation: 5,
+      physicalEnvironment: 5,
+      contribution: 5,
+      satisfactionScores: {} as Record<string, number>
+    },
+    futureVision: {
+      timeFrame: '5-years',
+      physicalHealth: '',
+      mentalEmotional: '',
+      relationships: '',
+      career: '',
+      lifestyle: '',
+      legacy: '',
+      dailyLife: '',
+      feelings: ''
+    },
+    implementationPlan: {
+      immediateActions: [] as string[],
+      thirtyDayGoals: [] as string[],
+      ninetyDayGoals: [] as string[],
+      yearlyMilestones: [] as string[],
+      visionReminders: [] as string[]
+    }
+  });
+
+  const steps = [
+    'Core Values Discovery',
+    'Life Wheel Assessment',
+    'Future Self Visualization',
+    'Vision Implementation Planning'
+  ];
+
+  const coreValuesList = [
+    'Authenticity', 'Adventure', 'Balance', 'Compassion', 'Connection', 'Creativity',
+    'Excellence', 'Family', 'Freedom', 'Growth', 'Health', 'Honesty', 'Independence',
+    'Innovation', 'Integrity', 'Joy', 'Knowledge', 'Leadership', 'Love', 'Peace',
+    'Security', 'Service', 'Spirituality', 'Stability', 'Success', 'Tradition',
+    'Wisdom', 'Beauty', 'Courage', 'Curiosity', 'Empathy', 'Gratitude'
+  ];
+
+  const renderValuesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Core Values Discovery</h4>
+        <p className="text-sm text-purple-800">
+          Values are your internal compass - they guide decisions and create fulfillment. 
+          Research shows that living aligned with core values increases life satisfaction by 40% 
+          and reduces stress by 35%. Select 5-7 values that resonate most deeply with who you are.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Select Your Core Values (Choose 5-7):</h5>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {coreValuesList.map(value => (
+            <div key={value} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id={value}
+                checked={visionData.coreValues.selectedValues.includes(value)}
+                onChange={(e) => {
+                  const current = visionData.coreValues.selectedValues;
+                  setVisionData(prev => ({
+                    ...prev,
+                    coreValues: {
+                      ...prev.coreValues,
+                      selectedValues: e.target.checked
+                        ? [...current, value]
+                        : current.filter(v => v !== value)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <label htmlFor={value} className="text-sm cursor-pointer">{value}</label>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 text-sm text-gray-600">
+          Selected: {visionData.coreValues.selectedValues.length} values
+        </div>
+      </div>
+
+      {visionData.coreValues.selectedValues.length > 0 && (
+        <div className="space-y-4">
+          <h5 className="font-medium">Define Your Values:</h5>
+          <p className="text-sm text-gray-600">
+            Write what each value means to you personally. This creates deeper connection and clearer guidance.
+          </p>
+          {visionData.coreValues.selectedValues.map(value => (
+            <div key={value} className="space-y-2">
+              <label className="block text-sm font-medium">{value}:</label>
+              <Textarea
+                value={visionData.coreValues.valueDefinitions[value] || ''}
+                onChange={(e) => setVisionData(prev => ({
+                  ...prev,
+                  coreValues: {
+                    ...prev.coreValues,
+                    valueDefinitions: {
+                      ...prev.coreValues.valueDefinitions,
+                      [value]: e.target.value
+                    }
+                  }
+                }))}
+                placeholder={`What does ${value} mean to you? How does it show up in your life?`}
+                rows={2}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Values Reflection</h5>
+        <p className="text-sm text-blue-800">
+          Strong values create decision-making clarity and emotional resilience. 
+          When facing choices, ask: "Which option most honors my core values?"
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderLifeWheelStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Life Wheel Assessment</h4>
+        <p className="text-sm text-green-800">
+          The Life Wheel reveals where you're thriving and where you need attention. 
+          This holistic view helps create balanced goals that support your overall well-being 
+          rather than optimizing one area at the expense of others.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        {[
+          { key: 'healthWellness', label: 'Health & Wellness', description: 'Physical health, energy, fitness, nutrition, sleep' },
+          { key: 'relationships', label: 'Relationships', description: 'Family, friends, romantic partner, social connections' },
+          { key: 'careerPurpose', label: 'Career & Purpose', description: 'Work satisfaction, career growth, sense of purpose' },
+          { key: 'personalGrowth', label: 'Personal Growth', description: 'Learning, development, self-awareness, spiritual growth' },
+          { key: 'financialSecurity', label: 'Financial Security', description: 'Income, savings, investments, financial stress' },
+          { key: 'funRecreation', label: 'Fun & Recreation', description: 'Hobbies, leisure, play, creativity, joy' },
+          { key: 'physicalEnvironment', label: 'Physical Environment', description: 'Home, workspace, community, surroundings' },
+          { key: 'contribution', label: 'Contribution', description: 'Giving back, volunteering, making a difference' }
+        ].map(area => (
+          <div key={area.key} className="space-y-3">
+            <div>
+              <h5 className="font-medium">{area.label}</h5>
+              <p className="text-sm text-gray-600">{area.description}</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Current satisfaction level:</span>
+                <span className="font-medium">{visionData.lifeWheelAssessment[area.key as keyof typeof visionData.lifeWheelAssessment]}/10</span>
+              </div>
+              <div className="flex gap-2">
+                {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                  <Button
+                    key={num}
+                    variant={visionData.lifeWheelAssessment[area.key as keyof typeof visionData.lifeWheelAssessment] === num ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setVisionData(prev => ({
+                      ...prev,
+                      lifeWheelAssessment: {
+                        ...prev.lifeWheelAssessment,
+                        [area.key]: num
+                      }
+                    }))}
+                  >
+                    {num}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-amber-50 p-4 rounded-lg">
+        <h5 className="font-medium text-amber-900 mb-2">Life Balance Insights</h5>
+        <div className="text-sm text-amber-800">
+          <p className="mb-2">
+            <strong>Average Life Satisfaction:</strong> {(
+              Object.values(visionData.lifeWheelAssessment).reduce((a, b) => a + b, 0) / 8
+            ).toFixed(1)}/10
+          </p>
+          <p className="mb-2">
+            <strong>Highest Areas:</strong> {Object.entries(visionData.lifeWheelAssessment)
+              .sort(([,a], [,b]) => b - a)
+              .slice(0, 2)
+              .map(([key]) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
+              .join(', ')}
+          </p>
+          <p>
+            <strong>Growth Opportunities:</strong> {Object.entries(visionData.lifeWheelAssessment)
+              .sort(([,a], [,b]) => a - b)
+              .slice(0, 2)
+              .map(([key]) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
+              .join(', ')}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderVisionStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Future Self Visualization</h4>
+        <p className="text-sm text-indigo-800">
+          Neuroscience shows that detailed visualization activates the same brain regions as actual experience. 
+          By creating a vivid picture of your future self, you're training your brain to recognize and move toward that reality.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Time Frame:</label>
+          <div className="flex gap-2">
+            {['3-years', '5-years', '10-years'].map(timeFrame => (
+              <Button
+                key={timeFrame}
+                variant={visionData.futureVision.timeFrame === timeFrame ? "default" : "outline"}
+                size="sm"
+                onClick={() => setVisionData(prev => ({
+                  ...prev,
+                  futureVision: { ...prev.futureVision, timeFrame }
+                }))}
+              >
+                {timeFrame}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Physical Health & Vitality:</label>
+            <Textarea
+              value={visionData.futureVision.physicalHealth}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, physicalHealth: e.target.value }
+              }))}
+              placeholder="How does your body feel? What's your energy like? What activities do you enjoy? How do you move through the world?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Mental & Emotional Well-being:</label>
+            <Textarea
+              value={visionData.futureVision.mentalEmotional}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, mentalEmotional: e.target.value }
+              }))}
+              placeholder="What's your mental clarity like? How do you handle stress? What's your relationship with emotions? How do you feel about yourself?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Relationships & Connection:</label>
+            <Textarea
+              value={visionData.futureVision.relationships}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, relationships: e.target.value }
+              }))}
+              placeholder="What do your relationships look like? How do you connect with others? What kind of partner, friend, family member are you?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Career & Purpose:</label>
+            <Textarea
+              value={visionData.futureVision.career}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, career: e.target.value }
+              }))}
+              placeholder="What work are you doing? How do you contribute? What's your sense of purpose? How do you make a difference?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Lifestyle & Daily Life:</label>
+            <Textarea
+              value={visionData.futureVision.lifestyle}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, lifestyle: e.target.value }
+              }))}
+              placeholder="What does a typical day look like? Where do you live? How do you spend your time? What brings you joy?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Legacy & Impact:</label>
+            <Textarea
+              value={visionData.futureVision.legacy}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, legacy: e.target.value }
+              }))}
+              placeholder="What do you want to be remembered for? What impact do you want to have? How do you want to have changed the world?"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">How You Feel:</label>
+            <Textarea
+              value={visionData.futureVision.feelings}
+              onChange={(e) => setVisionData(prev => ({
+                ...prev,
+                futureVision: { ...prev.futureVision, feelings: e.target.value }
+              }))}
+              placeholder="How do you feel about your life? What emotions dominate? What's your overall sense of satisfaction and fulfillment?"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-teal-50 p-4 rounded-lg">
+        <h5 className="font-medium text-teal-900 mb-2">Vision Power Principles</h5>
+        <div className="text-sm text-teal-800 space-y-1">
+          <div>• <strong>Specificity:</strong> The more detailed your vision, the more your brain can work toward it</div>
+          <div>• <strong>Emotion:</strong> Feel the vision as if it's already happening - this creates motivation</div>
+          <div>• <strong>Regular review:</strong> Visit your vision weekly to keep it alive and adjust as needed</div>
+          <div>• <strong>Believability:</strong> Your vision should stretch you but feel possible</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderImplementationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-emerald-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-emerald-900 mb-3">Vision Implementation Planning</h4>
+        <p className="text-sm text-emerald-800">
+          A vision without a plan is just a dream. Research shows that people who create detailed implementation plans 
+          are 3x more likely to achieve their goals. Let's break your vision into actionable steps.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Immediate Actions (This Week):</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={visionData.implementationPlan.immediateActions[index] || ''}
+                  onChange={(e) => {
+                    const newActions = [...visionData.implementationPlan.immediateActions];
+                    newActions[index] = e.target.value;
+                    setVisionData(prev => ({
+                      ...prev,
+                      implementationPlan: {
+                        ...prev.implementationPlan,
+                        immediateActions: newActions
+                      }
+                    }));
+                  }}
+                  placeholder={`Immediate action ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">30-Day Goals:</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={visionData.implementationPlan.thirtyDayGoals[index] || ''}
+                  onChange={(e) => {
+                    const newGoals = [...visionData.implementationPlan.thirtyDayGoals];
+                    newGoals[index] = e.target.value;
+                    setVisionData(prev => ({
+                      ...prev,
+                      implementationPlan: {
+                        ...prev.implementationPlan,
+                        thirtyDayGoals: newGoals
+                      }
+                    }));
+                  }}
+                  placeholder={`30-day goal ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">90-Day Milestones:</label>
+          <div className="space-y-2">
+            {[0, 1, 2].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={visionData.implementationPlan.ninetyDayGoals[index] || ''}
+                  onChange={(e) => {
+                    const newGoals = [...visionData.implementationPlan.ninetyDayGoals];
+                    newGoals[index] = e.target.value;
+                    setVisionData(prev => ({
+                      ...prev,
+                      implementationPlan: {
+                        ...prev.implementationPlan,
+                        ninetyDayGoals: newGoals
+                      }
+                    }));
+                  }}
+                  placeholder={`90-day milestone ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Vision Reminder Systems:</label>
+          <div className="space-y-2">
+            {[
+              'Morning vision review',
+              'Weekly progress check',
+              'Monthly vision update',
+              'Quarterly goal adjustment'
+            ].map((reminder, index) => (
+              <label key={index} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={visionData.implementationPlan.visionReminders.includes(reminder)}
+                  onChange={(e) => {
+                    const current = visionData.implementationPlan.visionReminders;
+                    setVisionData(prev => ({
+                      ...prev,
+                      implementationPlan: {
+                        ...prev.implementationPlan,
+                        visionReminders: e.target.checked
+                          ? [...current, reminder]
+                          : current.filter(r => r !== reminder)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{reminder}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h5 className="font-medium text-purple-900 mb-2">Implementation Success Strategies</h5>
+        <div className="text-sm text-purple-800 space-y-1">
+          <div>• <strong>Start small:</strong> Begin with the easiest actions to build momentum</div>
+          <div>• <strong>Track progress:</strong> Weekly check-ins keep you accountable and motivated</div>
+          <div>• <strong>Adjust regularly:</strong> Your vision can evolve as you grow and learn</div>
+          <div>• <strong>Celebrate wins:</strong> Acknowledge progress to maintain motivation</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="w-6 h-6 text-purple-600" />
+          Future Self Visualization & Values Mapping
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Design your values-aligned future through evidence-based visioning and implementation planning</p>
+          </div>
+
+          {currentStep === 0 && renderValuesStep()}
+          {currentStep === 1 && renderLifeWheelStep()}
+          {currentStep === 2 && renderVisionStep()}
+          {currentStep === 3 && renderImplementationStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w6-vision', visionData)}
+                className="ml-auto"
+              >
+                Complete Vision & Values Mapping
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 6 Component 2: SMART Goal Architecture System
+function SmartGoalArchitecture({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [goalData, setGoalData] = useState({
+    goalSelection: {
+      lifeDomain: '',
+      goalStatement: '',
+      whyImportant: '',
+      visionConnection: '',
+      successDefinition: ''
+    },
+    smartFramework: {
+      specific: '',
+      measurable: '',
+      achievable: '',
+      relevant: '',
+      timeBound: '',
+      smartScore: 0
+    },
+    obstacleAnticipation: {
+      likelyObstacles: [] as string[],
+      pastPatterns: '',
+      resourcesNeeded: [] as string[],
+      supportSystems: [] as string[],
+      contingencyPlans: {} as Record<string, string>
+    },
+    actionPlanning: {
+      weeklyActions: [] as string[],
+      monthlyMilestones: [] as string[],
+      trackingMethod: '',
+      accountability: '',
+      rewardSystem: ''
+    }
+  });
+
+  const steps = [
+    'Goal Selection & Foundation',
+    'SMART Framework Application',
+    'Obstacle Anticipation & Planning',
+    'Action Planning & Accountability'
+  ];
+
+  const lifeDomains = [
+    'Health & Wellness',
+    'Relationships & Family',
+    'Career & Purpose',
+    'Personal Growth',
+    'Financial Security',
+    'Creative Expression',
+    'Community & Service',
+    'Physical Environment'
+  ];
+
+  const renderGoalSelectionStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Goal Selection & Foundation</h4>
+        <p className="text-sm text-blue-800">
+          Effective goals aren't just wishes - they're strategic decisions aligned with your values and vision. 
+          Research shows that people who set specific, challenging goals perform 90% better than those with vague intentions.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Life Domain Focus:</label>
+          <select
+            value={goalData.goalSelection.lifeDomain}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              goalSelection: { ...prev.goalSelection, lifeDomain: e.target.value }
+            }))}
+            className="w-full px-3 py-2 border rounded-md"
+          >
+            <option value="">Select a life domain...</option>
+            {lifeDomains.map(domain => (
+              <option key={domain} value={domain}>{domain}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Goal Statement:</label>
+          <Textarea
+            value={goalData.goalSelection.goalStatement}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              goalSelection: { ...prev.goalSelection, goalStatement: e.target.value }
+            }))}
+            placeholder="Write your goal in one clear sentence. What exactly do you want to achieve?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "I will establish a consistent morning routine that includes 20 minutes of movement, 10 minutes of meditation, and healthy breakfast by March 31st."
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Why This Goal Matters:</label>
+          <Textarea
+            value={goalData.goalSelection.whyImportant}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              goalSelection: { ...prev.goalSelection, whyImportant: e.target.value }
+            }))}
+            placeholder="What's driving this goal? How will achieving it improve your life? What happens if you don't achieve it?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Connection to Your Future Vision:</label>
+          <Textarea
+            value={goalData.goalSelection.visionConnection}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              goalSelection: { ...prev.goalSelection, visionConnection: e.target.value }
+            }))}
+            placeholder="How does this goal connect to your bigger vision? What future version of yourself does this serve?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Success Definition:</label>
+          <Textarea
+            value={goalData.goalSelection.successDefinition}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              goalSelection: { ...prev.goalSelection, successDefinition: e.target.value }
+            }))}
+            placeholder="How will you know you've succeeded? What will be different in your life?"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h5 className="font-medium text-green-900 mb-2">Goal Foundation Strength</h5>
+        <p className="text-sm text-green-800">
+          Strong goals have clear personal meaning, connect to your larger vision, and include specific success criteria. 
+          This foundation creates the motivation to persist through challenges.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderSmartFrameworkStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">SMART Framework Application</h4>
+        <p className="text-sm text-indigo-800">
+          The SMART framework transforms vague wishes into actionable goals. Each element serves a specific purpose 
+          in goal achievement: Specific (clarity), Measurable (progress), Achievable (confidence), Relevant (motivation), Time-bound (urgency).
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            <strong>S</strong>pecific - What exactly will you do?
+          </label>
+          <Textarea
+            value={goalData.smartFramework.specific}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              smartFramework: { ...prev.smartFramework, specific: e.target.value }
+            }))}
+            placeholder="Define the precise actions, behaviors, or outcomes. Who, what, where, when, which, why?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> Replace "exercise more" with "attend yoga class twice per week and walk 30 minutes daily"
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            <strong>M</strong>easurable - How will you track progress?
+          </label>
+          <Textarea
+            value={goalData.smartFramework.measurable}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              smartFramework: { ...prev.smartFramework, measurable: e.target.value }
+            }))}
+            placeholder="Define numbers, percentages, frequencies, or other metrics. How will you measure success and progress?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> Include frequency (daily, weekly), duration (30 minutes), or quantities (5 servings, 3 times)
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            <strong>A</strong>chievable - Is this realistic for you right now?
+          </label>
+          <Textarea
+            value={goalData.smartFramework.achievable}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              smartFramework: { ...prev.smartFramework, achievable: e.target.value }
+            }))}
+            placeholder="Consider your current situation, resources, constraints, and past experience. What makes this goal realistic?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> Challenge yourself but ensure it's doable given your current life circumstances
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            <strong>R</strong>elevant - Why does this matter to you?
+          </label>
+          <Textarea
+            value={goalData.smartFramework.relevant}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              smartFramework: { ...prev.smartFramework, relevant: e.target.value }
+            }))}
+            placeholder="How does this align with your values, vision, and other priorities? Why is this the right goal at this time?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> Connect to your life values and long-term vision for motivation
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            <strong>T</strong>ime-bound - When will you complete this?
+          </label>
+          <Textarea
+            value={goalData.smartFramework.timeBound}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              smartFramework: { ...prev.smartFramework, timeBound: e.target.value }
+            }))}
+            placeholder="Set a specific deadline, include interim milestones, and create urgency. When will you achieve this goal?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> Include both final deadline and checkpoint dates for accountability
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h5 className="font-medium text-purple-900 mb-2">SMART Goal Assessment</h5>
+        <div className="text-sm text-purple-800">
+          <p className="mb-2">
+            <strong>Completion:</strong> {Object.values(goalData.smartFramework).filter(v => v.length > 0).length}/5 elements defined
+          </p>
+          <p>
+            Strong SMART goals increase achievement probability by 42% compared to vague intentions. 
+            Each element you complete makes your goal more actionable and likely to succeed.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderObstacleStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Obstacle Anticipation & Planning</h4>
+        <p className="text-sm text-orange-800">
+          Implementation intentions (if-then planning) increase goal achievement by 300%. 
+          By anticipating obstacles and planning responses, you're preparing your brain to automatically 
+          navigate challenges rather than being derailed by them.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Likely Obstacles:</label>
+          <div className="space-y-2">
+            {[
+              'Time constraints', 'Energy limitations', 'Family responsibilities', 'Work demands',
+              'Financial constraints', 'Health issues', 'Motivation fluctuations', 'Perfectionism',
+              'Social pressure', 'Seasonal changes', 'Technology distractions', 'Travel/schedule changes'
+            ].map(obstacle => (
+              <label key={obstacle} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={goalData.obstacleAnticipation.likelyObstacles.includes(obstacle)}
+                  onChange={(e) => {
+                    const current = goalData.obstacleAnticipation.likelyObstacles;
+                    setGoalData(prev => ({
+                      ...prev,
+                      obstacleAnticipation: {
+                        ...prev.obstacleAnticipation,
+                        likelyObstacles: e.target.checked
+                          ? [...current, obstacle]
+                          : current.filter(o => o !== obstacle)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{obstacle}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Past Patterns:</label>
+          <Textarea
+            value={goalData.obstacleAnticipation.pastPatterns}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              obstacleAnticipation: { ...prev.obstacleAnticipation, pastPatterns: e.target.value }
+            }))}
+            placeholder="When you've attempted similar goals before, what derailed you? What patterns do you notice?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Resources Needed:</label>
+          <div className="space-y-2">
+            {[
+              'Time planning tools', 'Financial resources', 'Social support', 'Professional guidance',
+              'Educational materials', 'Equipment/supplies', 'Accountability partner', 'Skill development',
+              'Childcare support', 'Transportation', 'Technology tools', 'Backup plans'
+            ].map(resource => (
+              <label key={resource} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={goalData.obstacleAnticipation.resourcesNeeded.includes(resource)}
+                  onChange={(e) => {
+                    const current = goalData.obstacleAnticipation.resourcesNeeded;
+                    setGoalData(prev => ({
+                      ...prev,
+                      obstacleAnticipation: {
+                        ...prev.obstacleAnticipation,
+                        resourcesNeeded: e.target.checked
+                          ? [...current, resource]
+                          : current.filter(r => r !== resource)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{resource}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Support Systems:</label>
+          <div className="space-y-2">
+            {[
+              'Family members', 'Friends', 'Colleagues', 'Online communities', 'Professional coach',
+              'Mentor', 'Accountability group', 'Workout partner', 'Therapist/counselor', 'Support groups'
+            ].map(support => (
+              <label key={support} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={goalData.obstacleAnticipation.supportSystems.includes(support)}
+                  onChange={(e) => {
+                    const current = goalData.obstacleAnticipation.supportSystems;
+                    setGoalData(prev => ({
+                      ...prev,
+                      obstacleAnticipation: {
+                        ...prev.obstacleAnticipation,
+                        supportSystems: e.target.checked
+                          ? [...current, support]
+                          : current.filter(s => s !== support)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{support}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {goalData.obstacleAnticipation.likelyObstacles.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Contingency Plans:</label>
+            <p className="text-sm text-gray-600 mb-3">
+              For each obstacle you selected, create an "if-then" plan. Example: "If I feel too tired to exercise, then I'll do 10 minutes of gentle stretching instead."
+            </p>
+            <div className="space-y-3">
+              {goalData.obstacleAnticipation.likelyObstacles.map(obstacle => (
+                <div key={obstacle} className="space-y-1">
+                  <label className="text-sm font-medium">If {obstacle} happens:</label>
+                  <Textarea
+                    value={goalData.obstacleAnticipation.contingencyPlans[obstacle] || ''}
+                    onChange={(e) => setGoalData(prev => ({
+                      ...prev,
+                      obstacleAnticipation: {
+                        ...prev.obstacleAnticipation,
+                        contingencyPlans: {
+                          ...prev.obstacleAnticipation.contingencyPlans,
+                          [obstacle]: e.target.value
+                        }
+                      }
+                    }))}
+                    placeholder="Then I will..."
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-red-50 p-4 rounded-lg">
+        <h5 className="font-medium text-red-900 mb-2">Obstacle Planning Benefits</h5>
+        <div className="text-sm text-red-800 space-y-1">
+          <div>• <strong>Reduces anxiety:</strong> Knowing you have a plan decreases worry about potential problems</div>
+          <div>• <strong>Increases persistence:</strong> Pre-decided responses help you bounce back faster from setbacks</div>
+          <div>• <strong>Builds confidence:</strong> Thorough preparation increases belief in your ability to succeed</div>
+          <div>• <strong>Saves decision energy:</strong> Pre-made plans eliminate in-the-moment decision fatigue</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderActionPlanningStep = () => (
+    <div className="space-y-6">
+      <div className="bg-emerald-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-emerald-900 mb-3">Action Planning & Accountability</h4>
+        <p className="text-sm text-emerald-800">
+          Goals without action plans are just wishes. Research shows that breaking goals into specific weekly actions 
+          increases achievement rates by 76%. Adding accountability structures increases success by another 65%.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Weekly Action Steps:</label>
+          <p className="text-sm text-gray-600 mb-3">
+            Break your goal into specific weekly actions. What will you do each week to move closer to your goal?
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2, 3, 4].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-16">Week {index + 1}:</span>
+                <input
+                  type="text"
+                  value={goalData.actionPlanning.weeklyActions[index] || ''}
+                  onChange={(e) => {
+                    const newActions = [...goalData.actionPlanning.weeklyActions];
+                    newActions[index] = e.target.value;
+                    setGoalData(prev => ({
+                      ...prev,
+                      actionPlanning: {
+                        ...prev.actionPlanning,
+                        weeklyActions: newActions
+                      }
+                    }));
+                  }}
+                  placeholder={`Specific action for week ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Monthly Milestones:</label>
+          <p className="text-sm text-gray-600 mb-3">
+            Set monthly check-in points to assess progress and adjust your approach if needed.
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-20">Month {index + 1}:</span>
+                <input
+                  type="text"
+                  value={goalData.actionPlanning.monthlyMilestones[index] || ''}
+                  onChange={(e) => {
+                    const newMilestones = [...goalData.actionPlanning.monthlyMilestones];
+                    newMilestones[index] = e.target.value;
+                    setGoalData(prev => ({
+                      ...prev,
+                      actionPlanning: {
+                        ...prev.actionPlanning,
+                        monthlyMilestones: newMilestones
+                      }
+                    }));
+                  }}
+                  placeholder={`Milestone to reach by month ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Tracking Method:</label>
+          <Textarea
+            value={goalData.actionPlanning.trackingMethod}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              actionPlanning: { ...prev.actionPlanning, trackingMethod: e.target.value }
+            }))}
+            placeholder="How will you track your progress? Daily journal, app, spreadsheet, calendar, photos, measurements?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Accountability System:</label>
+          <Textarea
+            value={goalData.actionPlanning.accountability}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              actionPlanning: { ...prev.actionPlanning, accountability: e.target.value }
+            }))}
+            placeholder="Who will help keep you accountable? How often will you check in? What consequences for missing actions?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Reward System:</label>
+          <Textarea
+            value={goalData.actionPlanning.rewardSystem}
+            onChange={(e) => setGoalData(prev => ({
+              ...prev,
+              actionPlanning: { ...prev.actionPlanning, rewardSystem: e.target.value }
+            }))}
+            placeholder="How will you celebrate progress? Weekly rewards for consistency, milestone celebrations, final achievement reward?"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-teal-50 p-4 rounded-lg">
+        <h5 className="font-medium text-teal-900 mb-2">Action Planning Success Factors</h5>
+        <div className="text-sm text-teal-800 space-y-1">
+          <div>• <strong>Specific actions:</strong> "Exercise 3x/week" vs "be healthier"</div>
+          <div>• <strong>Regular tracking:</strong> Daily or weekly progress monitoring</div>
+          <div>• <strong>External accountability:</strong> Someone else knows your commitment</div>
+          <div>• <strong>Meaningful rewards:</strong> Celebrate progress to maintain motivation</div>
+          <div>• <strong>Flexible adjustments:</strong> Adapt your plan based on what you learn</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="w-6 h-6 text-blue-600" />
+          SMART Goal Architecture System
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Transform your vision into achievable goals using evidence-based planning frameworks</p>
+          </div>
+
+          {currentStep === 0 && renderGoalSelectionStep()}
+          {currentStep === 1 && renderSmartFrameworkStep()}
+          {currentStep === 2 && renderObstacleStep()}
+          {currentStep === 3 && renderActionPlanningStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w6-goals', goalData)}
+                className="ml-auto"
+              >
+                Complete SMART Goal System
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 6 Component 3: Reverse Engineering Success Method
+function ReverseEngineeringSuccess({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [reverseData, setReverseData] = useState({
+    goalDefinition: {
+      ultimateGoal: '',
+      successMetrics: '',
+      completionDate: '',
+      whyImportant: ''
+    },
+    backwardMapping: {
+      finalMilestone: '',
+      sixMonthMilestone: '',
+      threeMonthMilestone: '',
+      oneMonthMilestone: '',
+      twoWeekMilestone: '',
+      oneWeekMilestone: ''
+    },
+    resourceIdentification: {
+      skillsNeeded: [] as string[],
+      knowledgeGaps: [] as string[],
+      toolsResources: [] as string[],
+      supportNetwork: [] as string[],
+      financialRequirements: '',
+      timeInvestment: ''
+    },
+    actionSequencing: {
+      immediateActions: [] as string[],
+      weeklyRoutines: [] as string[],
+      monthlyReviews: [] as string[],
+      quarterlyAdjustments: [] as string[],
+      criticalPathActions: [] as string[]
+    }
+  });
+
+  const steps = [
+    'Goal Definition & End State',
+    'Backward Milestone Mapping',
+    'Resource & Gap Identification',
+    'Action Sequencing & Critical Path'
+  ];
+
+  const renderGoalDefinitionStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Goal Definition & End State</h4>
+        <p className="text-sm text-indigo-800">
+          Reverse engineering starts with crystal clear end-state definition. By working backwards from your desired outcome, 
+          you identify the exact pathway and avoid common planning pitfalls. This method is used by successful entrepreneurs, 
+          athletes, and project managers to ensure systematic progress toward complex goals.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Ultimate Goal (Final Outcome):</label>
+          <Textarea
+            value={reverseData.goalDefinition.ultimateGoal}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              goalDefinition: { ...prev.goalDefinition, ultimateGoal: e.target.value }
+            }))}
+            placeholder="Describe your ultimate goal in vivid detail. What exactly will be different? What will you have achieved?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "I will have lost 30 pounds, feel energetic throughout the day, fit comfortably in my favorite clothes, and have established sustainable healthy eating habits."
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Success Metrics (How You'll Know You've Succeeded):</label>
+          <Textarea
+            value={reverseData.goalDefinition.successMetrics}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              goalDefinition: { ...prev.goalDefinition, successMetrics: e.target.value }
+            }))}
+            placeholder="List specific, measurable indicators of success. Numbers, behaviors, feelings, or outcomes that prove you've achieved your goal."
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "Weight of 145 lbs, walking 10,000 steps daily, eating 5 servings of vegetables daily, sleeping 7-8 hours nightly, energy level 8/10."
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Completion Date:</label>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="date"
+              value={reverseData.goalDefinition.completionDate}
+              onChange={(e) => setReverseData(prev => ({
+                ...prev,
+                goalDefinition: { ...prev.goalDefinition, completionDate: e.target.value }
+              }))}
+              className="px-3 py-2 border rounded-md"
+            />
+            <div className="flex items-center text-sm text-gray-600">
+              {reverseData.goalDefinition.completionDate && (
+                <span>
+                  {Math.ceil((new Date(reverseData.goalDefinition.completionDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days from now
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Why This Goal is Critical:</label>
+          <Textarea
+            value={reverseData.goalDefinition.whyImportant}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              goalDefinition: { ...prev.goalDefinition, whyImportant: e.target.value }
+            }))}
+            placeholder="What makes this goal absolutely essential? What happens if you don't achieve it? How will success transform your life?"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h5 className="font-medium text-purple-900 mb-2">Reverse Engineering Advantages</h5>
+        <div className="text-sm text-purple-800 space-y-1">
+          <div>• <strong>Clarity:</strong> You know exactly where you're going</div>
+          <div>• <strong>Efficiency:</strong> Eliminates unnecessary steps and detours</div>
+          <div>• <strong>Milestone identification:</strong> Clear progress markers along the way</div>
+          <div>• <strong>Resource planning:</strong> Identify what you need before you need it</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBackwardMappingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Backward Milestone Mapping</h4>
+        <p className="text-sm text-green-800">
+          Working backwards from your end goal, we'll identify what needs to be true at each major milestone. 
+          This creates a clear roadmap and helps you stay on track by providing regular checkpoints and progress validation.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h5 className="font-medium text-gray-900 mb-2">Your Ultimate Goal</h5>
+          <p className="text-sm text-gray-700">
+            {reverseData.goalDefinition.ultimateGoal || 'Complete the goal definition step first'}
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Final Milestone (1 month before completion):</label>
+          <Textarea
+            value={reverseData.backwardMapping.finalMilestone}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              backwardMapping: { ...prev.backwardMapping, finalMilestone: e.target.value }
+            }))}
+            placeholder="What needs to be true 1 month before your goal completion date? What should be mostly finished?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> This should be 90% of your goal achieved, with just fine-tuning remaining
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Six-Month Milestone:</label>
+          <Textarea
+            value={reverseData.backwardMapping.sixMonthMilestone}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              backwardMapping: { ...prev.backwardMapping, sixMonthMilestone: e.target.value }
+            }))}
+            placeholder="What needs to be accomplished 6 months before your goal date? What systems should be in place?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Tip:</strong> Focus on systems, habits, and foundational elements that need to be established
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Three-Month Milestone:</label>
+          <Textarea
+            value={reverseData.backwardMapping.threeMonthMilestone}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              backwardMapping: { ...prev.backwardMapping, threeMonthMilestone: e.target.value }
+            }))}
+            placeholder="What progress should be visible 3 months before completion? What should be your routine by then?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">One-Month Milestone:</label>
+          <Textarea
+            value={reverseData.backwardMapping.oneMonthMilestone}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              backwardMapping: { ...prev.backwardMapping, oneMonthMilestone: e.target.value }
+            }))}
+            placeholder="What needs to be established in the first month? What foundation should be laid?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Two-Week Milestone:</label>
+          <Textarea
+            value={reverseData.backwardMapping.twoWeekMilestone}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              backwardMapping: { ...prev.backwardMapping, twoWeekMilestone: e.target.value }
+            }))}
+            placeholder="What should be accomplished in your first 2 weeks? What initial momentum should you build?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">One-Week Milestone:</label>
+          <Textarea
+            value={reverseData.backwardMapping.oneWeekMilestone}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              backwardMapping: { ...prev.backwardMapping, oneWeekMilestone: e.target.value }
+            }))}
+            placeholder="What needs to happen in your very first week? What immediate actions will you take?"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Milestone Mapping Benefits</h5>
+        <div className="text-sm text-blue-800 space-y-1">
+          <div>• <strong>Clear progress markers:</strong> You know if you're on track at each stage</div>
+          <div>• <strong>Prevents procrastination:</strong> Immediate next steps are always clear</div>
+          <div>• <strong>Builds momentum:</strong> Regular achievements maintain motivation</div>
+          <div>• <strong>Enables adjustment:</strong> Course corrections before problems become crises</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderResourceIdentificationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Resource & Gap Identification</h4>
+        <p className="text-sm text-orange-800">
+          Success requires more than willpower - it requires the right resources, skills, and support systems. 
+          By identifying what you need upfront, you can acquire these resources strategically rather than scrambling for them when needed.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Skills You Need to Develop:</label>
+          <div className="space-y-2">
+            {[
+              'Time management', 'Meal planning', 'Exercise technique', 'Stress management', 'Communication skills',
+              'Financial planning', 'Technology skills', 'Problem-solving', 'Leadership', 'Negotiation',
+              'Research abilities', 'Organization systems', 'Networking', 'Public speaking', 'Creative thinking'
+            ].map(skill => (
+              <label key={skill} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={reverseData.resourceIdentification.skillsNeeded.includes(skill)}
+                  onChange={(e) => {
+                    const current = reverseData.resourceIdentification.skillsNeeded;
+                    setReverseData(prev => ({
+                      ...prev,
+                      resourceIdentification: {
+                        ...prev.resourceIdentification,
+                        skillsNeeded: e.target.checked
+                          ? [...current, skill]
+                          : current.filter(s => s !== skill)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{skill}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Knowledge Gaps to Fill:</label>
+          <div className="space-y-2">
+            {[
+              'Nutrition basics', 'Exercise science', 'Mental health strategies', 'Financial literacy',
+              'Industry trends', 'Technology updates', 'Legal requirements', 'Best practices',
+              'Research methods', 'Cultural competency', 'Market analysis', 'Health information'
+            ].map(knowledge => (
+              <label key={knowledge} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={reverseData.resourceIdentification.knowledgeGaps.includes(knowledge)}
+                  onChange={(e) => {
+                    const current = reverseData.resourceIdentification.knowledgeGaps;
+                    setReverseData(prev => ({
+                      ...prev,
+                      resourceIdentification: {
+                        ...prev.resourceIdentification,
+                        knowledgeGaps: e.target.checked
+                          ? [...current, knowledge]
+                          : current.filter(k => k !== knowledge)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{knowledge}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Tools & Resources Required:</label>
+          <div className="space-y-2">
+            {[
+              'Tracking apps', 'Exercise equipment', 'Books/courses', 'Software tools', 'Professional services',
+              'Subscriptions', 'Workspace setup', 'Safety equipment', 'Measurement tools', 'Communication tools',
+              'Research databases', 'Transportation', 'Storage solutions', 'Backup systems'
+            ].map(tool => (
+              <label key={tool} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={reverseData.resourceIdentification.toolsResources.includes(tool)}
+                  onChange={(e) => {
+                    const current = reverseData.resourceIdentification.toolsResources;
+                    setReverseData(prev => ({
+                      ...prev,
+                      resourceIdentification: {
+                        ...prev.resourceIdentification,
+                        toolsResources: e.target.checked
+                          ? [...current, tool]
+                          : current.filter(t => t !== tool)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{tool}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Support Network Needed:</label>
+          <div className="space-y-2">
+            {[
+              'Family support', 'Friend accountability', 'Professional mentor', 'Coach/trainer', 'Online community',
+              'Workplace allies', 'Healthcare providers', 'Financial advisor', 'Legal counsel', 'Technical support',
+              'Childcare providers', 'House/pet sitters', 'Emergency contacts', 'Backup support'
+            ].map(support => (
+              <label key={support} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={reverseData.resourceIdentification.supportNetwork.includes(support)}
+                  onChange={(e) => {
+                    const current = reverseData.resourceIdentification.supportNetwork;
+                    setReverseData(prev => ({
+                      ...prev,
+                      resourceIdentification: {
+                        ...prev.resourceIdentification,
+                        supportNetwork: e.target.checked
+                          ? [...current, support]
+                          : current.filter(s => s !== support)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{support}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Financial Requirements:</label>
+          <Textarea
+            value={reverseData.resourceIdentification.financialRequirements}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              resourceIdentification: { ...prev.resourceIdentification, financialRequirements: e.target.value }
+            }))}
+            placeholder="Estimate the financial investment needed: equipment, courses, services, subscriptions, etc."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Time Investment Required:</label>
+          <Textarea
+            value={reverseData.resourceIdentification.timeInvestment}
+            onChange={(e) => setReverseData(prev => ({
+              ...prev,
+              resourceIdentification: { ...prev.resourceIdentification, timeInvestment: e.target.value }
+            }))}
+            placeholder="How much time will you need? Daily, weekly, monthly commitments for different activities?"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-teal-50 p-4 rounded-lg">
+        <h5 className="font-medium text-teal-900 mb-2">Resource Planning Benefits</h5>
+        <div className="text-sm text-teal-800 space-y-1">
+          <div>• <strong>Prevents surprises:</strong> You know what you need before you need it</div>
+          <div>• <strong>Enables budgeting:</strong> Plan financial investments strategically</div>
+          <div>• <strong>Builds confidence:</strong> Knowing you have resources reduces anxiety</div>
+          <div>• <strong>Accelerates progress:</strong> Resources ready when needed speeds execution</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderActionSequencingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-red-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-red-900 mb-3">Action Sequencing & Critical Path</h4>
+        <p className="text-sm text-red-800">
+          The final step is organizing your actions in the optimal sequence. Some actions depend on others, some can happen simultaneously, 
+          and some are more critical than others. This creates your personalized roadmap for systematic goal achievement.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Immediate Actions (Start This Week):</label>
+          <p className="text-sm text-gray-600 mb-3">
+            What actions can you take immediately to build momentum and begin progress?
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2, 3, 4].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-12">#{index + 1}</span>
+                <input
+                  type="text"
+                  value={reverseData.actionSequencing.immediateActions[index] || ''}
+                  onChange={(e) => {
+                    const newActions = [...reverseData.actionSequencing.immediateActions];
+                    newActions[index] = e.target.value;
+                    setReverseData(prev => ({
+                      ...prev,
+                      actionSequencing: {
+                        ...prev.actionSequencing,
+                        immediateActions: newActions
+                      }
+                    }));
+                  }}
+                  placeholder={`Immediate action ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Weekly Routines to Establish:</label>
+          <p className="text-sm text-gray-600 mb-3">
+            What regular routines will consistently move you toward your goal?
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2, 3].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-12">#{index + 1}</span>
+                <input
+                  type="text"
+                  value={reverseData.actionSequencing.weeklyRoutines[index] || ''}
+                  onChange={(e) => {
+                    const newRoutines = [...reverseData.actionSequencing.weeklyRoutines];
+                    newRoutines[index] = e.target.value;
+                    setReverseData(prev => ({
+                      ...prev,
+                      actionSequencing: {
+                        ...prev.actionSequencing,
+                        weeklyRoutines: newRoutines
+                      }
+                    }));
+                  }}
+                  placeholder={`Weekly routine ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Monthly Review Points:</label>
+          <p className="text-sm text-gray-600 mb-3">
+            What will you review and adjust each month to stay on track?
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-12">#{index + 1}</span>
+                <input
+                  type="text"
+                  value={reverseData.actionSequencing.monthlyReviews[index] || ''}
+                  onChange={(e) => {
+                    const newReviews = [...reverseData.actionSequencing.monthlyReviews];
+                    newReviews[index] = e.target.value;
+                    setReverseData(prev => ({
+                      ...prev,
+                      actionSequencing: {
+                        ...prev.actionSequencing,
+                        monthlyReviews: newReviews
+                      }
+                    }));
+                  }}
+                  placeholder={`Monthly review ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Quarterly Adjustments:</label>
+          <p className="text-sm text-gray-600 mb-3">
+            What major adjustments or pivots might you need to make each quarter?
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-12">Q{index + 1}</span>
+                <input
+                  type="text"
+                  value={reverseData.actionSequencing.quarterlyAdjustments[index] || ''}
+                  onChange={(e) => {
+                    const newAdjustments = [...reverseData.actionSequencing.quarterlyAdjustments];
+                    newAdjustments[index] = e.target.value;
+                    setReverseData(prev => ({
+                      ...prev,
+                      actionSequencing: {
+                        ...prev.actionSequencing,
+                        quarterlyAdjustments: newAdjustments
+                      }
+                    }));
+                  }}
+                  placeholder={`Quarterly adjustment ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Critical Path Actions:</label>
+          <p className="text-sm text-gray-600 mb-3">
+            Which actions are absolutely essential and cannot be delayed? These are your highest priorities.
+          </p>
+          <div className="space-y-2">
+            {[0, 1, 2, 3, 4].map(index => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-sm font-medium w-12">#{index + 1}</span>
+                <input
+                  type="text"
+                  value={reverseData.actionSequencing.criticalPathActions[index] || ''}
+                  onChange={(e) => {
+                    const newActions = [...reverseData.actionSequencing.criticalPathActions];
+                    newActions[index] = e.target.value;
+                    setReverseData(prev => ({
+                      ...prev,
+                      actionSequencing: {
+                        ...prev.actionSequencing,
+                        criticalPathActions: newActions
+                      }
+                    }));
+                  }}
+                  placeholder={`Critical action ${index + 1}...`}
+                  className="flex-1 px-3 py-2 border rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-emerald-50 p-4 rounded-lg">
+        <h5 className="font-medium text-emerald-900 mb-2">Your Success Roadmap Summary</h5>
+        <div className="text-sm text-emerald-800 space-y-2">
+          <div>
+            <strong>Goal:</strong> {reverseData.goalDefinition.ultimateGoal.substring(0, 100)}
+            {reverseData.goalDefinition.ultimateGoal.length > 100 && '...'}
+          </div>
+          <div>
+            <strong>Timeline:</strong> {reverseData.goalDefinition.completionDate && 
+              `${Math.ceil((new Date(reverseData.goalDefinition.completionDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days`}
+          </div>
+          <div>
+            <strong>Immediate Actions:</strong> {reverseData.actionSequencing.immediateActions.filter(a => a).length} defined
+          </div>
+          <div>
+            <strong>Resources Identified:</strong> {
+              reverseData.resourceIdentification.skillsNeeded.length + 
+              reverseData.resourceIdentification.knowledgeGaps.length + 
+              reverseData.resourceIdentification.toolsResources.length + 
+              reverseData.resourceIdentification.supportNetwork.length
+            } items
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="w-6 h-6 text-orange-600" />
+          Reverse Engineering Success Method
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-orange-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Work backwards from your goal to create a systematic pathway to success</p>
+          </div>
+
+          {currentStep === 0 && renderGoalDefinitionStep()}
+          {currentStep === 1 && renderBackwardMappingStep()}
+          {currentStep === 2 && renderResourceIdentificationStep()}
+          {currentStep === 3 && renderActionSequencingStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w6-reverse', reverseData)}
+                className="ml-auto"
+              >
+                Complete Success Method
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Week 6 Component 4: Habit Loop Mastery System
+function HabitLoopMastery({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [habitData, setHabitData] = useState({
+    habitSelection: {
+      goalConnection: '',
+      specificHabit: '',
+      whyImportant: '',
+      currentBehavior: '',
+      desiredFrequency: ''
+    },
+    loopDesign: {
+      cue: '',
+      routine: '',
+      reward: '',
+      cueType: '',
+      routineDetails: '',
+      rewardType: ''
+    },
+    implementationStrategy: {
+      stackingHabit: '',
+      environmentDesign: '',
+      implementationIntention: '',
+      temptationBundling: '',
+      socialSupport: ''
+    },
+    trackingSystem: {
+      trackingMethod: '',
+      streakTracking: true,
+      reminderSystem: '',
+      reviewSchedule: '',
+      adaptationPlan: ''
+    }
+  });
+
+  const steps = [
+    'Habit Selection & Goal Alignment',
+    'Habit Loop Design',
+    'Implementation Strategy',
+    'Tracking & Optimization System'
+  ];
+
+  const renderHabitSelectionStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Habit Selection & Goal Alignment</h4>
+        <p className="text-sm text-blue-800">
+          Successful habits are strategically chosen to support your bigger goals. Research shows that people who link habits 
+          to their identity and values have 87% higher success rates. We'll select one keystone habit that creates positive 
+          ripple effects across your life.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Connection to Your Goal:</label>
+          <Textarea
+            value={habitData.habitSelection.goalConnection}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              habitSelection: { ...prev.habitSelection, goalConnection: e.target.value }
+            }))}
+            placeholder="How does this habit directly support your main goal? What progress will this habit create?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Specific Habit to Build:</label>
+          <Textarea
+            value={habitData.habitSelection.specificHabit}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              habitSelection: { ...prev.habitSelection, specificHabit: e.target.value }
+            }))}
+            placeholder="Define the exact behavior you want to make automatic. Be specific about when, where, and how."
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "I will meditate for 10 minutes immediately after I drink my morning coffee in my living room chair."
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Why This Habit Matters:</label>
+          <Textarea
+            value={habitData.habitSelection.whyImportant}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              habitSelection: { ...prev.habitSelection, whyImportant: e.target.value }
+            }))}
+            placeholder="What makes this habit essential for your success? How will it transform your life?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Current Behavior Pattern:</label>
+          <Textarea
+            value={habitData.habitSelection.currentBehavior}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              habitSelection: { ...prev.habitSelection, currentBehavior: e.target.value }
+            }))}
+            placeholder="What do you currently do instead? What's your existing routine in this area?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Desired Frequency:</label>
+          <div className="grid grid-cols-2 gap-4">
+            <select
+              value={habitData.habitSelection.desiredFrequency}
+              onChange={(e) => setHabitData(prev => ({
+                ...prev,
+                habitSelection: { ...prev.habitSelection, desiredFrequency: e.target.value }
+              }))}
+              className="px-3 py-2 border rounded-md"
+            >
+              <option value="">Select frequency...</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays only</option>
+              <option value="3-times-week">3 times per week</option>
+              <option value="weekly">Weekly</option>
+              <option value="custom">Custom schedule</option>
+            </select>
+            <div className="flex items-center text-sm text-gray-600">
+              <span>Start with a frequency you can maintain consistently</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h5 className="font-medium text-green-900 mb-2">Habit Selection Guidelines</h5>
+        <div className="text-sm text-green-800 space-y-1">
+          <div>• <strong>Start small:</strong> Make it so easy you can't say no</div>
+          <div>• <strong>Be specific:</strong> Vague habits fail, specific habits succeed</div>
+          <div>• <strong>Focus on one:</strong> Master one habit before adding another</div>
+          <div>• <strong>Choose identity-based:</strong> "I am someone who..." rather than "I will do..."</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLoopDesignStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Habit Loop Design</h4>
+        <p className="text-sm text-purple-800">
+          Every habit follows a neurological loop: Cue → Routine → Reward. By designing each element intentionally, 
+          you create a powerful system that becomes automatic. This is the same framework used to break bad habits 
+          and build good ones systematically.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h5 className="font-medium text-gray-900 mb-2">The Habit Loop Science</h5>
+          <div className="text-sm text-gray-700 space-y-1">
+            <div><strong>Cue:</strong> The trigger that starts the habit (time, location, emotion, person, preceding action)</div>
+            <div><strong>Routine:</strong> The behavior itself (what you do)</div>
+            <div><strong>Reward:</strong> The benefit you get (what reinforces the habit)</div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Cue (Trigger):</label>
+          <Textarea
+            value={habitData.loopDesign.cue}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              loopDesign: { ...prev.loopDesign, cue: e.target.value }
+            }))}
+            placeholder="What will trigger this habit? Be specific about the exact cue that will remind you to do this behavior."
+            rows={3}
+          />
+          <div className="mt-2">
+            <label className="block text-sm font-medium mb-1">Cue Type:</label>
+            <div className="flex flex-wrap gap-2">
+              {['Time-based', 'Location-based', 'Emotion-based', 'Person-based', 'Action-based'].map(type => (
+                <Button
+                  key={type}
+                  variant={habitData.loopDesign.cueType === type ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setHabitData(prev => ({
+                    ...prev,
+                    loopDesign: { ...prev.loopDesign, cueType: type }
+                  }))}
+                >
+                  {type}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Examples:</strong> "After I pour my coffee" (action), "At 6:30 AM" (time), "In my home office" (location)
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Routine (The Behavior):</label>
+          <Textarea
+            value={habitData.loopDesign.routine}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              loopDesign: { ...prev.loopDesign, routine: e.target.value }
+            }))}
+            placeholder="Describe the exact behavior you'll do. Include duration, location, and any specific steps."
+            rows={3}
+          />
+          <div className="mt-2">
+            <label className="block text-sm font-medium mb-1">Routine Details:</label>
+            <Textarea
+              value={habitData.loopDesign.routineDetails}
+              onChange={(e) => setHabitData(prev => ({
+                ...prev,
+                loopDesign: { ...prev.loopDesign, routineDetails: e.target.value }
+              }))}
+              placeholder="Break down the routine into specific steps. What exactly will you do first, second, third?"
+              rows={3}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Reward (The Payoff):</label>
+          <Textarea
+            value={habitData.loopDesign.reward}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              loopDesign: { ...prev.loopDesign, reward: e.target.value }
+            }))}
+            placeholder="What reward will you get immediately after completing the habit? This reinforces the behavior."
+            rows={3}
+          />
+          <div className="mt-2">
+            <label className="block text-sm font-medium mb-1">Reward Type:</label>
+            <div className="flex flex-wrap gap-2">
+              {['Intrinsic', 'Extrinsic', 'Social', 'Sensory', 'Progress'].map(type => (
+                <Button
+                  key={type}
+                  variant={habitData.loopDesign.rewardType === type ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setHabitData(prev => ({
+                    ...prev,
+                    loopDesign: { ...prev.loopDesign, rewardType: type }
+                  }))}
+                >
+                  {type}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Examples:</strong> "Feeling accomplished" (intrinsic), "Check off on tracker" (progress), "Favorite tea" (sensory)
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-indigo-50 p-4 rounded-lg">
+        <h5 className="font-medium text-indigo-900 mb-2">Your Habit Loop Summary</h5>
+        <div className="text-sm text-indigo-800 space-y-2">
+          <div><strong>Cue:</strong> {habitData.loopDesign.cue || 'Not defined yet'}</div>
+          <div><strong>Routine:</strong> {habitData.loopDesign.routine || 'Not defined yet'}</div>
+          <div><strong>Reward:</strong> {habitData.loopDesign.reward || 'Not defined yet'}</div>
+          <div className="mt-2 text-indigo-700">
+            <strong>Loop strength:</strong> {Object.values(habitData.loopDesign).filter(v => v.length > 0).length}/6 elements defined
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderImplementationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Implementation Strategy</h4>
+        <p className="text-sm text-orange-800">
+          Implementation strategies increase habit success by 3-5x. We'll use proven techniques like habit stacking, 
+          environment design, and temptation bundling to make your new habit as easy as possible to maintain.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Habit Stacking:</label>
+          <Textarea
+            value={habitData.implementationStrategy.stackingHabit}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              implementationStrategy: { ...prev.implementationStrategy, stackingHabit: e.target.value }
+            }))}
+            placeholder="After I [existing habit], I will [new habit]. What existing habit will you stack this new habit onto?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "After I brush my teeth, I will do 10 pushups" or "After I sit at my desk, I will write in my journal"
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Environment Design:</label>
+          <Textarea
+            value={habitData.implementationStrategy.environmentDesign}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              implementationStrategy: { ...prev.implementationStrategy, environmentDesign: e.target.value }
+            }))}
+            placeholder="How will you design your environment to make this habit easier? What will you add, remove, or change?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "Place yoga mat by bed, remove phone from bedroom, set out workout clothes the night before"
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Implementation Intention:</label>
+          <Textarea
+            value={habitData.implementationStrategy.implementationIntention}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              implementationStrategy: { ...prev.implementationStrategy, implementationIntention: e.target.value }
+            }))}
+            placeholder="If [situation], then I will [behavior]. Plan for obstacles and difficult situations."
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "If I feel too tired to exercise, then I will do 5 minutes of stretching instead"
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Temptation Bundling:</label>
+          <Textarea
+            value={habitData.implementationStrategy.temptationBundling}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              implementationStrategy: { ...prev.implementationStrategy, temptationBundling: e.target.value }
+            }))}
+            placeholder="Pair your habit with something you enjoy. How can you make this habit more attractive?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "I will only listen to my favorite podcast while walking" or "I will drink my favorite tea while journaling"
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Social Support:</label>
+          <Textarea
+            value={habitData.implementationStrategy.socialSupport}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              implementationStrategy: { ...prev.implementationStrategy, socialSupport: e.target.value }
+            }))}
+            placeholder="How will you use social support to maintain this habit? Who will help keep you accountable?"
+            rows={3}
+          />
+          <div className="mt-1 text-xs text-gray-600">
+            <strong>Example:</strong> "Text my sister daily after completing habit, join online community, find workout partner"
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-emerald-50 p-4 rounded-lg">
+        <h5 className="font-medium text-emerald-900 mb-2">Implementation Power Strategies</h5>
+        <div className="text-sm text-emerald-800 space-y-1">
+          <div>• <strong>Habit Stacking:</strong> Links new habit to existing automatic behavior</div>
+          <div>• <strong>Environment Design:</strong> Makes good habits easier and bad habits harder</div>
+          <div>• <strong>Implementation Intentions:</strong> Pre-decides responses to obstacles</div>
+          <div>• <strong>Temptation Bundling:</strong> Adds immediate gratification to delayed rewards</div>
+          <div>• <strong>Social Support:</strong> Leverages accountability and community motivation</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTrackingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-teal-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-teal-900 mb-3">Tracking & Optimization System</h4>
+        <p className="text-sm text-teal-800">
+          What gets measured gets managed. People who track their habits are 2x more likely to achieve them. 
+          We'll create a simple but effective system to monitor your progress and make continuous improvements.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Tracking Method:</label>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                'Paper habit tracker',
+                'Phone app',
+                'Calendar marks',
+                'Physical tokens',
+                'Photo evidence',
+                'Journal entries'
+              ].map(method => (
+                <label key={method} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="trackingMethod"
+                    value={method}
+                    checked={habitData.trackingSystem.trackingMethod === method}
+                    onChange={(e) => setHabitData(prev => ({
+                      ...prev,
+                      trackingSystem: { ...prev.trackingSystem, trackingMethod: e.target.value }
+                    }))}
+                    className="rounded"
+                  />
+                  <span className="text-sm">{method}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={habitData.trackingSystem.streakTracking}
+              onChange={(e) => setHabitData(prev => ({
+                ...prev,
+                trackingSystem: { ...prev.trackingSystem, streakTracking: e.target.checked }
+              }))}
+              className="rounded"
+            />
+            <span className="text-sm font-medium">Track streaks and celebrate milestones</span>
+          </label>
+          <p className="text-xs text-gray-600 mt-1">
+            Streak tracking provides motivation and helps identify patterns in your success
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Reminder System:</label>
+          <Textarea
+            value={habitData.trackingSystem.reminderSystem}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              trackingSystem: { ...prev.trackingSystem, reminderSystem: e.target.value }
+            }))}
+            placeholder="How will you remind yourself to do this habit? Phone alarms, sticky notes, calendar events?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Review Schedule:</label>
+          <Textarea
+            value={habitData.trackingSystem.reviewSchedule}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              trackingSystem: { ...prev.trackingSystem, reviewSchedule: e.target.value }
+            }))}
+            placeholder="When will you review your progress? Daily check-ins, weekly assessments, monthly optimization?"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Adaptation Plan:</label>
+          <Textarea
+            value={habitData.trackingSystem.adaptationPlan}
+            onChange={(e) => setHabitData(prev => ({
+              ...prev,
+              trackingSystem: { ...prev.trackingSystem, adaptationPlan: e.target.value }
+            }))}
+            placeholder="How will you adapt this habit if it's not working? What modifications will you try?"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h5 className="font-medium text-purple-900 mb-2">Your Complete Habit System</h5>
+        <div className="text-sm text-purple-800 space-y-2">
+          <div><strong>Habit:</strong> {habitData.habitSelection.specificHabit.substring(0, 60)}
+            {habitData.habitSelection.specificHabit.length > 60 && '...'}</div>
+          <div><strong>Cue:</strong> {habitData.loopDesign.cue.substring(0, 60)}
+            {habitData.loopDesign.cue.length > 60 && '...'}</div>
+          <div><strong>Reward:</strong> {habitData.loopDesign.reward.substring(0, 60)}
+            {habitData.loopDesign.reward.length > 60 && '...'}</div>
+          <div><strong>Tracking:</strong> {habitData.trackingSystem.trackingMethod || 'Not selected'}</div>
+          <div className="mt-2 text-purple-700">
+            <strong>System completion:</strong> {Math.round(
+              (Object.values(habitData.habitSelection).filter(v => v.length > 0).length +
+               Object.values(habitData.loopDesign).filter(v => v.length > 0).length +
+               Object.values(habitData.implementationStrategy).filter(v => v.length > 0).length +
+               Object.values(habitData.trackingSystem).filter(v => v.length > 0 || v === true).length) / 18 * 100
+            )}%
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 p-4 rounded-lg">
+        <h5 className="font-medium text-amber-900 mb-2">Habit Success Timeline</h5>
+        <div className="text-sm text-amber-800 space-y-1">
+          <div><strong>Week 1-2:</strong> Focus on consistency over perfection</div>
+          <div><strong>Week 3-4:</strong> Habit becomes easier, less conscious effort needed</div>
+          <div><strong>Week 5-8:</strong> Habit becomes more automatic</div>
+          <div><strong>Week 9-12:</strong> Habit is established, ready to optimize or add new habits</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <RotateCcw className="w-6 h-6 text-teal-600" />
+          Habit Loop Mastery System
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-teal-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Design sustainable habits using neuroscience-based loop architecture</p>
+          </div>
+
+          {currentStep === 0 && renderHabitSelectionStep()}
+          {currentStep === 1 && renderLoopDesignStep()}
+          {currentStep === 2 && renderImplementationStep()}
+          {currentStep === 3 && renderTrackingStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w6-habits', habitData)}
+                className="ml-auto"
+              >
+                Complete Habit Mastery System
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function EnhancedCoachingComponentMinimal({ component, moduleId, onComplete, onClose }: EnhancedCoachingComponentMinimalProps) {
   // Handle special interactive components
   if (component.id === 'focus-memory-rituals') {
@@ -12120,6 +14578,23 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'w5-mind-management') {
     return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 6 Components
+  if (component.id === 'w6-vision') {
+    return <FutureSelfVisualization onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w6-goals') {
+    return <SmartGoalArchitecture onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w6-reverse') {
+    return <ReverseEngineeringSuccess onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w6-habits') {
+    return <HabitLoopMastery onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
