@@ -35,12 +35,13 @@ export default function Coaching() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    // Check for payment access or payment success from URL
+    // Check for payment access, admin access, or payment success from URL
     const urlParams = new URLSearchParams(window.location.search);
     const paymentSuccess = urlParams.get('payment') === 'success';
+    const adminAccess = urlParams.get('admin') === 'true';
     const storedAccess = localStorage.getItem('coachingAccess') === 'true';
     
-    if (paymentSuccess) {
+    if (paymentSuccess || adminAccess) {
       localStorage.setItem('coachingAccess', 'true');
       setHasAccess(true);
     } else if (storedAccess) {

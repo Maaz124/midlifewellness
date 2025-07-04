@@ -267,12 +267,19 @@ export default function Dashboard() {
                   </div>
                   <Badge variant="secondary" className="bg-green-100 text-green-800">67% OFF</Badge>
                 </div>
-                <Link href="/coaching">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Unlock Full Program
-                  </Button>
-                </Link>
+                <div className="flex gap-3">
+                  <Link href="/coaching">
+                    <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Unlock Full Program
+                    </Button>
+                  </Link>
+                  <Link href="/coaching?admin=true">
+                    <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
+                      Admin Access
+                    </Button>
+                  </Link>
+                </div>
               </div>
               <div className="p-6 bg-white/50">
                 <div className="space-y-3 text-sm">
