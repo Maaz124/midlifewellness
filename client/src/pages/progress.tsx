@@ -4,67 +4,190 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, Calendar, Award, Download, BarChart3, Target, BookOpen, Heart } from 'lucide-react';
+import { TrendingUp, Calendar, Award, Download, BarChart3, Target, BookOpen, Heart, LineChart } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js';
+import { Line, Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 export default function ProgressPage() {
   const { data } = useWellnessData();
   const [timeRange, setTimeRange] = useState('30');
+  const [chartType, setChartType] = useState<'line' | 'bar'>('line');
   const [chartData, setChartData] = useState<any>(null);
 
-  // Mock chart data - in a real app, this would come from your analytics
-  const generateMockData = () => {
-    const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+  // Enhanced chart data with dynamic color coding
+  const generateChartData = () => {
+    const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
+    
+    // Simulate weekly progress data leading to current scores
+    const mentalData = [45, 55, 62, 68, data.healthScores.mental || 0];
+    const physicalData = [40, 50, 58, 65, data.healthScores.physical || 0];
+    const cognitiveData = [50, 60, 68, 75, data.healthScores.cognitive || 0];
+    
+    const getScoreColor = (score: number) => {
+      if (score >= 80) return 'hsl(142, 76%, 36%)'; // Excellent - Green
+      if (score >= 70) return 'hsl(217, 91%, 60%)'; // Very Good - Blue
+      if (score >= 60) return 'hsl(45, 93%, 47%)'; // Good - Yellow
+      if (score >= 40) return 'hsl(25, 95%, 53%)'; // Fair - Orange
+      return 'hsl(0, 84%, 60%)'; // Poor - Red
+    };
+
     return {
       labels,
       datasets: [
         {
           label: 'Mental Health',
-          data: [65, 68, 72, 75],
-          borderColor: 'hsl(261, 73%, 66%)',
-          backgroundColor: 'hsla(261, 73%, 66%, 0.15)',
-          borderWidth: 3,
-          pointBackgroundColor: 'hsl(261, 73%, 66%)',
+          data: mentalData,
+          borderColor: getScoreColor(data.healthScores.mental || 0),
+          backgroundColor: chartType === 'bar' 
+            ? getScoreColor(data.healthScores.mental || 0) + '80'
+            : getScoreColor(data.healthScores.mental || 0) + '20',
+          borderWidth: chartType === 'line' ? 3 : 2,
+          pointBackgroundColor: getScoreColor(data.healthScores.mental || 0),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
-          pointRadius: 6,
+          pointRadius: chartType === 'line' ? 6 : 0,
           tension: 0.4,
-          fill: true
+          fill: chartType === 'line' ? true : false,
+          borderRadius: chartType === 'bar' ? 6 : 0,
+          borderSkipped: false,
         },
         {
           label: 'Physical Health', 
-          data: [60, 63, 68, 70],
-          borderColor: 'hsl(14, 86%, 76%)',
-          backgroundColor: 'hsla(14, 86%, 76%, 0.15)',
-          borderWidth: 3,
-          pointBackgroundColor: 'hsl(14, 86%, 76%)',
+          data: physicalData,
+          borderColor: getScoreColor(data.healthScores.physical || 0),
+          backgroundColor: chartType === 'bar'
+            ? getScoreColor(data.healthScores.physical || 0) + '80'
+            : getScoreColor(data.healthScores.physical || 0) + '20',
+          borderWidth: chartType === 'line' ? 3 : 2,
+          pointBackgroundColor: getScoreColor(data.healthScores.physical || 0),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
-          pointRadius: 6,
+          pointRadius: chartType === 'line' ? 6 : 0,
           tension: 0.4,
-          fill: true
+          fill: chartType === 'line' ? true : false,
+          borderRadius: chartType === 'bar' ? 6 : 0,
+          borderSkipped: false,
         },
         {
           label: 'Cognitive Health',
-          data: [75, 78, 81, 83],
-          borderColor: 'hsl(140, 20%, 65%)',
-          backgroundColor: 'hsla(140, 20%, 65%, 0.15)',
-          borderWidth: 3,
-          pointBackgroundColor: 'hsl(140, 20%, 65%)',
+          data: cognitiveData,
+          borderColor: getScoreColor(data.healthScores.cognitive || 0),
+          backgroundColor: chartType === 'bar'
+            ? getScoreColor(data.healthScores.cognitive || 0) + '80'
+            : getScoreColor(data.healthScores.cognitive || 0) + '20',
+          borderWidth: chartType === 'line' ? 3 : 2,
+          pointBackgroundColor: getScoreColor(data.healthScores.cognitive || 0),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
-          pointRadius: 6,
+          pointRadius: chartType === 'line' ? 6 : 0,
           tension: 0.4,
-          fill: true
+          fill: chartType === 'line' ? true : false,
+          borderRadius: chartType === 'bar' ? 6 : 0,
+          borderSkipped: false,
         }
       ]
     };
   };
 
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12,
+            weight: 500,
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        titleColor: '#374151',
+        bodyColor: '#374151',
+        borderColor: '#e5e7eb',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: true,
+        callbacks: {
+          label: function(context: any) {
+            const score = context.parsed.y;
+            const category = score >= 80 ? 'Excellent' :
+                           score >= 70 ? 'Very Good' :
+                           score >= 60 ? 'Good' :
+                           score >= 40 ? 'Fair' : 'Needs Focus';
+            return `${context.dataset.label}: ${score} (${category})`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        grid: {
+          color: 'rgba(156, 163, 175, 0.3)',
+        },
+        ticks: {
+          callback: function(value: any) {
+            return value + '%';
+          },
+          color: '#6b7280',
+          font: {
+            size: 11,
+          }
+        }
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#6b7280',
+          font: {
+            size: 11,
+          }
+        }
+      }
+    },
+    elements: {
+      point: {
+        hoverRadius: 8,
+      }
+    }
+  };
+
   useEffect(() => {
-    // Initialize chart when component mounts
-    setChartData(generateMockData());
-  }, []);
+    // Generate chart data when component mounts or chart type changes
+    setChartData(generateChartData());
+  }, [chartType, data.healthScores.mental, data.healthScores.physical, data.healthScores.cognitive]);
 
   const moodDistribution = {
     'very-happy': { value: 32, color: 'hsl(142, 76%, 36%)', label: 'Very Happy' },
@@ -136,6 +259,25 @@ export default function ProgressPage() {
           <p className="text-gray-600">Track your wellness transformation with detailed analytics and personalized insights.</p>
         </div>
         <div className="flex space-x-3">
+          <Select value={chartType} onValueChange={(value: 'line' | 'bar') => setChartType(value)}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="line">
+                <div className="flex items-center gap-2">
+                  <LineChart className="w-4 h-4" />
+                  Line Chart
+                </div>
+              </SelectItem>
+              <SelectItem value="bar">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  Bar Chart
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -213,131 +355,26 @@ export default function ProgressPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-64 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6">
-                {data.healthScores.overall > 0 ? (
-                  <div className="space-y-6">
-                    {/* Color-coded progress bars visualization */}
-                    <div className="space-y-4">
-                      {/* Mental Health Bar */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-700">Mental Health</span>
-                          <span className={`text-sm font-bold ${getScoreCategory(data.healthScores.mental).color}`}>
-                            {data.healthScores.mental}/100
-                          </span>
-                        </div>
-                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
-                            style={{
-                              width: `${data.healthScores.mental}%`,
-                              background: `linear-gradient(90deg, 
-                                ${getProgressColor(data.healthScores.mental)} 0%,
-                                ${data.healthScores.mental >= 80 ? 'hsl(142, 76%, 46%)' :
-                                  data.healthScores.mental >= 70 ? 'hsl(217, 91%, 70%)' :
-                                  data.healthScores.mental >= 60 ? 'hsl(45, 93%, 57%)' :
-                                  data.healthScores.mental >= 40 ? 'hsl(25, 95%, 63%)' : 'hsl(0, 84%, 70%)'} 100%)`
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Physical Health Bar */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-700">Physical Health</span>
-                          <span className={`text-sm font-bold ${getScoreCategory(data.healthScores.physical).color}`}>
-                            {data.healthScores.physical}/100
-                          </span>
-                        </div>
-                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
-                            style={{
-                              width: `${data.healthScores.physical}%`,
-                              background: `linear-gradient(90deg, 
-                                ${getProgressColor(data.healthScores.physical)} 0%,
-                                ${data.healthScores.physical >= 80 ? 'hsl(142, 76%, 46%)' :
-                                  data.healthScores.physical >= 70 ? 'hsl(217, 91%, 70%)' :
-                                  data.healthScores.physical >= 60 ? 'hsl(45, 93%, 57%)' :
-                                  data.healthScores.physical >= 40 ? 'hsl(25, 95%, 63%)' : 'hsl(0, 84%, 70%)'} 100%)`
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Cognitive Health Bar */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-700">Cognitive Health</span>
-                          <span className={`text-sm font-bold ${getScoreCategory(data.healthScores.cognitive).color}`}>
-                            {data.healthScores.cognitive}/100
-                          </span>
-                        </div>
-                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
-                            style={{
-                              width: `${data.healthScores.cognitive}%`,
-                              background: `linear-gradient(90deg, 
-                                ${getProgressColor(data.healthScores.cognitive)} 0%,
-                                ${data.healthScores.cognitive >= 80 ? 'hsl(142, 76%, 46%)' :
-                                  data.healthScores.cognitive >= 70 ? 'hsl(217, 91%, 70%)' :
-                                  data.healthScores.cognitive >= 60 ? 'hsl(45, 93%, 57%)' :
-                                  data.healthScores.cognitive >= 40 ? 'hsl(25, 95%, 63%)' : 'hsl(0, 84%, 70%)'} 100%)`
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Overall wellness indicator */}
-                    <div className="pt-4 border-t border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-800">Overall Wellness Score</span>
-                        <div className="flex items-center space-x-3">
-                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${getScoreCategory(data.healthScores.overall).bg} ${getScoreCategory(data.healthScores.overall).color}`}>
-                            {getScoreCategory(data.healthScores.overall).label}
-                          </div>
-                          <span className={`text-xl font-bold ${getScoreCategory(data.healthScores.overall).color}`}>
-                            {data.healthScores.overall}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Trend indicators */}
-                    <div className="grid grid-cols-3 gap-4 pt-2">
-                      <div className="text-center">
-                        <div className={`w-2 h-8 mx-auto rounded-full ${
-                          data.healthScores.mental >= 70 ? 'bg-emerald-400' :
-                          data.healthScores.mental >= 50 ? 'bg-amber-400' : 'bg-rose-400'
-                        }`} />
-                        <div className="text-xs text-gray-500 mt-1">Mental</div>
-                      </div>
-                      <div className="text-center">
-                        <div className={`w-2 h-8 mx-auto rounded-full ${
-                          data.healthScores.physical >= 70 ? 'bg-emerald-400' :
-                          data.healthScores.physical >= 50 ? 'bg-amber-400' : 'bg-rose-400'
-                        }`} />
-                        <div className="text-xs text-gray-500 mt-1">Physical</div>
-                      </div>
-                      <div className="text-center">
-                        <div className={`w-2 h-8 mx-auto rounded-full ${
-                          data.healthScores.cognitive >= 70 ? 'bg-emerald-400' :
-                          data.healthScores.cognitive >= 50 ? 'bg-amber-400' : 'bg-rose-400'
-                        }`} />
-                        <div className="text-xs text-gray-500 mt-1">Cognitive</div>
-                      </div>
-                    </div>
+              <div className="h-80 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-4">
+                {chartData && data.healthScores.overall > 0 ? (
+                  <div className="h-full">
+                    {chartType === 'line' ? (
+                      <Line data={chartData} options={chartOptions} />
+                    ) : (
+                      <Bar data={chartData} options={chartOptions} />
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mb-4">
-                      <BarChart3 className="w-8 h-8 text-blue-500" />
+                      {chartType === 'line' ? (
+                        <LineChart className="w-8 h-8 text-blue-500" />
+                      ) : (
+                        <BarChart3 className="w-8 h-8 text-blue-500" />
+                      )}
                     </div>
                     <h3 className="font-medium text-gray-800 mb-2">Wellness Trends Awaiting Data</h3>
-                    <p className="text-gray-500 text-sm">Complete your health assessments to see beautiful color-coded progress visualization</p>
+                    <p className="text-gray-500 text-sm">Complete your health assessments to see beautiful color-coded {chartType} chart visualization</p>
                     <div className="flex items-center space-x-2 mt-4">
                       <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
@@ -345,6 +382,14 @@ export default function ProgressPage() {
                       <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-4"
+                      onClick={() => setChartType(chartType === 'line' ? 'bar' : 'line')}
+                    >
+                      Switch to {chartType === 'line' ? 'Bar' : 'Line'} Chart
+                    </Button>
                   </div>
                 )}
               </div>
