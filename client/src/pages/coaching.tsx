@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-fixed';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules } from '@/lib/coaching-data';
+import { useLocation } from 'wouter';
 import { 
   Clock, 
   CheckCircle, 
@@ -19,7 +20,10 @@ import {
   ChevronUp, 
   RotateCcw,
   Play,
-  Eye
+  Eye,
+  Lock,
+  CreditCard,
+  Sparkles
 } from 'lucide-react';
 
 export default function Coaching() {
@@ -27,6 +31,24 @@ export default function Coaching() {
   const [activeComponent, setActiveComponent] = useState<any>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [openWeeks, setOpenWeeks] = useState<string[]>(['week-1', 'week-2']); // Week 1 and 2 open by default
+  const [hasAccess, setHasAccess] = useState(false);
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    // Check for payment access or payment success from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get('payment') === 'success';
+    const storedAccess = localStorage.getItem('coachingAccess') === 'true';
+    
+    if (paymentSuccess) {
+      localStorage.setItem('coachingAccess', 'true');
+      setHasAccess(true);
+    } else if (storedAccess) {
+      setHasAccess(true);
+    } else {
+      setHasAccess(false);
+    }
+  }, []);
 
   const handleComponentComplete = (componentId: string, responseData?: any) => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
@@ -111,6 +133,90 @@ export default function Coaching() {
               setActiveModuleId(null);
             }}
           />
+        </div>
+      </div>
+    );
+  }
+
+  // Payment Protection Screen
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-16">
+          <div className="text-center space-y-6">
+            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+              <Lock className="w-12 h-12 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900">
+              Unlock Your Transformation Journey
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Join thousands of women who have transformed their midlife experience with Dr. Sidra Bukhari's proven 6-week Mind-Body Reset program.
+            </p>
+          </div>
+
+          <Card className="border-2 border-purple-200 bg-white/80 backdrop-blur">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl text-purple-800 flex items-center justify-center gap-2">
+                <Sparkles className="w-6 h-6" />
+                Premium Coaching Program
+              </CardTitle>
+              <CardDescription className="text-lg">
+                Get complete access to all 24 interactive components across 6 transformational weeks
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg text-gray-800">What's Included:</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>6 comprehensive weekly modules</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>24 interactive coaching components</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>CBT & NLP therapeutic techniques</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>Hormone & nervous system focus</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span>Lifetime access to all content</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-purple-100 to-pink-100 p-6 rounded-lg text-center">
+                  <div className="text-3xl font-bold text-purple-700 mb-2">$97</div>
+                  <div className="text-sm text-gray-600 line-through mb-2">Regular: $297</div>
+                  <div className="text-lg font-semibold text-purple-800 mb-4">67% OFF Launch Special</div>
+                  <Button 
+                    onClick={() => setLocation('/checkout')}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3"
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Get Instant Access
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-3">30-day money-back guarantee</p>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg text-center">
+                <p className="text-blue-800 font-medium">
+                  ✨ Health Assessment dashboard remains completely FREE
+                </p>
+                <p className="text-blue-600 text-sm mt-1">
+                  Continue using all wellness tracking tools at no cost
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );

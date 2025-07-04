@@ -10,6 +10,7 @@ import Journal from "@/pages/journal";
 import Progress from "@/pages/progress";
 import Community from "@/pages/community";
 import About from "@/pages/about";
+import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
           <Route path="/progress" component={Progress} />
           <Route path="/community" component={Community} />
           <Route path="/about" component={About} />
+          <Route path="/checkout" component={Checkout} />
           <Route component={NotFound} />
         </Switch>
       </main>
