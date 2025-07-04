@@ -4031,13 +4031,648 @@ function PauseLabelShiftTechnique({ onComplete, onClose }: { onComplete: (id: st
 
 // Boundaries Worksheet Component
 function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
   const [boundariesData, setBoundariesData] = useState({
-    timeScripts: { saying_no: '', time_requests: '', interruptions: '' },
-    emotionalScripts: { support_requests: '', criticism: '', guilt_trips: '' },
-    familyScripts: { expectations: '', responsibilities: '', personal_time: '' },
-    digitalScripts: { work_hours: '', social_media: '', availability: '' },
+    assessment: {
+      currentChallenges: [] as string[],
+      difficultSituations: '',
+      boundaryViolations: '',
+      stressLevel: 5
+    },
+    timeScripts: {
+      saying_no: '',
+      time_requests: '',
+      interruptions: '',
+      work_overload: '',
+      social_obligations: ''
+    },
+    emotionalScripts: {
+      support_requests: '',
+      criticism: '',
+      guilt_trips: '',
+      emotional_dumping: '',
+      manipulation: ''
+    },
+    familyScripts: {
+      expectations: '',
+      responsibilities: '',
+      personal_time: '',
+      parenting_pressure: '',
+      elder_care: ''
+    },
+    digitalScripts: {
+      work_hours: '',
+      social_media: '',
+      availability: '',
+      urgent_messages: '',
+      phone_calls: ''
+    },
+    practiceScenarios: {} as Record<string, { situation: string; script: string; confidence: number }>,
     practiceCommitments: [] as string[]
   });
+
+  const steps = [
+    'Boundary Assessment',
+    'Time Boundaries',
+    'Emotional Boundaries', 
+    'Family Boundaries',
+    'Digital Boundaries',
+    'Practice Scenarios',
+    'Implementation Plan'
+  ];
+
+  const boundaryTypes = [
+    'Saying no to requests without guilt',
+    'Managing work-life balance',
+    'Dealing with criticism or judgment',
+    'Setting limits on emotional support',
+    'Protecting personal time and space',
+    'Managing family expectations',
+    'Controlling digital availability',
+    'Handling manipulation or guilt trips'
+  ];
+
+  const renderAssessmentStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Understanding Your Boundary Challenges</h4>
+        <p className="text-sm text-blue-800">
+          Before creating scripts, let's identify your specific boundary challenges and current stress patterns.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Which boundary areas are most challenging for you?</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {boundaryTypes.map((type, index) => (
+            <label key={index} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={boundariesData.assessment.currentChallenges.includes(type)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setBoundariesData(prev => ({
+                      ...prev,
+                      assessment: {
+                        ...prev.assessment,
+                        currentChallenges: [...prev.assessment.currentChallenges, type]
+                      }
+                    }));
+                  } else {
+                    setBoundariesData(prev => ({
+                      ...prev,
+                      assessment: {
+                        ...prev.assessment,
+                        currentChallenges: prev.assessment.currentChallenges.filter(c => c !== type)
+                      }
+                    }));
+                  }
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{type}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Describe your most difficult boundary situations:</label>
+        <Textarea
+          value={boundariesData.assessment.difficultSituations}
+          onChange={(e) => setBoundariesData(prev => ({
+            ...prev,
+            assessment: { ...prev.assessment, difficultSituations: e.target.value }
+          }))}
+          placeholder="What situations make it hardest for you to maintain boundaries? Who are the people involved?"
+          rows={4}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Recent boundary violations or disappointments:</label>
+        <Textarea
+          value={boundariesData.assessment.boundaryViolations}
+          onChange={(e) => setBoundariesData(prev => ({
+            ...prev,
+            assessment: { ...prev.assessment, boundaryViolations: e.target.value }
+          }))}
+          placeholder="Times when you said yes but wished you'd said no, or when others crossed your boundaries..."
+          rows={3}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-3">Current stress level from boundary issues (1 = No stress, 10 = Overwhelming)</label>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-500">No stress</span>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value={boundariesData.assessment.stressLevel}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              assessment: { ...prev.assessment, stressLevel: parseInt(e.target.value) }
+            }))}
+            className="flex-1"
+          />
+          <span className="text-sm text-gray-500">Overwhelming</span>
+          <span className="w-8 text-center font-medium bg-blue-100 rounded px-2 py-1">{boundariesData.assessment.stressLevel}</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTimeBoundariesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Time Boundary Scripts</h4>
+        <p className="text-sm text-orange-800">
+          Protect your time and energy with clear, respectful language. Practice these scripts until they feel natural.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Saying no to requests:</label>
+          <p className="text-xs text-gray-600 mb-2">For non-essential requests that would overload your schedule</p>
+          <Textarea
+            value={boundariesData.timeScripts.saying_no}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              timeScripts: { ...prev.timeScripts, saying_no: e.target.value }
+            }))}
+            placeholder="e.g., 'I appreciate you thinking of me, but I'm not available for that right now. I hope you find someone who can help.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Managing time-consuming requests:</label>
+          <p className="text-xs text-gray-600 mb-2">When people ask for significant time investments</p>
+          <Textarea
+            value={boundariesData.timeScripts.time_requests}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              timeScripts: { ...prev.timeScripts, time_requests: e.target.value }
+            }))}
+            placeholder="e.g., 'That sounds important. Let me check my calendar and get back to you tomorrow with what I can realistically commit to.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Handling interruptions:</label>
+          <p className="text-xs text-gray-600 mb-2">When your focused time is being disrupted</p>
+          <Textarea
+            value={boundariesData.timeScripts.interruptions}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              timeScripts: { ...prev.timeScripts, interruptions: e.target.value }
+            }))}
+            placeholder="e.g., 'I'm in deep focus right now. Can we schedule 15 minutes later today to discuss this properly?'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Preventing work overload:</label>
+          <p className="text-xs text-gray-600 mb-2">When asked to take on additional work responsibilities</p>
+          <Textarea
+            value={boundariesData.timeScripts.work_overload}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              timeScripts: { ...prev.timeScripts, work_overload: e.target.value }
+            }))}
+            placeholder="e.g., 'I want to deliver quality work. To take this on, I'd need to adjust deadlines on X and Y projects. Should we prioritize this over those?'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Managing social obligations:</label>
+          <p className="text-xs text-gray-600 mb-2">For social events or commitments that drain your energy</p>
+          <Textarea
+            value={boundariesData.timeScripts.social_obligations}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              timeScripts: { ...prev.timeScripts, social_obligations: e.target.value }
+            }))}
+            placeholder="e.g., 'I'm not able to commit to that right now. I'm focusing on some personal priorities, but I hope you have a wonderful time.'"
+            rows={3}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEmotionalBoundariesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Emotional Boundary Scripts</h4>
+        <p className="text-sm text-purple-800">
+          Protect your emotional energy while maintaining compassionate relationships. These scripts help you support others without depleting yourself.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Limiting emotional support requests:</label>
+          <p className="text-xs text-gray-600 mb-2">When someone frequently seeks emotional support beyond your capacity</p>
+          <Textarea
+            value={boundariesData.emotionalScripts.support_requests}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              emotionalScripts: { ...prev.emotionalScripts, support_requests: e.target.value }
+            }))}
+            placeholder="e.g., 'I care about you and I can see you're struggling. I have about 10 minutes to listen right now, and then I'd encourage you to reach out to [professional/other support].'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Responding to criticism or judgment:</label>
+          <p className="text-xs text-gray-600 mb-2">When others criticize your choices or lifestyle</p>
+          <Textarea
+            value={boundariesData.emotionalScripts.criticism}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              emotionalScripts: { ...prev.emotionalScripts, criticism: e.target.value }
+            }))}
+            placeholder="e.g., 'I understand you have a different perspective. This is what works for me right now.' or 'I'm not open to feedback on this topic.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Handling guilt trips:</label>
+          <p className="text-xs text-gray-600 mb-2">When others try to make you feel guilty for your boundaries</p>
+          <Textarea
+            value={boundariesData.emotionalScripts.guilt_trips}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              emotionalScripts: { ...prev.emotionalScripts, guilt_trips: e.target.value }
+            }))}
+            placeholder="e.g., 'I understand you're disappointed. My decision isn't about you - it's about what I need to take care of myself right now.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Stopping emotional dumping:</label>
+          <p className="text-xs text-gray-600 mb-2">When conversations become one-sided venting sessions</p>
+          <Textarea
+            value={boundariesData.emotionalScripts.emotional_dumping}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              emotionalScripts: { ...prev.emotionalScripts, emotional_dumping: e.target.value }
+            }))}
+            placeholder="e.g., 'I can hear how frustrated you are. I'm not in the right headspace to be helpful with this today. Can we catch up when I'm more available to really listen?'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Addressing manipulation:</label>
+          <p className="text-xs text-gray-600 mb-2">When others use emotional manipulation to get their way</p>
+          <Textarea
+            value={boundariesData.emotionalScripts.manipulation}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              emotionalScripts: { ...prev.emotionalScripts, manipulation: e.target.value }
+            }))}
+            placeholder="e.g., 'I notice this conversation is getting pressured. I need to take a step back. Let's revisit this when we can discuss it more calmly.'"
+            rows={3}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderFamilyBoundariesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Family Boundary Scripts</h4>
+        <p className="text-sm text-green-800">
+          Family relationships often have the most complex boundary challenges. These scripts help you maintain love while protecting your well-being.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Managing family expectations:</label>
+          <p className="text-xs text-gray-600 mb-2">When family expects you to fulfill traditional or assumed roles</p>
+          <Textarea
+            value={boundariesData.familyScripts.expectations}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              familyScripts: { ...prev.familyScripts, expectations: e.target.value }
+            }))}
+            placeholder="e.g., 'I love our family and I'm not able to take on that responsibility right now. Let's brainstorm other solutions together.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Redistributing family responsibilities:</label>
+          <p className="text-xs text-gray-600 mb-2">When you're carrying too much of the family load</p>
+          <Textarea
+            value={boundariesData.familyScripts.responsibilities}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              familyScripts: { ...prev.familyScripts, responsibilities: e.target.value }
+            }))}
+            placeholder="e.g., 'I've been handling most of [specific tasks]. I need to share this load. Here's what I can continue doing, and here's what I need help with...'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Protecting personal time:</label>
+          <p className="text-xs text-gray-600 mb-2">When family members don't respect your need for alone time</p>
+          <Textarea
+            value={boundariesData.familyScripts.personal_time}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              familyScripts: { ...prev.familyScripts, personal_time: e.target.value }
+            }))}
+            placeholder="e.g., 'I need one hour of uninterrupted time to recharge. This isn't about not wanting to be with you - it's about me taking care of myself so I can be present with you later.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Handling parenting pressure:</label>
+          <p className="text-xs text-gray-600 mb-2">When others judge or pressure your parenting decisions</p>
+          <Textarea
+            value={boundariesData.familyScripts.parenting_pressure}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              familyScripts: { ...prev.familyScripts, parenting_pressure: e.target.value }
+            }))}
+            placeholder="e.g., 'I appreciate that you care about [child's name]. [Partner] and I have discussed this and we're comfortable with our approach.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Managing elder care expectations:</label>
+          <p className="text-xs text-gray-600 mb-2">When family assumes you'll provide extensive elder care</p>
+          <Textarea
+            value={boundariesData.familyScripts.elder_care}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              familyScripts: { ...prev.familyScripts, elder_care: e.target.value }
+            }))}
+            placeholder="e.g., 'I want to support [family member] in the best way possible. Let's have a family meeting to discuss how we can all contribute to their care in sustainable ways.'"
+            rows={3}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDigitalBoundariesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Digital Boundary Scripts</h4>
+        <p className="text-sm text-indigo-800">
+          Technology can blur boundaries between work and personal life. These scripts help you maintain digital wellness.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Setting work hours boundaries:</label>
+          <p className="text-xs text-gray-600 mb-2">For emails, messages, or calls outside your designated work hours</p>
+          <Textarea
+            value={boundariesData.digitalScripts.work_hours}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              digitalScripts: { ...prev.digitalScripts, work_hours: e.target.value }
+            }))}
+            placeholder="e.g., 'I received your message. I check work communications between 9-5 on weekdays. I'll respond by [specific time] tomorrow.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Managing social media interactions:</label>
+          <p className="text-xs text-gray-600 mb-2">When social media becomes overwhelming or intrusive</p>
+          <Textarea
+            value={boundariesData.digitalScripts.social_media}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              digitalScripts: { ...prev.digitalScripts, social_media: e.target.value }
+            }))}
+            placeholder="e.g., 'I'm taking a break from social media to focus on personal priorities. I'll catch up with you through [preferred method] instead.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Controlling availability expectations:</label>
+          <p className="text-xs text-gray-600 mb-2">When others expect immediate responses to messages</p>
+          <Textarea
+            value={boundariesData.digitalScripts.availability}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              digitalScripts: { ...prev.digitalScripts, availability: e.target.value }
+            }))}
+            placeholder="e.g., 'I typically respond to messages within 24-48 hours. If something is truly urgent, please call me directly.'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Handling 'urgent' messages:</label>
+          <p className="text-xs text-gray-600 mb-2">When everything is labeled as urgent but isn't truly an emergency</p>
+          <Textarea
+            value={boundariesData.digitalScripts.urgent_messages}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              digitalScripts: { ...prev.digitalScripts, urgent_messages: e.target.value }
+            }))}
+            placeholder="e.g., 'I see you marked this as urgent. To help me prioritize, can you let me know what happens if this waits until [tomorrow/Monday]?'"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Managing unexpected phone calls:</label>
+          <p className="text-xs text-gray-600 mb-2">When people call without scheduling, expecting immediate availability</p>
+          <Textarea
+            value={boundariesData.digitalScripts.phone_calls}
+            onChange={(e) => setBoundariesData(prev => ({
+              ...prev,
+              digitalScripts: { ...prev.digitalScripts, phone_calls: e.target.value }
+            }))}
+            placeholder="e.g., 'I'm not available to talk right now. Can we schedule 20 minutes sometime this week when I can give you my full attention?'"
+            rows={3}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPracticeScenariosStep = () => {
+    const scenarios = [
+      {
+        id: 'overwhelming-request',
+        title: 'Overwhelming Work Request',
+        situation: 'Your colleague asks you to help with their project that would require 10+ hours of work, saying "You\'re the only one who can help me!"'
+      },
+      {
+        id: 'family-guilt',
+        title: 'Family Guilt Trip',
+        situation: 'Your mother says "I guess you\'re too busy for family" when you can\'t attend every family gathering.'
+      },
+      {
+        id: 'friend-emotional-dump',
+        title: 'Friend\'s Emotional Dumping',
+        situation: 'A friend calls daily to vent about their relationship problems but never asks how you\'re doing or follows your advice.'
+      }
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-yellow-50 p-6 rounded-lg">
+          <h4 className="font-semibold text-yellow-900 mb-3">Practice Boundary Scenarios</h4>
+          <p className="text-sm text-yellow-800">
+            Practice applying your boundary scripts to realistic scenarios. Rate your confidence to track progress.
+          </p>
+        </div>
+
+        {scenarios.map((scenario, index) => (
+          <div key={scenario.id} className="border rounded-lg p-6 space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-8 h-8 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center text-sm font-medium">
+                {index + 1}
+              </span>
+              <h5 className="font-semibold text-lg">{scenario.title}</h5>
+            </div>
+            
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm font-medium text-gray-700">Scenario:</p>
+              <p className="text-sm text-gray-600 mt-1">{scenario.situation}</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Your boundary response:</label>
+              <Textarea
+                value={boundariesData.practiceScenarios[scenario.id]?.script || ''}
+                onChange={(e) => setBoundariesData(prev => ({
+                  ...prev,
+                  practiceScenarios: {
+                    ...prev.practiceScenarios,
+                    [scenario.id]: {
+                      ...prev.practiceScenarios[scenario.id],
+                      situation: scenario.situation,
+                      script: e.target.value
+                    }
+                  }
+                }))}
+                placeholder="Write how you would respond using your boundary scripts..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Confidence level (1-10):</label>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Not confident</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={boundariesData.practiceScenarios[scenario.id]?.confidence || 5}
+                  onChange={(e) => setBoundariesData(prev => ({
+                    ...prev,
+                    practiceScenarios: {
+                      ...prev.practiceScenarios,
+                      [scenario.id]: {
+                        ...prev.practiceScenarios[scenario.id],
+                        situation: scenario.situation,
+                        confidence: parseInt(e.target.value)
+                      }
+                    }
+                  }))}
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-500">Very confident</span>
+                <span className="w-8 text-center font-medium bg-yellow-100 rounded px-2 py-1">
+                  {boundariesData.practiceScenarios[scenario.id]?.confidence || 5}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderImplementationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Implementation & Practice Plan</h4>
+        <p className="text-sm text-green-800">
+          Boundaries become stronger with practice. Choose specific commitments to integrate into your daily life.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Choose your boundary practice commitments:</h5>
+        <div className="space-y-3">
+          {[
+            'Practice saying no to one small request this week',
+            'Use one emotional boundary script when someone drains my energy',
+            'Set specific work hours and communicate them to colleagues/family',
+            'Schedule and protect 30 minutes of daily personal time',
+            'Have one honest conversation about redistributing family responsibilities',
+            'Create an email auto-response about my availability',
+            'Practice one boundary script in the mirror daily until it feels natural',
+            'Ask for 24 hours to think before committing to any new requests',
+            'Share my boundary goals with a trusted friend or partner for support',
+            'Review and adjust my boundary scripts weekly based on what works'
+          ].map((commitment, index) => (
+            <label key={index} className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={boundariesData.practiceCommitments.includes(commitment)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setBoundariesData(prev => ({
+                      ...prev,
+                      practiceCommitments: [...prev.practiceCommitments, commitment]
+                    }));
+                  } else {
+                    setBoundariesData(prev => ({
+                      ...prev,
+                      practiceCommitments: prev.practiceCommitments.filter(c => c !== commitment)
+                    }));
+                  }
+                }}
+                className="rounded mt-1"
+              />
+              <span className="text-sm">{commitment}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-semibold text-blue-900 mb-2">Remember: Boundary Setting Tips</h5>
+        <ul className="text-sm text-blue-800 space-y-1">
+          <li>• Start with low-stakes situations to build confidence</li>
+          <li>• Your "no" is a complete sentence - you don't need elaborate explanations</li>
+          <li>• Expect some pushback initially - people are used to your old patterns</li>
+          <li>• Consistency is key - maintain boundaries even when it feels uncomfortable</li>
+          <li>• Self-care isn't selfish - you can't pour from an empty cup</li>
+        </ul>
+      </div>
+    </div>
+  );
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -4052,41 +4687,58 @@ function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string,
           <Heart className="w-6 h-6 text-green-600" />
           Boundaries Worksheet
         </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="bg-green-50 p-6 rounded-lg">
-            <h4 className="font-semibold text-green-900 mb-3">Design Personalized Boundary Scripts</h4>
-            <p className="text-sm text-green-800">
-              Create specific language for different boundary situations you encounter.
-            </p>
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Design personalized boundary scripts for time, emotional, family, and digital situations</p>
           </div>
 
-          <div className="space-y-8">
-            <div>
-              <h5 className="font-semibold mb-4 text-blue-700">Time Boundaries</h5>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Saying no to requests:</label>
-                  <Textarea
-                    value={boundariesData.timeScripts.saying_no}
-                    onChange={(e) => setBoundariesData(prev => ({
-                      ...prev,
-                      timeScripts: { ...prev.timeScripts, saying_no: e.target.value }
-                    }))}
-                    placeholder="e.g., 'I appreciate you thinking of me, but I'm not available for that right now.'"
-                    rows={2}
-                  />
-                </div>
-              </div>
-            </div>
+          {currentStep === 0 && renderAssessmentStep()}
+          {currentStep === 1 && renderTimeBoundariesStep()}
+          {currentStep === 2 && renderEmotionalBoundariesStep()}
+          {currentStep === 3 && renderFamilyBoundariesStep()}
+          {currentStep === 4 && renderDigitalBoundariesStep()}
+          {currentStep === 5 && renderPracticeScenariosStep()}
+          {currentStep === 6 && renderImplementationStep()}
 
-            <Button 
-              onClick={() => onComplete('w3-boundaries', boundariesData)}
-              className="w-full"
-            >
-              Complete Boundaries Work
-            </Button>
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w3-boundaries', boundariesData)}
+                className="ml-auto"
+              >
+                Complete Boundaries Worksheet
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
