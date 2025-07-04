@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { Bell, User, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/logo';
 
 export function NavHeader() {
   const [location] = useLocation();
@@ -26,15 +27,9 @@ export function NavHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
-              <i className="fas fa-lotus text-white text-lg"></i>
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-800">ThriveMidlife</h1>
-              <p className="text-xs text-gray-500">Mind-Body Reset</p>
-            </div>
-          </div>
+          <Link href="/" className="flex items-center">
+            <Logo size="md" className="hover:opacity-80 transition-opacity" />
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">

@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, Target, BookOpen, RefreshCw } from 'lucide-react';
 import { Link } from 'wouter';
+import { Logo } from '@/components/logo';
 
 export default function Dashboard() {
   const { data, updateHealthScores } = useWellnessData();
@@ -50,6 +51,9 @@ export default function Dashboard() {
       {/* Welcome Section */}
       <section className="bg-gradient-to-br from-primary/5 via-white to-sage/5 py-12 rounded-3xl">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-6">
+            <Logo size="xl" className="animate-pulse" />
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
             Welcome to Your Wellness Journey
           </h1>
