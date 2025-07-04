@@ -14,7 +14,7 @@ export function NavHeader() {
     { path: '/journal', label: 'Journal', icon: 'fas fa-book' },
     { path: '/progress', label: 'Progress', icon: 'fas fa-trophy' },
     { path: '/community', label: 'Community', icon: 'fas fa-users' },
-    { path: '/about', label: 'About Dr. Sidra', icon: 'fas fa-user-md' },
+    { path: '/about', label: 'About', icon: 'fas fa-user-md' },
   ];
 
   const isActive = (path: string) => {
