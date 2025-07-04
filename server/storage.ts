@@ -17,6 +17,7 @@ import {
   experienceReactions,
   type User, 
   type InsertUser,
+  type UpsertUser,
   type HealthAssessment,
   type InsertHealthAssessment,
   type JournalEntry,
@@ -50,40 +51,41 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
-  // Users
-  getUser(id: number): Promise<User | undefined>;
+  // Users (Replit Auth compatible)
+  getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
 
   // Health Assessments
-  getHealthAssessmentsByUser(userId: number): Promise<HealthAssessment[]>;
+  getHealthAssessmentsByUser(userId: string): Promise<HealthAssessment[]>;
   createHealthAssessment(assessment: InsertHealthAssessment): Promise<HealthAssessment>;
-  getLatestHealthAssessment(userId: number, type: string): Promise<HealthAssessment | undefined>;
+  getLatestHealthAssessment(userId: string, type: string): Promise<HealthAssessment | undefined>;
 
   // Journal Entries
-  getJournalEntriesByUser(userId: number): Promise<JournalEntry[]>;
+  getJournalEntriesByUser(userId: string): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
   deleteJournalEntry(id: number): Promise<void>;
 
   // Coaching Progress
-  getCoachingProgressByUser(userId: number): Promise<CoachingProgress[]>;
+  getCoachingProgressByUser(userId: string): Promise<CoachingProgress[]>;
   createCoachingProgress(progress: InsertCoachingProgress): Promise<CoachingProgress>;
   updateCoachingProgress(id: number, updates: Partial<CoachingProgress>): Promise<CoachingProgress>;
 
   // Goals
-  getGoalsByUser(userId: number): Promise<Goal[]>;
+  getGoalsByUser(userId: string): Promise<Goal[]>;
   createGoal(goal: InsertGoal): Promise<Goal>;
   updateGoal(id: number, updates: Partial<Goal>): Promise<Goal>;
   deleteGoal(id: number): Promise<void>;
 
   // Habits
-  getHabitsByUser(userId: number): Promise<Habit[]>;
+  getHabitsByUser(userId: string): Promise<Habit[]>;
   createHabit(habit: InsertHabit): Promise<Habit>;
   updateHabit(id: number, updates: Partial<Habit>): Promise<Habit>;
   deleteHabit(id: number): Promise<void>;
 
   // Mood Entries
-  getMoodEntriesByUser(userId: number): Promise<MoodEntry[]>;
+  getMoodEntriesByUser(userId: string): Promise<MoodEntry[]>;
   createMoodEntry(entry: InsertMoodEntry): Promise<MoodEntry>;
 }
 
@@ -308,4 +310,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { DatabaseStorage } from "./database-storage";
+
+export const storage = new DatabaseStorage();

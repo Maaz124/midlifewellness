@@ -1,7 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
-import { storage } from "./storage";
+import { DatabaseStorage } from "./database-storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
+
+const storage = new DatabaseStorage();
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -19,10 +22,26 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Health Assessments
+  // Initialize database storage and authentication
+  const storage = new DatabaseStorage();
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Health Assessments (keeping free access)
   app.get("/api/health-assessments/:userId", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.params.userId;
       const assessments = await storage.getHealthAssessmentsByUser(userId);
       res.json(assessments);
     } catch (error) {
@@ -41,9 +60,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Journal Entries
-  app.get("/api/journal-entries/:userId", async (req, res) => {
+  app.get("/api/journal-entries", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub;
       const entries = await storage.getJournalEntriesByUser(userId);
       res.json(entries);
     } catch (error) {
@@ -72,9 +91,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Coaching Progress
-  app.get("/api/coaching-progress/:userId", async (req, res) => {
+  app.get("/api/coaching-progress", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub;
       const progress = await storage.getCoachingProgressByUser(userId);
       res.json(progress);
     } catch (error) {
@@ -104,9 +123,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Goals
-  app.get("/api/goals/:userId", async (req, res) => {
+  app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub;
       const goals = await storage.getGoalsByUser(userId);
       res.json(goals);
     } catch (error) {
@@ -146,9 +165,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Habits
-  app.get("/api/habits/:userId", async (req, res) => {
+  app.get("/api/habits", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub;
       const habits = await storage.getHabitsByUser(userId);
       res.json(habits);
     } catch (error) {
@@ -188,9 +207,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mood Entries
-  app.get("/api/mood-entries/:userId", async (req, res) => {
+  app.get("/api/mood-entries", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub;
       const entries = await storage.getMoodEntriesByUser(userId);
       res.json(entries);
     } catch (error) {
@@ -209,10 +228,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User Management
-  app.get("/api/users/:id", async (req, res) => {
+  app.get("/api/users/me", isAuthenticated, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const user = await storage.getUser(id);
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -243,9 +262,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics endpoint
-  app.get("/api/analytics/:userId", async (req, res) => {
+  app.get("/api/analytics", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub;
       
       // Fetch all relevant data for analytics
       const [assessments, journalEntries, moodEntries, goals, habits] = await Promise.all([

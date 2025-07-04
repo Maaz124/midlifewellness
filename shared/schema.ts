@@ -1,18 +1,32 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for authentication
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table for Replit Auth
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  id: varchar("id").primaryKey().notNull(),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const healthAssessments = pgTable("health_assessments", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   assessmentType: text("assessment_type").notNull(), // 'mental', 'physical', 'cognitive'
   score: integer("score").notNull(),
   responses: jsonb("responses").notNull(),
@@ -21,7 +35,7 @@ export const healthAssessments = pgTable("health_assessments", {
 
 export const journalEntries = pgTable("journal_entries", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   title: text("title"),
   content: text("content").notNull(),
   mood: text("mood"), // 'very-happy', 'happy', 'neutral', 'sad', 'very-sad'
@@ -31,7 +45,7 @@ export const journalEntries = pgTable("journal_entries", {
 
 export const coachingProgress = pgTable("coaching_progress", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   weekNumber: integer("week_number").notNull(),
   moduleId: text("module_id").notNull(),
   completed: boolean("completed").default(false),
@@ -41,7 +55,7 @@ export const coachingProgress = pgTable("coaching_progress", {
 
 export const goals = pgTable("goals", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
   description: text("description"),
   category: text("category").notNull(), // 'sleep', 'mindfulness', 'exercise', 'self-care'
@@ -54,7 +68,7 @@ export const goals = pgTable("goals", {
 
 export const habits = pgTable("habits", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   frequency: text("frequency").notNull(), // 'daily', 'weekly'
@@ -65,7 +79,7 @@ export const habits = pgTable("habits", {
 
 export const moodEntries = pgTable("mood_entries", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   mood: text("mood").notNull(),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -86,7 +100,7 @@ export const forumCategories = pgTable("forum_categories", {
 export const forumPosts = pgTable("forum_posts", {
   id: serial("id").primaryKey(),
   categoryId: integer("category_id").references(() => forumCategories.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
   content: text("content").notNull(),
   isAnonymous: boolean("is_anonymous").default(false),
@@ -102,7 +116,7 @@ export const forumPosts = pgTable("forum_posts", {
 export const forumReplies = pgTable("forum_replies", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").references(() => forumPosts.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   content: text("content").notNull(),
   isAnonymous: boolean("is_anonymous").default(false),
   likes: integer("likes").default(0),
@@ -120,7 +134,7 @@ export const supportGroups = pgTable("support_groups", {
   currentMembers: integer("current_members").default(0),
   meetingSchedule: text("meeting_schedule"),
   nextMeeting: timestamp("next_meeting"),
-  facilitatorId: integer("facilitator_id").references(() => users.id),
+  facilitatorId: varchar("facilitator_id").references(() => users.id),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -128,7 +142,7 @@ export const supportGroups = pgTable("support_groups", {
 export const supportGroupMembers = pgTable("support_group_members", {
   id: serial("id").primaryKey(),
   groupId: integer("group_id").references(() => supportGroups.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   role: text("role").default("member"), // 'member', 'facilitator', 'co-facilitator'
   joinedAt: timestamp("joined_at").defaultNow().notNull(),
   isActive: boolean("is_active").default(true),
@@ -136,8 +150,8 @@ export const supportGroupMembers = pgTable("support_group_members", {
 
 export const peerConnections = pgTable("peer_connections", {
   id: serial("id").primaryKey(),
-  requesterId: integer("requester_id").references(() => users.id).notNull(),
-  receiverId: integer("receiver_id").references(() => users.id).notNull(),
+  requesterId: varchar("requester_id").references(() => users.id).notNull(),
+  receiverId: varchar("receiver_id").references(() => users.id).notNull(),
   status: text("status").default("pending"), // 'pending', 'accepted', 'declined', 'blocked'
   connectionType: text("connection_type").default("peer"), // 'peer', 'mentor', 'accountability'
   message: text("message"),
@@ -147,7 +161,7 @@ export const peerConnections = pgTable("peer_connections", {
 
 export const userProfiles = pgTable("user_profiles", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   displayName: text("display_name"),
   bio: text("bio"),
   location: text("location"),
@@ -164,7 +178,7 @@ export const userProfiles = pgTable("user_profiles", {
 
 export const sharedExperiences = pgTable("shared_experiences", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
   content: text("content").notNull(),
   category: text("category").notNull(), // 'breakthrough', 'challenge', 'tip', 'question'
@@ -178,15 +192,15 @@ export const sharedExperiences = pgTable("shared_experiences", {
 export const experienceReactions = pgTable("experience_reactions", {
   id: serial("id").primaryKey(),
   experienceId: integer("experience_id").references(() => sharedExperiences.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   reactionType: text("reaction_type").notNull(), // 'like', 'heart', 'support', 'relate'
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export const insertHealthAssessmentSchema = createInsertSchema(healthAssessments).omit({
@@ -277,6 +291,7 @@ export const insertExperienceReactionSchema = createInsertSchema(experienceReact
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type UpsertUser = typeof users.$inferInsert;
 
 export type InsertHealthAssessment = z.infer<typeof insertHealthAssessmentSchema>;
 export type HealthAssessment = typeof healthAssessments.$inferSelect;
