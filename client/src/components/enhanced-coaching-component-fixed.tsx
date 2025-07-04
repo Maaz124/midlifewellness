@@ -7586,27 +7586,843 @@ function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string
   );
 }
 
-// Create Your Calm Corner Component (Stub)
+// Create Your Calm Corner Component
 function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [calmCornerData, setCalmCornerData] = useState({
+    spaceAssessment: {
+      availableSpace: '',
+      timeAvailable: '',
+      privacyLevel: 5,
+      currentChallenges: '',
+      sanctuaryGoals: ''
+    },
+    sensoryDesign: {
+      colors: [] as string[],
+      lighting: [] as string[],
+      textures: [] as string[],
+      sounds: [] as string[],
+      scents: [] as string[]
+    },
+    essentialItems: {
+      comfort: [] as string[],
+      mindfulness: [] as string[],
+      grounding: [] as string[],
+      inspiration: [] as string[]
+    },
+    ritualPractices: {
+      entryRitual: '',
+      breathingPractice: '',
+      mindfulnessActivity: '',
+      gratitudePractice: '',
+      exitRitual: ''
+    },
+    maintenancePlan: {
+      dailyTending: '',
+      weeklyRefresh: '',
+      monthlyEvolution: '',
+      seasonalChanges: '',
+      boundaryMaintenance: ''
+    }
+  });
+
+  const steps = [
+    'Space Assessment & Planning',
+    'Sensory Environment Design',
+    'Essential Items & Tools',
+    'Mindful Rituals & Practices',
+    'Maintenance & Evolution Plan'
+  ];
+
+  const colorOptions = [
+    { name: 'Soft Blues', effect: 'Calming, reduces anxiety', hex: '#E6F3FF' },
+    { name: 'Sage Greens', effect: 'Grounding, promotes balance', hex: '#E8F5E8' },
+    { name: 'Warm Beiges', effect: 'Comforting, creates security', hex: '#F5F1E8' },
+    { name: 'Lavender', effect: 'Soothing, aids relaxation', hex: '#F0E6FF' },
+    { name: 'Soft Pinks', effect: 'Nurturing, self-compassion', hex: '#FFE6F0' },
+    { name: 'Cream & Ivory', effect: 'Pure, creates clarity', hex: '#FFFEF7' },
+    { name: 'Dusty Rose', effect: 'Gentle warmth, emotional healing', hex: '#F5E6E8' },
+    { name: 'Pale Yellow', effect: 'Uplifting, promotes joy', hex: '#FFFACD' }
+  ];
+
+  const lightingOptions = [
+    'Soft table lamps', 'String lights', 'Candles or LED candles', 'Salt lamps',
+    'Natural sunlight', 'Dimmer switches', 'Colored bulbs', 'Lanterns',
+    'Fairy lights', 'Floor lamps', 'Natural light filtering', 'Sunrise lamps'
+  ];
+
+  const textureOptions = [
+    'Soft throw blankets', 'Velvet cushions', 'Fuzzy rugs', 'Smooth stones',
+    'Wooden elements', 'Silk fabrics', 'Cashmere throws', 'Bamboo items',
+    'Cotton comfort items', 'Linen textures', 'Faux fur accents', 'Natural fibers'
+  ];
+
+  const soundOptions = [
+    'Nature sounds', 'Soft instrumental music', 'Singing bowls', 'Wind chimes',
+    'White noise machine', 'Meditation bells', 'Classical music', 'Ambient sounds',
+    'Rain sounds', 'Ocean waves', 'Forest sounds', 'Complete silence'
+  ];
+
+  const scentOptions = [
+    'Lavender essential oil', 'Eucalyptus', 'Vanilla candles', 'Sandalwood',
+    'Chamomile', 'Rose', 'Bergamot', 'Fresh flowers',
+    'Cedar', 'Lemon balm', 'Frankincense', 'Fresh air/no scent'
+  ];
+
+  const comfortItems = [
+    'Meditation cushion', 'Soft throw blanket', 'Comfortable chair', 'Floor pillows',
+    'Ottoman or footrest', 'Eye pillow', 'Weighted blanket', 'Ergonomic support',
+    'Reading nook setup', 'Yoga mat', 'Bolster pillow', 'Bean bag chair'
+  ];
+
+  const mindfulnessItems = [
+    'Journal and pen', 'Meditation timer', 'Inspirational books', 'Oracle cards',
+    'Gratitude jar', 'Mindfulness bell', 'Meditation app/device', 'Affirmation cards',
+    'Vision board', 'Prayer beads', 'Meditation stones', 'Breathing guide poster'
+  ];
+
+  const groundingItems = [
+    'Crystals or stones', 'Plants or flowers', 'Water element (bowl/fountain)', 'Wood elements',
+    'Sand tray', 'Smooth river rocks', 'Essential oil diffuser', 'Natural textures',
+    'Grounding mat', 'Earth elements', 'Textured objects', 'Balance stones'
+  ];
+
+  const inspirationItems = [
+    'Meaningful photos', 'Inspiring quotes', 'Art or mandalas', 'Vision board',
+    'Spiritual symbols', 'Achievement reminders', 'Motivational books', 'Personal totems',
+    'Goal visualization tools', 'Meaningful jewelry', 'Legacy items', 'Dream catchers'
+  ];
+
+  const renderAssessmentStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Creating Your Personal Sanctuary</h4>
+        <p className="text-sm text-green-800">
+          Your calm corner is more than a physical space - it's a sacred sanctuary that signals to your nervous system 
+          that it's time to rest, restore, and reconnect. Even the smallest corner can become a powerful refuge when 
+          designed with intention.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">What space do you have available for your calm corner?</label>
+          <Textarea
+            value={calmCornerData.spaceAssessment.availableSpace}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              spaceAssessment: { ...prev.spaceAssessment, availableSpace: e.target.value }
+            }))}
+            placeholder="e.g., Corner of bedroom, part of living room, home office nook, guest room, outdoor patio, even a dedicated chair..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How much time can you realistically spend in your calm corner daily?</label>
+          <Textarea
+            value={calmCornerData.spaceAssessment.timeAvailable}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              spaceAssessment: { ...prev.spaceAssessment, timeAvailable: e.target.value }
+            }))}
+            placeholder="e.g., 10 minutes in morning, 15 minutes after work, weekend meditation sessions, quick breathing breaks..."
+            rows={2}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-3">Privacy level needed (1 = Public/shared space, 10 = Completely private)</label>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-500">Shared</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={calmCornerData.spaceAssessment.privacyLevel}
+              onChange={(e) => setCalmCornerData(prev => ({
+                ...prev,
+                spaceAssessment: { 
+                  ...prev.spaceAssessment, 
+                  privacyLevel: parseInt(e.target.value) 
+                }
+              }))}
+              className="flex-1"
+            />
+            <span className="text-sm text-gray-500">Private</span>
+            <span className="w-8 text-center font-medium bg-green-100 rounded px-2 py-1">
+              {calmCornerData.spaceAssessment.privacyLevel}
+            </span>
+          </div>
+          <div className="mt-2 text-sm text-gray-600">
+            {calmCornerData.spaceAssessment.privacyLevel <= 3 && "Shared space - focus on portable, subtle calming elements"}
+            {calmCornerData.spaceAssessment.privacyLevel >= 4 && calmCornerData.spaceAssessment.privacyLevel <= 7 && "Semi-private - can add personal touches and small sanctuary items"}
+            {calmCornerData.spaceAssessment.privacyLevel >= 8 && "Private space - can create full sensory sanctuary with all desired elements"}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">What are your main challenges in creating calm spaces?</label>
+          <Textarea
+            value={calmCornerData.spaceAssessment.currentChallenges}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              spaceAssessment: { ...prev.spaceAssessment, currentChallenges: e.target.value }
+            }))}
+            placeholder="e.g., Lack of space, family interruptions, clutter, noise, limited budget, time constraints, perfectionism..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">What do you hope your calm corner will provide for you?</label>
+          <Textarea
+            value={calmCornerData.spaceAssessment.sanctuaryGoals}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              spaceAssessment: { ...prev.spaceAssessment, sanctuaryGoals: e.target.value }
+            }))}
+            placeholder="e.g., Daily stress relief, morning meditation space, creative inspiration, emotional processing, spiritual connection..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Calm Corner Success Principles</h5>
+        <ul className="text-sm text-blue-800 space-y-1">
+          <li>• Start small - even a single chair can be transformed</li>
+          <li>• Consistency matters more than perfection</li>
+          <li>• Use items that speak to your senses and soul</li>
+          <li>• Create clear boundaries (even invisible ones)</li>
+          <li>• Make it easily accessible for daily use</li>
+          <li>• Allow it to evolve with your needs</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  const renderSensoryDesignStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Sensory Environment Design</h4>
+        <p className="text-sm text-purple-800">
+          Your nervous system responds to sensory input before conscious thought. By designing a multi-sensory 
+          environment that promotes calm, you create an automatic trigger for relaxation and safety.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Color Psychology - Choose colors that promote your desired state:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {colorOptions.map((color) => (
+              <label key={color.name} className="cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.sensoryDesign.colors.includes(color.name)}
+                  onChange={(e) => {
+                    const current = calmCornerData.sensoryDesign.colors;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      sensoryDesign: {
+                        ...prev.sensoryDesign,
+                        colors: e.target.checked 
+                          ? [...current, color.name]
+                          : current.filter(c => c !== color.name)
+                      }
+                    }));
+                  }}
+                  className="sr-only"
+                />
+                <div className={`p-3 rounded-lg border-2 transition-all ${
+                  calmCornerData.sensoryDesign.colors.includes(color.name) 
+                    ? 'border-purple-500 ring-2 ring-purple-200' 
+                    : 'border-gray-200 hover:border-purple-300'
+                }`} style={{ backgroundColor: color.hex }}>
+                  <div className="font-medium text-sm">{color.name}</div>
+                  <div className="text-xs text-gray-600 mt-1">{color.effect}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Lighting - Select lighting that supports relaxation:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {lightingOptions.map((light) => (
+              <label key={light} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.sensoryDesign.lighting.includes(light)}
+                  onChange={(e) => {
+                    const current = calmCornerData.sensoryDesign.lighting;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      sensoryDesign: {
+                        ...prev.sensoryDesign,
+                        lighting: e.target.checked 
+                          ? [...current, light]
+                          : current.filter(l => l !== light)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{light}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Textures - Choose textures that feel comforting:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {textureOptions.map((texture) => (
+              <label key={texture} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.sensoryDesign.textures.includes(texture)}
+                  onChange={(e) => {
+                    const current = calmCornerData.sensoryDesign.textures;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      sensoryDesign: {
+                        ...prev.sensoryDesign,
+                        textures: e.target.checked 
+                          ? [...current, texture]
+                          : current.filter(t => t !== texture)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{texture}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Sounds - Select audio elements for your space:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {soundOptions.map((sound) => (
+              <label key={sound} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.sensoryDesign.sounds.includes(sound)}
+                  onChange={(e) => {
+                    const current = calmCornerData.sensoryDesign.sounds;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      sensoryDesign: {
+                        ...prev.sensoryDesign,
+                        sounds: e.target.checked 
+                          ? [...current, sound]
+                          : current.filter(s => s !== sound)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{sound}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Scents - Choose aromatherapy elements:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {scentOptions.map((scent) => (
+              <label key={scent} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.sensoryDesign.scents.includes(scent)}
+                  onChange={(e) => {
+                    const current = calmCornerData.sensoryDesign.scents;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      sensoryDesign: {
+                        ...prev.sensoryDesign,
+                        scents: e.target.checked 
+                          ? [...current, scent]
+                          : current.filter(s => s !== scent)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{scent}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h5 className="font-medium text-purple-900 mb-2">Sensory Design Tips</h5>
+        <ul className="text-sm text-purple-800 space-y-1">
+          <li>• Layer multiple senses for deeper impact</li>
+          <li>• Choose 2-3 primary colors to avoid overstimulation</li>
+          <li>• Soft, warm lighting is more calming than bright, cool light</li>
+          <li>• Natural textures connect you to earth energy</li>
+          <li>• Consistent scents help trigger relaxation response</li>
+          <li>• Consider seasonal changes to keep space fresh</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  const renderEssentialItemsStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Essential Items & Tools</h4>
+        <p className="text-sm text-orange-800">
+          The objects in your calm corner should serve both functional and emotional purposes. Each item 
+          should either support your practice or bring you joy, peace, and connection to your highest self.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Comfort Items - Physical support for relaxation:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {comfortItems.map((item) => (
+              <label key={item} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.essentialItems.comfort.includes(item)}
+                  onChange={(e) => {
+                    const current = calmCornerData.essentialItems.comfort;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      essentialItems: {
+                        ...prev.essentialItems,
+                        comfort: e.target.checked 
+                          ? [...current, item]
+                          : current.filter(i => i !== item)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{item}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Mindfulness Tools - Support for practice and reflection:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {mindfulnessItems.map((item) => (
+              <label key={item} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.essentialItems.mindfulness.includes(item)}
+                  onChange={(e) => {
+                    const current = calmCornerData.essentialItems.mindfulness;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      essentialItems: {
+                        ...prev.essentialItems,
+                        mindfulness: e.target.checked 
+                          ? [...current, item]
+                          : current.filter(i => i !== item)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{item}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Grounding Elements - Connection to earth and nature:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {groundingItems.map((item) => (
+              <label key={item} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.essentialItems.grounding.includes(item)}
+                  onChange={(e) => {
+                    const current = calmCornerData.essentialItems.grounding;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      essentialItems: {
+                        ...prev.essentialItems,
+                        grounding: e.target.checked 
+                          ? [...current, item]
+                          : current.filter(i => i !== item)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{item}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Inspiration Items - Personal meaning and motivation:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {inspirationItems.map((item) => (
+              <label key={item} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={calmCornerData.essentialItems.inspiration.includes(item)}
+                  onChange={(e) => {
+                    const current = calmCornerData.essentialItems.inspiration;
+                    setCalmCornerData(prev => ({
+                      ...prev,
+                      essentialItems: {
+                        ...prev.essentialItems,
+                        inspiration: e.target.checked 
+                          ? [...current, item]
+                          : current.filter(i => i !== item)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{item}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="bg-orange-50 p-4 rounded-lg">
+          <h5 className="font-medium text-orange-900 mb-2">Essential vs. Enhancement</h5>
+          <div className="text-sm text-orange-800 space-y-1">
+            <div><strong>Essential (Start here):</strong></div>
+            <div>• One comfortable seating option</div>
+            <div>• One soft texture (blanket/pillow)</div>
+            <div>• One calming scent or candle</div>
+            <div>• Journal or reflection tool</div>
+            <div>• One inspirational item</div>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h5 className="font-medium text-blue-900 mb-2">Budget-Friendly Options</h5>
+          <div className="text-sm text-blue-800 space-y-1">
+            <div>• Use existing chair + throw blanket</div>
+            <div>• Print meaningful quotes or photos</div>
+            <div>• Gather stones/shells from nature</div>
+            <div>• Repurpose scarves for soft textures</div>
+            <div>• Use phone for meditation music</div>
+            <div>• Create DIY vision board</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderRitualsStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Mindful Rituals & Practices</h4>
+        <p className="text-sm text-indigo-800">
+          Rituals transform ordinary moments into sacred ones. By creating consistent practices in your calm corner, 
+          you train your nervous system to shift into rest mode quickly and deeply.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Entry Ritual - How will you transition into your calm corner?</label>
+          <Textarea
+            value={calmCornerData.ritualPractices.entryRitual}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              ritualPractices: { ...prev.ritualPractices, entryRitual: e.target.value }
+            }))}
+            placeholder="e.g., Remove shoes, light candle, take 3 deep breaths, set intention, place phone aside, wash hands mindfully..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Purpose:</strong> Signals to your nervous system that you're entering sacred time
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Breathing Practice - Your go-to breathwork in this space:</label>
+          <Textarea
+            value={calmCornerData.ritualPractices.breathingPractice}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              ritualPractices: { ...prev.ritualPractices, breathingPractice: e.target.value }
+            }))}
+            placeholder="e.g., 5 minutes of box breathing, heart coherence breathing, 4-7-8 breathing, gentle belly breathing..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Purpose:</strong> Activates parasympathetic nervous system and centers your mind
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Mindfulness Activity - Your preferred present-moment practice:</label>
+          <Textarea
+            value={calmCornerData.ritualPractices.mindfulnessActivity}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              ritualPractices: { ...prev.ritualPractices, mindfulnessActivity: e.target.value }
+            }))}
+            placeholder="e.g., Body scan meditation, loving-kindness practice, mindful journaling, guided meditation, nature observation..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Purpose:</strong> Cultivates awareness and presence while releasing mental chatter
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Gratitude Practice - How will you cultivate appreciation?</label>
+          <Textarea
+            value={calmCornerData.ritualPractices.gratitudePractice}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              ritualPractices: { ...prev.ritualPractices, gratitudePractice: e.target.value }
+            }))}
+            placeholder="e.g., Write 3 things I'm grateful for, gratitude meditation, appreciate my body, send love to family, celebrate small wins..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Purpose:</strong> Shifts brain chemistry toward positivity and abundance
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Exit Ritual - How will you complete your practice?</label>
+          <Textarea
+            value={calmCornerData.ritualPractices.exitRitual}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              ritualPractices: { ...prev.ritualPractices, exitRitual: e.target.value }
+            }))}
+            placeholder="e.g., Set intention for day ahead, blow out candle, place hands on heart, thank my space, gentle stretch..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Purpose:</strong> Seals in the peaceful energy and prepares you for daily activities
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="bg-indigo-50 p-4 rounded-lg">
+          <h5 className="font-medium text-indigo-900 mb-2">Sample 10-Minute Morning Ritual</h5>
+          <div className="text-sm text-indigo-800 space-y-1">
+            <div>1. Light candle, set phone aside (1 min)</div>
+            <div>2. Box breathing practice (3 min)</div>
+            <div>3. Body scan or meditation (4 min)</div>
+            <div>4. Gratitude journaling (1 min)</div>
+            <div>5. Set intention, blow out candle (1 min)</div>
+          </div>
+        </div>
+
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h5 className="font-medium text-green-900 mb-2">Sample 5-Minute Evening Ritual</h5>
+          <div className="text-sm text-green-800 space-y-1">
+            <div>1. Settle in with soft blanket (30 sec)</div>
+            <div>2. Release the day with exhales (2 min)</div>
+            <div>3. Appreciate 3 good moments (1 min)</div>
+            <div>4. Body relaxation practice (1 min)</div>
+            <div>5. Set peaceful intention for sleep (30 sec)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMaintenanceStep = () => (
+    <div className="space-y-6">
+      <div className="bg-teal-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-teal-900 mb-3">Maintenance & Evolution Plan</h4>
+        <p className="text-sm text-teal-800">
+          A living calm corner evolves with your needs and seasons of life. Regular tending keeps the space 
+          energetically fresh and personally meaningful, while protecting its sacred purpose.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Daily Tending - How will you keep your space sacred?</label>
+          <Textarea
+            value={calmCornerData.maintenancePlan.dailyTending}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              maintenancePlan: { ...prev.maintenancePlan, dailyTending: e.target.value }
+            }))}
+            placeholder="e.g., Tidy items after use, fluff cushions, straighten blankets, ensure candles are safely extinguished, reset items mindfully..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Weekly Refresh - Weekly rejuvenation practices:</label>
+          <Textarea
+            value={calmCornerData.maintenancePlan.weeklyRefresh}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              maintenancePlan: { ...prev.maintenancePlan, weeklyRefresh: e.target.value }
+            }))}
+            placeholder="e.g., Dust surfaces, wash throws/cushions, change water for plants, refresh scents, rearrange items slightly, clean crystals..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Monthly Evolution - How will your space grow with you?</label>
+          <Textarea
+            value={calmCornerData.maintenancePlan.monthlyEvolution}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              maintenancePlan: { ...prev.maintenancePlan, monthlyEvolution: e.target.value }
+            }))}
+            placeholder="e.g., Add new inspirational quotes, rotate seasonal items, introduce new scents, update vision board, assess what's working..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Seasonal Changes - Connecting with natural rhythms:</label>
+          <Textarea
+            value={calmCornerData.maintenancePlan.seasonalChanges}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              maintenancePlan: { ...prev.maintenancePlan, seasonalChanges: e.target.value }
+            }))}
+            placeholder="e.g., Spring: fresh flowers, light colors. Summer: cooling elements. Fall: warm textures, gratitude focus. Winter: cozy lighting, reflection..."
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Boundary Maintenance - Protecting your sacred space:</label>
+          <Textarea
+            value={calmCornerData.maintenancePlan.boundaryMaintenance}
+            onChange={(e) => setCalmCornerData(prev => ({
+              ...prev,
+              maintenancePlan: { ...prev.maintenancePlan, boundaryMaintenance: e.target.value }
+            }))}
+            placeholder="e.g., Keep work items out, ask family to respect space, use 'do not disturb' signals, maintain phone-free zone, gentle education about purpose..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-teal-50 p-4 rounded-lg">
+        <h5 className="font-semibold text-teal-900 mb-2">Your Calm Corner Success Metrics</h5>
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h6 className="font-medium text-teal-800 mb-1">Frequency Indicators:</h6>
+            <ul className="text-teal-700 space-y-1">
+              <li>• Using space consistently</li>
+              <li>• Looking forward to practice time</li>
+              <li>• Automatic stress relief when entering</li>
+              <li>• Family/friends respecting boundaries</li>
+            </ul>
+          </div>
+          <div>
+            <h6 className="font-medium text-teal-800 mb-1">Effectiveness Indicators:</h6>
+            <ul className="text-teal-700 space-y-1">
+              <li>• Faster transition to calm state</li>
+              <li>• Improved overall stress management</li>
+              <li>• Better sleep and energy</li>
+              <li>• Increased emotional resilience</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 p-4 rounded-lg">
+        <h5 className="font-medium text-amber-900 mb-2">Troubleshooting Common Challenges</h5>
+        <div className="text-sm text-amber-800 space-y-2">
+          <div><strong>Not using it regularly:</strong> Lower barriers (keep simpler), link to existing habits, start with just 2 minutes</div>
+          <div><strong>Space feels stagnant:</strong> Add one new element, change positioning, introduce seasonal items</div>
+          <div><strong>Family interruptions:</strong> Create visual cues, educate about importance, use "busy" signals</div>
+          <div><strong>Perfectionism paralysis:</strong> Start with one item and build gradually, remember process over perfection</div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
-        <Button variant="outline" onClick={onClose} className="flex items-center gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Coaching
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
         <CardTitle className="flex items-center gap-2">
           <Heart className="w-6 h-6 text-green-600" />
           Create Your Calm Corner
         </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="bg-green-50 rounded-lg p-6">
-          <p className="text-green-800">Coming soon: Design your personalized sanctuary with color psychology, aromatherapy, and mindful rituals</p>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Design your personalized sanctuary for daily restoration and nervous system regulation</p>
+          </div>
+
+          {currentStep === 0 && renderAssessmentStep()}
+          {currentStep === 1 && renderSensoryDesignStep()}
+          {currentStep === 2 && renderEssentialItemsStep()}
+          {currentStep === 3 && renderRitualsStep()}
+          {currentStep === 4 && renderMaintenanceStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w4-calm-corner', calmCornerData)}
+                className="ml-auto"
+              >
+                Complete Calm Corner Design
+              </Button>
+            )}
+          </div>
         </div>
-        <Button onClick={() => onComplete('w4-calm-corner')} className="w-full mt-6">
-          Complete Calm Corner Design
-        </Button>
       </CardContent>
     </Card>
   );
