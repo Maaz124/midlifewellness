@@ -6445,6 +6445,755 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
   );
 }
 
+// Week 5 Component 1: Enhanced Cognitive Clarity Assessment
+function EnhancedCognitiveAssessment({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [assessmentData, setAssessmentData] = useState({
+    cognitiveBaseline: {
+      memoryRating: 5,
+      focusRating: 5,
+      clarityRating: 5,
+      energyRating: 5,
+      sleepQuality: 5,
+      stressLevel: 5,
+      currentChallenges: [] as string[],
+      lifestageFactors: [] as string[]
+    },
+    dailyPatterns: {
+      bestFocusTime: '',
+      worstFocusTime: '',
+      mentalFatigueSignals: [] as string[],
+      concentrationDisruptors: [] as string[],
+      cognitiveSupports: [] as string[],
+      brainfogTriggers: [] as string[]
+    },
+    lifestyle: {
+      exercise: '',
+      nutrition: '',
+      hydration: '',
+      screenTime: '',
+      multitasking: '',
+      mentalStimulation: ''
+    },
+    personalizedInsights: {
+      primaryCognitiveConcerns: [] as string[],
+      strengthAreas: [] as string[],
+      improvementGoals: '',
+      motivations: '',
+      successMetrics: ''
+    }
+  });
+
+  const steps = [
+    'Cognitive Baseline Assessment',
+    'Daily Patterns Analysis', 
+    'Lifestyle Impact Evaluation',
+    'Personalized Insights & Recommendations'
+  ];
+
+  const cognitiveSignificance = {
+    memory: "Memory changes during midlife are often related to hormonal fluctuations affecting the hippocampus. Estrogen supports neural connectivity and when it declines, you may notice changes in working memory and recall.",
+    focus: "Attention and concentration can be impacted by hormonal changes, sleep disruption, and increased life stress. Your brain is adapting to new hormonal patterns while managing complex life demands.",
+    clarity: "Mental clarity often fluctuates during perimenopause due to changing estrogen levels affecting neurotransmitter function. This 'brain fog' is temporary and manageable with the right strategies.",
+    energy: "Cognitive energy is directly linked to physical energy, sleep quality, blood sugar stability, and stress hormones. Optimizing these areas can dramatically improve mental performance.",
+    sleep: "Sleep is crucial for memory consolidation, brain detoxification, and cognitive restoration. Hormonal changes can disrupt sleep patterns, creating a cycle that affects daytime cognitive function.",
+    stress: "Chronic stress elevates cortisol, which impairs memory formation and retrieval. Learning stress management is essential for cognitive optimization during midlife transitions."
+  };
+
+  const currentChallenges = [
+    'Forgetting names or words mid-conversation',
+    'Difficulty concentrating on complex tasks',
+    'Mental fatigue by afternoon',
+    'Trouble remembering where I put things',
+    'Feeling mentally "foggy" or unclear',
+    'Taking longer to process information',
+    'Difficulty multitasking like before',
+    'Forgetting appointments or deadlines',
+    'Hard to follow complex conversations',
+    'Losing train of thought frequently',
+    'Difficulty learning new information',
+    'Feeling overwhelmed by mental tasks'
+  ];
+
+  const lifestageFactors = [
+    'Perimenopause/menopause hormonal changes',
+    'Increased caregiving responsibilities',
+    'Career transitions or workplace stress',
+    'Sleep disruptions or insomnia',
+    'Relationship changes or family stress',
+    'Health concerns or medical changes',
+    'Medication side effects',
+    'Increased life responsibilities',
+    'Financial or housing pressures',
+    'Loss or grief experiences',
+    'Technology overwhelm',
+    'Social isolation or loneliness'
+  ];
+
+  const renderBaselineStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Cognitive Baseline Assessment</h4>
+        <p className="text-sm text-blue-800">
+          Understanding your current cognitive patterns helps create personalized strategies. 
+          Rate how you've been feeling over the past 2-3 weeks on average.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {[
+          { key: 'memoryRating', label: 'Memory & Recall', low: 'Poor recall', high: 'Sharp memory', significance: cognitiveSignificance.memory },
+          { key: 'focusRating', label: 'Focus & Attention', low: 'Very distractible', high: 'Laser focused', significance: cognitiveSignificance.focus },
+          { key: 'clarityRating', label: 'Mental Clarity', low: 'Very foggy', high: 'Crystal clear', significance: cognitiveSignificance.clarity },
+          { key: 'energyRating', label: 'Mental Energy', low: 'Mentally exhausted', high: 'Mentally energized', significance: cognitiveSignificance.energy },
+          { key: 'sleepQuality', label: 'Sleep Quality', low: 'Poor sleep', high: 'Excellent sleep', significance: cognitiveSignificance.sleep },
+          { key: 'stressLevel', label: 'Stress Level', low: 'Very calm', high: 'Very stressed', significance: cognitiveSignificance.stress }
+        ].map((item) => (
+          <div key={item.key} className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-2">{item.label}</label>
+              <div className="space-y-2">
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={assessmentData.cognitiveBaseline[item.key as keyof typeof assessmentData.cognitiveBaseline] as number}
+                  onChange={(e) => setAssessmentData(prev => ({
+                    ...prev,
+                    cognitiveBaseline: { 
+                      ...prev.cognitiveBaseline, 
+                      [item.key]: parseInt(e.target.value) 
+                    }
+                  }))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{item.low}</span>
+                  <span className="font-medium">
+                    {assessmentData.cognitiveBaseline[item.key as keyof typeof assessmentData.cognitiveBaseline]}
+                  </span>
+                  <span>{item.high}</span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 p-3 rounded text-xs text-gray-700">
+              <strong>Why this matters:</strong> {item.significance}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Current cognitive challenges (select all that apply):</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {currentChallenges.map((challenge) => (
+            <label key={challenge} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={assessmentData.cognitiveBaseline.currentChallenges.includes(challenge)}
+                onChange={(e) => {
+                  const current = assessmentData.cognitiveBaseline.currentChallenges;
+                  setAssessmentData(prev => ({
+                    ...prev,
+                    cognitiveBaseline: {
+                      ...prev.cognitiveBaseline,
+                      currentChallenges: e.target.checked 
+                        ? [...current, challenge]
+                        : current.filter(c => c !== challenge)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{challenge}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Life stage factors affecting your cognition:</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {lifestageFactors.map((factor) => (
+            <label key={factor} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={assessmentData.cognitiveBaseline.lifestageFactors.includes(factor)}
+                onChange={(e) => {
+                  const current = assessmentData.cognitiveBaseline.lifestageFactors;
+                  setAssessmentData(prev => ({
+                    ...prev,
+                    cognitiveBaseline: {
+                      ...prev.cognitiveBaseline,
+                      lifestageFactors: e.target.checked 
+                        ? [...current, factor]
+                        : current.filter(f => f !== factor)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{factor}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Your Cognitive Health Score</h5>
+        <div className="flex items-center gap-4">
+          <div className="flex-1 bg-blue-200 rounded-full h-3">
+            <div 
+              className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+              style={{ 
+                width: `${(
+                  (assessmentData.cognitiveBaseline.memoryRating + 
+                   assessmentData.cognitiveBaseline.focusRating + 
+                   assessmentData.cognitiveBaseline.clarityRating + 
+                   assessmentData.cognitiveBaseline.energyRating + 
+                   assessmentData.cognitiveBaseline.sleepQuality + 
+                   (10 - assessmentData.cognitiveBaseline.stressLevel)) / 60
+                ) * 100}%` 
+              }}
+            />
+          </div>
+          <span className="text-sm font-medium">
+            {Math.round((
+              (assessmentData.cognitiveBaseline.memoryRating + 
+               assessmentData.cognitiveBaseline.focusRating + 
+               assessmentData.cognitiveBaseline.clarityRating + 
+               assessmentData.cognitiveBaseline.energyRating + 
+               assessmentData.cognitiveBaseline.sleepQuality + 
+               (10 - assessmentData.cognitiveBaseline.stressLevel)) / 60
+            ) * 100)}%
+          </span>
+        </div>
+        <p className="text-sm text-blue-800 mt-2">
+          {Math.round((
+            (assessmentData.cognitiveBaseline.memoryRating + 
+             assessmentData.cognitiveBaseline.focusRating + 
+             assessmentData.cognitiveBaseline.clarityRating + 
+             assessmentData.cognitiveBaseline.energyRating + 
+             assessmentData.cognitiveBaseline.sleepQuality + 
+             (10 - assessmentData.cognitiveBaseline.stressLevel)) / 60
+          ) * 100) >= 75 ? "Excellent cognitive foundation!" : 
+          Math.round((
+            (assessmentData.cognitiveBaseline.memoryRating + 
+             assessmentData.cognitiveBaseline.focusRating + 
+             assessmentData.cognitiveBaseline.clarityRating + 
+             assessmentData.cognitiveBaseline.energyRating + 
+             assessmentData.cognitiveBaseline.sleepQuality + 
+             (10 - assessmentData.cognitiveBaseline.stressLevel)) / 60
+          ) * 100) >= 50 ? "Good baseline with opportunities for optimization" : "Significant potential for cognitive enhancement"}
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderPatternsStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Daily Cognitive Patterns Analysis</h4>
+        <p className="text-sm text-green-800">
+          Understanding your natural cognitive rhythms and triggers helps optimize your mental performance 
+          throughout the day and identify areas for targeted improvement.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">When is your focus typically at its best?</label>
+          <Textarea
+            value={assessmentData.dailyPatterns.bestFocusTime}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              dailyPatterns: { ...prev.dailyPatterns, bestFocusTime: e.target.value }
+            }))}
+            placeholder="e.g., First 2 hours after waking, mid-morning around 10am, early evening after dinner..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">When do you typically experience mental fatigue or brain fog?</label>
+          <Textarea
+            value={assessmentData.dailyPatterns.worstFocusTime}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              dailyPatterns: { ...prev.dailyPatterns, worstFocusTime: e.target.value }
+            }))}
+            placeholder="e.g., After lunch around 2-3pm, late afternoon, when I haven't eaten for hours..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Mental fatigue warning signs (select all you experience):</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Eyes feel heavy or strained',
+            'Difficulty choosing words',
+            'Making more typos or mistakes',
+            'Reading the same thing multiple times',
+            'Feeling mentally "sluggish"',
+            'Increased irritability or impatience',
+            'Craving sugar or caffeine',
+            'Difficulty staying organized',
+            'Losing track of conversations',
+            'Physical tension in head/neck',
+            'Procrastinating on mental tasks',
+            'Feeling overwhelmed by decisions'
+          ].map((signal) => (
+            <label key={signal} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={assessmentData.dailyPatterns.mentalFatigueSignals.includes(signal)}
+                onChange={(e) => {
+                  const current = assessmentData.dailyPatterns.mentalFatigueSignals;
+                  setAssessmentData(prev => ({
+                    ...prev,
+                    dailyPatterns: {
+                      ...prev.dailyPatterns,
+                      mentalFatigueSignals: e.target.checked 
+                        ? [...current, signal]
+                        : current.filter(s => s !== signal)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{signal}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Major concentration disruptors:</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Notifications from phone/computer',
+            'Background noise or conversations',
+            'Visual clutter in environment',
+            'Hunger or blood sugar drops',
+            'Worry about other tasks',
+            'Physical discomfort or pain',
+            'Interruptions from others',
+            'Poor lighting or uncomfortable temperature',
+            'Multitasking or task switching',
+            'Emotional stress or anxiety',
+            'Fatigue or sleep deprivation',
+            'Perfectionism or overthinking'
+          ].map((disruptor) => (
+            <label key={disruptor} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={assessmentData.dailyPatterns.concentrationDisruptors.includes(disruptor)}
+                onChange={(e) => {
+                  const current = assessmentData.dailyPatterns.concentrationDisruptors;
+                  setAssessmentData(prev => ({
+                    ...prev,
+                    dailyPatterns: {
+                      ...prev.dailyPatterns,
+                      concentrationDisruptors: e.target.checked 
+                        ? [...current, disruptor]
+                        : current.filter(d => d !== disruptor)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{disruptor}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What currently supports your cognitive performance:</h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Regular exercise or movement',
+            'Consistent sleep schedule',
+            'Healthy meals and snacks',
+            'Staying hydrated throughout day',
+            'Taking breaks between tasks',
+            'Organizing workspace and materials',
+            'Using lists or planning tools',
+            'Meditation or mindfulness practice',
+            'Limiting distractions during focus time',
+            'Natural light or good lighting',
+            'Background music or silence',
+            'Social connection and conversation'
+          ].map((support) => (
+            <label key={support} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={assessmentData.dailyPatterns.cognitiveSupports.includes(support)}
+                onChange={(e) => {
+                  const current = assessmentData.dailyPatterns.cognitiveSupports;
+                  setAssessmentData(prev => ({
+                    ...prev,
+                    dailyPatterns: {
+                      ...prev.dailyPatterns,
+                      cognitiveSupports: e.target.checked 
+                        ? [...current, support]
+                        : current.filter(s => s !== support)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{support}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLifestyleStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Lifestyle Impact on Cognitive Health</h4>
+        <p className="text-sm text-purple-800">
+          Your daily lifestyle choices have a profound impact on cognitive function. Understanding these 
+          connections helps identify the most effective areas for improvement.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Describe your current exercise and movement patterns:</label>
+          <Textarea
+            value={assessmentData.lifestyle.exercise}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              lifestyle: { ...prev.lifestyle, exercise: e.target.value }
+            }))}
+            placeholder="e.g., Walk 30 minutes most days, yoga twice weekly, mostly sedentary with occasional weekend activities..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Cognitive impact:</strong> Exercise increases BDNF (brain-derived neurotrophic factor), 
+            improves blood flow to the brain, and enhances neuroplasticity.
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Describe your typical eating patterns and food choices:</label>
+          <Textarea
+            value={assessmentData.lifestyle.nutrition}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              lifestyle: { ...prev.lifestyle, nutrition: e.target.value }
+            }))}
+            placeholder="e.g., Skip breakfast, healthy lunch, dinner varies, snack on processed foods, cook from scratch on weekends..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Cognitive impact:</strong> Blood sugar stability, omega-3 fatty acids, antioxidants, 
+            and B vitamins directly affect memory, focus, and mental clarity.
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How well do you stay hydrated throughout the day?</label>
+          <Textarea
+            value={assessmentData.lifestyle.hydration}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              lifestyle: { ...prev.lifestyle, hydration: e.target.value }
+            }))}
+            placeholder="e.g., Forget to drink water until afternoon, 2-3 glasses daily, mainly coffee and tea, carry water bottle..."
+            rows={2}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Cognitive impact:</strong> Even mild dehydration (2%) can impair attention, memory, 
+            and psychomotor skills within hours.
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Describe your daily screen time and technology use:</label>
+          <Textarea
+            value={assessmentData.lifestyle.screenTime}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              lifestyle: { ...prev.lifestyle, screenTime: e.target.value }
+            }))}
+            placeholder="e.g., Computer work 8 hours, phone checking frequently, TV evenings, read before bed..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Cognitive impact:</strong> Blue light disrupts sleep, constant switching affects attention, 
+            and information overload can impair decision-making.
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How often do you multitask or switch between tasks?</label>
+          <Textarea
+            value={assessmentData.lifestyle.multitasking}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              lifestyle: { ...prev.lifestyle, multitasking: e.target.value }
+            }))}
+            placeholder="e.g., Constantly juggling multiple projects, check email while on calls, single-focus when possible..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Cognitive impact:</strong> Task switching reduces efficiency by up to 40% and increases 
+            mental fatigue. Single-tasking improves both speed and accuracy.
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">What activities provide mental stimulation and learning?</label>
+          <Textarea
+            value={assessmentData.lifestyle.mentalStimulation}
+            onChange={(e) => setAssessmentData(prev => ({
+              ...prev,
+              lifestyle: { ...prev.lifestyle, mentalStimulation: e.target.value }
+            }))}
+            placeholder="e.g., Reading novels, learning languages, puzzles, engaging conversations, creative hobbies..."
+            rows={3}
+          />
+          <div className="mt-2 text-xs text-gray-600">
+            <strong>Cognitive impact:</strong> Novel mental challenges build cognitive reserve and promote 
+            neuroplasticity, protecting against age-related cognitive decline.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderInsightsStep = () => {
+    const cognitiveScore = Math.round((
+      (assessmentData.cognitiveBaseline.memoryRating + 
+       assessmentData.cognitiveBaseline.focusRating + 
+       assessmentData.cognitiveBaseline.clarityRating + 
+       assessmentData.cognitiveBaseline.energyRating + 
+       assessmentData.cognitiveBaseline.sleepQuality + 
+       (10 - assessmentData.cognitiveBaseline.stressLevel)) / 60
+    ) * 100);
+
+    const getPersonalizedRecommendations = () => {
+      const recommendations = [];
+      
+      if (assessmentData.cognitiveBaseline.memoryRating <= 5) {
+        recommendations.push("🧠 Memory Enhancement: Focus on sleep optimization, stress reduction, and memory techniques like spaced repetition");
+      }
+      
+      if (assessmentData.cognitiveBaseline.focusRating <= 5) {
+        recommendations.push("🎯 Attention Training: Practice single-tasking, reduce distractions, and try attention-building exercises");
+      }
+      
+      if (assessmentData.cognitiveBaseline.clarityRating <= 5) {
+        recommendations.push("✨ Mental Clarity: Prioritize hydration, balanced nutrition, and brain-clearing activities like meditation");
+      }
+      
+      if (assessmentData.cognitiveBaseline.energyRating <= 5) {
+        recommendations.push("⚡ Energy Optimization: Examine sleep, exercise, nutrition timing, and stress management practices");
+      }
+      
+      if (assessmentData.cognitiveBaseline.sleepQuality <= 5) {
+        recommendations.push("😴 Sleep Enhancement: This is often the foundation - prioritize sleep hygiene and consistency");
+      }
+      
+      if (assessmentData.cognitiveBaseline.stressLevel >= 7) {
+        recommendations.push("🌊 Stress Management: High stress directly impairs cognitive function - stress reduction is crucial");
+      }
+
+      return recommendations;
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-indigo-50 p-6 rounded-lg">
+          <h4 className="font-semibold text-indigo-900 mb-3">Your Personalized Cognitive Profile</h4>
+          <p className="text-sm text-indigo-800">
+            Based on your assessment, here are your unique cognitive patterns, strengths, and 
+            targeted recommendations for enhancement.
+          </p>
+        </div>
+
+        <div className="bg-white border-2 border-indigo-200 rounded-lg p-6">
+          <h5 className="font-semibold text-lg mb-4">Your Cognitive Health Score: {cognitiveScore}%</h5>
+          
+          <div className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h6 className="font-medium text-blue-900 mb-2">Strongest Areas</h6>
+                <div className="text-sm text-blue-800">
+                  {assessmentData.cognitiveBaseline.memoryRating >= 7 && <div>• Excellent memory</div>}
+                  {assessmentData.cognitiveBaseline.focusRating >= 7 && <div>• Strong focus</div>}
+                  {assessmentData.cognitiveBaseline.clarityRating >= 7 && <div>• Mental clarity</div>}
+                  {assessmentData.cognitiveBaseline.energyRating >= 7 && <div>• Good mental energy</div>}
+                  {assessmentData.cognitiveBaseline.sleepQuality >= 7 && <div>• Quality sleep</div>}
+                  {assessmentData.cognitiveBaseline.stressLevel <= 4 && <div>• Low stress levels</div>}
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <h6 className="font-medium text-yellow-900 mb-2">Areas for Growth</h6>
+                <div className="text-sm text-yellow-800">
+                  {assessmentData.cognitiveBaseline.memoryRating <= 5 && <div>• Memory enhancement</div>}
+                  {assessmentData.cognitiveBaseline.focusRating <= 5 && <div>• Focus improvement</div>}
+                  {assessmentData.cognitiveBaseline.clarityRating <= 5 && <div>• Mental clarity</div>}
+                  {assessmentData.cognitiveBaseline.energyRating <= 5 && <div>• Energy optimization</div>}
+                  {assessmentData.cognitiveBaseline.sleepQuality <= 5 && <div>• Sleep quality</div>}
+                  {assessmentData.cognitiveBaseline.stressLevel >= 7 && <div>• Stress management</div>}
+                </div>
+              </div>
+
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h6 className="font-medium text-green-900 mb-2">Key Insights</h6>
+                <div className="text-sm text-green-800">
+                  <div>• {assessmentData.cognitiveBaseline.currentChallenges.length} specific challenges identified</div>
+                  <div>• {assessmentData.dailyPatterns.cognitiveSupports.length} current supports</div>
+                  <div>• {assessmentData.cognitiveBaseline.lifestageFactors.length} life factors impacting cognition</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h6 className="font-medium">Your Priority Recommendations:</h6>
+              <div className="space-y-2">
+                {getPersonalizedRecommendations().map((rec, index) => (
+                  <div key={index} className="bg-gray-50 p-3 rounded-lg text-sm">
+                    {rec}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">What are your top 3 cognitive concerns you'd like to address?</label>
+            <Textarea
+              value={assessmentData.personalizedInsights.improvementGoals}
+              onChange={(e) => setAssessmentData(prev => ({
+                ...prev,
+                personalizedInsights: { ...prev.personalizedInsights, improvementGoals: e.target.value }
+              }))}
+              placeholder="e.g., 1. Remember names better in social situations, 2. Stay focused during long work sessions, 3. Reduce afternoon brain fog..."
+              rows={4}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">What motivates you to improve your cognitive health?</label>
+            <Textarea
+              value={assessmentData.personalizedInsights.motivations}
+              onChange={(e) => setAssessmentData(prev => ({
+                ...prev,
+                personalizedInsights: { ...prev.personalizedInsights, motivations: e.target.value }
+              }))}
+              placeholder="e.g., Want to excel at work, be more present with family, feel confident in conversations, aging gracefully..."
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">How will you know when your cognitive enhancement efforts are working?</label>
+            <Textarea
+              value={assessmentData.personalizedInsights.successMetrics}
+              onChange={(e) => setAssessmentData(prev => ({
+                ...prev,
+                personalizedInsights: { ...prev.personalizedInsights, successMetrics: e.target.value }
+              }))}
+              placeholder="e.g., Remembering conversations better, staying focused for longer periods, feeling mentally sharp all day, less frustration with forgetfulness..."
+              rows={3}
+            />
+          </div>
+        </div>
+
+        <div className="bg-indigo-50 p-4 rounded-lg">
+          <h5 className="font-medium text-indigo-900 mb-2">Next Steps in Your Cognitive Journey</h5>
+          <div className="text-sm text-indigo-800 space-y-1">
+            <div>1. <strong>Focus & Memory Rituals:</strong> Learn evidence-based cognitive enhancement techniques</div>
+            <div>2. <strong>Brain-Boosting Nutrition:</strong> Optimize your diet for cognitive performance</div>
+            <div>3. <strong>Mind Management System:</strong> Organize your mental load for better clarity</div>
+            <div>4. <strong>Ongoing Assessment:</strong> Track your progress and adjust strategies</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-blue-600" />
+          Enhanced Cognitive Clarity Assessment
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Comprehensive evaluation with educational context and personalized cognitive optimization strategies</p>
+          </div>
+
+          {currentStep === 0 && renderBaselineStep()}
+          {currentStep === 1 && renderPatternsStep()}
+          {currentStep === 2 && renderLifestyleStep()}
+          {currentStep === 3 && renderInsightsStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w5-assessment', assessmentData)}
+                className="ml-auto"
+              >
+                Complete Assessment
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Main Enhanced Coaching Component
 // Breathwork & Vagus Nerve Reset Component
 function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
@@ -9441,6 +10190,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'w4-meditation') {
     return <GuidedGroundingMeditation onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 5 Components
+  if (component.id === 'w5-assessment') {
+    return <EnhancedCognitiveAssessment onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
