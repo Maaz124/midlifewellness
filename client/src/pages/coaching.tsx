@@ -146,26 +146,27 @@ export default function Coaching() {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Payment Banner for Preview Mode */}
         {showPreview && (
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-lg shadow-lg">
-            <div className="flex items-center justify-between">
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-lg shadow-lg border border-purple-400">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-2 rounded-full">
+                <div className="bg-white/20 p-3 rounded-full">
                   <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Preview Mode - Unlock Full Access</h2>
-                  <p className="text-purple-100">See what's included, then get instant access to all interactive components</p>
+                  <h2 className="text-xl font-bold">🔒 Program Preview - Full Content Below</h2>
+                  <p className="text-purple-100">Browse all 6 weeks and 24 components, then unlock to start your transformation</p>
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">$97</div>
-                <div className="text-sm text-purple-200 line-through">$297</div>
+              <div className="text-center bg-white/10 p-4 rounded-lg">
+                <div className="text-3xl font-bold">$97</div>
+                <div className="text-sm text-purple-200 line-through">Regular: $297</div>
+                <div className="text-green-200 font-semibold mb-2">Save 67% Today</div>
                 <Button 
                   onClick={() => setLocation('/checkout')}
-                  className="mt-2 bg-white text-purple-600 hover:bg-purple-50"
+                  className="bg-white text-purple-600 hover:bg-purple-50 font-semibold"
                 >
                   <CreditCard className="w-4 h-4 mr-2" />
-                  Unlock Now
+                  Unlock All Components
                 </Button>
               </div>
             </div>
@@ -200,16 +201,22 @@ export default function Coaching() {
           )}
           
           {showPreview && (
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-              <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
-                6 Comprehensive Weeks
-              </Badge>
-              <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
-                24 Interactive Components
-              </Badge>
-              <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
-                Lifetime Access
-              </Badge>
+            <div className="space-y-4">
+              <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
+                  6 Comprehensive Weeks
+                </Badge>
+                <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
+                  24 Interactive Components
+                </Badge>
+                <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
+                  Lifetime Access
+                </Badge>
+              </div>
+              <div className="text-center bg-green-50 border border-green-200 p-3 rounded-lg">
+                <p className="text-green-800 font-medium">✨ Join hundreds of women already transforming their midlife experience</p>
+                <p className="text-green-700 text-sm">Dr. Sidra's proven methodology based on real clinical results</p>
+              </div>
             </div>
           )}
         </div>
@@ -335,27 +342,50 @@ export default function Coaching() {
                           return (
                             <div 
                               key={component.id}
-                              className="flex items-center justify-between p-4 rounded-lg border hover:border-gray-300 transition-colors"
+                              className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                                showPreview 
+                                  ? 'border-purple-200 bg-gradient-to-r from-purple-50/50 to-pink-50/50 hover:border-purple-300' 
+                                  : 'hover:border-gray-300'
+                              }`}
                             >
                               <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
-                                  {getComponentIcon(component.type)}
+                                  {showPreview ? (
+                                    <div className="p-1 bg-purple-100 rounded">
+                                      {getComponentIcon(component.type)}
+                                    </div>
+                                  ) : (
+                                    getComponentIcon(component.type)
+                                  )}
                                   {isCompleted && (
                                     <CheckCircle className="w-4 h-4 text-green-600" />
                                   )}
+                                  {showPreview && (
+                                    <Lock className="w-3 h-3 text-purple-500" />
+                                  )}
                                 </div>
-                                <div>
-                                  <h4 className="font-medium text-gray-900">
+                                <div className="flex-1">
+                                  <h4 className={`font-medium ${showPreview ? 'text-purple-900' : 'text-gray-900'}`}>
                                     {component.title}
+                                    {showPreview && (
+                                      <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                                        Interactive
+                                      </span>
+                                    )}
                                   </h4>
-                                  <p className="text-sm text-gray-600">
+                                  <p className={`text-sm ${showPreview ? 'text-purple-700' : 'text-gray-600'}`}>
                                     {component.description}
+                                    {showPreview && (
+                                      <span className="block mt-1 text-xs text-purple-600 font-medium">
+                                        🎯 Evidence-based technique • Proven results
+                                      </span>
+                                    )}
                                   </p>
                                   {component.duration && (
                                     <div className="flex items-center gap-1 mt-1">
-                                      <Clock className="w-3 h-3 text-gray-500" />
-                                      <span className="text-xs text-gray-500">
-                                        {component.duration} minutes
+                                      <Clock className={`w-3 h-3 ${showPreview ? 'text-purple-500' : 'text-gray-500'}`} />
+                                      <span className={`text-xs ${showPreview ? 'text-purple-600' : 'text-gray-500'}`}>
+                                        {component.duration} minutes of transformation
                                       </span>
                                     </div>
                                   )}
@@ -441,8 +471,12 @@ export default function Coaching() {
                 </div>
                 <h2 className="text-3xl font-bold">Ready to Transform Your Midlife Experience?</h2>
                 <p className="text-xl text-purple-100">
-                  You've seen the complete program structure. Now unlock all 24 interactive components and start your transformation journey with Dr. Sidra Bukhari's expert guidance.
+                  You've seen Dr. Sidra's complete program structure. Join hundreds of women already transforming their midlife experience with this evidence-based approach.
                 </p>
+                <div className="bg-white/10 p-3 rounded-lg text-center">
+                  <p className="text-lg font-semibold text-yellow-200">⚡ Limited Time: Launch Special Pricing</p>
+                  <p className="text-purple-200 text-sm">This introductory price won't last forever</p>
+                </div>
                 <div className="flex items-center justify-center gap-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold">$97</div>
