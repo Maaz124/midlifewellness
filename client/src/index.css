@@ -29,6 +29,20 @@
   --chart-4: hsl(217, 91%, 60%);
   --chart-5: hsl(327, 73%, 97%);
   
+  /* Enhanced Color-Coded Chart Variables */
+  --chart-excellent: hsl(142, 76%, 36%);
+  --chart-very-good: hsl(217, 91%, 60%);
+  --chart-good: hsl(45, 93%, 47%);
+  --chart-fair: hsl(25, 95%, 53%);
+  --chart-poor: hsl(0, 84%, 60%);
+  
+  /* Wellness Journey Colors */
+  --mental-health: hsl(261, 73%, 66%);
+  --physical-health: hsl(14, 86%, 76%);
+  --cognitive-health: hsl(140, 20%, 65%);
+  --emotional-wellness: hsl(327, 73%, 97%);
+  --progress-gradient: linear-gradient(135deg, var(--chart-1), var(--chart-3));
+  
   /* Custom wellness colors */
   --sage: hsl(140, 20%, 65%);
   --sage-foreground: hsl(0, 0%, 100%);

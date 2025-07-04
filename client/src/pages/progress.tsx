@@ -22,22 +22,40 @@ export default function ProgressPage() {
           label: 'Mental Health',
           data: [65, 68, 72, 75],
           borderColor: 'hsl(261, 73%, 66%)',
-          backgroundColor: 'hsl(261, 73%, 66%, 0.1)',
-          tension: 0.4
+          backgroundColor: 'hsla(261, 73%, 66%, 0.15)',
+          borderWidth: 3,
+          pointBackgroundColor: 'hsl(261, 73%, 66%)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          tension: 0.4,
+          fill: true
         },
         {
-          label: 'Physical Health',
+          label: 'Physical Health', 
           data: [60, 63, 68, 70],
           borderColor: 'hsl(14, 86%, 76%)',
-          backgroundColor: 'hsl(14, 86%, 76%, 0.1)',
-          tension: 0.4
+          backgroundColor: 'hsla(14, 86%, 76%, 0.15)',
+          borderWidth: 3,
+          pointBackgroundColor: 'hsl(14, 86%, 76%)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          tension: 0.4,
+          fill: true
         },
         {
           label: 'Cognitive Health',
           data: [75, 78, 81, 83],
           borderColor: 'hsl(140, 20%, 65%)',
-          backgroundColor: 'hsl(140, 20%, 65%, 0.1)',
-          tension: 0.4
+          backgroundColor: 'hsla(140, 20%, 65%, 0.15)',
+          borderWidth: 3,
+          pointBackgroundColor: 'hsl(140, 20%, 65%)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          tension: 0.4,
+          fill: true
         }
       ]
     };
@@ -49,22 +67,39 @@ export default function ProgressPage() {
   }, []);
 
   const moodDistribution = {
-    'very-happy': 32,
-    'happy': 28,
-    'neutral': 25,
-    'sad': 12,
-    'very-sad': 3
+    'very-happy': { value: 32, color: 'hsl(142, 76%, 36%)', label: 'Very Happy' },
+    'happy': { value: 28, color: 'hsl(217, 91%, 60%)', label: 'Happy' },
+    'neutral': { value: 25, color: 'hsl(45, 93%, 47%)', label: 'Neutral' },
+    'sad': { value: 12, color: 'hsl(25, 95%, 53%)', label: 'Sad' },
+    'very-sad': { value: 3, color: 'hsl(0, 84%, 60%)', label: 'Very Sad' }
   };
 
   const weeklyActivity = [
-    { day: 'Monday', percentage: 85 },
-    { day: 'Tuesday', percentage: 92 },
-    { day: 'Wednesday', percentage: 78 },
-    { day: 'Thursday', percentage: 88 },
-    { day: 'Friday', percentage: 95 },
-    { day: 'Saturday', percentage: 72 },
-    { day: 'Sunday', percentage: 81 }
+    { day: 'Monday', percentage: 85, color: 'hsl(142, 76%, 36%)' },
+    { day: 'Tuesday', percentage: 92, color: 'hsl(142, 76%, 36%)' },
+    { day: 'Wednesday', percentage: 78, color: 'hsl(217, 91%, 60%)' },
+    { day: 'Thursday', percentage: 88, color: 'hsl(142, 76%, 36%)' },
+    { day: 'Friday', percentage: 95, color: 'hsl(142, 76%, 36%)' },
+    { day: 'Saturday', percentage: 72, color: 'hsl(45, 93%, 47%)' },
+    { day: 'Sunday', percentage: 81, color: 'hsl(217, 91%, 60%)' }
   ];
+  
+  // Helper function to get color based on percentage
+  const getProgressColor = (percentage: number) => {
+    if (percentage >= 90) return 'hsl(142, 76%, 36%)'; // Excellent - Green
+    if (percentage >= 80) return 'hsl(217, 91%, 60%)'; // Very Good - Blue  
+    if (percentage >= 70) return 'hsl(45, 93%, 47%)'; // Good - Yellow
+    if (percentage >= 50) return 'hsl(25, 95%, 53%)'; // Fair - Orange
+    return 'hsl(0, 84%, 60%)'; // Poor - Red
+  };
+  
+  const getScoreCategory = (score: number) => {
+    if (score >= 90) return { label: 'Excellent', color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    if (score >= 80) return { label: 'Very Good', color: 'text-blue-600', bg: 'bg-blue-50' };
+    if (score >= 70) return { label: 'Good', color: 'text-amber-600', bg: 'bg-amber-50' };
+    if (score >= 50) return { label: 'Fair', color: 'text-orange-600', bg: 'bg-orange-50' };
+    return { label: 'Needs Focus', color: 'text-rose-600', bg: 'bg-rose-50' };
+  };
 
   const achievements = [
     {
