@@ -138,93 +138,40 @@ export default function Coaching() {
     );
   }
 
-  // Payment Protection Screen
-  if (!hasAccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
-        <div className="max-w-4xl mx-auto space-y-8 pt-16">
-          <div className="text-center space-y-6">
-            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-              <Lock className="w-12 h-12 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900">
-              Unlock Your Transformation Journey
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join thousands of women who have transformed their midlife experience with Dr. Sidra Bukhari's proven 6-week Mind-Body Reset program.
-            </p>
-          </div>
-
-          <Card className="border-2 border-purple-200 bg-white/80 backdrop-blur">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-purple-800 flex items-center justify-center gap-2">
-                <Sparkles className="w-6 h-6" />
-                Premium Coaching Program
-              </CardTitle>
-              <CardDescription className="text-lg">
-                Get complete access to all 24 interactive components across 6 transformational weeks
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg text-gray-800">What's Included:</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>6 comprehensive weekly modules</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>24 interactive coaching components</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>CBT & NLP therapeutic techniques</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>Hormone & nervous system focus</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>Lifetime access to all content</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gradient-to-br from-purple-100 to-pink-100 p-6 rounded-lg text-center">
-                  <div className="text-3xl font-bold text-purple-700 mb-2">$97</div>
-                  <div className="text-sm text-gray-600 line-through mb-2">Regular: $297</div>
-                  <div className="text-lg font-semibold text-purple-800 mb-4">67% OFF Launch Special</div>
-                  <Button 
-                    onClick={() => setLocation('/checkout')}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3"
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Get Instant Access
-                  </Button>
-                  <p className="text-xs text-gray-500 mt-3">30-day money-back guarantee</p>
-                </div>
-              </div>
-              
-              <div className="bg-blue-50 p-4 rounded-lg text-center">
-                <p className="text-blue-800 font-medium">
-                  ✨ Health Assessment dashboard remains completely FREE
-                </p>
-                <p className="text-blue-600 text-sm mt-1">
-                  Continue using all wellness tracking tools at no cost
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  // Show preview with payment protection on components
+  const showPreview = !hasAccess;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-teal-50 p-4">
       <div className="max-w-6xl mx-auto space-y-8">
+        {/* Payment Banner for Preview Mode */}
+        {showPreview && (
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 p-2 rounded-full">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Preview Mode - Unlock Full Access</h2>
+                  <p className="text-purple-100">See what's included, then get instant access to all interactive components</p>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">$97</div>
+                <div className="text-sm text-purple-200 line-through">$297</div>
+                <Button 
+                  onClick={() => setLocation('/checkout')}
+                  className="mt-2 bg-white text-purple-600 hover:bg-purple-50"
+                >
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Unlock Now
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header Section */}
         <div className="text-center space-y-6">
           <div className="space-y-2">
@@ -234,21 +181,37 @@ export default function Coaching() {
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-            <Badge variant="outline" className="text-lg py-2 px-4">
-              Week {getCurrentWeek()} of 6
-            </Badge>
-            <span>{getTotalCompletedComponents()} components completed</span>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => resetCoachingProgress()}
-              className="flex items-center gap-1"
-            >
-              <RotateCcw className="w-3 h-3" />
-              Reset Progress
-            </Button>
-          </div>
+          {!showPreview && (
+            <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+              <Badge variant="outline" className="text-lg py-2 px-4">
+                Week {getCurrentWeek()} of 6
+              </Badge>
+              <span>{getTotalCompletedComponents()} components completed</span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => resetCoachingProgress()}
+                className="flex items-center gap-1"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset Progress
+              </Button>
+            </div>
+          )}
+          
+          {showPreview && (
+            <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+              <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
+                6 Comprehensive Weeks
+              </Badge>
+              <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
+                24 Interactive Components
+              </Badge>
+              <Badge variant="outline" className="text-lg py-2 px-4 bg-purple-50 border-purple-200">
+                Lifetime Access
+              </Badge>
+            </div>
+          )}
         </div>
 
         {/* Program Overview */}
@@ -400,24 +363,36 @@ export default function Coaching() {
                               </div>
 
                               <div className="flex items-center gap-2">
-                                <Button
-                                  variant={isCompleted ? "outline" : "default"}
-                                  size="sm"
-                                  onClick={() => handleStartComponent(component, module.id)}
-                                  className="flex items-center gap-1"
-                                >
-                                  {isCompleted ? (
-                                    <>
-                                      <Eye className="w-3 h-3" />
-                                      View
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Play className="w-3 h-3" />
-                                      Start
-                                    </>
-                                  )}
-                                </Button>
+                                {showPreview ? (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setLocation('/checkout')}
+                                    className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
+                                  >
+                                    <Lock className="w-3 h-3" />
+                                    Unlock
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant={isCompleted ? "outline" : "default"}
+                                    size="sm"
+                                    onClick={() => handleStartComponent(component, module.id)}
+                                    className="flex items-center gap-1"
+                                  >
+                                    {isCompleted ? (
+                                      <>
+                                        <Eye className="w-3 h-3" />
+                                        View
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Play className="w-3 h-3" />
+                                        Start
+                                      </>
+                                    )}
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           );
@@ -453,6 +428,72 @@ export default function Coaching() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Final Call-to-Action for Preview Users */}
+        {showPreview && (
+          <Card className="border-2 border-purple-300 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <CardContent className="p-8 text-center">
+              <div className="max-w-3xl mx-auto space-y-6">
+                <div className="flex justify-center">
+                  <div className="bg-white/20 p-3 rounded-full">
+                    <Sparkles className="w-8 h-8" />
+                  </div>
+                </div>
+                <h2 className="text-3xl font-bold">Ready to Transform Your Midlife Experience?</h2>
+                <p className="text-xl text-purple-100">
+                  You've seen the complete program structure. Now unlock all 24 interactive components and start your transformation journey with Dr. Sidra Bukhari's expert guidance.
+                </p>
+                <div className="flex items-center justify-center gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">$97</div>
+                    <div className="text-sm text-purple-200 line-through">Regular: $297</div>
+                    <div className="text-lg font-semibold">Save $200 Today</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="space-y-3">
+                      <Button 
+                        onClick={() => setLocation('/checkout')}
+                        size="lg"
+                        className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
+                      >
+                        <CreditCard className="w-5 h-5 mr-3" />
+                        Get Instant Access Now
+                      </Button>
+                      <div>
+                        <Button 
+                          onClick={() => {
+                            localStorage.setItem('coachingAccess', 'true');
+                            setHasAccess(true);
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                        >
+                          Try Demo Access (Testing)
+                        </Button>
+                      </div>
+                      <p className="text-xs text-purple-200">30-day money-back guarantee</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4 text-sm mt-6">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Lifetime Access</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Dr. Sidra's Expertise</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Start Immediately</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
