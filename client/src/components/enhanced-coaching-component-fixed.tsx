@@ -1675,7 +1675,7 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
 }
 
 // Mirror Work & Affirmations Component
-function MirrorWorkAffirmations({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
   const [customAffirmation, setCustomAffirmation] = useState('');
@@ -14522,11 +14522,11 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
   }
 
   if (component.id === 'w2-thought-audit') {
-    return <ComprehensiveThoughtPatternAudit onComplete={onComplete} onClose={onClose} />;
+    return <ThoughtAuditTracker onComplete={onComplete} onClose={onClose} />;
   }
 
   if (component.id === 'w2-nlp-reframing') {
-    return <NLPLanguagePatternMastery onComplete={onComplete} onClose={onClose} />;
+    return <NLPReframingPractice onComplete={onComplete} onClose={onClose} />;
   }
 
   // Week 3 Components
