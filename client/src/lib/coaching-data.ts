@@ -256,7 +256,7 @@ export const coachingModules: CoachingModule[] = [
     id: 'week-6',
     weekNumber: 6,
     title: 'Future Self & Goal Mapping',
-    description: 'Vision creation, SMART goal setting, and sustainable habit formation',
+    description: 'Design your thriving future through values-based vision creation, evidence-based goal setting, and sustainable habit formation specifically for midlife women',
     completed: false,
     progress: 0,
     locked: false,
@@ -264,29 +264,29 @@ export const coachingModules: CoachingModule[] = [
       {
         id: 'w6-vision',
         type: 'exercise',
-        title: 'Digital Vision Board',
-        description: 'Create a visual representation of your future self',
+        title: '🎯 Future Self Visualization & Values Mapping',
+        description: '5-step comprehensive visioning process with values assessment, life wheel analysis, and personalized future self creation for midlife transitions',
         completed: false
       },
       {
         id: 'w6-goals',
         type: 'worksheet',
-        title: 'SMART Goal Setting',
-        description: 'Develop specific, measurable, achievable goals aligned with your values',
+        title: 'SMART Goal Architecture System',
+        description: 'Evidence-based goal framework with 6 life domains, implementation timeline, obstacle anticipation, and success metrics for midlife women',
         completed: false
       },
       {
         id: 'w6-reverse',
         type: 'exercise',
-        title: 'Reverse Engineer Method',
-        description: 'Work backwards from your goals to create actionable steps',
+        title: 'Reverse Engineering Success Method',
+        description: 'Strategic backward planning with milestone mapping, resource identification, and action sequencing for sustainable goal achievement',
         completed: false
       },
       {
         id: 'w6-habits',
         type: 'exercise',
-        title: 'Habit Loop Creator',
-        description: 'Design sustainable habits that support your long-term goals',
+        title: 'Habit Loop Mastery System',
+        description: 'Neuroscience-based habit formation with cue-routine-reward loops, implementation intentions, and habit stacking for lasting change',
         completed: false
       }
     ]
