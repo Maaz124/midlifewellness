@@ -5353,6 +5353,926 @@ function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?
   );
 }
 
+// WEEK 4 COMPONENTS - NERVOUS SYSTEM RESET
+
+// Somatic Grounding Practices Component
+function SomaticGroundingPractices({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [practiceData, setPracticeData] = useState({
+    nervousSystemAssessment: {
+      currentState: 5,
+      stressSigns: [] as string[],
+      triggerPatterns: '',
+      copingHistory: '',
+      goals: ''
+    },
+    techniqueProgress: {} as Record<string, {
+      practiced: boolean;
+      effectiveness: number;
+      experience: string;
+      confidence: number;
+      integrateDaily: boolean;
+    }>,
+    personalPlan: {
+      dailyTechniques: [] as string[],
+      emergencyTechniques: [] as string[],
+      practiceSchedule: '',
+      trackingMethod: '',
+      progressGoals: ''
+    }
+  });
+
+  const steps = [
+    'Nervous System Assessment',
+    'Learn 5-4-3-2-1 Grounding',
+    'Progressive Body Scan',
+    'Quick Reset Techniques',
+    'Emergency Grounding Tools',
+    'Personal Integration Plan'
+  ];
+
+  const stressSigns = [
+    'Rapid heartbeat', 'Shallow breathing', 'Muscle tension', 'Restlessness',
+    'Mind racing', 'Sweating', 'Digestive issues', 'Sleep problems',
+    'Irritability', 'Difficulty concentrating', 'Fatigue', 'Headaches'
+  ];
+
+  const techniques = [
+    {
+      id: 'grounding-5-4-3-2-1',
+      name: '5-4-3-2-1 Sensory Grounding',
+      description: 'Use your five senses to anchor yourself in the present moment',
+      timeNeeded: '3-5 minutes',
+      when: 'Anxiety, overwhelm, panic'
+    },
+    {
+      id: 'body-scan',
+      name: 'Progressive Body Scan',
+      description: 'Systematic tension release from head to toe',
+      timeNeeded: '10-15 minutes',
+      when: 'Before sleep, during breaks'
+    },
+    {
+      id: 'quick-reset',
+      name: 'Quick Reset Techniques',
+      description: '30-second grounding tools for immediate relief',
+      timeNeeded: '30 seconds - 2 minutes',
+      when: 'In public, at work, during conversations'
+    },
+    {
+      id: 'emergency-grounding',
+      name: 'Emergency Grounding',
+      description: 'Intensive techniques for acute distress',
+      timeNeeded: '5-10 minutes',
+      when: 'Panic attacks, severe overwhelm'
+    }
+  ];
+
+  const renderAssessmentStep = () => (
+    <div className="space-y-6">
+      <div className="bg-teal-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-teal-900 mb-3">Understanding Your Nervous System</h4>
+        <p className="text-sm text-teal-800">
+          Your nervous system is constantly adapting to life's demands. In midlife, hormonal changes can make 
+          this system more sensitive. Let's assess your current state and build personalized grounding tools.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-3">Current nervous system activation level (1 = Completely calm, 10 = Highly activated)</label>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-500">Calm</span>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value={practiceData.nervousSystemAssessment.currentState}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              nervousSystemAssessment: { 
+                ...prev.nervousSystemAssessment, 
+                currentState: parseInt(e.target.value) 
+              }
+            }))}
+            className="flex-1"
+          />
+          <span className="text-sm text-gray-500">Activated</span>
+          <span className="w-8 text-center font-medium bg-teal-100 rounded px-2 py-1">
+            {practiceData.nervousSystemAssessment.currentState}
+          </span>
+        </div>
+        <div className="mt-2 text-sm text-gray-600">
+          {practiceData.nervousSystemAssessment.currentState <= 3 && "You're in a calm, regulated state"}
+          {practiceData.nervousSystemAssessment.currentState >= 4 && practiceData.nervousSystemAssessment.currentState <= 6 && "You're experiencing moderate activation"}
+          {practiceData.nervousSystemAssessment.currentState >= 7 && "You're in a highly activated state - perfect time to practice grounding"}
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Which physical stress signs do you currently experience?</h5>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {stressSigns.map((sign) => (
+            <label key={sign} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={practiceData.nervousSystemAssessment.stressSigns.includes(sign)}
+                onChange={(e) => {
+                  const current = practiceData.nervousSystemAssessment.stressSigns;
+                  setPracticeData(prev => ({
+                    ...prev,
+                    nervousSystemAssessment: {
+                      ...prev.nervousSystemAssessment,
+                      stressSigns: e.target.checked 
+                        ? [...current, sign]
+                        : current.filter(s => s !== sign)
+                    }
+                  }));
+                }}
+                className="rounded"
+              />
+              <span className="text-sm">{sign}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">What situations typically activate your nervous system?</label>
+        <Textarea
+          value={practiceData.nervousSystemAssessment.triggerPatterns}
+          onChange={(e) => setPracticeData(prev => ({
+            ...prev,
+            nervousSystemAssessment: { 
+              ...prev.nervousSystemAssessment, 
+              triggerPatterns: e.target.value 
+            }
+          }))}
+          placeholder="e.g., Work deadlines, family conflicts, health appointments, social situations, financial discussions..."
+          rows={3}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">What grounding or calming techniques have you tried before?</label>
+        <Textarea
+          value={practiceData.nervousSystemAssessment.copingHistory}
+          onChange={(e) => setPracticeData(prev => ({
+            ...prev,
+            nervousSystemAssessment: { 
+              ...prev.nervousSystemAssessment, 
+              copingHistory: e.target.value 
+            }
+          }))}
+          placeholder="What has worked? What hasn't? What would you like to learn?"
+          rows={3}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Your goals for nervous system regulation:</label>
+        <Textarea
+          value={practiceData.nervousSystemAssessment.goals}
+          onChange={(e) => setPracticeData(prev => ({
+            ...prev,
+            nervousSystemAssessment: { 
+              ...prev.nervousSystemAssessment, 
+              goals: e.target.value 
+            }
+          }))}
+          placeholder="e.g., Feel calmer in social situations, sleep better, reduce anxiety during work stress..."
+          rows={3}
+        />
+      </div>
+    </div>
+  );
+
+  const renderGroundingStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">5-4-3-2-1 Sensory Grounding Technique</h4>
+        <p className="text-sm text-blue-800">
+          This technique uses your five senses to bring you immediately into the present moment. 
+          It's one of the most effective tools for anxiety and overwhelm.
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-blue-200 rounded-lg p-6 space-y-4">
+        <h5 className="font-semibold text-lg text-blue-900">Learn the Technique:</h5>
+        
+        <div className="space-y-4">
+          <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-lg">
+            <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">5</div>
+            <div>
+              <h6 className="font-medium">NOTICE 5 things you can SEE</h6>
+              <p className="text-sm text-gray-600">Look around and name 5 specific things: "I see a blue coffee mug, a wooden desk, green leaves on the plant..."</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 bg-green-50 rounded-lg">
+            <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">4</div>
+            <div>
+              <h6 className="font-medium">NOTICE 4 things you can TOUCH</h6>
+              <p className="text-sm text-gray-600">Feel textures around you: "I feel the smooth table surface, my soft sweater, the cool air on my skin..."</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-lg">
+            <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+            <div>
+              <h6 className="font-medium">NOTICE 3 things you can HEAR</h6>
+              <p className="text-sm text-gray-600">Listen carefully: "I hear birds outside, the hum of the refrigerator, my own breathing..."</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-lg">
+            <div className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+            <div>
+              <h6 className="font-medium">NOTICE 2 things you can SMELL</h6>
+              <p className="text-sm text-gray-600">Take a gentle breath: "I smell coffee, fresh air, my perfume, the clean scent of soap..."</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 bg-red-50 rounded-lg">
+            <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+            <div>
+              <h6 className="font-medium">NOTICE 1 thing you can TASTE</h6>
+              <p className="text-sm text-gray-600">Notice any taste in your mouth, or take a sip of water: "I taste the mint from my gum, the lingering coffee..."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 p-4 rounded-lg">
+        <h6 className="font-medium text-yellow-900 mb-2">Practice Right Now:</h6>
+        <p className="text-sm text-yellow-800">Take 3 minutes to practice this technique. Go slowly and really focus on each sense.</p>
+        
+        <div className="mt-4 space-y-3">
+          <div>
+            <label className="block text-sm font-medium mb-1">How effective was this technique for you? (1-10)</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Not helpful</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={practiceData.techniqueProgress['grounding-5-4-3-2-1']?.effectiveness || 5}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'grounding-5-4-3-2-1': {
+                      ...prev.techniqueProgress['grounding-5-4-3-2-1'],
+                      effectiveness: parseInt(e.target.value),
+                      practiced: true
+                    }
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Very helpful</span>
+              <span className="w-8 text-center font-medium bg-yellow-100 rounded px-2 py-1">
+                {practiceData.techniqueProgress['grounding-5-4-3-2-1']?.effectiveness || 5}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Describe your experience with this technique:</label>
+            <Textarea
+              value={practiceData.techniqueProgress['grounding-5-4-3-2-1']?.experience || ''}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                techniqueProgress: {
+                  ...prev.techniqueProgress,
+                  'grounding-5-4-3-2-1': {
+                    ...prev.techniqueProgress['grounding-5-4-3-2-1'],
+                    experience: e.target.value,
+                    practiced: true
+                  }
+                }
+              }))}
+              placeholder="What did you notice? How did your body feel before and after? What was challenging or helpful?"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBodyScanStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Progressive Body Scan for Deep Relaxation</h4>
+        <p className="text-sm text-green-800">
+          This technique systematically releases tension throughout your body. Perfect for unwinding 
+          after stressful days or preparing for restful sleep.
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-green-200 rounded-lg p-6 space-y-6">
+        <h5 className="font-semibold text-lg text-green-900">Guided Body Scan Practice:</h5>
+        
+        <div className="space-y-4">
+          <div className="p-4 bg-green-50 rounded-lg">
+            <h6 className="font-medium mb-2">Preparation (1 minute)</h6>
+            <ul className="text-sm text-gray-700 space-y-1">
+              <li>• Find a comfortable position (sitting or lying down)</li>
+              <li>• Close your eyes or soften your gaze</li>
+              <li>• Take 3 deep, slow breaths</li>
+              <li>• Set intention to release tension and connect with your body</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div className="p-3 border-l-4 border-green-400 bg-green-25">
+              <h6 className="font-medium">Head & Face (2 minutes)</h6>
+              <p className="text-sm text-gray-600">Notice your scalp, forehead, eyes, cheeks, jaw. Consciously relax each area. Let your jaw drop slightly open.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-blue-400 bg-blue-25">
+              <h6 className="font-medium">Neck & Shoulders (2 minutes)</h6>
+              <p className="text-sm text-gray-600">Feel the weight of your head. Notice shoulder tension. Imagine your shoulders melting away from your ears.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-purple-400 bg-purple-25">
+              <h6 className="font-medium">Arms & Hands (2 minutes)</h6>
+              <p className="text-sm text-gray-600">Scan down your arms to your fingertips. Make a fist, then release completely. Feel the contrast.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-orange-400 bg-orange-25">
+              <h6 className="font-medium">Chest & Heart (2 minutes)</h6>
+              <p className="text-sm text-gray-600">Notice your breathing without changing it. Feel your heartbeat. Send appreciation to your heart for all it does.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-red-400 bg-red-25">
+              <h6 className="font-medium">Torso & Back (2 minutes)</h6>
+              <p className="text-sm text-gray-600">Scan your abdomen, lower back, spine. Notice areas of tension or comfort without judgment.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-indigo-400 bg-indigo-25">
+              <h6 className="font-medium">Hips & Pelvis (1 minute)</h6>
+              <p className="text-sm text-gray-600">Notice this center of your body. Breathe into this area and allow any held tension to release.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-pink-400 bg-pink-25">
+              <h6 className="font-medium">Legs & Feet (3 minutes)</h6>
+              <p className="text-sm text-gray-600">Scan thighs, knees, calves, ankles, feet, toes. Wiggle your toes, then let them rest completely.</p>
+            </div>
+
+            <div className="p-3 border-l-4 border-yellow-400 bg-yellow-25">
+              <h6 className="font-medium">Whole Body Integration (1 minute)</h6>
+              <p className="text-sm text-gray-600">Feel your entire body as one connected system. Notice the relaxation you've created. Take 3 gratitude breaths.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h6 className="font-medium text-green-900 mb-2">Practice Reflection:</h6>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Body scan effectiveness (1-10):</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Not helpful</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={practiceData.techniqueProgress['body-scan']?.effectiveness || 5}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'body-scan': {
+                      ...prev.techniqueProgress['body-scan'],
+                      effectiveness: parseInt(e.target.value),
+                      practiced: true
+                    }
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Very helpful</span>
+              <span className="w-8 text-center font-medium bg-green-100 rounded px-2 py-1">
+                {practiceData.techniqueProgress['body-scan']?.effectiveness || 5}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">What did you discover about your body?</label>
+            <Textarea
+              value={practiceData.techniqueProgress['body-scan']?.experience || ''}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                techniqueProgress: {
+                  ...prev.techniqueProgress,
+                  'body-scan': {
+                    ...prev.techniqueProgress['body-scan'],
+                    experience: e.target.value,
+                    practiced: true
+                  }
+                }
+              }))}
+              placeholder="Where do you hold tension? What areas felt good? What surprised you?"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderQuickResetStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Quick Reset Techniques for Immediate Relief</h4>
+        <p className="text-sm text-orange-800">
+          These 30-second to 2-minute techniques can be used anywhere - at work, in public, 
+          during conversations - for instant nervous system regulation.
+        </p>
+      </div>
+
+      <div className="grid gap-6">
+        <div className="border rounded-lg p-6 bg-white">
+          <h5 className="font-semibold text-lg mb-4">The 30-Second Reset Toolkit</h5>
+          
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h6 className="font-medium text-blue-900">Tactical Breathing (30 seconds)</h6>
+              <p className="text-sm text-gray-600 mb-2">Inhale for 4, hold for 4, exhale for 6. Repeat 3-4 times.</p>
+              <div className="text-xs text-blue-700">Use: During meetings, conversations, when feeling overwhelmed</div>
+            </div>
+
+            <div className="p-4 bg-green-50 rounded-lg">
+              <h6 className="font-medium text-green-900">Feet on Floor Reset (15 seconds)</h6>
+              <p className="text-sm text-gray-600 mb-2">Press feet firmly into ground, feel the connection, take one deep breath.</p>
+              <div className="text-xs text-green-700">Use: While sitting at desk, in waiting rooms, before difficult conversations</div>
+            </div>
+
+            <div className="p-4 bg-purple-50 rounded-lg">
+              <h6 className="font-medium text-purple-900">Peripheral Vision (20 seconds)</h6>
+              <p className="text-sm text-gray-600 mb-2">Look straight ahead, slowly expand awareness to see as wide as possible without moving eyes.</p>
+              <div className="text-xs text-purple-700">Use: When feeling tunnel vision, anxiety, or mental overwhelm</div>
+            </div>
+
+            <div className="p-4 bg-red-50 rounded-lg">
+              <h6 className="font-medium text-red-900">Hand Temperature Awareness (30 seconds)</h6>
+              <p className="text-sm text-gray-600 mb-2">Notice the temperature of your hands, rub them together, place on heart or belly.</p>
+              <div className="text-xs text-red-700">Use: When hands are cold/sweaty from stress, before presentations</div>
+            </div>
+
+            <div className="p-4 bg-yellow-50 rounded-lg">
+              <h6 className="font-medium text-yellow-900">Gentle Neck Release (45 seconds)</h6>
+              <p className="text-sm text-gray-600 mb-2">Slowly drop chin to chest, roll head side to side gently, return to center.</p>
+              <div className="text-xs text-yellow-700">Use: Between tasks, after screen time, when feeling tense</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-6 bg-white">
+          <h5 className="font-semibold text-lg mb-4">2-Minute Power Resets</h5>
+          
+          <div className="space-y-4">
+            <div className="p-4 bg-indigo-50 rounded-lg">
+              <h6 className="font-medium text-indigo-900">Cold Water Face Reset</h6>
+              <p className="text-sm text-gray-600 mb-2">Splash cold water on face and wrists, or hold ice cube. Activates parasympathetic nervous system.</p>
+            </div>
+
+            <div className="p-4 bg-pink-50 rounded-lg">
+              <h6 className="font-medium text-pink-900">Wall Push Reset</h6>
+              <p className="text-sm text-gray-600 mb-2">Find wall, place palms flat, lean in and push gently 10 times. Releases upper body tension.</p>
+            </div>
+
+            <div className="p-4 bg-teal-50 rounded-lg">
+              <h6 className="font-medium text-teal-900">Silent Humming Reset</h6>
+              <p className="text-sm text-gray-600 mb-2">Close mouth, hum quietly (or internally) for 30 seconds. Vibrations stimulate vagus nerve.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-orange-50 p-4 rounded-lg">
+        <h6 className="font-medium text-orange-900 mb-2">Practice Challenge:</h6>
+        <p className="text-sm text-orange-800 mb-3">Try 3 different quick reset techniques right now. Rate their effectiveness.</p>
+        
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium mb-1">Quick reset techniques effectiveness (1-10):</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Not helpful</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={practiceData.techniqueProgress['quick-reset']?.effectiveness || 5}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'quick-reset': {
+                      ...prev.techniqueProgress['quick-reset'],
+                      effectiveness: parseInt(e.target.value),
+                      practiced: true
+                    }
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Very helpful</span>
+              <span className="w-8 text-center font-medium bg-orange-100 rounded px-2 py-1">
+                {practiceData.techniqueProgress['quick-reset']?.effectiveness || 5}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Which techniques worked best for you and why?</label>
+            <Textarea
+              value={practiceData.techniqueProgress['quick-reset']?.experience || ''}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                techniqueProgress: {
+                  ...prev.techniqueProgress,
+                  'quick-reset': {
+                    ...prev.techniqueProgress['quick-reset'],
+                    experience: e.target.value,
+                    practiced: true
+                  }
+                }
+              }))}
+              placeholder="Which felt most natural? Which would you use at work? Which for anxiety?"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEmergencyStep = () => (
+    <div className="space-y-6">
+      <div className="bg-red-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-red-900 mb-3">Emergency Grounding for Intense Overwhelm</h4>
+        <p className="text-sm text-red-800">
+          These intensive techniques are for moments of acute distress, panic, or severe overwhelm. 
+          They provide deeper nervous system regulation when you need it most.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="border rounded-lg p-6 bg-white">
+          <h5 className="font-semibold text-lg mb-4 text-red-700">STOP Technique for Panic</h5>
+          <div className="space-y-3">
+            <div className="flex items-start gap-4 p-3 bg-red-50 rounded">
+              <span className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">S</span>
+              <div>
+                <h6 className="font-medium">STOP what you're doing</h6>
+                <p className="text-sm text-gray-600">Pause all activity, don't make decisions, resist fight/flight urges</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-3 bg-orange-50 rounded">
+              <span className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-sm">T</span>
+              <div>
+                <h6 className="font-medium">TAKE a breath</h6>
+                <p className="text-sm text-gray-600">One long, slow exhale (8 counts), then natural breathing</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-3 bg-yellow-50 rounded">
+              <span className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold text-sm">O</span>
+              <div>
+                <h6 className="font-medium">OBSERVE your body</h6>
+                <p className="text-sm text-gray-600">Notice physical sensations without judging them</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-3 bg-green-50 rounded">
+              <span className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">P</span>
+              <div>
+                <h6 className="font-medium">PROCEED with intention</h6>
+                <p className="text-sm text-gray-600">Choose your next action from a calmer place</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-6 bg-white">
+          <h5 className="font-semibold text-lg mb-4 text-blue-700">Intensive Grounding Sequence</h5>
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h6 className="font-medium">1. Physical Grounding (2 minutes)</h6>
+              <ul className="text-sm text-gray-600 space-y-1 mt-2">
+                <li>• Press hands firmly on a solid surface</li>
+                <li>• Feel your body weight in the chair/floor</li>
+                <li>• Squeeze and release major muscle groups</li>
+                <li>• Hold an ice cube or splash cold water on wrists</li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-green-50 rounded-lg">
+              <h6 className="font-medium">2. Mental Grounding (3 minutes)</h6>
+              <ul className="text-sm text-gray-600 space-y-1 mt-2">
+                <li>• Name 5 things you can see in detail</li>
+                <li>• Count backwards from 100 by 7s (100, 93, 86...)</li>
+                <li>• Recite something you know by heart (poem, song, prayer)</li>
+                <li>• Describe your surroundings out loud in detail</li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-purple-50 rounded-lg">
+              <h6 className="font-medium">3. Emotional Grounding (2 minutes)</h6>
+              <ul className="text-sm text-gray-600 space-y-1 mt-2">
+                <li>• Say "This feeling is temporary" 3 times</li>
+                <li>• Think of someone who makes you feel safe</li>
+                <li>• Remind yourself: "I am safe in this moment"</li>
+                <li>• Focus on one thing you're grateful for</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-6 bg-white">
+          <h5 className="font-semibold text-lg mb-4 text-purple-700">Container Breathing for Overwhelm</h5>
+          <div className="p-4 bg-purple-50 rounded-lg">
+            <div className="space-y-3">
+              <p className="text-sm text-gray-700"><strong>Step 1:</strong> Imagine your distress as a color or shape</p>
+              <p className="text-sm text-gray-700"><strong>Step 2:</strong> Breathe it into an imaginary container (box, balloon, bubble)</p>
+              <p className="text-sm text-gray-700"><strong>Step 3:</strong> Seal the container with each exhale</p>
+              <p className="text-sm text-gray-700"><strong>Step 4:</strong> Place container outside your body (mentally)</p>
+              <p className="text-sm text-gray-700"><strong>Step 5:</strong> Know you can open it later when you're ready</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-red-50 p-4 rounded-lg">
+        <h6 className="font-medium text-red-900 mb-2">Emergency Technique Assessment:</h6>
+        
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium mb-1">Confidence in using these emergency techniques (1-10):</label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Not confident</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={practiceData.techniqueProgress['emergency-grounding']?.confidence || 5}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  techniqueProgress: {
+                    ...prev.techniqueProgress,
+                    'emergency-grounding': {
+                      ...prev.techniqueProgress['emergency-grounding'],
+                      confidence: parseInt(e.target.value),
+                      practiced: true
+                    }
+                  }
+                }))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">Very confident</span>
+              <span className="w-8 text-center font-medium bg-red-100 rounded px-2 py-1">
+                {practiceData.techniqueProgress['emergency-grounding']?.confidence || 5}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Which emergency technique feels most accessible to you?</label>
+            <Textarea
+              value={practiceData.techniqueProgress['emergency-grounding']?.experience || ''}
+              onChange={(e) => setPracticeData(prev => ({
+                ...prev,
+                techniqueProgress: {
+                  ...prev.techniqueProgress,
+                  'emergency-grounding': {
+                    ...prev.techniqueProgress['emergency-grounding'],
+                    experience: e.target.value,
+                    practiced: true
+                  }
+                }
+              }))}
+              placeholder="Which would you remember in a crisis? What feels most natural? What concerns do you have?"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderIntegrationPlanStep = () => (
+    <div className="space-y-6">
+      <div className="bg-teal-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-teal-900 mb-3">Personal Grounding Integration Plan</h4>
+        <p className="text-sm text-teal-800">
+          Create your personalized toolkit based on what you've learned. This plan will help you 
+          integrate somatic grounding into your daily life and have tools ready for any situation.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Choose your daily grounding practices:</h5>
+          <div className="space-y-3">
+            {[
+              'Morning body scan (5-10 minutes)',
+              'Midday quick reset check-in (1-2 minutes)',
+              '5-4-3-2-1 grounding when stressed',
+              'Evening progressive relaxation',
+              'Tactical breathing during challenging moments',
+              'Cold water reset when overwhelmed',
+              'Feet-on-floor grounding during work',
+              'Wall push reset between tasks'
+            ].map((practice) => (
+              <label key={practice} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={practiceData.personalPlan.dailyTechniques.includes(practice)}
+                  onChange={(e) => {
+                    const current = practiceData.personalPlan.dailyTechniques;
+                    setPracticeData(prev => ({
+                      ...prev,
+                      personalPlan: {
+                        ...prev.personalPlan,
+                        dailyTechniques: e.target.checked 
+                          ? [...current, practice]
+                          : current.filter(p => p !== practice)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{practice}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Emergency grounding toolkit (for crisis moments):</h5>
+          <div className="space-y-3">
+            {[
+              'STOP technique for panic',
+              'Intensive 7-minute grounding sequence',
+              'Container breathing for overwhelm',
+              'Cold water face/wrist reset',
+              'Call trusted person while grounding',
+              'Remove myself from triggering situation',
+              'Use emergency grounding app or recording',
+              'Practice basic safety reminders'
+            ].map((technique) => (
+              <label key={technique} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={practiceData.personalPlan.emergencyTechniques.includes(technique)}
+                  onChange={(e) => {
+                    const current = practiceData.personalPlan.emergencyTechniques;
+                    setPracticeData(prev => ({
+                      ...prev,
+                      personalPlan: {
+                        ...prev.personalPlan,
+                        emergencyTechniques: e.target.checked 
+                          ? [...current, technique]
+                          : current.filter(t => t !== technique)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{technique}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Your weekly practice schedule:</label>
+          <Textarea
+            value={practiceData.personalPlan.practiceSchedule}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              personalPlan: { ...prev.personalPlan, practiceSchedule: e.target.value }
+            }))}
+            placeholder="e.g., Monday/Wednesday/Friday: 10-minute body scan before work. Daily: 5-4-3-2-1 grounding when I feel stress building..."
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">How will you track your progress?</label>
+          <Textarea
+            value={practiceData.personalPlan.trackingMethod}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              personalPlan: { ...prev.personalPlan, trackingMethod: e.target.value }
+            }))}
+            placeholder="e.g., Phone notes after each practice, weekly check-ins with myself, rating stress levels before/after techniques..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Your 30-day grounding goals:</label>
+          <Textarea
+            value={practiceData.personalPlan.progressGoals}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              personalPlan: { ...prev.personalPlan, progressGoals: e.target.value }
+            }))}
+            placeholder="e.g., Use quick reset techniques daily at work, feel more calm during family stress, sleep better using body scan..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-teal-50 p-4 rounded-lg">
+        <h5 className="font-semibold text-teal-900 mb-2">Grounding Success Reminders</h5>
+        <ul className="text-sm text-teal-800 space-y-1">
+          <li>• Start small - even 30 seconds of grounding makes a difference</li>
+          <li>• Practice when calm so techniques are available when stressed</li>
+          <li>• Your nervous system learns through repetition and kindness</li>
+          <li>• Different techniques work for different situations - experiment</li>
+          <li>• Progress isn't linear - celebrate small improvements</li>
+          <li>• Trust your body's wisdom and healing capacity</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-teal-600" />
+          Somatic Grounding Practices
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-teal-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Master 5 powerful body-based techniques for nervous system regulation</p>
+          </div>
+
+          {currentStep === 0 && renderAssessmentStep()}
+          {currentStep === 1 && renderGroundingStep()}
+          {currentStep === 2 && renderBodyScanStep()}
+          {currentStep === 3 && renderQuickResetStep()}
+          {currentStep === 4 && renderEmergencyStep()}
+          {currentStep === 5 && renderIntegrationPlanStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w4-grounding', practiceData)}
+                className="ml-auto"
+              >
+                Complete Grounding Practices
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Understanding Your Hormonal Symphony Component
 function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const [currentSection, setCurrentSection] = useState('intro');
@@ -5526,6 +6446,84 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
 }
 
 // Main Enhanced Coaching Component
+// Breathwork & Vagus Nerve Reset Component (Stub)
+function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <Button variant="outline" onClick={onClose} className="flex items-center gap-2 mb-4">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Coaching
+        </Button>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-blue-600" />
+          Breathwork & Vagus Nerve Reset
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-blue-50 rounded-lg p-6">
+          <p className="text-blue-800">Coming soon: Learn box breathing, heart coherence, cold exposure breathing, and humming techniques for instant calm</p>
+        </div>
+        <Button onClick={() => onComplete('w4-breathwork')} className="w-full mt-6">
+          Complete Breathwork Training
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Create Your Calm Corner Component (Stub)
+function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <Button variant="outline" onClick={onClose} className="flex items-center gap-2 mb-4">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Coaching
+        </Button>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-green-600" />
+          Create Your Calm Corner
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-green-50 rounded-lg p-6">
+          <p className="text-green-800">Coming soon: Design your personalized sanctuary with color psychology, aromatherapy, and mindful rituals</p>
+        </div>
+        <Button onClick={() => onComplete('w4-calm-corner')} className="w-full mt-6">
+          Complete Calm Corner Design
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Guided Grounding Meditation Component (Stub)
+function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <Button variant="outline" onClick={onClose} className="flex items-center gap-2 mb-4">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Coaching
+        </Button>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-purple-600" />
+          Guided Grounding Meditation
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-purple-50 rounded-lg p-6">
+          <p className="text-purple-800">Coming soon: 12-minute nervous system regulation meditation with body scan and breath awareness</p>
+        </div>
+        <Button onClick={() => onComplete('w4-meditation')} className="w-full mt-6">
+          Complete Meditation Practice
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function EnhancedCoachingComponentMinimal({ component, moduleId, onComplete, onClose }: EnhancedCoachingComponentMinimalProps) {
   // Handle special interactive components
   if (component.id === 'focus-memory-rituals') {
@@ -5617,6 +6615,23 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'w3-mood-map') {
     return <WeeklyMoodMap onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 4 Components
+  if (component.id === 'w4-grounding') {
+    return <SomaticGroundingPractices onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w4-breathwork') {
+    return <BreathworkVagusReset onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w4-calm-corner') {
+    return <CreateCalmCorner onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w4-meditation') {
+    return <GuidedGroundingMeditation onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
