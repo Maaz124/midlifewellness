@@ -9,6 +9,7 @@ import Coaching from "@/pages/coaching";
 import Journal from "@/pages/journal";
 import Progress from "@/pages/progress";
 import Community from "@/pages/community";
+import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -22,6 +23,7 @@ function Router() {
           <Route path="/journal" component={Journal} />
           <Route path="/progress" component={Progress} />
           <Route path="/community" component={Community} />
+          <Route path="/about" component={About} />
           <Route component={NotFound} />
         </Switch>
       </main>

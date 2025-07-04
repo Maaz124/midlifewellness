@@ -1,5 +1,6 @@
 import { HealthCalculator } from '@/components/health-calculator';
 import { MeditationTimer } from '@/components/meditation-timer';
+import { AboutDoctor } from '@/components/about-doctor';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -241,6 +242,11 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      </section>
+
+      {/* About Dr. Sidra Bukhari */}
+      <section>
+        <AboutDoctor />
       </section>
 
       {/* Meditation Timer */}
