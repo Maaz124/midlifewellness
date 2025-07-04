@@ -8428,27 +8428,906 @@ function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, da
   );
 }
 
-// Guided Grounding Meditation Component (Stub)
+// Guided Grounding Meditation Component
 function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [meditationTimer, setMeditationTimer] = useState(0);
+  const [currentPhase, setCurrentPhase] = useState('preparation');
+  const [meditationData, setMeditationData] = useState({
+    personalAssessment: {
+      experienceLevel: 'beginner',
+      currentStress: 5,
+      physicalTension: 5,
+      mentalChatter: 5,
+      preferredDuration: 12,
+      specificConcerns: ''
+    },
+    meditationPreferences: {
+      voiceGuidance: true,
+      backgroundSounds: [] as string[],
+      visualCues: true,
+      breathingPrompts: true,
+      bodyAwareness: true
+    },
+    sessionExperience: {
+      beforeStress: 5,
+      afterStress: 5,
+      beforeTension: 5,
+      afterTension: 5,
+      beforeMentalClarity: 5,
+      afterMentalClarity: 5,
+      insights: '',
+      challenges: '',
+      favoriteAspects: ''
+    },
+    practiceIntegration: {
+      dailySchedule: '',
+      adaptations: '',
+      progressGoals: '',
+      reminderSystems: ''
+    }
+  });
+
+  const steps = [
+    'Personal Meditation Assessment',
+    'Meditation Preferences Setup',
+    'Guided 12-Minute Practice',
+    'Post-Meditation Reflection',
+    'Daily Practice Integration'
+  ];
+
+  const meditationPhases = [
+    { name: 'Preparation', duration: 60, description: 'Settling into comfortable position' },
+    { name: 'Breath Awareness', duration: 180, description: 'Connecting with natural breathing rhythm' },
+    { name: 'Body Scan', duration: 300, description: 'Progressive relaxation from head to toe' },
+    { name: 'Grounding Visualization', duration: 180, description: 'Connecting with earth energy' },
+    { name: 'Present Moment', duration: 120, description: 'Cultivating awareness and presence' },
+    { name: 'Integration', duration: 60, description: 'Preparing to return to daily activities' }
+  ];
+
+  const backgroundSoundOptions = [
+    'Forest sounds', 'Ocean waves', 'Gentle rain', 'Singing bowls',
+    'Soft instrumental', 'Nature symphony', 'Wind through trees', 'Mountain stream',
+    'Tibetan bells', 'Ambient tones', 'Silence (no background)', 'Heartbeat rhythm'
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setMeditationTimer(prev => {
+          const newTime = prev + 1;
+          
+          // Calculate current phase based on timer
+          let cumulativeTime = 0;
+          for (const phase of meditationPhases) {
+            cumulativeTime += phase.duration;
+            if (newTime <= cumulativeTime) {
+              setCurrentPhase(phase.name.toLowerCase().replace(' ', '-'));
+              break;
+            }
+          }
+          
+          // Auto-complete when meditation finishes
+          if (newTime >= 720) { // 12 minutes total
+            setIsPlaying(false);
+            setCurrentPhase('complete');
+          }
+          
+          return newTime;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const renderAssessmentStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Personal Meditation Assessment</h4>
+        <p className="text-sm text-indigo-800">
+          This grounding meditation is designed to calm your nervous system, release physical tension, 
+          and bring you into present-moment awareness. Let's personalize it to your current needs and experience level.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-3">Your meditation experience level:</label>
+          <div className="space-y-2">
+            {[
+              { value: 'complete-beginner', label: 'Complete Beginner', desc: 'New to meditation or very little experience' },
+              { value: 'beginner', label: 'Beginner', desc: 'Some guided meditations, still learning' },
+              { value: 'intermediate', label: 'Intermediate', desc: 'Regular practice, comfortable with guidance' },
+              { value: 'experienced', label: 'Experienced', desc: 'Consistent practice, can meditate independently' }
+            ].map((level) => (
+              <label key={level.value} className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="experience"
+                  value={level.value}
+                  checked={meditationData.personalAssessment.experienceLevel === level.value}
+                  onChange={(e) => setMeditationData(prev => ({
+                    ...prev,
+                    personalAssessment: { ...prev.personalAssessment, experienceLevel: e.target.value }
+                  }))}
+                  className="mt-1"
+                />
+                <div>
+                  <div className="font-medium text-sm">{level.label}</div>
+                  <div className="text-xs text-gray-600">{level.desc}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-3">Current stress level (1-10)</label>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={meditationData.personalAssessment.currentStress}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  personalAssessment: { ...prev.personalAssessment, currentStress: parseInt(e.target.value) }
+                }))}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>Calm</span>
+                <span className="font-medium">{meditationData.personalAssessment.currentStress}</span>
+                <span>Stressed</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-3">Physical tension (1-10)</label>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={meditationData.personalAssessment.physicalTension}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  personalAssessment: { ...prev.personalAssessment, physicalTension: parseInt(e.target.value) }
+                }))}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>Relaxed</span>
+                <span className="font-medium">{meditationData.personalAssessment.physicalTension}</span>
+                <span>Tense</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-3">Mental chatter (1-10)</label>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={meditationData.personalAssessment.mentalChatter}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  personalAssessment: { ...prev.personalAssessment, mentalChatter: parseInt(e.target.value) }
+                }))}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>Quiet</span>
+                <span className="font-medium">{meditationData.personalAssessment.mentalChatter}</span>
+                <span>Racing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-3">Preferred meditation duration:</label>
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { value: 5, label: '5 minutes', desc: 'Quick reset' },
+              { value: 8, label: '8 minutes', desc: 'Short practice' },
+              { value: 12, label: '12 minutes', desc: 'Standard session' },
+              { value: 15, label: '15 minutes', desc: 'Extended practice' }
+            ].map((duration) => (
+              <label key={duration.value} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="duration"
+                  value={duration.value}
+                  checked={meditationData.personalAssessment.preferredDuration === duration.value}
+                  onChange={(e) => setMeditationData(prev => ({
+                    ...prev,
+                    personalAssessment: { ...prev.personalAssessment, preferredDuration: parseInt(e.target.value) }
+                  }))}
+                  className="sr-only"
+                />
+                <div className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  meditationData.personalAssessment.preferredDuration === duration.value
+                    ? 'border-indigo-500 bg-indigo-50'
+                    : 'border-gray-200 hover:border-indigo-300'
+                }`}>
+                  <div className="font-medium text-sm">{duration.label}</div>
+                  <div className="text-xs text-gray-600">{duration.desc}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Any specific concerns or intentions for this practice?</label>
+          <Textarea
+            value={meditationData.personalAssessment.specificConcerns}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              personalAssessment: { ...prev.personalAssessment, specificConcerns: e.target.value }
+            }))}
+            placeholder="e.g., Feeling overwhelmed today, need help with sleep preparation, processing difficult emotions, preparing for stressful event..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-indigo-50 p-4 rounded-lg">
+        <h5 className="font-medium text-indigo-900 mb-2">Benefits of Grounding Meditation</h5>
+        <div className="grid md:grid-cols-2 gap-4 text-sm text-indigo-800">
+          <ul className="space-y-1">
+            <li>• Activates parasympathetic nervous system</li>
+            <li>• Reduces cortisol and stress hormones</li>
+            <li>• Improves emotional regulation</li>
+            <li>• Enhances present-moment awareness</li>
+          </ul>
+          <ul className="space-y-1">
+            <li>• Releases physical tension</li>
+            <li>• Calms mental chatter</li>
+            <li>• Improves sleep quality</li>
+            <li>• Builds stress resilience</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPreferencesStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Meditation Preferences Setup</h4>
+        <p className="text-sm text-purple-800">
+          Customize your meditation experience to create the most supportive environment for your practice. 
+          These preferences will help create a deeply personalized grounding session.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h5 className="font-medium mb-4">Guidance Preferences:</h5>
+          <div className="space-y-3">
+            <label className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={meditationData.meditationPreferences.voiceGuidance}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  meditationPreferences: { ...prev.meditationPreferences, voiceGuidance: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <div>
+                <span className="font-medium text-sm">Voice Guidance</span>
+                <p className="text-xs text-gray-600">Gentle spoken instructions throughout the practice</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={meditationData.meditationPreferences.visualCues}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  meditationPreferences: { ...prev.meditationPreferences, visualCues: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <div>
+                <span className="font-medium text-sm">Visual Cues</span>
+                <p className="text-xs text-gray-600">On-screen prompts and phase indicators</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={meditationData.meditationPreferences.breathingPrompts}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  meditationPreferences: { ...prev.meditationPreferences, breathingPrompts: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <div>
+                <span className="font-medium text-sm">Breathing Prompts</span>
+                <p className="text-xs text-gray-600">Gentle reminders to return to breath awareness</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={meditationData.meditationPreferences.bodyAwareness}
+                onChange={(e) => setMeditationData(prev => ({
+                  ...prev,
+                  meditationPreferences: { ...prev.meditationPreferences, bodyAwareness: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <div>
+                <span className="font-medium text-sm">Body Awareness Cues</span>
+                <p className="text-xs text-gray-600">Guidance for body scan and physical relaxation</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-medium mb-4">Background Sounds - Choose what supports your relaxation:</h5>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {backgroundSoundOptions.map((sound) => (
+              <label key={sound} className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={meditationData.meditationPreferences.backgroundSounds.includes(sound)}
+                  onChange={(e) => {
+                    const current = meditationData.meditationPreferences.backgroundSounds;
+                    setMeditationData(prev => ({
+                      ...prev,
+                      meditationPreferences: {
+                        ...prev.meditationPreferences,
+                        backgroundSounds: e.target.checked 
+                          ? [...current, sound]
+                          : current.filter(s => s !== sound)
+                      }
+                    }));
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">{sound}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h5 className="font-medium text-purple-900 mb-2">Meditation Setup Tips</h5>
+        <ul className="text-sm text-purple-800 space-y-1">
+          <li>• Find a comfortable seated or lying position</li>
+          <li>• Ensure you won't be interrupted for the full duration</li>
+          <li>• Consider dimming lights or using an eye pillow</li>
+          <li>• Have a blanket nearby for warmth and comfort</li>
+          <li>• Turn off notifications on devices</li>
+          <li>• Set an intention for your practice</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  const renderMeditationStep = () => {
+    const totalDuration = meditationData.personalAssessment.preferredDuration * 60; // Convert to seconds
+    const progress = (meditationTimer / totalDuration) * 100;
+    const currentPhaseIndex = meditationPhases.findIndex(phase => 
+      phase.name.toLowerCase().replace(' ', '-') === currentPhase
+    );
+    const currentPhaseData = meditationPhases[currentPhaseIndex] || meditationPhases[0];
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-emerald-50 p-6 rounded-lg">
+          <h4 className="font-semibold text-emerald-900 mb-3">Guided Grounding Meditation</h4>
+          <p className="text-sm text-emerald-800">
+            Allow yourself to settle into this time of restoration. There's nothing you need to do except 
+            follow along gently and give yourself this gift of presence.
+          </p>
+        </div>
+
+        <div className="bg-white border-2 border-emerald-200 rounded-lg p-6">
+          <div className="text-center space-y-4">
+            <div className="text-3xl font-bold text-emerald-700">
+              {Math.floor(meditationTimer / 60)}:{(meditationTimer % 60).toString().padStart(2, '0')}
+            </div>
+            
+            <div className="w-full bg-emerald-200 rounded-full h-3">
+              <div 
+                className="bg-emerald-600 h-3 rounded-full transition-all duration-1000"
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <h5 className="text-xl font-semibold text-emerald-900 capitalize">
+                {currentPhase.replace('-', ' ')}
+              </h5>
+              <p className="text-emerald-700">{currentPhaseData?.description}</p>
+            </div>
+
+            <div className="space-y-4">
+              {!isPlaying ? (
+                <Button 
+                  onClick={() => {
+                    setIsPlaying(true);
+                    setMeditationTimer(0);
+                    setCurrentPhase('preparation');
+                  }}
+                  size="lg"
+                  className="w-full"
+                >
+                  Begin Meditation
+                </Button>
+              ) : (
+                <div className="space-y-3">
+                  <Button 
+                    onClick={() => setIsPlaying(false)}
+                    variant="outline"
+                    size="lg"
+                    className="w-full"
+                  >
+                    Pause Practice
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => {
+                      setIsPlaying(false);
+                      setMeditationTimer(0);
+                      setCurrentPhase('preparation');
+                    }}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Restart
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Meditation Phase Content */}
+        <div className="bg-white border rounded-lg p-6">
+          <div className="space-y-4">
+            {currentPhase === 'preparation' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Settling In</h6>
+                <p className="text-gray-700">
+                  Find a comfortable position. Allow your body to be supported. 
+                  Close your eyes or soften your gaze. Take a moment to arrive here fully.
+                </p>
+                <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                  Notice how your body feels right now. There's no need to change anything, 
+                  just become aware of your current state.
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'breath-awareness' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Breath Awareness</h6>
+                <p className="text-gray-700">
+                  Bring your attention to your natural breath. Don't change it, 
+                  just notice the gentle rhythm of inhaling and exhaling.
+                </p>
+                <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded">
+                  If your mind wanders, that's completely normal. Gently guide your 
+                  attention back to the sensation of breathing.
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'body-scan' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Body Scan Relaxation</h6>
+                <p className="text-gray-700">
+                  Starting from the top of your head, slowly scan down through your body. 
+                  Notice any areas of tension and breathe softness into them.
+                </p>
+                <div className="text-sm text-gray-600 bg-green-50 p-3 rounded">
+                  Head and face... neck and shoulders... arms and hands... 
+                  chest and heart... abdomen... hips... legs and feet...
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'grounding-visualization' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Earth Connection</h6>
+                <p className="text-gray-700">
+                  Imagine roots growing from your body into the earth below. 
+                  Feel yourself supported and connected to the stable ground.
+                </p>
+                <div className="text-sm text-gray-600 bg-amber-50 p-3 rounded">
+                  Draw up the earth's calm, steady energy. Let it fill your body 
+                  with stability and peace.
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'present-moment' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Present Moment Awareness</h6>
+                <p className="text-gray-700">
+                  Rest in this moment of pure being. Nothing to do, nowhere to go, 
+                  just awareness itself resting in awareness.
+                </p>
+                <div className="text-sm text-gray-600 bg-purple-50 p-3 rounded">
+                  You are safe. You are here. You are enough, exactly as you are.
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'integration' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Gentle Return</h6>
+                <p className="text-gray-700">
+                  Begin to deepen your breath. Wiggle your fingers and toes. 
+                  Carry this sense of calm with you as you return to your day.
+                </p>
+                <div className="text-sm text-gray-600 bg-teal-50 p-3 rounded">
+                  Take three deep breaths. When you're ready, gently open your eyes.
+                </div>
+              </div>
+            )}
+
+            {currentPhase === 'complete' && (
+              <div className="text-center space-y-3">
+                <h6 className="font-semibold text-lg">Practice Complete</h6>
+                <p className="text-gray-700">
+                  Well done. You've given yourself a beautiful gift of presence and calm. 
+                  Notice how you feel now compared to when you began.
+                </p>
+                <div className="text-sm text-gray-600 bg-green-50 p-3 rounded">
+                  Take a moment to appreciate this time you've invested in your wellbeing.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {meditationData.meditationPreferences.backgroundSounds.length > 0 && (
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h6 className="font-medium mb-2">Selected Background: </h6>
+            <div className="text-sm text-gray-700">
+              {meditationData.meditationPreferences.backgroundSounds.join(', ')}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderReflectionStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Post-Meditation Reflection</h4>
+        <p className="text-sm text-blue-800">
+          Reflection helps integrate your meditation experience and track the benefits of your practice. 
+          Take a moment to notice what shifted during your session.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="space-y-3">
+          <h5 className="font-medium">Stress Level</h5>
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-2">Before: {meditationData.sessionExperience.beforeStress}</div>
+            <div className="text-sm font-medium mb-2">After:</div>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={meditationData.sessionExperience.afterStress}
+              onChange={(e) => setMeditationData(prev => ({
+                ...prev,
+                sessionExperience: { ...prev.sessionExperience, afterStress: parseInt(e.target.value) }
+              }))}
+              className="w-full"
+            />
+            <div className="text-center font-medium text-blue-600">
+              {meditationData.sessionExperience.afterStress}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <h5 className="font-medium">Physical Tension</h5>
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-2">Before: {meditationData.sessionExperience.beforeTension}</div>
+            <div className="text-sm font-medium mb-2">After:</div>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={meditationData.sessionExperience.afterTension}
+              onChange={(e) => setMeditationData(prev => ({
+                ...prev,
+                sessionExperience: { ...prev.sessionExperience, afterTension: parseInt(e.target.value) }
+              }))}
+              className="w-full"
+            />
+            <div className="text-center font-medium text-blue-600">
+              {meditationData.sessionExperience.afterTension}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <h5 className="font-medium">Mental Clarity</h5>
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-2">Before: {meditationData.sessionExperience.beforeMentalClarity}</div>
+            <div className="text-sm font-medium mb-2">After:</div>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={meditationData.sessionExperience.afterMentalClarity}
+              onChange={(e) => setMeditationData(prev => ({
+                ...prev,
+                sessionExperience: { ...prev.sessionExperience, afterMentalClarity: parseInt(e.target.value) }
+              }))}
+              className="w-full"
+            />
+            <div className="text-center font-medium text-blue-600">
+              {meditationData.sessionExperience.afterMentalClarity}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Insights or realizations from your practice:</label>
+          <Textarea
+            value={meditationData.sessionExperience.insights}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              sessionExperience: { ...prev.sessionExperience, insights: e.target.value }
+            }))}
+            placeholder="e.g., Noticed how tense my shoulders were, felt more connected to my body, mind became quieter than expected..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Any challenges you experienced:</label>
+          <Textarea
+            value={meditationData.sessionExperience.challenges}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              sessionExperience: { ...prev.sessionExperience, challenges: e.target.value }
+            }))}
+            placeholder="e.g., Mind kept wandering, difficult to sit still, felt emotional, hard to focus on breath..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Favorite aspects of the meditation:</label>
+          <Textarea
+            value={meditationData.sessionExperience.favoriteAspects}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              sessionExperience: { ...prev.sessionExperience, favoriteAspects: e.target.value }
+            }))}
+            placeholder="e.g., Body scan was deeply relaxing, grounding visualization felt powerful, loved the gentle guidance..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-medium text-blue-900 mb-2">Your Meditation Benefits Summary</h5>
+        <div className="grid md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <div className="font-medium">Stress Reduction:</div>
+            <div className="text-blue-800">
+              {meditationData.sessionExperience.beforeStress - meditationData.sessionExperience.afterStress > 0 
+                ? `↓ ${meditationData.sessionExperience.beforeStress - meditationData.sessionExperience.afterStress} points` 
+                : 'Maintained calm state'}
+            </div>
+          </div>
+          <div>
+            <div className="font-medium">Tension Release:</div>
+            <div className="text-blue-800">
+              {meditationData.sessionExperience.beforeTension - meditationData.sessionExperience.afterTension > 0 
+                ? `↓ ${meditationData.sessionExperience.beforeTension - meditationData.sessionExperience.afterTension} points` 
+                : 'Maintained relaxation'}
+            </div>
+          </div>
+          <div>
+            <div className="font-medium">Mental Clarity:</div>
+            <div className="text-blue-800">
+              {meditationData.sessionExperience.afterMentalClarity - meditationData.sessionExperience.beforeMentalClarity > 0 
+                ? `↑ ${meditationData.sessionExperience.afterMentalClarity - meditationData.sessionExperience.beforeMentalClarity} points` 
+                : 'Maintained clarity'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderIntegrationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-teal-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-teal-900 mb-3">Daily Practice Integration</h4>
+        <p className="text-sm text-teal-800">
+          Regular meditation practice creates lasting changes in your brain and nervous system. 
+          Let's create a sustainable plan to integrate grounding meditation into your daily life.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Your ideal daily meditation schedule:</label>
+          <Textarea
+            value={meditationData.practiceIntegration.dailySchedule}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              practiceIntegration: { ...prev.practiceIntegration, dailySchedule: e.target.value }
+            }))}
+            placeholder="e.g., 10 minutes each morning after coffee, 5 minutes before bed, weekend longer sessions, meditation breaks during work..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Adaptations for busy or challenging days:</label>
+          <Textarea
+            value={meditationData.practiceIntegration.adaptations}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              practiceIntegration: { ...prev.practiceIntegration, adaptations: e.target.value }
+            }))}
+            placeholder="e.g., 3-minute breathing practice, walking meditation, mindful moments during daily tasks, evening body scan..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Your meditation progress goals for the next month:</label>
+          <Textarea
+            value={meditationData.practiceIntegration.progressGoals}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              practiceIntegration: { ...prev.practiceIntegration, progressGoals: e.target.value }
+            }))}
+            placeholder="e.g., Meditate 5 days per week, feel calmer during stressful situations, improve sleep quality, develop consistent routine..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Reminder systems and accountability:</label>
+          <Textarea
+            value={meditationData.practiceIntegration.reminderSystems}
+            onChange={(e) => setMeditationData(prev => ({
+              ...prev,
+              practiceIntegration: { ...prev.practiceIntegration, reminderSystems: e.target.value }
+            }))}
+            placeholder="e.g., Phone reminders, meditation app, practice buddy, calendar blocks, meditation space setup as visual cue..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="bg-teal-50 p-4 rounded-lg">
+          <h5 className="font-medium text-teal-900 mb-2">Building Your Practice</h5>
+          <div className="text-sm text-teal-800 space-y-1">
+            <div><strong>Week 1-2:</strong> 5-8 minutes daily, focus on consistency</div>
+            <div><strong>Week 3-4:</strong> 10-12 minutes, explore different techniques</div>
+            <div><strong>Month 2:</strong> 15+ minutes, develop personal style</div>
+            <div><strong>Ongoing:</strong> Adapt length based on needs and schedule</div>
+          </div>
+        </div>
+
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h5 className="font-medium text-green-900 mb-2">Success Indicators</h5>
+          <div className="text-sm text-green-800 space-y-1">
+            <div>• Looking forward to meditation time</div>
+            <div>• Faster recovery from stressful events</div>
+            <div>• Improved emotional regulation</div>
+            <div>• Better sleep and energy levels</div>
+            <div>• Increased self-awareness</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 p-4 rounded-lg">
+        <h5 className="font-medium text-amber-900 mb-2">Troubleshooting Common Challenges</h5>
+        <div className="text-sm text-amber-800 space-y-2">
+          <div><strong>Can't find time:</strong> Start with 3-5 minutes, link to existing habits, use transition moments</div>
+          <div><strong>Mind too busy:</strong> That's normal! Meditation is practice, not perfection. Shorter sessions more frequently</div>
+          <div><strong>Falling asleep:</strong> Try sitting up, eyes slightly open, or practice at different times</div>
+          <div><strong>Lack of motivation:</strong> Remember your why, track benefits, find meditation buddy or group</div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
-        <Button variant="outline" onClick={onClose} className="flex items-center gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Coaching
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
         <CardTitle className="flex items-center gap-2">
           <Heart className="w-6 h-6 text-purple-600" />
           Guided Grounding Meditation
         </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="bg-purple-50 rounded-lg p-6">
-          <p className="text-purple-800">Coming soon: 12-minute nervous system regulation meditation with body scan and breath awareness</p>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">12-minute nervous system regulation meditation with personalized guidance</p>
+          </div>
+
+          {currentStep === 0 && renderAssessmentStep()}
+          {currentStep === 1 && renderPreferencesStep()}
+          {currentStep === 2 && renderMeditationStep()}
+          {currentStep === 3 && renderReflectionStep()}
+          {currentStep === 4 && renderIntegrationStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w4-meditation', meditationData)}
+                className="ml-auto"
+              >
+                Complete Meditation Practice
+              </Button>
+            )}
+          </div>
         </div>
-        <Button onClick={() => onComplete('w4-meditation')} className="w-full mt-6">
-          Complete Meditation Practice
-        </Button>
       </CardContent>
     </Card>
   );
