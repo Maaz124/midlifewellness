@@ -64,10 +64,38 @@ export default function Dashboard() {
           <Card className="wellness-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-primary" />
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                  data.healthScores.overall >= 80 ? 'bg-emerald-100' :
+                  data.healthScores.overall >= 70 ? 'bg-blue-100' :
+                  data.healthScores.overall >= 60 ? 'bg-amber-100' :
+                  data.healthScores.overall >= 40 ? 'bg-orange-100' : 'bg-rose-100'
+                }`}>
+                  <TrendingUp className={`w-6 h-6 ${
+                    data.healthScores.overall >= 80 ? 'text-emerald-600' :
+                    data.healthScores.overall >= 70 ? 'text-blue-600' :
+                    data.healthScores.overall >= 60 ? 'text-amber-600' :
+                    data.healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
+                  }`} />
                 </div>
-                <span className="text-2xl font-bold text-primary">{data.healthScores.overall}</span>
+                <div className="text-right">
+                  <span className={`text-2xl font-bold ${
+                    data.healthScores.overall >= 80 ? 'text-emerald-600' :
+                    data.healthScores.overall >= 70 ? 'text-blue-600' :
+                    data.healthScores.overall >= 60 ? 'text-amber-600' :
+                    data.healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
+                  }`}>{data.healthScores.overall}</span>
+                  <div className={`text-xs font-medium px-2 py-1 rounded-full inline-block ml-2 ${
+                    data.healthScores.overall >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                    data.healthScores.overall >= 70 ? 'bg-blue-100 text-blue-800' :
+                    data.healthScores.overall >= 60 ? 'bg-amber-100 text-amber-800' :
+                    data.healthScores.overall >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                  }`}>
+                    {data.healthScores.overall >= 80 ? 'Excellent' :
+                     data.healthScores.overall >= 70 ? 'Very Good' :
+                     data.healthScores.overall >= 60 ? 'Good' :
+                     data.healthScores.overall >= 40 ? 'Fair' : 'Needs Focus'}
+                  </div>
+                </div>
               </div>
               <h3 className="font-semibold text-gray-800 mb-1">Overall Wellness</h3>
               <p className="text-sm text-gray-500">
