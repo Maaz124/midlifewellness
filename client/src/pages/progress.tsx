@@ -165,34 +165,186 @@ export default function ProgressPage() {
                 </CardTitle>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-primary rounded-full"></div>
-                    <span className="text-gray-600">Mental Health</span>
+                    <div className={`w-4 h-4 rounded-full ${
+                      data.healthScores.mental >= 80 ? 'bg-emerald-500' :
+                      data.healthScores.mental >= 70 ? 'bg-blue-500' :
+                      data.healthScores.mental >= 60 ? 'bg-amber-500' :
+                      data.healthScores.mental >= 40 ? 'bg-orange-500' : 'bg-rose-500'
+                    }`}></div>
+                    <span className="text-gray-700 font-medium">Mental Health</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      data.healthScores.mental >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      data.healthScores.mental >= 70 ? 'bg-blue-100 text-blue-800' :
+                      data.healthScores.mental >= 60 ? 'bg-amber-100 text-amber-800' :
+                      data.healthScores.mental >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>{data.healthScores.mental}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-coral-500 rounded-full"></div>
-                    <span className="text-gray-600">Physical Health</span>
+                    <div className={`w-4 h-4 rounded-full ${
+                      data.healthScores.physical >= 80 ? 'bg-emerald-500' :
+                      data.healthScores.physical >= 70 ? 'bg-blue-500' :
+                      data.healthScores.physical >= 60 ? 'bg-amber-500' :
+                      data.healthScores.physical >= 40 ? 'bg-orange-500' : 'bg-rose-500'
+                    }`}></div>
+                    <span className="text-gray-700 font-medium">Physical Health</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      data.healthScores.physical >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      data.healthScores.physical >= 70 ? 'bg-blue-100 text-blue-800' :
+                      data.healthScores.physical >= 60 ? 'bg-amber-100 text-amber-800' :
+                      data.healthScores.physical >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>{data.healthScores.physical}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-sage-500 rounded-full"></div>
-                    <span className="text-gray-600">Cognitive Health</span>
+                    <div className={`w-4 h-4 rounded-full ${
+                      data.healthScores.cognitive >= 80 ? 'bg-emerald-500' :
+                      data.healthScores.cognitive >= 70 ? 'bg-blue-500' :
+                      data.healthScores.cognitive >= 60 ? 'bg-amber-500' :
+                      data.healthScores.cognitive >= 40 ? 'bg-orange-500' : 'bg-rose-500'
+                    }`}></div>
+                    <span className="text-gray-700 font-medium">Cognitive Health</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      data.healthScores.cognitive >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      data.healthScores.cognitive >= 70 ? 'bg-blue-100 text-blue-800' :
+                      data.healthScores.cognitive >= 60 ? 'bg-amber-100 text-amber-800' :
+                      data.healthScores.cognitive >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>{data.healthScores.cognitive}</span>
                   </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="h-64 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6">
                 {data.healthScores.overall > 0 ? (
-                  <div className="text-center">
-                    <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Chart visualization would appear here</p>
-                    <p className="text-sm text-gray-400 mt-2">
-                      Tracking: Mental ({data.healthScores.mental}), Physical ({data.healthScores.physical}), Cognitive ({data.healthScores.cognitive})
-                    </p>
+                  <div className="space-y-6">
+                    {/* Color-coded progress bars visualization */}
+                    <div className="space-y-4">
+                      {/* Mental Health Bar */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-700">Mental Health</span>
+                          <span className={`text-sm font-bold ${getScoreCategory(data.healthScores.mental).color}`}>
+                            {data.healthScores.mental}/100
+                          </span>
+                        </div>
+                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
+                            style={{
+                              width: `${data.healthScores.mental}%`,
+                              background: `linear-gradient(90deg, 
+                                ${getProgressColor(data.healthScores.mental)} 0%,
+                                ${data.healthScores.mental >= 80 ? 'hsl(142, 76%, 46%)' :
+                                  data.healthScores.mental >= 70 ? 'hsl(217, 91%, 70%)' :
+                                  data.healthScores.mental >= 60 ? 'hsl(45, 93%, 57%)' :
+                                  data.healthScores.mental >= 40 ? 'hsl(25, 95%, 63%)' : 'hsl(0, 84%, 70%)'} 100%)`
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Physical Health Bar */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-700">Physical Health</span>
+                          <span className={`text-sm font-bold ${getScoreCategory(data.healthScores.physical).color}`}>
+                            {data.healthScores.physical}/100
+                          </span>
+                        </div>
+                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
+                            style={{
+                              width: `${data.healthScores.physical}%`,
+                              background: `linear-gradient(90deg, 
+                                ${getProgressColor(data.healthScores.physical)} 0%,
+                                ${data.healthScores.physical >= 80 ? 'hsl(142, 76%, 46%)' :
+                                  data.healthScores.physical >= 70 ? 'hsl(217, 91%, 70%)' :
+                                  data.healthScores.physical >= 60 ? 'hsl(45, 93%, 57%)' :
+                                  data.healthScores.physical >= 40 ? 'hsl(25, 95%, 63%)' : 'hsl(0, 84%, 70%)'} 100%)`
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Cognitive Health Bar */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-700">Cognitive Health</span>
+                          <span className={`text-sm font-bold ${getScoreCategory(data.healthScores.cognitive).color}`}>
+                            {data.healthScores.cognitive}/100
+                          </span>
+                        </div>
+                        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
+                            style={{
+                              width: `${data.healthScores.cognitive}%`,
+                              background: `linear-gradient(90deg, 
+                                ${getProgressColor(data.healthScores.cognitive)} 0%,
+                                ${data.healthScores.cognitive >= 80 ? 'hsl(142, 76%, 46%)' :
+                                  data.healthScores.cognitive >= 70 ? 'hsl(217, 91%, 70%)' :
+                                  data.healthScores.cognitive >= 60 ? 'hsl(45, 93%, 57%)' :
+                                  data.healthScores.cognitive >= 40 ? 'hsl(25, 95%, 63%)' : 'hsl(0, 84%, 70%)'} 100%)`
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Overall wellness indicator */}
+                    <div className="pt-4 border-t border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-gray-800">Overall Wellness Score</span>
+                        <div className="flex items-center space-x-3">
+                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${getScoreCategory(data.healthScores.overall).bg} ${getScoreCategory(data.healthScores.overall).color}`}>
+                            {getScoreCategory(data.healthScores.overall).label}
+                          </div>
+                          <span className={`text-xl font-bold ${getScoreCategory(data.healthScores.overall).color}`}>
+                            {data.healthScores.overall}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Trend indicators */}
+                    <div className="grid grid-cols-3 gap-4 pt-2">
+                      <div className="text-center">
+                        <div className={`w-2 h-8 mx-auto rounded-full ${
+                          data.healthScores.mental >= 70 ? 'bg-emerald-400' :
+                          data.healthScores.mental >= 50 ? 'bg-amber-400' : 'bg-rose-400'
+                        }`} />
+                        <div className="text-xs text-gray-500 mt-1">Mental</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`w-2 h-8 mx-auto rounded-full ${
+                          data.healthScores.physical >= 70 ? 'bg-emerald-400' :
+                          data.healthScores.physical >= 50 ? 'bg-amber-400' : 'bg-rose-400'
+                        }`} />
+                        <div className="text-xs text-gray-500 mt-1">Physical</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`w-2 h-8 mx-auto rounded-full ${
+                          data.healthScores.cognitive >= 70 ? 'bg-emerald-400' :
+                          data.healthScores.cognitive >= 50 ? 'bg-amber-400' : 'bg-rose-400'
+                        }`} />
+                        <div className="text-xs text-gray-500 mt-1">Cognitive</div>
+                      </div>
+                    </div>
                   </div>
                 ) : (
-                  <div className="text-center">
-                    <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Complete health assessments to see your progress</p>
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mb-4">
+                      <BarChart3 className="w-8 h-8 text-blue-500" />
+                    </div>
+                    <h3 className="font-medium text-gray-800 mb-2">Wellness Trends Awaiting Data</h3>
+                    <p className="text-gray-500 text-sm">Complete your health assessments to see beautiful color-coded progress visualization</p>
+                    <div className="flex items-center space-x-2 mt-4">
+                      <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
+                    </div>
                   </div>
                 )}
               </div>
