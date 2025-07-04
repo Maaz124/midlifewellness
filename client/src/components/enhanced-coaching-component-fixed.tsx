@@ -2777,30 +2777,66 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
     { id: 'reflection', title: 'Post-Meditation Reflection', icon: '📝' }
   ];
 
+  const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+
   const meditationPhases = [
     {
       title: 'Preparation',
       description: 'Setting up your space and intention',
       duration: 2,
-      completed: true
+      completed: true,
+      instructions: [
+        'Find a comfortable seated position with your spine naturally straight',
+        'Close your eyes or soften your gaze downward',
+        'Place one hand on your heart and one on your belly',
+        'Take a moment to set an intention for this practice',
+        'Allow your breath to settle into its natural rhythm'
+      ],
+      guidance: 'This phase helps you transition from daily activities into a meditative state. Take your time to get comfortable and present.'
     },
     {
       title: 'Grounding',
       description: 'Connecting with your body and breath',
       duration: 3,
-      completed: true
+      completed: true,
+      instructions: [
+        'Begin to notice your natural breath without changing it',
+        'Feel the weight of your body supported by the chair or cushion',
+        'Scan from the top of your head down to your toes',
+        'Allow any tension to soften with each exhale',
+        'Notice where you feel most connected to the ground'
+      ],
+      guidance: 'Grounding helps regulate your nervous system and prepares your body for deeper meditation work.'
     },
     {
       title: 'Hormone Harmony',
       description: 'Visualizing hormonal balance and flow',
       duration: 7,
-      completed: true
+      completed: true,
+      instructions: [
+        'Imagine a warm, golden light filling your entire body',
+        'See this light flowing through your endocrine system',
+        'Visualize your hormones in perfect harmony and balance',
+        'Send appreciation to your ovaries, adrenals, and thyroid',
+        'Trust in your body\'s innate wisdom to heal and regulate',
+        'Feel the gentle rhythm of hormonal flow throughout your body'
+      ],
+      guidance: 'This visualization supports hormonal balance by reducing stress and promoting healing through the mind-body connection.'
     },
     {
       title: 'Integration',
       description: 'Anchoring the practice in your body',
       duration: 3,
-      completed: false
+      completed: false,
+      instructions: [
+        'Place both hands on your heart and feel the steady rhythm',
+        'Set an intention to carry this harmony throughout your day',
+        'Begin to wiggle your fingers and toes',
+        'Take three deep, conscious breaths',
+        'When ready, slowly open your eyes',
+        'Notice how you feel in this moment'
+      ],
+      guidance: 'Integration helps you bring the benefits of meditation into your daily life and maintain the sense of balance you\'ve created.'
     }
   ];
 
@@ -2900,18 +2936,73 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
         {meditationPhases.map((phase, index) => (
           <div 
             key={phase.title}
-            className={`border rounded-lg p-4 ${
+            className={`border rounded-lg transition-all duration-200 cursor-pointer ${
               phase.completed ? 'border-green-500 bg-green-50' : 'border-gray-200'
-            }`}
+            } ${expandedPhase === phase.title ? 'ring-2 ring-purple-300' : 'hover:border-purple-300'}`}
+            onClick={() => setExpandedPhase(expandedPhase === phase.title ? null : phase.title)}
           >
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="font-semibold flex items-center gap-2">
-                {phase.completed && <span className="text-green-600">✓</span>}
-                {phase.title}
-              </h4>
-              <span className="text-sm text-gray-500">{phase.duration} min</span>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold flex items-center gap-2">
+                  {phase.completed && <span className="text-green-600">✓</span>}
+                  {phase.title}
+                  <span className="text-purple-600 ml-2">
+                    {expandedPhase === phase.title ? '▼' : '▶'}
+                  </span>
+                </h4>
+                <span className="text-sm text-gray-500">{phase.duration} min</span>
+              </div>
+              <p className="text-sm text-gray-600">{phase.description}</p>
+              
+              {expandedPhase === phase.title && (
+                <div className="mt-4 space-y-4 border-t pt-4">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h5 className="font-medium text-purple-900 mb-2">Phase Guidance</h5>
+                    <p className="text-sm text-purple-800">{phase.guidance}</p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-3">Step-by-Step Instructions</h5>
+                    <ol className="space-y-2">
+                      {phase.instructions.map((instruction, idx) => (
+                        <li key={idx} className="flex items-start gap-3 text-sm">
+                          <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xs font-medium">
+                            {idx + 1}
+                          </span>
+                          <span className="text-gray-700">{instruction}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedPhase(null);
+                      }}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Mark as completed if not already
+                        if (!phase.completed) {
+                          // Update completion status
+                          console.log(`Completed ${phase.title}`);
+                        }
+                      }}
+                    >
+                      {phase.completed ? 'Practice Again' : 'Start Practice'}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
-            <p className="text-sm text-gray-600">{phase.description}</p>
           </div>
         ))}
       </div>
