@@ -3165,6 +3165,978 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
   );
 }
 
+// Week 3 Components - Emotion Regulation & Boundaries
+
+// Overwhelm Pattern Analysis Component
+function OverwhelmPatternAnalysis({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [analysisData, setAnalysisData] = useState({
+    triggers: {
+      work: false,
+      family: false,
+      health: false,
+      financial: false,
+      social: false,
+      time: false,
+      technology: false,
+      other: ''
+    },
+    physicalSymptoms: {
+      tension: false,
+      headaches: false,
+      fatigue: false,
+      heartRacing: false,
+      breathShallow: false,
+      digestive: false,
+      sleep: false,
+      other: ''
+    },
+    emotionalSymptoms: {
+      anxiety: false,
+      irritability: false,
+      sadness: false,
+      anger: false,
+      numbness: false,
+      overwhelm: false,
+      guilt: false,
+      other: ''
+    },
+    currentStrategies: '',
+    effectiveStrategies: [] as string[],
+    personalizedPlan: {
+      earlyWarnings: '',
+      preventive: '',
+      inTheMoment: '',
+      recovery: ''
+    }
+  });
+
+  const steps = [
+    'Overwhelm Triggers Assessment',
+    'Physical Response Mapping',
+    'Emotional Pattern Recognition',
+    'Strategy Evaluation',
+    'Personalized Action Plan'
+  ];
+
+  const copingStrategies = [
+    { id: 'breathing', name: 'Deep breathing exercises', category: 'Physical' },
+    { id: 'movement', name: 'Physical movement/exercise', category: 'Physical' },
+    { id: 'nature', name: 'Time in nature', category: 'Environmental' },
+    { id: 'boundaries', name: 'Setting clear boundaries', category: 'Behavioral' },
+    { id: 'delegation', name: 'Delegating tasks', category: 'Behavioral' },
+    { id: 'meditation', name: 'Meditation/mindfulness', category: 'Mental' },
+    { id: 'journaling', name: 'Journaling/writing', category: 'Mental' },
+    { id: 'support', name: 'Talking to support system', category: 'Social' },
+    { id: 'rest', name: 'Quality sleep/rest', category: 'Physical' },
+    { id: 'nutrition', name: 'Proper nutrition', category: 'Physical' }
+  ];
+
+  const renderTriggersStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Understanding Your Overwhelm Triggers</h4>
+        <p className="text-sm text-blue-800">
+          Identifying your specific triggers is the first step toward effective overwhelm management. 
+          Check all areas that commonly create stress or overwhelm in your life.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Select your main overwhelm triggers:</h5>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries({
+            work: 'Work/Career demands',
+            family: 'Family responsibilities',
+            health: 'Health concerns',
+            financial: 'Financial pressures',
+            social: 'Social obligations',
+            time: 'Time management',
+            technology: 'Technology/digital overwhelm'
+          }).map(([key, label]) => (
+            <label key={key} className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={analysisData.triggers[key as keyof typeof analysisData.triggers] as boolean}
+                onChange={(e) => setAnalysisData(prev => ({
+                  ...prev,
+                  triggers: { ...prev.triggers, [key]: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <span className="text-sm">{label}</span>
+            </label>
+          ))}
+        </div>
+        
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-2">Other triggers (please specify):</label>
+          <Textarea
+            value={analysisData.triggers.other}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              triggers: { ...prev.triggers, other: e.target.value }
+            }))}
+            placeholder="Describe any other specific triggers..."
+            rows={2}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPhysicalStep = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-orange-900 mb-3">Your Physical Response to Overwhelm</h4>
+        <p className="text-sm text-orange-800">
+          Your body sends clear signals when overwhelm begins. Learning to recognize these early 
+          warning signs helps you intervene before overwhelm becomes unmanageable.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">How does overwhelm show up in your body?</h5>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries({
+            tension: 'Muscle tension (shoulders, neck, jaw)',
+            headaches: 'Headaches or migraines',
+            fatigue: 'Sudden fatigue or exhaustion',
+            heartRacing: 'Heart racing or palpitations',
+            breathShallow: 'Shallow or rapid breathing',
+            digestive: 'Digestive issues or nausea',
+            sleep: 'Sleep disruption or insomnia'
+          }).map(([key, label]) => (
+            <label key={key} className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={analysisData.physicalSymptoms[key as keyof typeof analysisData.physicalSymptoms] as boolean}
+                onChange={(e) => setAnalysisData(prev => ({
+                  ...prev,
+                  physicalSymptoms: { ...prev.physicalSymptoms, [key]: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <span className="text-sm">{label}</span>
+            </label>
+          ))}
+        </div>
+        
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-2">Other physical symptoms:</label>
+          <Textarea
+            value={analysisData.physicalSymptoms.other}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              physicalSymptoms: { ...prev.physicalSymptoms, other: e.target.value }
+            }))}
+            placeholder="Describe any other physical responses..."
+            rows={2}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEmotionalStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Emotional Overwhelm Patterns</h4>
+        <p className="text-sm text-purple-800">
+          Emotions during overwhelm can feel intense and confusing. Identifying your emotional 
+          patterns helps you respond with compassion rather than judgment.
+        </p>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">What emotions typically arise during overwhelm?</h5>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries({
+            anxiety: 'Anxiety or worry',
+            irritability: 'Irritability or impatience',
+            sadness: 'Sadness or depression',
+            anger: 'Anger or frustration',
+            numbness: 'Emotional numbness',
+            overwhelm: 'Feeling completely overwhelmed',
+            guilt: 'Guilt or self-blame'
+          }).map(([key, label]) => (
+            <label key={key} className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={analysisData.emotionalSymptoms[key as keyof typeof analysisData.emotionalSymptoms] as boolean}
+                onChange={(e) => setAnalysisData(prev => ({
+                  ...prev,
+                  emotionalSymptoms: { ...prev.emotionalSymptoms, [key]: e.target.checked }
+                }))}
+                className="rounded"
+              />
+              <span className="text-sm">{label}</span>
+            </label>
+          ))}
+        </div>
+        
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-2">Other emotional responses:</label>
+          <Textarea
+            value={analysisData.emotionalSymptoms.other}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              emotionalSymptoms: { ...prev.emotionalSymptoms, other: e.target.value }
+            }))}
+            placeholder="Describe any other emotional responses..."
+            rows={2}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStrategyStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Current Coping Strategy Assessment</h4>
+        <p className="text-sm text-green-800">
+          Let's evaluate what you're currently doing to manage overwhelm and identify what works best for you.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-3">What strategies do you currently use when feeling overwhelmed?</label>
+        <Textarea
+          value={analysisData.currentStrategies}
+          onChange={(e) => setAnalysisData(prev => ({
+            ...prev,
+            currentStrategies: e.target.value
+          }))}
+          placeholder="Describe your current coping methods (both helpful and unhelpful)..."
+          rows={4}
+        />
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Which strategies have been most effective for you?</h5>
+        <div className="space-y-3">
+          {copingStrategies.map((strategy) => (
+            <label key={strategy.id} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={analysisData.effectiveStrategies.includes(strategy.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setAnalysisData(prev => ({
+                      ...prev,
+                      effectiveStrategies: [...prev.effectiveStrategies, strategy.id]
+                    }));
+                  } else {
+                    setAnalysisData(prev => ({
+                      ...prev,
+                      effectiveStrategies: prev.effectiveStrategies.filter(id => id !== strategy.id)
+                    }));
+                  }
+                }}
+                className="rounded"
+              />
+              <div>
+                <span className="text-sm font-medium">{strategy.name}</span>
+                <span className="text-xs text-gray-500 ml-2">({strategy.category})</span>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderActionPlanStep = () => (
+    <div className="space-y-6">
+      <div className="bg-indigo-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-indigo-900 mb-3">Your Personalized Overwhelm Management Plan</h4>
+        <p className="text-sm text-indigo-800">
+          Based on your patterns and effective strategies, create a comprehensive plan for managing overwhelm at every stage.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Early Warning System</label>
+          <p className="text-xs text-gray-600 mb-2">What are your first signs that overwhelm is building?</p>
+          <Textarea
+            value={analysisData.personalizedPlan.earlyWarnings}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              personalizedPlan: { ...prev.personalizedPlan, earlyWarnings: e.target.value }
+            }))}
+            placeholder="e.g., Shoulders getting tense, feeling rushed, starting to multitask frantically..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Preventive Strategies</label>
+          <p className="text-xs text-gray-600 mb-2">Daily practices to prevent overwhelm from building:</p>
+          <Textarea
+            value={analysisData.personalizedPlan.preventive}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              personalizedPlan: { ...prev.personalizedPlan, preventive: e.target.value }
+            }))}
+            placeholder="e.g., Morning meditation, time-blocking, regular breaks, boundary setting..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">In-the-Moment Tools</label>
+          <p className="text-xs text-gray-600 mb-2">What you'll do when overwhelm hits:</p>
+          <Textarea
+            value={analysisData.personalizedPlan.inTheMoment}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              personalizedPlan: { ...prev.personalizedPlan, inTheMoment: e.target.value }
+            }))}
+            placeholder="e.g., STOP technique, 4-7-8 breathing, step outside, ask for help..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Recovery & Reset</label>
+          <p className="text-xs text-gray-600 mb-2">How you'll restore after an overwhelming period:</p>
+          <Textarea
+            value={analysisData.personalizedPlan.recovery}
+            onChange={(e) => setAnalysisData(prev => ({
+              ...prev,
+              personalizedPlan: { ...prev.personalizedPlan, recovery: e.target.value }
+            }))}
+            placeholder="e.g., Gentle movement, nourishing meal, early bedtime, self-compassion practice..."
+            rows={3}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-blue-600" />
+          Overwhelm Pattern Analysis
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Complete comprehensive analysis of your overwhelm triggers and responses</p>
+          </div>
+
+          {currentStep === 0 && renderTriggersStep()}
+          {currentStep === 1 && renderPhysicalStep()}
+          {currentStep === 2 && renderEmotionalStep()}
+          {currentStep === 3 && renderStrategyStep()}
+          {currentStep === 4 && renderActionPlanStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w3-patterns', analysisData)}
+                className="ml-auto"
+              >
+                Complete Analysis
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Pause-Label-Shift Technique Component
+function PauseLabelShiftTechnique({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [practiceData, setPracticeData] = useState({
+    scenarios: {} as Record<string, { pause?: string; label?: string; shift?: string }>,
+    personalPractice: {
+      situation: '',
+      pauseResponse: '',
+      labelResponse: '',
+      shiftResponse: '',
+      reflection: ''
+    },
+    confidenceLevel: 5,
+    commitments: [] as string[]
+  });
+
+  const steps = [
+    'Learn the Technique',
+    'Guided Practice Scenarios',
+    'Personal Application',
+    'Integration Planning'
+  ];
+
+  const practiceScenarios = [
+    {
+      id: 'work-deadline',
+      title: 'Overwhelming Work Deadline',
+      situation: 'You have three major projects due tomorrow and your boss just added another urgent task. You feel your chest tightening and panic rising.',
+      pausePrompt: 'What would PAUSE look like in this moment?',
+      labelPrompt: 'How would you LABEL what you\'re experiencing?',
+      shiftPrompt: 'What SHIFT would be most helpful?'
+    },
+    {
+      id: 'family-conflict',
+      title: 'Family Disagreement',
+      situation: 'Your teenager is arguing with you about curfew, raising their voice and saying "you don\'t understand anything!" You feel anger and hurt building.',
+      pausePrompt: 'How would you create a PAUSE here?',
+      labelPrompt: 'What emotions and thoughts would you LABEL?',
+      shiftPrompt: 'What SHIFT could improve this interaction?'
+    },
+    {
+      id: 'health-anxiety',
+      title: 'Health Concern Spiral',
+      situation: 'You\'ve been feeling more tired lately and start googling symptoms. Soon you\'re convinced something serious is wrong and your mind is racing with worst-case scenarios.',
+      pausePrompt: 'Where would you PAUSE this spiral?',
+      labelPrompt: 'What would you LABEL about this experience?',
+      shiftPrompt: 'What SHIFT would serve you better?'
+    }
+  ];
+
+  const renderLearnStep = () => (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">The Neuroscience Behind Pause-Label-Shift</h4>
+        <p className="text-sm text-blue-800 mb-4">
+          This technique activates your prefrontal cortex (thinking brain) to regulate your amygdala (emotional brain), 
+          creating space between trigger and response.
+        </p>
+        <div className="text-xs text-blue-700">
+          Research shows that simply naming emotions can reduce amygdala activity by up to 50%, giving you back emotional control.
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-red-50 p-6 rounded-lg">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <span className="text-2xl">⏸️</span>
+          </div>
+          <h5 className="font-semibold text-red-900 mb-2">1. PAUSE</h5>
+          <p className="text-sm text-red-800 mb-3">
+            Stop the automatic reaction. Take a breath. Create space.
+          </p>
+          <div className="text-xs text-red-700">
+            <strong>Techniques:</strong> Deep breath, count to 5, step back, close eyes briefly
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 p-6 rounded-lg">
+          <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+            <span className="text-2xl">🏷️</span>
+          </div>
+          <h5 className="font-semibold text-yellow-900 mb-2">2. LABEL</h5>
+          <p className="text-sm text-yellow-800 mb-3">
+            Name what you're experiencing without judgment.
+          </p>
+          <div className="text-xs text-yellow-700">
+            <strong>Examples:</strong> "I'm feeling overwhelmed," "I notice anxiety," "There's anger here"
+          </div>
+        </div>
+
+        <div className="bg-green-50 p-6 rounded-lg">
+          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <span className="text-2xl">⚡</span>
+          </div>
+          <h5 className="font-semibold text-green-900 mb-2">3. SHIFT</h5>
+          <p className="text-sm text-green-800 mb-3">
+            Choose a more helpful response aligned with your values.
+          </p>
+          <div className="text-xs text-green-700">
+            <strong>Options:</strong> Perspective shift, action change, self-compassion, problem-solving
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <h5 className="font-semibold mb-3">Why This Works in Midlife</h5>
+        <ul className="text-sm space-y-2">
+          <li>• <strong>Hormonal fluctuations</strong> can make emotions feel more intense - this technique provides stability</li>
+          <li>• <strong>Accumulated stress</strong> from multiple life responsibilities requires conscious regulation</li>
+          <li>• <strong>Neuroplasticity</strong> means you can still rewire automatic responses at any age</li>
+          <li>• <strong>Life experience</strong> gives you wisdom to draw upon when shifting perspectives</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  const renderPracticeStep = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-blue-900 mb-3">Guided Practice Scenarios</h4>
+        <p className="text-sm text-blue-800">
+          Practice applying the Pause-Label-Shift technique to common overwhelming situations. 
+          Think through each step and write your responses.
+        </p>
+      </div>
+
+      {practiceScenarios.map((scenario, index) => (
+        <div key={scenario.id} className="border rounded-lg p-6 space-y-4">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-8 h-8 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-sm font-medium">
+              {index + 1}
+            </span>
+            <h5 className="font-semibold text-lg">{scenario.title}</h5>
+          </div>
+          
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <p className="text-sm font-medium text-gray-700">Scenario:</p>
+            <p className="text-sm text-gray-600 mt-1">{scenario.situation}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-red-700">⏸️ PAUSE</label>
+              <p className="text-xs text-gray-600">{scenario.pausePrompt}</p>
+              <Textarea
+                value={practiceData.scenarios[scenario.id]?.pause || ''}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  scenarios: {
+                    ...prev.scenarios,
+                    [scenario.id]: {
+                      ...prev.scenarios[scenario.id],
+                      pause: e.target.value
+                    }
+                  }
+                }))}
+                placeholder="Describe your pause strategy..."
+                rows={3}
+                className="text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-yellow-700">🏷️ LABEL</label>
+              <p className="text-xs text-gray-600">{scenario.labelPrompt}</p>
+              <Textarea
+                value={practiceData.scenarios[scenario.id]?.label || ''}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  scenarios: {
+                    ...prev.scenarios,
+                    [scenario.id]: {
+                      ...prev.scenarios[scenario.id],
+                      label: e.target.value
+                    }
+                  }
+                }))}
+                placeholder="Name what you're experiencing..."
+                rows={3}
+                className="text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-green-700">⚡ SHIFT</label>
+              <p className="text-xs text-gray-600">{scenario.shiftPrompt}</p>
+              <Textarea
+                value={practiceData.scenarios[scenario.id]?.shift || ''}
+                onChange={(e) => setPracticeData(prev => ({
+                  ...prev,
+                  scenarios: {
+                    ...prev.scenarios,
+                    [scenario.id]: {
+                      ...prev.scenarios[scenario.id],
+                      shift: e.target.value
+                    }
+                  }
+                }))}
+                placeholder="Choose your helpful response..."
+                rows={3}
+                className="text-sm"
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderPersonalStep = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-purple-900 mb-3">Apply to Your Personal Situation</h4>
+        <p className="text-sm text-purple-800">
+          Think of a recent situation where you felt overwhelmed. Apply the Pause-Label-Shift technique 
+          and practice what you could do differently next time.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Describe a recent overwhelming situation:</label>
+        <Textarea
+          value={practiceData.personalPractice.situation}
+          onChange={(e) => setPracticeData(prev => ({
+            ...prev,
+            personalPractice: { ...prev.personalPractice, situation: e.target.value }
+          }))}
+          placeholder="Describe what happened, how you felt, and how you responded..."
+          rows={4}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">⏸️</span>
+            <label className="text-sm font-medium text-red-700">How could you have PAUSED?</label>
+          </div>
+          <Textarea
+            value={practiceData.personalPractice.pauseResponse}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              personalPractice: { ...prev.personalPractice, pauseResponse: e.target.value }
+            }))}
+            placeholder="What pause technique would have helped you create space?"
+            rows={4}
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🏷️</span>
+            <label className="text-sm font-medium text-yellow-700">How would you LABEL the experience?</label>
+          </div>
+          <Textarea
+            value={practiceData.personalPractice.labelResponse}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              personalPractice: { ...prev.personalPractice, labelResponse: e.target.value }
+            }))}
+            placeholder="Name the emotions, thoughts, and sensations you noticed..."
+            rows={4}
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">⚡</span>
+            <label className="text-sm font-medium text-green-700">What SHIFT would have served you better?</label>
+          </div>
+          <Textarea
+            value={practiceData.personalPractice.shiftResponse}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              personalPractice: { ...prev.personalPractice, shiftResponse: e.target.value }
+            }))}
+            placeholder="What different response would align with your values and goals?"
+            rows={4}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Reflection on this practice:</label>
+        <Textarea
+          value={practiceData.personalPractice.reflection}
+          onChange={(e) => setPracticeData(prev => ({
+            ...prev,
+            personalPractice: { ...prev.personalPractice, reflection: e.target.value }
+          }))}
+          placeholder="What insights did you gain? How might this technique help you in the future?"
+          rows={3}
+        />
+      </div>
+    </div>
+  );
+
+  const renderIntegrationStep = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-6 rounded-lg">
+        <h4 className="font-semibold text-green-900 mb-3">Integration & Daily Practice</h4>
+        <p className="text-sm text-green-800">
+          The key to mastering this technique is consistent practice. Plan how you'll integrate 
+          Pause-Label-Shift into your daily life.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-3">How confident do you feel about using this technique? (1 = Not confident, 10 = Very confident)</label>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-500">Not confident</span>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value={practiceData.confidenceLevel}
+            onChange={(e) => setPracticeData(prev => ({
+              ...prev,
+              confidenceLevel: parseInt(e.target.value)
+            }))}
+            className="flex-1"
+          />
+          <span className="text-sm text-gray-500">Very confident</span>
+          <span className="w-8 text-center font-medium bg-blue-100 rounded px-2 py-1">{practiceData.confidenceLevel}</span>
+        </div>
+      </div>
+
+      <div>
+        <h5 className="font-medium mb-4">Choose your integration commitments:</h5>
+        <div className="space-y-3">
+          {[
+            'Practice one micro-pause each day (even just taking one conscious breath)',
+            'Use the labeling technique when I notice strong emotions arising',
+            'Apply the full Pause-Label-Shift method at least once this week',
+            'Share this technique with someone in my support system',
+            'Set a daily reminder to check in with my emotional state',
+            'Practice this technique during low-stress moments to build the habit'
+          ].map((commitment, index) => (
+            <label key={index} className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50">
+              <input
+                type="checkbox"
+                checked={practiceData.commitments.includes(commitment)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setPracticeData(prev => ({
+                      ...prev,
+                      commitments: [...prev.commitments, commitment]
+                    }));
+                  } else {
+                    setPracticeData(prev => ({
+                      ...prev,
+                      commitments: prev.commitments.filter(c => c !== commitment)
+                    }));
+                  }
+                }}
+                className="rounded mt-1"
+              />
+              <span className="text-sm">{commitment}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h5 className="font-semibold text-blue-900 mb-2">Quick Reference Card</h5>
+        <div className="text-sm text-blue-800 space-y-1">
+          <p><strong>⏸️ PAUSE:</strong> Stop, breathe, create space</p>
+          <p><strong>🏷️ LABEL:</strong> "I notice..." or "I'm feeling..."</p>
+          <p><strong>⚡ SHIFT:</strong> Ask "What would serve me better right now?"</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-6 h-6 text-purple-600" />
+          Pause-Label-Shift Technique
+        </CardTitle>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <span className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2">{steps[currentStep]}</h3>
+            <p className="text-gray-600">Master the neuroscience-backed 3-step emotion regulation method</p>
+          </div>
+
+          {currentStep === 0 && renderLearnStep()}
+          {currentStep === 1 && renderPracticeStep()}
+          {currentStep === 2 && renderPersonalStep()}
+          {currentStep === 3 && renderIntegrationStep()}
+
+          <div className="flex justify-between pt-4">
+            {currentStep > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            
+            {currentStep < steps.length - 1 ? (
+              <Button 
+                onClick={() => setCurrentStep(prev => prev + 1)}
+                className="ml-auto"
+              >
+                Next Step
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => onComplete('w3-technique', practiceData)}
+                className="ml-auto"
+              >
+                Complete Practice
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Boundaries Worksheet Component
+function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [boundariesData, setBoundariesData] = useState({
+    timeScripts: { saying_no: '', time_requests: '', interruptions: '' },
+    emotionalScripts: { support_requests: '', criticism: '', guilt_trips: '' },
+    familyScripts: { expectations: '', responsibilities: '', personal_time: '' },
+    digitalScripts: { work_hours: '', social_media: '', availability: '' },
+    practiceCommitments: [] as string[]
+  });
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="w-6 h-6 text-green-600" />
+          Boundaries Worksheet
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="bg-green-50 p-6 rounded-lg">
+            <h4 className="font-semibold text-green-900 mb-3">Design Personalized Boundary Scripts</h4>
+            <p className="text-sm text-green-800">
+              Create specific language for different boundary situations you encounter.
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            <div>
+              <h5 className="font-semibold mb-4 text-blue-700">Time Boundaries</h5>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Saying no to requests:</label>
+                  <Textarea
+                    value={boundariesData.timeScripts.saying_no}
+                    onChange={(e) => setBoundariesData(prev => ({
+                      ...prev,
+                      timeScripts: { ...prev.timeScripts, saying_no: e.target.value }
+                    }))}
+                    placeholder="e.g., 'I appreciate you thinking of me, but I'm not available for that right now.'"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              onClick={() => onComplete('w3-boundaries', boundariesData)}
+              className="w-full"
+            >
+              Complete Boundaries Work
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Weekly Mood Map Component
+function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const [moodData, setMoodData] = useState({
+    dailyMoods: {} as Record<string, number>,
+    patterns: '',
+    insights: ''
+  });
+
+  return (
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Coaching
+          </Button>
+        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="w-6 h-6 text-purple-600" />
+          Weekly Mood Map
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="bg-purple-50 p-6 rounded-lg">
+            <h4 className="font-semibold text-purple-900 mb-3">Track Your Emotional Patterns</h4>
+            <p className="text-sm text-purple-800">
+              Visual tracking helps identify emotional patterns and regulation progress.
+            </p>
+          </div>
+
+          <Button 
+            onClick={() => onComplete('w3-mood-map', moodData)}
+            className="w-full"
+          >
+            Complete Mood Mapping
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Understanding Your Hormonal Symphony Component
 function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const [currentSection, setCurrentSection] = useState('intro');
@@ -3412,6 +4384,23 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   if (component.id === 'w2-nlp') {
     return <NLPReframingPractice onComplete={onComplete} onClose={onClose} />;
+  }
+
+  // Week 3 Components
+  if (component.id === 'w3-patterns') {
+    return <OverwhelmPatternAnalysis onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w3-technique') {
+    return <PauseLabelShiftTechnique onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w3-boundaries') {
+    return <BoundariesWorksheet onComplete={onComplete} onClose={onClose} />;
+  }
+
+  if (component.id === 'w3-mood-map') {
+    return <WeeklyMoodMap onComplete={onComplete} onClose={onClose} />;
   }
 
   // Default fallback for any other components
