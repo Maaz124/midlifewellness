@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
-// Lazy load the large coaching component to improve page performance
-const EnhancedCoachingComponentMinimal = lazy(() => 
-  import('@/components/enhanced-coaching-component-fixed').then(module => ({
-    default: module.EnhancedCoachingComponentMinimal
+// Use optimized component loader for better performance
+const ComponentLoader = lazy(() => 
+  import('@/components/coaching/component-loader').then(module => ({
+    default: module.ComponentLoader
   }))
 );
 
@@ -151,7 +151,7 @@ export default function Coaching() {
               </Card>
             </div>
           }>
-            <EnhancedCoachingComponentMinimal
+            <ComponentLoader
               component={activeComponent}
               moduleId={activeModuleId}
               onComplete={handleComponentComplete}
