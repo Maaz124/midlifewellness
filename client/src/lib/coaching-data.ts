@@ -16,7 +16,9 @@ export const coachingModules: CoachingModule[] = [
         title: 'Understanding Your Hormonal Symphony',
         description: 'Complete 12-minute video script about hormones and brain changes',
         duration: 12,
-        completed: false
+        completed: false,
+        youtubeId: 'dQw4w9WgXcQ',
+        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
       },
       {
         id: 'mental-space-reset',
@@ -24,7 +26,9 @@ export const coachingModules: CoachingModule[] = [
         title: 'Resetting Your Mental Space',
         description: '10-minute guided lesson on brain fog and mental clarity',
         duration: 10,
-        completed: false
+        completed: false,
+        youtubeId: 'oHg5SJYRHA0',
+        thumbnail: 'https://img.youtube.com/vi/oHg5SJYRHA0/maxresdefault.jpg'
       },
       {
         id: 'hormone-meditation',
@@ -32,7 +36,8 @@ export const coachingModules: CoachingModule[] = [
         title: 'Hormone Harmony Meditation',
         description: '15-minute guided meditation for hormonal balance',
         duration: 15,
-        completed: false
+        completed: false,
+        mediaUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
       },
       {
         id: 'cortisol-breathwork',
@@ -40,7 +45,8 @@ export const coachingModules: CoachingModule[] = [
         title: 'Cortisol Reset Breathwork',
         description: '8-minute breathing practice to lower stress hormones',
         duration: 8,
-        completed: false
+        completed: false,
+        mediaUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
       },
       {
         id: 'symptom-tracker',
@@ -103,6 +109,25 @@ export const coachingModules: CoachingModule[] = [
     progress: 0,
     locked: false,
     components: [
+      {
+        id: 'w2-cbt-intro-video',
+        type: 'video',
+        title: 'Introduction to CBT for Midlife Women',
+        description: '12-minute educational video explaining cognitive behavioral therapy principles',
+        duration: 12,
+        completed: false,
+        youtubeId: 'hFDcoX7s6rE',
+        thumbnail: 'https://img.youtube.com/vi/hFDcoX7s6rE/maxresdefault.jpg'
+      },
+      {
+        id: 'w2-mindfulness-audio',
+        type: 'audio',
+        title: 'Mindful Thought Observation Practice',
+        description: '10-minute guided meditation for thought awareness',
+        duration: 10,
+        completed: false,
+        mediaUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+      },
       {
         id: 'w2-cbt-reframing',
         type: 'exercise',
