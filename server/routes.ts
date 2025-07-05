@@ -646,6 +646,179 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== COMMUNITY API ENDPOINTS =====
+  
+  // Forum Categories
+  app.get('/api/community/categories', async (req, res) => {
+    try {
+      const categories = await storage.getForumCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error('Error fetching forum categories:', error);
+      res.status(500).json({ message: 'Failed to fetch categories' });
+    }
+  });
+
+  // Forum Posts
+  app.get('/api/community/posts', async (req, res) => {
+    try {
+      const { category, search } = req.query;
+      const posts = await storage.getForumPosts(category as string, search as string);
+      res.json(posts);
+    } catch (error) {
+      console.error('Error fetching forum posts:', error);
+      res.status(500).json({ message: 'Failed to fetch posts' });
+    }
+  });
+
+  app.post('/api/community/posts', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { title, content, categoryId, isAnonymous } = req.body;
+      
+      if (!title?.trim() || !content?.trim() || !categoryId) {
+        return res.status(400).json({ message: 'Title, content, and category are required' });
+      }
+
+      const post = await storage.createForumPost({
+        userId,
+        title: title.trim(),
+        content: content.trim(),
+        categoryId: parseInt(categoryId),
+        isAnonymous: isAnonymous || false
+      });
+      
+      res.status(201).json(post);
+    } catch (error) {
+      console.error('Error creating forum post:', error);
+      res.status(500).json({ message: 'Failed to create post' });
+    }
+  });
+
+  app.get('/api/community/posts/:id', async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const post = await storage.getForumPostById(postId);
+      
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+      
+      // Increment view count
+      await storage.incrementPostViews(postId);
+      
+      res.json(post);
+    } catch (error) {
+      console.error('Error fetching forum post:', error);
+      res.status(500).json({ message: 'Failed to fetch post' });
+    }
+  });
+
+  // Forum Replies
+  app.get('/api/community/posts/:id/replies', async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const replies = await storage.getForumReplies(postId);
+      res.json(replies);
+    } catch (error) {
+      console.error('Error fetching replies:', error);
+      res.status(500).json({ message: 'Failed to fetch replies' });
+    }
+  });
+
+  app.post('/api/community/posts/:id/replies', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const postId = parseInt(req.params.id);
+      const { content, isAnonymous, parentReplyId } = req.body;
+      
+      if (!content?.trim()) {
+        return res.status(400).json({ message: 'Reply content is required' });
+      }
+
+      const reply = await storage.createForumReply({
+        postId,
+        userId,
+        content: content.trim(),
+        isAnonymous: isAnonymous || false,
+        parentReplyId: parentReplyId || null
+      });
+      
+      res.status(201).json(reply);
+    } catch (error) {
+      console.error('Error creating reply:', error);
+      res.status(500).json({ message: 'Failed to create reply' });
+    }
+  });
+
+  // Support Groups
+  app.get('/api/community/groups', async (req, res) => {
+    try {
+      const groups = await storage.getSupportGroups();
+      res.json(groups);
+    } catch (error) {
+      console.error('Error fetching support groups:', error);
+      res.status(500).json({ message: 'Failed to fetch support groups' });
+    }
+  });
+
+  app.post('/api/community/groups', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { name, description, type, category, maxMembers, meetingSchedule } = req.body;
+      
+      if (!name?.trim() || !description?.trim() || !type || !category) {
+        return res.status(400).json({ message: 'Name, description, type, and category are required' });
+      }
+
+      const group = await storage.createSupportGroup({
+        name: name.trim(),
+        description: description.trim(),
+        type,
+        category,
+        maxMembers: maxMembers || 50,
+        meetingSchedule,
+        facilitatorId: userId
+      });
+      
+      res.status(201).json(group);
+    } catch (error) {
+      console.error('Error creating support group:', error);
+      res.status(500).json({ message: 'Failed to create support group' });
+    }
+  });
+
+  app.post('/api/community/groups/:id/join', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const groupId = parseInt(req.params.id);
+      
+      const membership = await storage.joinSupportGroup(groupId, userId);
+      
+      if (membership) {
+        res.status(201).json({ message: 'Successfully joined group', membership });
+      } else {
+        res.status(400).json({ message: 'Unable to join group (may be full or already a member)' });
+      }
+    } catch (error) {
+      console.error('Error joining support group:', error);
+      res.status(500).json({ message: 'Failed to join support group' });
+    }
+  });
+
+  app.get('/api/community/groups/:id/members', async (req, res) => {
+    try {
+      const groupId = parseInt(req.params.id);
+      const members = await storage.getSupportGroupMembers(groupId);
+      res.json(members);
+    } catch (error) {
+      console.error('Error fetching group members:', error);
+      res.status(500).json({ message: 'Failed to fetch group members' });
+    }
+  });
+
+
+
   const httpServer = createServer(app);
   return httpServer;
 }

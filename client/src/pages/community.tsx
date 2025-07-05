@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,9 @@ import {
   Share2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+
 
 interface ForumPost {
   id: number;
@@ -70,12 +73,49 @@ export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewPostDialog, setShowNewPostDialog] = useState(false);
-  const [newPost, setNewPost] = useState({ title: '', content: '', category: 'general', isAnonymous: false });
+  const [newPost, setNewPost] = useState({ title: '', content: '', categoryId: 1, isAnonymous: false });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch real community data
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['/api/community/categories']
+  });
+
+  const { data: forumPosts = [], isLoading: postsLoading } = useQuery({
+    queryKey: ['/api/community/posts', selectedCategory, searchQuery]
+  });
+
+  const { data: supportGroups = [], isLoading: groupsLoading } = useQuery({
+    queryKey: ['/api/community/groups']
+  });
+
+  // Create post mutation
+  const createPostMutation = useMutation({
+    mutationFn: async (postData: { title: string; content: string; categoryId: number; isAnonymous: boolean }) => {
+      return await apiRequest("POST", "/api/community/posts", postData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/community/posts'] });
+      setShowNewPostDialog(false);
+      setNewPost({ title: '', content: '', categoryId: 1, isAnonymous: false });
+      toast({
+        title: "Success",
+        description: "Your post has been created successfully!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create post. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
   
   // Handle button clicks
   const handleReplyClick = (postId: number) => {
-    const post = mockForumPosts.find(p => p.id === postId);
+    const post = forumPosts.find((p: any) => p.id === postId);
     toast({
       title: "Opening Discussion",
       description: `Viewing replies for "${post?.title}". This would navigate to a detailed discussion page.`,
@@ -114,7 +154,7 @@ export default function Community() {
         title: "Post Created!",
         description: `"${newPost.title}" has been posted successfully. Your discussion is now live in the forum.`,
       });
-      setNewPost({ title: '', content: '', category: 'general', isAnonymous: false });
+      setNewPost({ title: '', content: '', categoryId: 1, isAnonymous: false });
       setShowNewPostDialog(false);
     } else {
       toast({
@@ -402,8 +442,8 @@ export default function Community() {
                     />
                     <div className="flex gap-4">
                       <select
-                        value={newPost.category}
-                        onChange={(e) => setNewPost({...newPost, category: e.target.value})}
+                        value={newPost.categoryId.toString()}
+                        onChange={(e) => setNewPost({...newPost, categoryId: parseInt(e.target.value)})}
                         className="px-3 py-2 border rounded-md"
                       >
                         <option value="general">General Discussion</option>
