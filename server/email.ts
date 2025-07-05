@@ -69,7 +69,7 @@ export const emailTemplates = {
         </div>
         
         <p style="color: #9CA3AF; font-size: 14px; text-align: center; margin-top: 30px;">
-          Dr. Sidra Bukhari, MD - Psychiatrist & Women's Wellness Expert<br>
+          Dr. Sidra Bukhari, MRCPsych (UK) - Psychiatrist & Women's Wellness Expert<br>
           Transforming midlife transitions through evidence-based approaches
         </p>
       </div>
@@ -116,7 +116,7 @@ export const emailTemplates = {
         </p>
         
         <p style="color: #9CA3AF; font-size: 14px; text-align: center; margin-top: 30px;">
-          Dr. Sidra Bukhari, MD<br>
+          Dr. Sidra Bukhari, MRCPsych (UK)<br>
           Psychiatrist, NLP Life Coach & Women's Wellness Expert
         </p>
       </div>
@@ -155,7 +155,7 @@ export const emailTemplates = {
         </div>
         
         <p style="color: #9CA3AF; font-size: 14px; text-align: center; margin-top: 30px;">
-          Dr. Sidra Bukhari, MD<br>
+          Dr. Sidra Bukhari, MRCPsych (UK)<br>
           Your partner in midlife wellness transformation
         </p>
       </div>

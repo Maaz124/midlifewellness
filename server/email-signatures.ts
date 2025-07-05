@@ -11,7 +11,7 @@ export const emailSignatures = {
           </td>
           <td style="vertical-align: top;">
             <h3 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 18px; font-weight: bold;">
-              Dr. Sidra Bukhari, MD
+              Dr. Sidra Bukhari, MRCPsych (UK)
             </h3>
             <p style="margin: 0 0 3px 0; color: #6B7280; font-size: 14px;">
               Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
@@ -55,7 +55,7 @@ export const emailSignatures = {
       
       <div style="margin-bottom: 15px;">
         <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
-          <strong>Dr. Sidra Bukhari, MD</strong>
+          <strong>Dr. Sidra Bukhari, MRCPsych (UK)</strong>
         </p>
         <p style="margin: 0; color: #6B7280; font-size: 12px;">
           Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist

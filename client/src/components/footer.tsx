@@ -34,7 +34,7 @@ export function Footer() {
             </div>
             
             <div className="mb-6">
-              <h4 className="text-white font-semibold mb-3">Dr. Sidra Bukhari, MD</h4>
+              <h4 className="text-white font-semibold mb-3">Dr. Sidra Bukhari, MRCPsych (UK)</h4>
               <p className="text-gray-400 text-sm">
                 Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
               </p>
