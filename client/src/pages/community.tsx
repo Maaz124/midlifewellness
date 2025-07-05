@@ -70,6 +70,56 @@ export default function Community() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewPostDialog, setShowNewPostDialog] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'general', isAnonymous: false });
+  
+  // Handle button clicks
+  const handleReplyClick = (postId: number) => {
+    // In a real app, this would navigate to the post detail page
+    alert(`Opening replies for post ${postId}. This would normally navigate to a detailed discussion page.`);
+  };
+
+  const handleJoinGroup = (groupId: number, groupName: string, groupType: string) => {
+    if (groupType === 'open') {
+      alert(`Successfully joined "${groupName}"! You'll receive meeting notifications and can participate in discussions.`);
+    } else if (groupType === 'closed') {
+      alert(`Request sent to join "${groupName}". The facilitator will review your request and respond within 24 hours.`);
+    } else {
+      alert(`Learning more about "${groupName}". This would show detailed group information and application process.`);
+    }
+  };
+
+  const handleCreateGroup = () => {
+    alert('Opening group creation form. This would allow you to create a new support group with custom settings.');
+  };
+
+  const handleCreatePost = () => {
+    if (newPost.title.trim() && newPost.content.trim()) {
+      alert(`Post "${newPost.title}" created successfully! In a real app, this would be saved to the database and appear in the forum.`);
+      setNewPost({ title: '', content: '', category: 'general', isAnonymous: false });
+      setShowNewPostDialog(false);
+    } else {
+      alert('Please fill in both title and content to create your post.');
+    }
+  };
+
+  const handleShareExperience = () => {
+    alert('Opening experience sharing form. This would allow you to share your personal breakthrough, challenge, or helpful tip with the community.');
+  };
+
+  const handleBrowseProfiles = () => {
+    alert('Opening peer profiles browser. This would show other community members looking for connections and mentorship opportunities.');
+  };
+
+  const handleViewConnections = () => {
+    alert('Viewing your current connections. This would show your existing relationships and conversation history.');
+  };
+
+  const handleEditProfile = () => {
+    alert('Opening profile editor. This would allow you to update your bio, interests, and connection preferences.');
+  };
+
+  const handleJoinWaitlist = () => {
+    alert('Added to waitlist! You\'ll be notified when advanced peer connection features become available.');
+  };
 
   // Mock data - in real app this would come from API
   const forumCategories = [
@@ -336,7 +386,7 @@ export default function Community() {
                       <Button variant="outline" onClick={() => setShowNewPostDialog(false)}>
                         Cancel
                       </Button>
-                      <Button onClick={() => setShowNewPostDialog(false)}>
+                      <Button onClick={handleCreatePost}>
                         Post Discussion
                       </Button>
                     </div>
@@ -388,7 +438,12 @@ export default function Community() {
                         {post.likes}
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex items-center gap-1"
+                      onClick={() => handleReplyClick(post.id)}
+                    >
                       <Share2 className="w-4 h-4" />
                       Reply
                     </Button>
@@ -403,7 +458,10 @@ export default function Community() {
         <TabsContent value="groups" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Support Groups</h2>
-            <Button className="flex items-center gap-2">
+            <Button 
+              className="flex items-center gap-2"
+              onClick={handleCreateGroup}
+            >
               <Plus className="w-4 h-4" />
               Create Group
             </Button>
@@ -442,7 +500,11 @@ export default function Community() {
                     </div>
                   </div>
 
-                  <Button className="w-full" variant={group.type === 'open' ? 'default' : 'outline'}>
+                  <Button 
+                    className="w-full" 
+                    variant={group.type === 'open' ? 'default' : 'outline'}
+                    onClick={() => handleJoinGroup(group.id, group.name, group.type)}
+                  >
                     {group.type === 'open' ? 'Join Group' : group.type === 'closed' ? 'Request to Join' : 'Learn More'}
                   </Button>
                 </CardContent>
@@ -455,7 +517,10 @@ export default function Community() {
         <TabsContent value="experiences" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Shared Experiences</h2>
-            <Button className="flex items-center gap-2">
+            <Button 
+              className="flex items-center gap-2"
+              onClick={handleShareExperience}
+            >
               <Plus className="w-4 h-4" />
               Share Experience
             </Button>
@@ -531,7 +596,7 @@ export default function Community() {
                 <p className="text-gray-600">
                   Browse profiles of women open to new connections. Filter by interests, location, or support areas.
                 </p>
-                <Button className="w-full">Browse Profiles</Button>
+                <Button className="w-full" onClick={handleBrowseProfiles}>Browse Profiles</Button>
               </CardContent>
             </Card>
 
@@ -547,8 +612,8 @@ export default function Community() {
                   Manage your existing connections, view pending requests, and update your profile.
                 </p>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full">View My Connections</Button>
-                  <Button variant="outline" className="w-full">Edit My Profile</Button>
+                  <Button variant="outline" className="w-full" onClick={handleViewConnections}>View My Connections</Button>
+                  <Button variant="outline" className="w-full" onClick={handleEditProfile}>Edit My Profile</Button>
                 </div>
               </CardContent>
             </Card>
@@ -561,7 +626,7 @@ export default function Community() {
               We're working on enhanced peer connection features including mentorship matching, 
               accountability partnerships, and virtual coffee chat scheduling.
             </p>
-            <Button variant="outline">Join Waitlist</Button>
+            <Button variant="outline" onClick={handleJoinWaitlist}>Join Waitlist</Button>
           </div>
         </TabsContent>
       </Tabs>
