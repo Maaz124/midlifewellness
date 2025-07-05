@@ -1096,8 +1096,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Track the download
       await storage.createResourceDownload({
         userId,
-        resourceId,
-        downloadedAt: new Date()
+        resourceId
       });
 
       // Get file path
