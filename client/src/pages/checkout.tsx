@@ -31,11 +31,9 @@ const CheckoutForm = () => {
 
     setIsProcessing(true);
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/coaching?payment=success`,
-      },
+      redirect: 'if_required',
     });
 
     if (error) {
@@ -45,15 +43,37 @@ const CheckoutForm = () => {
         variant: "destructive",
       });
       setIsProcessing(false);
-    } else {
-      // Store payment success in localStorage
-      localStorage.setItem('coachingAccess', 'true');
-      toast({
-        title: "Payment Successful",
-        description: "Welcome to your ThriveMidlife coaching journey!",
-      });
-      setLocation('/coaching');
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      try {
+        // Confirm payment success with backend
+        await apiRequest('POST', '/api/payment-success', {
+          paymentIntentId: paymentIntent.id,
+          amount: 97
+        });
+        
+        // Store payment success in localStorage
+        localStorage.setItem('coachingAccess', 'true');
+        
+        toast({
+          title: "Payment Successful!",
+          description: "Welcome to the Mind-Body Reset program. A confirmation email has been sent.",
+        });
+        
+        setLocation('/coaching?payment=success');
+      } catch (emailError) {
+        // Payment succeeded but email failed - still grant access
+        localStorage.setItem('coachingAccess', 'true');
+        
+        toast({
+          title: "Payment Successful!",
+          description: "Welcome to the Mind-Body Reset program.",
+        });
+        
+        setLocation('/coaching?payment=success');
+      }
     }
+    
+    setIsProcessing(false);
   };
 
   return (
@@ -178,4 +198,4 @@ export default function Checkout() {
       </div>
     </div>
   );
-}
+};

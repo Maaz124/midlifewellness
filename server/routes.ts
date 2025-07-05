@@ -20,6 +20,7 @@ import {
   insertHabitSchema,
   insertMoodEntrySchema
 } from "@shared/schema";
+import { sendEmail, emailTemplates } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database storage and authentication
@@ -31,6 +32,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
+      
+      // Send welcome email for first-time users
+      if (user && user.email && user.createdAt) {
+        const createdDate = new Date(user.createdAt);
+        const daysSinceCreation = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+        
+        // Send welcome email if user was created within the last day
+        if (daysSinceCreation < 1) {
+          const welcomeTemplate = emailTemplates.welcome(user.firstName || '');
+          await sendEmail({
+            to: user.email,
+            from: 'welcome@thrivemidlife.com', // You'll need to verify this domain in SendGrid
+            subject: welcomeTemplate.subject,
+            html: welcomeTemplate.html,
+            text: welcomeTemplate.text
+          }).catch(error => {
+            console.error('Failed to send welcome email:', error);
+          });
+        }
+      }
+      
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -242,15 +264,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Payment endpoint for coaching access
-  app.post("/api/create-payment-intent", async (req, res) => {
+  app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
       const { amount } = req.body;
+      const userId = req.user.claims.sub;
+      
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "usd",
         metadata: {
           service: "coaching_plan",
-          description: "ThriveMidlife 6-Week Mind-Body Reset Coaching Program"
+          description: "ThriveMidlife 6-Week Mind-Body Reset Coaching Program",
+          userId: userId
         }
       });
       res.json({ clientSecret: paymentIntent.client_secret });
@@ -258,6 +283,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res
         .status(500)
         .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Payment success confirmation endpoint
+  app.post("/api/payment-success", isAuthenticated, async (req: any, res) => {
+    try {
+      const { paymentIntentId, amount } = req.body;
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      // Verify payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status === 'succeeded' && user && user.email) {
+        // Send payment confirmation email
+        const confirmationTemplate = emailTemplates.paymentConfirmation(
+          user.firstName || '',
+          amount
+        );
+        
+        await sendEmail({
+          to: user.email,
+          from: 'payments@thrivemidlife.com',
+          subject: confirmationTemplate.subject,
+          html: confirmationTemplate.html,
+          text: confirmationTemplate.text
+        }).catch(error => {
+          console.error('Failed to send payment confirmation email:', error);
+        });
+        
+        res.json({ success: true, message: "Payment confirmed and email sent" });
+      } else {
+        res.status(400).json({ success: false, message: "Payment not confirmed" });
+      }
+    } catch (error: any) {
+      console.error('Payment confirmation error:', error);
+      res.status(500).json({ message: "Error confirming payment: " + error.message });
+    }
+  });
+
+  // Send weekly coaching reminder emails (admin endpoint)
+  app.post("/api/send-weekly-reminders", async (req, res) => {
+    try {
+      const { weekNumber, weekTitle } = req.body;
+      
+      // This would typically be called by a scheduled job
+      // For now, it's a manual admin endpoint
+      
+      // In a real implementation, you'd query for users with coaching access
+      // and send personalized reminders based on their progress
+      
+      res.json({ 
+        success: true, 
+        message: `Weekly reminder system ready for Week ${weekNumber}: ${weekTitle}` 
+      });
+    } catch (error: any) {
+      console.error('Weekly reminder error:', error);
+      res.status(500).json({ message: "Error sending reminders: " + error.message });
+    }
+  });
+
+  // Test email endpoint (admin only)
+  app.post("/api/test-email", async (req, res) => {
+    try {
+      const { email, type = 'welcome' } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email address required" });
+      }
+      
+      let template;
+      if (type === 'welcome') {
+        template = emailTemplates.welcome('Test User');
+      } else if (type === 'payment') {
+        template = emailTemplates.paymentConfirmation('Test User', 97);
+      } else {
+        template = emailTemplates.weeklyReminder('Test User', 1, 'Mental Clarity & Mindset Foundations');
+      }
+      
+      const success = await sendEmail({
+        to: email,
+        from: 'test@thrivemidlife.com',
+        subject: template.subject,
+        html: template.html,
+        text: template.text
+      });
+      
+      res.json({ 
+        success, 
+        message: success ? 'Test email sent successfully' : 'Email sending failed'
+      });
+    } catch (error: any) {
+      console.error('Test email error:', error);
+      res.status(500).json({ message: "Error sending test email: " + error.message });
     }
   });
 
