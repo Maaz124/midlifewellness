@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Feather, Calendar, BookOpen, Search, Map, Smile, Meh, Frown, Heart, BarChart3 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Feather, Calendar, BookOpen, Search, Map, FileText, Download, ShoppingCart, Filter, DollarSign, Star, Lock, CheckCircle } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { getTodaysPrompt } from '@/lib/coaching-data';
 import { JournalEntry, MoodEntry } from '@/types/wellness';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Journal() {
   const { data, addJournalEntry, addMoodEntry } = useWellnessData();
@@ -15,6 +18,25 @@ export default function Journal() {
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [wordCount, setWordCount] = useState(0);
   const [lastSaved, setLastSaved] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [priceFilter, setPriceFilter] = useState('all');
+
+  // Fetch digital resources
+  const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
+    queryKey: ['/api/resources']
+  });
+
+  // Filter resources based on selected filters
+  const filteredResources = (allResources as any[]).filter((resource) => {
+    const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
+    const priceMatch = priceFilter === 'all' || 
+                      (priceFilter === 'free' && resource.price === 0) ||
+                      (priceFilter === 'paid' && resource.price > 0);
+    return categoryMatch && priceMatch;
+  });
+
+  // Get unique categories
+  const categories = ['all', ...new Set((allResources as any[]).map(r => r.category).filter(Boolean))];
 
   const todaysPrompt = getTodaysPrompt(data.userProfile.currentWeek);
   const currentDate = new Date().toLocaleDateString('en-US', { 

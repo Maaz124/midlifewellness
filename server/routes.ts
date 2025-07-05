@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import { DatabaseStorage } from "./database-storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { uploadVideo, VideoManager } from "./video-upload";
+import { uploadPDF, DigitalResourceManager } from "./digital-resources";
 import path from "path";
 
 const storage = new DatabaseStorage();
@@ -966,6 +967,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching coaching inquiries:', error);
       res.status(500).json({ message: 'Failed to fetch inquiries' });
+    }
+  });
+
+  // ===== DIGITAL RESOURCES ENDPOINTS =====
+
+  // Get all digital resources (public)
+  app.get('/api/resources', async (req, res) => {
+    try {
+      const resources = await storage.getDigitalResources();
+      res.json(resources);
+    } catch (error) {
+      console.error('Error fetching digital resources:', error);
+      res.status(500).json({ message: 'Failed to fetch resources' });
+    }
+  });
+
+  // Get user's purchased resources
+  app.get('/api/my-resources', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const purchases = await storage.getUserResourcePurchases(userId);
+      
+      // Get resource details for each purchase
+      const resourceIds = purchases.map(p => p.resourceId);
+      const allResources = await storage.getDigitalResources();
+      const purchasedResources = allResources.filter(r => 
+        resourceIds.includes(r.id) || r.price === 0 // Include free resources
+      );
+
+      res.json(purchasedResources);
+
+    } catch (error) {
+      console.error('Error fetching user resources:', error);
+      res.status(500).json({ message: 'Failed to fetch user resources' });
     }
   });
 

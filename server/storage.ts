@@ -47,7 +47,13 @@ import {
   type SharedExperience,
   type InsertSharedExperience,
   type ExperienceReaction,
-  type InsertExperienceReaction
+  type InsertExperienceReaction,
+  type DigitalResource,
+  type InsertDigitalResource,
+  type ResourcePurchase,
+  type InsertResourcePurchase,
+  type ResourceDownload,
+  type InsertResourceDownload
 } from "@shared/schema";
 
 export interface IStorage {
@@ -96,6 +102,22 @@ export interface IStorage {
   createVideo(video: InsertVideo): Promise<Video>;
   updateVideo(id: number, updates: Partial<Video>): Promise<Video>;
   deleteVideo(id: number): Promise<void>;
+
+  // Digital Resources
+  getDigitalResources(): Promise<DigitalResource[]>;
+  getDigitalResourceById(id: number): Promise<DigitalResource | undefined>;
+  createDigitalResource(resource: InsertDigitalResource): Promise<DigitalResource>;
+  updateDigitalResource(id: number, updates: Partial<DigitalResource>): Promise<DigitalResource>;
+  deleteDigitalResource(id: number): Promise<void>;
+
+  // Resource Purchases
+  createResourcePurchase(purchase: InsertResourcePurchase): Promise<ResourcePurchase>;
+  getUserResourcePurchases(userId: string): Promise<ResourcePurchase[]>;
+  hasUserPurchasedResource(userId: string, resourceId: number): Promise<boolean>;
+
+  // Resource Downloads
+  createResourceDownload(download: InsertResourceDownload): Promise<ResourceDownload>;
+  getUserResourceDownloads(userId: string): Promise<ResourceDownload[]>;
 }
 
 export class MemStorage implements IStorage {
