@@ -169,17 +169,29 @@ export default function Coaching() {
                   <p className="text-purple-100">Browse all 6 weeks and 24 components, then unlock to start your transformation</p>
                 </div>
               </div>
-              <div className="text-center bg-white/10 p-4 rounded-lg">
+              <div className="text-center bg-white/10 p-4 rounded-lg space-y-3">
                 <div className="text-3xl font-bold">$97</div>
                 <div className="text-sm text-purple-200 line-through">Regular: $297</div>
                 <div className="text-green-200 font-semibold mb-2">Save 67% Today</div>
-                <Button 
-                  onClick={() => setLocation('/checkout')}
-                  className="bg-white text-purple-600 hover:bg-purple-50 font-semibold"
-                >
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Unlock All Components
-                </Button>
+                <div className="space-y-2">
+                  <Button 
+                    onClick={() => setLocation('/checkout')}
+                    className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Secure Checkout - $97
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      localStorage.setItem('coachingAccess', 'true');
+                      setHasAccess(true);
+                    }}
+                    variant="outline"
+                    className="w-full bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 text-xs"
+                  >
+                    Demo Access (For Testing)
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
