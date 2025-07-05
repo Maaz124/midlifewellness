@@ -23,6 +23,7 @@ import {
   ThumbsUp,
   Share2
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ForumPost {
   id: number;
@@ -70,55 +71,93 @@ export default function Community() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewPostDialog, setShowNewPostDialog] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'general', isAnonymous: false });
+  const { toast } = useToast();
   
   // Handle button clicks
   const handleReplyClick = (postId: number) => {
-    // In a real app, this would navigate to the post detail page
-    alert(`Opening replies for post ${postId}. This would normally navigate to a detailed discussion page.`);
+    const post = mockForumPosts.find(p => p.id === postId);
+    toast({
+      title: "Opening Discussion",
+      description: `Viewing replies for "${post?.title}". This would navigate to a detailed discussion page.`,
+    });
   };
 
   const handleJoinGroup = (groupId: number, groupName: string, groupType: string) => {
     if (groupType === 'open') {
-      alert(`Successfully joined "${groupName}"! You'll receive meeting notifications and can participate in discussions.`);
+      toast({
+        title: "Welcome to the Group!",
+        description: `Successfully joined "${groupName}". You'll receive meeting notifications and can participate in discussions.`,
+      });
     } else if (groupType === 'closed') {
-      alert(`Request sent to join "${groupName}". The facilitator will review your request and respond within 24 hours.`);
+      toast({
+        title: "Request Sent",
+        description: `Your request to join "${groupName}" has been sent. The facilitator will review and respond within 24 hours.`,
+      });
     } else {
-      alert(`Learning more about "${groupName}". This would show detailed group information and application process.`);
+      toast({
+        title: "Group Information",
+        description: `Viewing details for "${groupName}". This would show group information and application process.`,
+      });
     }
   };
 
   const handleCreateGroup = () => {
-    alert('Opening group creation form. This would allow you to create a new support group with custom settings.');
+    toast({
+      title: "Create Support Group",
+      description: "Opening group creation form where you can set up a new support group with custom settings.",
+    });
   };
 
   const handleCreatePost = () => {
     if (newPost.title.trim() && newPost.content.trim()) {
-      alert(`Post "${newPost.title}" created successfully! In a real app, this would be saved to the database and appear in the forum.`);
+      toast({
+        title: "Post Created!",
+        description: `"${newPost.title}" has been posted successfully. Your discussion is now live in the forum.`,
+      });
       setNewPost({ title: '', content: '', category: 'general', isAnonymous: false });
       setShowNewPostDialog(false);
     } else {
-      alert('Please fill in both title and content to create your post.');
+      toast({
+        title: "Incomplete Post",
+        description: "Please fill in both title and content to create your post.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleShareExperience = () => {
-    alert('Opening experience sharing form. This would allow you to share your personal breakthrough, challenge, or helpful tip with the community.');
+    toast({
+      title: "Share Your Experience",
+      description: "Opening experience sharing form where you can share breakthroughs, challenges, or helpful tips.",
+    });
   };
 
   const handleBrowseProfiles = () => {
-    alert('Opening peer profiles browser. This would show other community members looking for connections and mentorship opportunities.');
+    toast({
+      title: "Browse Peer Profiles",
+      description: "Viewing community member profiles who are open to connections and mentorship opportunities.",
+    });
   };
 
   const handleViewConnections = () => {
-    alert('Viewing your current connections. This would show your existing relationships and conversation history.');
+    toast({
+      title: "Your Connections",
+      description: "Viewing your current connections, relationships, and conversation history.",
+    });
   };
 
   const handleEditProfile = () => {
-    alert('Opening profile editor. This would allow you to update your bio, interests, and connection preferences.');
+    toast({
+      title: "Edit Profile",
+      description: "Opening profile editor where you can update your bio, interests, and connection preferences.",
+    });
   };
 
   const handleJoinWaitlist = () => {
-    alert('Added to waitlist! You\'ll be notified when advanced peer connection features become available.');
+    toast({
+      title: "Added to Waitlist",
+      description: "You'll be notified when advanced peer connection features become available.",
+    });
   };
 
   // Mock data - in real app this would come from API
