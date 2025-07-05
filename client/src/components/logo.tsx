@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 interface LogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'full' | 'icon' | 'text';
+  variant?: 'full' | 'icon' | 'text' | 'light';
 }
 
 export function Logo({ className, size = 'md', variant = 'full' }: LogoProps) {
@@ -113,13 +113,16 @@ export function Logo({ className, size = 'md', variant = 'full' }: LogoProps) {
     </svg>
   );
 
-  const LogoText = () => (
+  const LogoText = ({ isLight = false }: { isLight?: boolean }) => (
     <div className="flex flex-col leading-tight">
-      <span className={`font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-rose-400 to-sage-600 ${textSize}`}>
+      <span className={`font-bold ${isLight 
+        ? 'text-white' 
+        : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-rose-400 to-sage-600'
+      } ${textSize}`}>
         ThriveMidlife
       </span>
       {size !== 'sm' && (
-        <span className="text-xs text-gray-500 font-medium tracking-wide">
+        <span className={`text-xs font-medium tracking-wide ${isLight ? 'text-gray-300' : 'text-gray-500'}`}>
           Mind-Body Reset
         </span>
       )}
@@ -138,6 +141,18 @@ export function Logo({ className, size = 'md', variant = 'full' }: LogoProps) {
     return (
       <div className={cn("flex items-center", className)}>
         <LogoText />
+      </div>
+    );
+  }
+
+  if (variant === 'light') {
+    return (
+      <div 
+        className={cn("flex items-center gap-3", className)}
+        style={{ width: width, height: height }}
+      >
+        <LogoIcon />
+        <LogoText isLight={true} />
       </div>
     );
   }
