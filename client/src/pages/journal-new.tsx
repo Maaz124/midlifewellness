@@ -13,11 +13,13 @@ import { JournalEntry, MoodEntry } from '@/types/wellness';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function JournalNew() {
   const { data, addJournalEntry, addMoodEntry } = useWellnessData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [journalContent, setJournalContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [wordCount, setWordCount] = useState(0);
@@ -62,6 +64,26 @@ export default function JournalNew() {
   });
 
   const handlePurchase = (resourceId: number) => {
+    if (!isAuthenticated && !authLoading) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to purchase digital resources.",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 1000);
+      return;
+    }
+    
+    if (authLoading) {
+      toast({
+        title: "Please Wait",
+        description: "Checking authentication...",
+      });
+      return;
+    }
+    
     purchaseResource.mutate(resourceId);
   };
 
@@ -455,7 +477,7 @@ export default function JournalNew() {
                               disabled={purchaseResource.isPending}
                             >
                               <ShoppingCart className="h-4 w-4 mr-2" />
-                              {purchaseResource.isPending ? 'Processing...' : `Purchase $${resource.price}`}
+                              {purchaseResource.isPending ? 'Processing...' : `Purchase $${(resource.price / 100).toFixed(2)}`}
                             </Button>
                           )}
                         </div>
