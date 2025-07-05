@@ -1074,6 +1074,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download resource endpoint (for free resources or purchased ones)
+  app.get('/api/download-resource/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const resourceId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const resource = await storage.getDigitalResourceById(resourceId);
+      if (!resource) {
+        return res.status(404).json({ message: 'Resource not found' });
+      }
+
+      // Check if resource is free or if user has purchased it
+      if (resource.price > 0) {
+        const hasPurchased = await storage.hasUserPurchasedResource(userId, resourceId);
+        if (!hasPurchased) {
+          return res.status(403).json({ message: 'Purchase required to download this resource' });
+        }
+      }
+
+      // Track the download
+      await storage.createResourceDownload({
+        userId,
+        resourceId,
+        downloadedAt: new Date()
+      });
+
+      // Get file path
+      const filePath = DigitalResourceManager.getFilePath(resource.filename);
+      
+      // Check if file exists
+      if (!DigitalResourceManager.fileExists(resource.filename)) {
+        return res.status(404).json({ message: 'File not found' });
+      }
+
+      // Set headers for download
+      res.setHeader('Content-Disposition', `attachment; filename="${resource.originalName || resource.title}.pdf"`);
+      res.setHeader('Content-Type', resource.mimeType);
+      
+      // Send file
+      res.sendFile(filePath);
+      
+    } catch (error) {
+      console.error('Error downloading resource:', error);
+      res.status(500).json({ message: 'Failed to download resource' });
+    }
+  });
+
   // Get payment intent details
   app.get('/api/payment-intent/:id', isAuthenticated, async (req: any, res) => {
     try {

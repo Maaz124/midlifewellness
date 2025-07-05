@@ -87,6 +87,17 @@ export default function JournalNew() {
     purchaseResource.mutate(resourceId);
   };
 
+  const handleFreeDownload = (resource: any) => {
+    // Create download link
+    const downloadUrl = `/api/download-resource/${resource.id}`;
+    window.open(downloadUrl, '_blank');
+    
+    toast({
+      title: "Download Started",
+      description: `${resource.title} is being downloaded.`,
+    });
+  };
+
   // Filter resources based on selected filters
   const filteredResources = (allResources as any[]).filter((resource) => {
     const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
@@ -465,6 +476,7 @@ export default function JournalNew() {
                             <Button 
                               className="flex-1 bg-green-600 hover:bg-green-700"
                               size="sm"
+                              onClick={() => handleFreeDownload(resource)}
                             >
                               <Download className="h-4 w-4 mr-2" />
                               Download Free
