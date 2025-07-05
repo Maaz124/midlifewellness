@@ -423,21 +423,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Marketing Funnel Routes
   
-  // Lead capture endpoint
+  // Lead capture endpoint with enhanced tracking
   app.post('/api/capture-lead', async (req, res) => {
     try {
-      const { email, firstName, lastName, source, leadMagnet } = req.body;
+      const { 
+        email, 
+        firstName, 
+        lastName, 
+        source, 
+        leadMagnet,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        referrerUrl,
+        userAgent,
+        timeZone
+      } = req.body;
       
       if (!email || !source) {
         return res.status(400).json({ message: 'Email and source are required' });
       }
+      
+      // Extract IP address from request
+      const ipAddress = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] as string;
       
       const lead = await marketingFunnel.captureLead({
         email,
         firstName,
         lastName,
         source,
-        leadMagnet
+        leadMagnet,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        referrerUrl,
+        ipAddress,
+        userAgent: userAgent || req.headers['user-agent'],
+        timeZone
       });
       
       res.json({ success: true, leadId: lead.id, message: 'Lead captured successfully' });
@@ -462,6 +484,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Conversion tracking error:', error);
       res.status(500).json({ success: false, message: 'Failed to track conversion' });
+    }
+  });
+
+  // Enhanced behavioral tracking
+  app.post('/api/track-behavior', async (req, res) => {
+    try {
+      const { leadId, eventType, eventData, sessionId } = req.body;
+      
+      if (!leadId || !eventType) {
+        return res.status(400).json({ message: 'Lead ID and event type are required' });
+      }
+      
+      await marketingFunnel.trackBehaviorEvent(leadId, eventType, eventData, sessionId);
+      
+      res.json({ success: true, message: 'Behavior tracked successfully' });
+    } catch (error) {
+      console.error('Behavior tracking error:', error);
+      res.status(500).json({ success: false, message: 'Failed to track behavior' });
+    }
+  });
+
+  // A/B testing assignment
+  app.post('/api/assign-ab-test', async (req, res) => {
+    try {
+      const { leadId, testName } = req.body;
+      
+      if (!leadId || !testName) {
+        return res.status(400).json({ message: 'Lead ID and test name are required' });
+      }
+      
+      const variant = await marketingFunnel.assignToABTest(leadId, testName);
+      
+      res.json({ success: true, variant });
+    } catch (error) {
+      console.error('A/B test assignment error:', error);
+      res.status(500).json({ success: false, message: 'Failed to assign A/B test' });
+    }
+  });
+
+  // Lead scoring update
+  app.post('/api/update-lead-score', async (req, res) => {
+    try {
+      const { leadId, eventType, eventData } = req.body;
+      
+      if (!leadId || !eventType) {
+        return res.status(400).json({ message: 'Lead ID and event type are required' });
+      }
+      
+      await marketingFunnel.updateLeadScore(leadId, eventType, eventData);
+      
+      res.json({ success: true, message: 'Lead score updated successfully' });
+    } catch (error) {
+      console.error('Lead scoring error:', error);
+      res.status(500).json({ success: false, message: 'Failed to update lead score' });
     }
   });
 

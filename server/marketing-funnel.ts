@@ -1,7 +1,19 @@
 import { db } from './db';
-import { leads, emailCampaigns, emailSends, conversionEvents } from '@shared/schema';
+import { 
+  leads, 
+  emailCampaigns, 
+  emailSends, 
+  conversionEvents,
+  behaviorEvents,
+  leadScoringRules,
+  abTests,
+  abTestVariants,
+  abTestAssignments,
+  emailSegments,
+  emailSegmentMembers
+} from '@shared/schema';
 import { sendEmail } from './email';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, gte, lte } from 'drizzle-orm';
 
 // Lead Management
 export class MarketingFunnel {
@@ -13,6 +25,13 @@ export class MarketingFunnel {
     lastName?: string;
     source: string;
     leadMagnet?: string;
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+    referrerUrl?: string;
+    ipAddress?: string;
+    userAgent?: string;
+    timeZone?: string;
   }) {
     try {
       // Check if lead already exists
@@ -24,29 +43,57 @@ export class MarketingFunnel {
 
       let lead;
       if (existingLead.length > 0) {
-        // Update existing lead
+        // Update existing lead with enhanced tracking
         [lead] = await db
           .update(leads)
           .set({
             lastEngaged: new Date(),
             ...(leadData.firstName && { firstName: leadData.firstName }),
-            ...(leadData.lastName && { lastName: leadData.lastName })
+            ...(leadData.lastName && { lastName: leadData.lastName }),
+            ...(leadData.utmSource && { utmSource: leadData.utmSource }),
+            ...(leadData.utmMedium && { utmMedium: leadData.utmMedium }),
+            ...(leadData.utmCampaign && { utmCampaign: leadData.utmCampaign })
           })
           .where(eq(leads.email, leadData.email))
           .returning();
       } else {
-        // Create new lead
+        // Calculate initial lead score
+        let initialScore = 0;
+        if (leadData.source === 'landing_page') initialScore += 10;
+        if (leadData.leadMagnet === 'free_assessment') initialScore += 15;
+        if (leadData.utmSource === 'facebook') initialScore += 5;
+        if (leadData.utmSource === 'google') initialScore += 8;
+
+        // Create new lead with enhanced data
         [lead] = await db
           .insert(leads)
-          .values(leadData)
+          .values({
+            ...leadData,
+            leadScore: initialScore,
+            status: 'active'
+          })
           .returning();
 
         // Trigger welcome sequence
         await this.triggerWelcomeSequence(lead.id);
       }
 
+      // Track behavioral event
+      await this.trackBehaviorEvent(lead.id, 'lead_captured', {
+        source: leadData.source,
+        leadMagnet: leadData.leadMagnet,
+        utm: {
+          source: leadData.utmSource,
+          medium: leadData.utmMedium,
+          campaign: leadData.utmCampaign
+        }
+      });
+
       // Track conversion event
       await this.trackConversion(lead.id, 'lead_captured', { source: leadData.source });
+
+      // Update lead segments
+      await this.updateLeadSegments(lead.id);
 
       return lead;
     } catch (error) {
@@ -315,30 +362,237 @@ Dr. Sidra Bukhari`
     }
   }
 
+  // Behavioral Tracking
+  async trackBehaviorEvent(leadId: number, eventType: string, eventData?: any, sessionId?: string) {
+    try {
+      await db.insert(behaviorEvents).values({
+        leadId,
+        sessionId: sessionId || `session_${Date.now()}`,
+        eventType,
+        eventData,
+        pageUrl: eventData?.pageUrl || null,
+        timestamp: new Date()
+      });
+
+      // Update lead score based on behavior
+      await this.updateLeadScore(leadId, eventType, eventData);
+    } catch (error) {
+      console.error('Error tracking behavior event:', error);
+    }
+  }
+
+  // Advanced Lead Scoring
+  async updateLeadScore(leadId: number, eventType: string, eventData?: any) {
+    try {
+      let scoreIncrease = 0;
+
+      // Define scoring rules
+      switch (eventType) {
+        case 'email_opened':
+          scoreIncrease = 5;
+          break;
+        case 'email_clicked':
+          scoreIncrease = 10;
+          break;
+        case 'assessment_started':
+          scoreIncrease = 15;
+          break;
+        case 'assessment_completed':
+          scoreIncrease = 25;
+          break;
+        case 'page_view':
+          if (eventData?.pageUrl?.includes('/coaching')) scoreIncrease = 8;
+          else if (eventData?.pageUrl?.includes('/checkout')) scoreIncrease = 20;
+          else scoreIncrease = 2;
+          break;
+        case 'video_watched':
+          const watchPercentage = eventData?.watchPercentage || 0;
+          scoreIncrease = Math.floor(watchPercentage / 25) * 5; // 5 points per 25% watched
+          break;
+        case 'download_completed':
+          scoreIncrease = 12;
+          break;
+        case 'social_share':
+          scoreIncrease = 8;
+          break;
+        default:
+          scoreIncrease = 1;
+      }
+
+      // Update lead score
+      await db
+        .update(leads)
+        .set({
+          leadScore: sql`${leads.leadScore} + ${scoreIncrease}`,
+          lastEngaged: new Date()
+        })
+        .where(eq(leads.id, leadId));
+
+    } catch (error) {
+      console.error('Error updating lead score:', error);
+    }
+  }
+
+  // Lead Segmentation
+  async updateLeadSegments(leadId: number) {
+    try {
+      const [lead] = await db
+        .select()
+        .from(leads)
+        .where(eq(leads.id, leadId));
+
+      if (!lead) return;
+
+      // Auto-assign to segments based on criteria
+      const segments = [];
+
+      if ((lead.leadScore || 0) >= 50) segments.push('high_intent');
+      if ((lead.leadScore || 0) >= 25) segments.push('warm_leads');
+      if (lead.source === 'facebook') segments.push('facebook_traffic');
+      if (lead.source === 'google') segments.push('google_traffic');
+      if (lead.leadMagnet === 'free_assessment') segments.push('assessment_interested');
+
+      // Add to segments
+      for (const segmentName of segments) {
+        await this.addToSegment(leadId, segmentName);
+      }
+    } catch (error) {
+      console.error('Error updating lead segments:', error);
+    }
+  }
+
+  async addToSegment(leadId: number, segmentName: string) {
+    try {
+      // Find or create segment
+      let [segment] = await db
+        .select()
+        .from(emailSegments)
+        .where(eq(emailSegments.name, segmentName));
+
+      if (!segment) {
+        [segment] = await db
+          .insert(emailSegments)
+          .values({
+            name: segmentName,
+            description: `Auto-generated segment: ${segmentName}`,
+            conditions: { autoGenerated: true },
+            isActive: true
+          })
+          .returning();
+      }
+
+      // Add lead to segment if not already there
+      const existing = await db
+        .select()
+        .from(emailSegmentMembers)
+        .where(and(
+          eq(emailSegmentMembers.segmentId, segment.id),
+          eq(emailSegmentMembers.leadId, leadId)
+        ));
+
+      if (existing.length === 0) {
+        await db.insert(emailSegmentMembers).values({
+          segmentId: segment.id,
+          leadId
+        });
+
+        // Update segment count
+        await db
+          .update(emailSegments)
+          .set({ leadCount: sql`${emailSegments.leadCount} + 1` })
+          .where(eq(emailSegments.id, segment.id));
+      }
+    } catch (error) {
+      console.error('Error adding to segment:', error);
+    }
+  }
+
+  // A/B Testing Support
+  async assignToABTest(leadId: number, testName: string) {
+    try {
+      const [test] = await db
+        .select()
+        .from(abTests)
+        .where(and(
+          eq(abTests.name, testName),
+          eq(abTests.status, 'active')
+        ));
+
+      if (!test) return null;
+
+      // Get test variants
+      const variants = await db
+        .select()
+        .from(abTestVariants)
+        .where(eq(abTestVariants.testId, test.id));
+
+      if (variants.length === 0) return null;
+
+      // Simple random assignment based on traffic percentage
+      const random = Math.random() * 100;
+      let cumulativePercentage = 0;
+      
+      for (const variant of variants) {
+        cumulativePercentage += variant.trafficPercentage;
+        if (random <= cumulativePercentage) {
+          // Assign to this variant
+          await db.insert(abTestAssignments).values({
+            testId: test.id,
+            variantId: variant.id,
+            leadId,
+            sessionId: `session_${Date.now()}`,
+            assignedAt: new Date()
+          });
+
+          return variant;
+        }
+      }
+
+      return variants[0]; // Fallback to first variant
+    } catch (error) {
+      console.error('Error assigning to A/B test:', error);
+      return null;
+    }
+  }
+
   // Analytics
   async getFunnelAnalytics() {
     try {
-      const totalLeads = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(leads);
+      // Get all leads for simple counting
+      const allLeads = await db.select().from(leads);
+      const totalLeadsCount = allLeads.length;
 
-      const convertedLeads = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(leads)
-        .where(eq(leads.status, 'converted'));
+      // Count converted leads
+      const convertedLeadsCount = allLeads.filter(lead => lead.status === 'converted').length;
 
-      const recentLeads = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(leads)
-        .where(sql`created_at >= NOW() - INTERVAL '30 days'`);
+      // Recent leads (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const recentLeadsCount = allLeads.filter(lead => 
+        lead.createdAt && new Date(lead.createdAt) >= thirtyDaysAgo
+      ).length;
+
+      // High score leads (score >= 50)
+      const highScoreLeadsCount = allLeads.filter(lead => 
+        (lead.leadScore || 0) >= 50
+      ).length;
+
+      // Average lead score
+      const totalScore = allLeads.reduce((sum, lead) => sum + (lead.leadScore || 0), 0);
+      const averageScore = totalLeadsCount > 0 ? totalScore / totalLeadsCount : 0;
+
+      // Conversion rate
+      const conversionRate = totalLeadsCount > 0 
+        ? (convertedLeadsCount / totalLeadsCount * 100).toFixed(2)
+        : '0';
 
       return {
-        totalLeads: totalLeads[0]?.count || 0,
-        convertedLeads: convertedLeads[0]?.count || 0,
-        conversionRate: totalLeads[0]?.count > 0 
-          ? ((convertedLeads[0]?.count || 0) / totalLeads[0].count * 100).toFixed(2)
-          : '0',
-        recentLeads: recentLeads[0]?.count || 0
+        totalLeads: totalLeadsCount,
+        convertedLeads: convertedLeadsCount,
+        conversionRate,
+        recentLeads: recentLeadsCount,
+        highScoreLeads: highScoreLeadsCount,
+        averageLeadScore: averageScore.toFixed(1)
       };
     } catch (error) {
       console.error('Error fetching funnel analytics:', error);
@@ -346,7 +600,9 @@ Dr. Sidra Bukhari`
         totalLeads: 0,
         convertedLeads: 0,
         conversionRate: '0',
-        recentLeads: 0
+        recentLeads: 0,
+        highScoreLeads: 0,
+        averageLeadScore: '0'
       };
     }
   }
