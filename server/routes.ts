@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { DatabaseStorage } from "./database-storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { uploadVideo, VideoManager } from "./video-upload";
+import path from "path";
 
 const storage = new DatabaseStorage();
 
@@ -561,6 +563,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/robots.txt', (req, res) => {
     res.set('Content-Type', 'text/plain');
     res.send(generateRobotsTxt());
+  });
+
+  // Video Upload Routes (for future use)
+  
+  // Upload video endpoint (admin only)
+  app.post('/api/upload-video', isAuthenticated, uploadVideo.single('video'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No video file uploaded' });
+      }
+
+      const videoMetadata = await VideoManager.saveVideoMetadata(req.file);
+      
+      res.json({
+        message: 'Video uploaded successfully',
+        video: videoMetadata
+      });
+    } catch (error) {
+      console.error('Video upload error:', error);
+      res.status(500).json({ message: 'Failed to upload video' });
+    }
+  });
+
+  // Serve video files
+  app.get('/api/videos/:filename', (req, res) => {
+    const { filename } = req.params;
+    const videoPath = path.join(process.cwd(), 'uploads', 'videos', filename);
+    
+    // Check if file exists
+    require('fs').access(videoPath, require('fs').constants.F_OK, (err: any) => {
+      if (err) {
+        return res.status(404).json({ message: 'Video not found' });
+      }
+      
+      // Serve video file with proper headers for streaming
+      const stat = require('fs').statSync(videoPath);
+      const fileSize = stat.size;
+      const range = req.headers.range;
+
+      if (range) {
+        // Handle range requests for video streaming
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = (end - start) + 1;
+        const file = require('fs').createReadStream(videoPath, { start, end });
+        const head = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': 'video/mp4',
+        };
+        res.writeHead(206, head);
+        file.pipe(res);
+      } else {
+        // Serve full video
+        const head = {
+          'Content-Length': fileSize,
+          'Content-Type': 'video/mp4',
+        };
+        res.writeHead(200, head);
+        require('fs').createReadStream(videoPath).pipe(res);
+      }
+    });
+  });
+
+  // Delete video endpoint (admin only)
+  app.delete('/api/videos/:filename', isAuthenticated, async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const deleted = await VideoManager.deleteVideo(filename);
+      
+      if (deleted) {
+        res.json({ message: 'Video deleted successfully' });
+      } else {
+        res.status(404).json({ message: 'Video not found' });
+      }
+    } catch (error) {
+      console.error('Video deletion error:', error);
+      res.status(500).json({ message: 'Failed to delete video' });
+    }
   });
 
   const httpServer = createServer(app);
