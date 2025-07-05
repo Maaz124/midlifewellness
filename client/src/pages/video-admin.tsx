@@ -22,7 +22,10 @@ import {
   User,
   FileVideo,
   Eye,
-  Tag
+  Tag,
+  FileText,
+  Download,
+  DollarSign
 } from 'lucide-react';
 
 interface VideoData {
@@ -39,6 +42,203 @@ interface VideoData {
   size: number;
   mimetype: string;
   isActive: boolean;
+}
+
+interface PDFResource {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  price: number;
+  originalName: string;
+  filename: string;
+  mimeType: string;
+  fileSize: number;
+  createdAt: string;
+  downloadCount: number;
+}
+
+function PDFResourcesManager() {
+  const { toast } = useToast();
+
+  // Fetch all PDF resources
+  const { data: resources, isLoading, refetch } = useQuery({
+    queryKey: ['/api/resources'],
+  });
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const formatPrice = (price: number) => {
+    return price === 0 ? 'Free' : `$${(price / 100).toFixed(2)}`;
+  };
+
+  const handleDownloadResource = (resource: PDFResource) => {
+    const downloadUrl = `/api/download-resource/${resource.id}`;
+    window.open(downloadUrl, '_blank');
+    
+    toast({
+      title: "Download Started",
+      description: `${resource.title} is being downloaded.`,
+    });
+  };
+
+  const handleViewFile = (resource: PDFResource) => {
+    const viewUrl = `/api/download-resource/${resource.id}`;
+    window.open(viewUrl, '_blank');
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Loading PDF resources...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const typedResources = resources as PDFResource[] || [];
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <FileText className="h-5 w-5" />
+            <span>PDF Resources Management</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-muted-foreground mb-4">
+            View and manage all PDF wellness resources. You can preview, download, and monitor download statistics.
+          </div>
+          
+          {typedResources.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No PDF resources found</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {typedResources.map((resource) => (
+                <Card key={resource.id} className="border">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <FileText className="h-5 w-5 text-purple-600" />
+                          <h3 className="font-semibold text-lg">{resource.title}</h3>
+                          <Badge variant={resource.price === 0 ? "secondary" : "default"}>
+                            {formatPrice(resource.price)}
+                          </Badge>
+                        </div>
+                        
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {resource.description}
+                        </p>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="font-medium">Category:</span>
+                            <div className="text-muted-foreground">{resource.category}</div>
+                          </div>
+                          
+                          <div>
+                            <span className="font-medium">File Size:</span>
+                            <div className="text-muted-foreground">{formatFileSize(resource.fileSize)}</div>
+                          </div>
+                          
+                          <div>
+                            <span className="font-medium">Downloads:</span>
+                            <div className="text-muted-foreground flex items-center">
+                              <Download className="h-3 w-3 mr-1" />
+                              {resource.downloadCount}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <span className="font-medium">Created:</span>
+                            <div className="text-muted-foreground">
+                              {new Date(resource.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-3 text-xs text-muted-foreground">
+                          <span className="font-medium">Filename:</span> {resource.filename} 
+                          <span className="ml-4 font-medium">Original:</span> {resource.originalName}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col space-y-2 ml-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewFile(resource)}
+                          className="w-24"
+                        >
+                          <Eye className="h-3 w-3 mr-1" />
+                          View
+                        </Button>
+                        
+                        <Button
+                          size="sm"
+                          onClick={() => handleDownloadResource(resource)}
+                          className="w-24"
+                        >
+                          <Download className="h-3 w-3 mr-1" />
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <DollarSign className="h-5 w-5" />
+            <span>Revenue Overview</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 border rounded-lg">
+              <div className="text-2xl font-bold text-purple-600">
+                {typedResources.filter(r => r.price === 0).length}
+              </div>
+              <div className="text-sm text-muted-foreground">Free Resources</div>
+            </div>
+            
+            <div className="p-4 border rounded-lg">
+              <div className="text-2xl font-bold text-green-600">
+                {typedResources.filter(r => r.price > 0).length}
+              </div>
+              <div className="text-sm text-muted-foreground">Paid Resources</div>
+            </div>
+            
+            <div className="p-4 border rounded-lg">
+              <div className="text-2xl font-bold text-blue-600">
+                {typedResources.reduce((sum, r) => sum + r.downloadCount, 0)}
+              </div>
+              <div className="text-sm text-muted-foreground">Total Downloads</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default function VideoAdmin() {
@@ -137,7 +337,7 @@ export default function VideoAdmin() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center space-x-2 mb-6">
         <FileVideo className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">Video Management</h1>
+        <h1 className="text-2xl font-bold">Content Management</h1>
         <Badge variant="secondary">Admin Only</Badge>
       </div>
 
@@ -146,6 +346,7 @@ export default function VideoAdmin() {
           <TabsTrigger value="upload">Upload Videos</TabsTrigger>
           <TabsTrigger value="manage">Manage Videos</TabsTrigger>
           <TabsTrigger value="preview">Preview Player</TabsTrigger>
+          <TabsTrigger value="resources">PDF Resources</TabsTrigger>
         </TabsList>
 
         <TabsContent value="upload">
@@ -296,6 +497,10 @@ export default function VideoAdmin() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="resources">
+          <PDFResourcesManager />
         </TabsContent>
       </Tabs>
 
