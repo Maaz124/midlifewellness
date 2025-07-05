@@ -124,21 +124,13 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center space-x-3 text-gray-300">
                 <Mail className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                <a href="mailto:hello@thrivemidlife.com" className="hover:text-purple-400 transition-colors">
-                  hello@thrivemidlife.com
-                </a>
-              </li>
-              <li className="flex items-center space-x-3 text-gray-300">
-                <Mail className="w-4 h-4 text-purple-400 flex-shrink-0" />
                 <a href="mailto:coaching@thrivemidlife.com" className="hover:text-purple-400 transition-colors">
                   coaching@thrivemidlife.com
                 </a>
               </li>
               <li className="flex items-center space-x-3 text-gray-300">
                 <HelpCircle className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                <a href="mailto:support@thrivemidlife.com" className="hover:text-purple-400 transition-colors">
-                  Technical Support
-                </a>
+                <span className="text-gray-300">General Inquiries & Support</span>
               </li>
               <li className="flex items-center space-x-3 text-gray-300">
                 <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />

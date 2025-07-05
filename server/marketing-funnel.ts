@@ -163,7 +163,7 @@ export class MarketingFunnel {
       
       const success = await sendEmail({
         to: lead.email,
-        from: 'dr.sidra@thrivemidlife.com',
+        from: 'coaching@thrivemidlife.com',
         subject: subject,
         html: emailContent.html,
         text: emailContent.text

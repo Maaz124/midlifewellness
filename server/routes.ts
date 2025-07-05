@@ -46,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const welcomeTemplate = emailTemplates.welcome(user.firstName || '');
           await sendEmail({
             to: user.email,
-            from: 'welcome@thrivemidlife.com', // You'll need to verify this domain in SendGrid
+            from: 'coaching@thrivemidlife.com',
             subject: welcomeTemplate.subject,
             html: welcomeTemplate.html,
             text: welcomeTemplate.text
@@ -308,7 +308,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         await sendEmail({
           to: user.email,
-          from: 'payments@thrivemidlife.com',
+          from: 'coaching@thrivemidlife.com',
           subject: confirmationTemplate.subject,
           html: confirmationTemplate.html,
           text: confirmationTemplate.text
@@ -367,7 +367,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const success = await sendEmail({
         to: email,
-        from: 'test@thrivemidlife.com',
+        from: 'coaching@thrivemidlife.com',
         subject: template.subject,
         html: template.html,
         text: template.text
@@ -857,7 +857,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const notificationEmailSent = await sendEmail({
         to: 'coaching@thrivemidlife.com', // Dr. Sidra's coaching email
-        from: 'noreply@thrivemidlife.com',
+        from: 'coaching@thrivemidlife.com',
         subject: `New Coaching Inquiry from ${name}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -941,7 +941,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const confirmationEmailSent = await sendEmail({
         to: email,
-        from: 'noreply@thrivemidlife.com',
+        from: 'coaching@thrivemidlife.com',
         subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
         html: addSignatureToEmail(confirmationEmailContent, 'personal')
       });

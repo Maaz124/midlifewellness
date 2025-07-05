@@ -86,7 +86,7 @@ export const emailSignatures = {
       
       <p style="margin: 15px 0 0 0; font-size: 10px; color: #9CA3AF; line-height: 1.3;">
         This email was sent from ThriveMidlife platform. If you no longer wish to receive these communications, 
-        please contact us at <a href="mailto:hello@thrivemidlife.com" style="color: #8B5CF6;">hello@thrivemidlife.com</a>
+        please contact us at <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6;">coaching@thrivemidlife.com</a>
       </p>
     </div>
   `,
@@ -108,7 +108,7 @@ export const emailSignatures = {
       
       <div style="margin-bottom: 15px;">
         <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
-          📧 <a href="mailto:support@thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">support@thrivemidlife.com</a>
+          📧 <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">coaching@thrivemidlife.com</a>
         </p>
         <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
           🌐 <a href="https://thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">www.thrivemidlife.com</a>
