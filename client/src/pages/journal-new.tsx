@@ -10,10 +10,14 @@ import { Feather, Calendar, BookOpen, FileText, Download, ShoppingCart, Filter, 
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { getTodaysPrompt } from '@/lib/coaching-data';
 import { JournalEntry, MoodEntry } from '@/types/wellness';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 export default function JournalNew() {
   const { data, addJournalEntry, addMoodEntry } = useWellnessData();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [journalContent, setJournalContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [wordCount, setWordCount] = useState(0);
@@ -25,6 +29,41 @@ export default function JournalNew() {
   const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
     queryKey: ['/api/resources']
   });
+
+  // Purchase mutation
+  const purchaseResource = useMutation({
+    mutationFn: async (resourceId: number) => {
+      const response = await apiRequest('POST', '/api/purchase-resource', { resourceId });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else if (data.clientSecret) {
+        // Redirect to checkout page with payment details
+        const resourceId = encodeURIComponent(data.resourceId || '');
+        const paymentIntent = encodeURIComponent(data.paymentIntentId || '');
+        window.location.href = `/resource-checkout?payment_intent=${paymentIntent}&resource_id=${resourceId}`;
+      } else {
+        toast({
+          title: "Purchase Successful",
+          description: "Your resource has been purchased successfully!",
+        });
+        queryClient.invalidateQueries({ queryKey: ['/api/resources'] });
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: "Purchase Failed",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handlePurchase = (resourceId: number) => {
+    purchaseResource.mutate(resourceId);
+  };
 
   // Filter resources based on selected filters
   const filteredResources = (allResources as any[]).filter((resource) => {
@@ -412,9 +451,11 @@ export default function JournalNew() {
                             <Button 
                               className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                               size="sm"
+                              onClick={() => handlePurchase(resource.id)}
+                              disabled={purchaseResource.isPending}
                             >
                               <ShoppingCart className="h-4 w-4 mr-2" />
-                              Purchase
+                              {purchaseResource.isPending ? 'Processing...' : `Purchase $${resource.price}`}
                             </Button>
                           )}
                         </div>
