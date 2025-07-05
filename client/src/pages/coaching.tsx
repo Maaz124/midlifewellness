@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-fixed';
+import { CoachingMediaComponent } from '@/components/coaching-media-component';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules } from '@/lib/coaching-data';
 import { useLocation } from 'wouter';
@@ -127,6 +128,22 @@ export default function Coaching() {
   };
 
   if (activeComponent && activeModuleId) {
+    // Use media component for video and audio types
+    if (activeComponent.type === 'video' || activeComponent.type === 'audio') {
+      return (
+        <CoachingMediaComponent
+          component={activeComponent}
+          moduleId={activeModuleId}
+          onComplete={handleComponentComplete}
+          onClose={() => {
+            setActiveComponent(null);
+            setActiveModuleId(null);
+          }}
+        />
+      );
+    }
+    
+    // Use enhanced component for other types
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 to-teal-50 p-4">
         <div className="max-w-6xl mx-auto">

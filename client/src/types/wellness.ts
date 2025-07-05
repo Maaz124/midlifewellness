@@ -75,6 +75,9 @@ export interface ModuleComponent {
   description: string;
   duration?: number;
   completed: boolean;
+  mediaUrl?: string;
+  youtubeId?: string;
+  thumbnail?: string;
 }
 
 export interface MoodEntry {
