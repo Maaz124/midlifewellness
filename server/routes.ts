@@ -21,6 +21,7 @@ import {
   insertMoodEntrySchema
 } from "@shared/schema";
 import { sendEmail, emailTemplates } from "./email";
+import { marketingFunnel } from "./marketing-funnel";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database storage and authentication
@@ -417,6 +418,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(analytics);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  // Marketing Funnel Routes
+  
+  // Lead capture endpoint
+  app.post('/api/capture-lead', async (req, res) => {
+    try {
+      const { email, firstName, lastName, source, leadMagnet } = req.body;
+      
+      if (!email || !source) {
+        return res.status(400).json({ message: 'Email and source are required' });
+      }
+      
+      const lead = await marketingFunnel.captureLead({
+        email,
+        firstName,
+        lastName,
+        source,
+        leadMagnet
+      });
+      
+      res.json({ success: true, leadId: lead.id, message: 'Lead captured successfully' });
+    } catch (error) {
+      console.error('Lead capture error:', error);
+      res.status(500).json({ success: false, message: 'Failed to capture lead' });
+    }
+  });
+
+  // Track conversion events
+  app.post('/api/track-conversion', async (req, res) => {
+    try {
+      const { leadId, eventType, eventData, value } = req.body;
+      
+      if (!leadId || !eventType) {
+        return res.status(400).json({ message: 'Lead ID and event type are required' });
+      }
+      
+      await marketingFunnel.trackConversion(leadId, eventType, eventData, value);
+      
+      res.json({ success: true, message: 'Conversion tracked successfully' });
+    } catch (error) {
+      console.error('Conversion tracking error:', error);
+      res.status(500).json({ success: false, message: 'Failed to track conversion' });
+    }
+  });
+
+  // Get funnel analytics (admin only)
+  app.get('/api/funnel-analytics', async (req, res) => {
+    try {
+      const analytics = await marketingFunnel.getFunnelAnalytics();
+      res.json(analytics);
+    } catch (error) {
+      console.error('Analytics error:', error);
+      res.status(500).json({ message: 'Failed to fetch analytics' });
     }
   });
 

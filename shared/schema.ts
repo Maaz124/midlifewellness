@@ -338,3 +338,88 @@ export type SharedExperience = typeof sharedExperiences.$inferSelect;
 
 export type InsertExperienceReaction = z.infer<typeof insertExperienceReactionSchema>;
 export type ExperienceReaction = typeof experienceReactions.$inferSelect;
+
+// Marketing Funnel Tables
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  email: varchar("email").notNull().unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  source: varchar("source").notNull(), // landing_page, social_media, referral
+  leadMagnet: varchar("lead_magnet"), // free_assessment, hormone_guide
+  status: varchar("status").default("active"), // active, converted, unsubscribed
+  tags: text("tags").array().default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+  convertedAt: timestamp("converted_at"),
+  lastEngaged: timestamp("last_engaged").defaultNow()
+});
+
+export const emailCampaigns = pgTable("email_campaigns", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  type: varchar("type").notNull(), // welcome_sequence, nurture, promotional
+  subject: varchar("subject").notNull(),
+  content: text("content").notNull(),
+  sequence: integer("sequence").default(1),
+  delayDays: integer("delay_days").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const emailSends = pgTable("email_sends", {
+  id: serial("id").primaryKey(),
+  leadId: integer("lead_id").references(() => leads.id),
+  campaignId: integer("campaign_id").references(() => emailCampaigns.id),
+  sentAt: timestamp("sent_at").defaultNow(),
+  opened: boolean("opened").default(false),
+  clicked: boolean("clicked").default(false),
+  openedAt: timestamp("opened_at"),
+  clickedAt: timestamp("clicked_at")
+});
+
+export const conversionEvents = pgTable("conversion_events", {
+  id: serial("id").primaryKey(),
+  leadId: integer("lead_id").references(() => leads.id),
+  eventType: varchar("event_type").notNull(), // assessment_completed, coaching_purchased, email_opened
+  eventData: jsonb("event_data"),
+  value: varchar("value"), // Store as string to avoid decimal issues
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Marketing Funnel Schema Definitions
+export const insertLeadSchema = createInsertSchema(leads).omit({
+  id: true,
+  createdAt: true,
+  convertedAt: true,
+  lastEngaged: true
+});
+
+export const insertEmailCampaignSchema = createInsertSchema(emailCampaigns).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertEmailSendSchema = createInsertSchema(emailSends).omit({
+  id: true,
+  sentAt: true,
+  openedAt: true,
+  clickedAt: true
+});
+
+export const insertConversionEventSchema = createInsertSchema(conversionEvents).omit({
+  id: true,
+  createdAt: true
+});
+
+// Marketing Funnel Types
+export type InsertLead = z.infer<typeof insertLeadSchema>;
+export type Lead = typeof leads.$inferSelect;
+
+export type InsertEmailCampaign = z.infer<typeof insertEmailCampaignSchema>;
+export type EmailCampaign = typeof emailCampaigns.$inferSelect;
+
+export type InsertEmailSend = z.infer<typeof insertEmailSendSchema>;
+export type EmailSend = typeof emailSends.$inferSelect;
+
+export type InsertConversionEvent = z.infer<typeof insertConversionEventSchema>;
+export type ConversionEvent = typeof conversionEvents.$inferSelect;
