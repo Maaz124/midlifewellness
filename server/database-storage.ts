@@ -589,10 +589,18 @@ export class DatabaseStorage implements IStorage {
       .from(resourcePurchases)
       .where(and(
         eq(resourcePurchases.userId, userId),
-        eq(resourcePurchases.resourceId, resourceId)
+        eq(resourcePurchases.resourceId, resourceId),
+        eq(resourcePurchases.status, 'completed')
       ))
       .limit(1);
     return !!purchase;
+  }
+
+  async updateResourcePurchaseStatus(paymentIntentId: string, status: string): Promise<void> {
+    await db
+      .update(resourcePurchases)
+      .set({ status })
+      .where(eq(resourcePurchases.paymentIntentId, paymentIntentId));
   }
 
   // Resource Download operations
