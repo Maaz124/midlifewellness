@@ -211,6 +211,22 @@ export const replyLikes = pgTable("reply_likes", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const coachingInquiries = pgTable("coaching_inquiries", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  coachingType: text("coaching_type").notNull(), // 'group', 'individual', 'both'
+  preferredSchedule: text("preferred_schedule"),
+  experience: text("experience"),
+  goals: text("goals").notNull(),
+  challenges: text("challenges"),
+  additionalInfo: text("additional_info"),
+  status: text("status").default("new").notNull(), // 'new', 'contacted', 'scheduled', 'completed'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -545,3 +561,12 @@ export const insertVideoSchema = createInsertSchema(videos).omit({
 // Video Types
 export type InsertVideo = z.infer<typeof insertVideoSchema>;
 export type Video = typeof videos.$inferSelect;
+
+export const insertCoachingInquirySchema = createInsertSchema(coachingInquiries).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCoachingInquiry = z.infer<typeof insertCoachingInquirySchema>;
+export type CoachingInquiry = typeof coachingInquiries.$inferSelect;

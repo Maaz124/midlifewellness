@@ -12,6 +12,7 @@ import {
   forumReplies,
   supportGroups,
   supportGroupMembers,
+  coachingInquiries,
 
   type User,
   type InsertUser,
@@ -32,7 +33,7 @@ import {
   type InsertVideo,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -481,5 +482,36 @@ export class DatabaseStorage implements IStorage {
       .orderBy(supportGroupMembers.joinedAt);
   }
 
+  // Coaching Inquiry operations
+  async createCoachingInquiry(inquiryData: any): Promise<any> {
+    const [newInquiry] = await db
+      .insert(coachingInquiries)
+      .values(inquiryData)
+      .returning();
+    return newInquiry;
+  }
 
+  async getCoachingInquiries(): Promise<any[]> {
+    return await db
+      .select()
+      .from(coachingInquiries)
+      .orderBy(desc(coachingInquiries.createdAt));
+  }
+
+  async getCoachingInquiryById(id: number): Promise<any> {
+    const [inquiry] = await db
+      .select()
+      .from(coachingInquiries)
+      .where(eq(coachingInquiries.id, id));
+    return inquiry;
+  }
+
+  async updateCoachingInquiryStatus(id: number, status: string): Promise<any> {
+    const [updatedInquiry] = await db
+      .update(coachingInquiries)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(coachingInquiries.id, id))
+      .returning();
+    return updatedInquiry;
+  }
 }
