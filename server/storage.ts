@@ -87,6 +87,15 @@ export interface IStorage {
   // Mood Entries
   getMoodEntriesByUser(userId: string): Promise<MoodEntry[]>;
   createMoodEntry(entry: InsertMoodEntry): Promise<MoodEntry>;
+
+  // Videos (for future use)
+  getVideos(): Promise<Video[]>;
+  getVideoById(id: number): Promise<Video | undefined>;
+  getVideosByModule(moduleId: string): Promise<Video[]>;
+  getVideosByWeek(weekNumber: number): Promise<Video[]>;
+  createVideo(video: InsertVideo): Promise<Video>;
+  updateVideo(id: number, updates: Partial<Video>): Promise<Video>;
+  deleteVideo(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {

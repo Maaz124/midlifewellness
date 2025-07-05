@@ -6,6 +6,7 @@ import {
   goals,
   habits,
   moodEntries,
+  videos,
   type User,
   type InsertUser,
   type UpsertUser,
@@ -21,6 +22,8 @@ import {
   type InsertHabit,
   type MoodEntry,
   type InsertMoodEntry,
+  type Video,
+  type InsertVideo,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -208,5 +211,48 @@ export class DatabaseStorage implements IStorage {
       .values(entry)
       .returning();
     return newEntry;
+  }
+
+  // Video operations (for future use)
+  async getVideos(): Promise<Video[]> {
+    return await db.select().from(videos).where(eq(videos.isActive, true));
+  }
+
+  async getVideoById(id: number): Promise<Video | undefined> {
+    const [video] = await db.select().from(videos).where(eq(videos.id, id));
+    return video;
+  }
+
+  async getVideosByModule(moduleId: string): Promise<Video[]> {
+    return await db.select().from(videos).where(
+      and(eq(videos.moduleId, moduleId), eq(videos.isActive, true))
+    );
+  }
+
+  async getVideosByWeek(weekNumber: number): Promise<Video[]> {
+    return await db.select().from(videos).where(
+      and(eq(videos.weekNumber, weekNumber), eq(videos.isActive, true))
+    );
+  }
+
+  async createVideo(video: InsertVideo): Promise<Video> {
+    const [newVideo] = await db
+      .insert(videos)
+      .values(video)
+      .returning();
+    return newVideo;
+  }
+
+  async updateVideo(id: number, updates: Partial<Video>): Promise<Video> {
+    const [updatedVideo] = await db
+      .update(videos)
+      .set(updates)
+      .where(eq(videos.id, id))
+      .returning();
+    return updatedVideo;
+  }
+
+  async deleteVideo(id: number): Promise<void> {
+    await db.update(videos).set({ isActive: false }).where(eq(videos.id, id));
   }
 }

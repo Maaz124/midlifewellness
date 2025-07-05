@@ -464,6 +464,26 @@ export const emailSegmentMembers = pgTable("email_segment_members", {
   addedAt: timestamp("added_at").defaultNow()
 });
 
+// Video storage table for future video content
+export const videos = pgTable("videos", {
+  id: serial("id").primaryKey(),
+  filename: varchar("filename").notNull(),
+  originalName: varchar("original_name").notNull(),
+  mimetype: varchar("mimetype").notNull(),
+  size: integer("size").notNull(),
+  duration: integer("duration"), // in seconds
+  resolution: varchar("resolution"), // e.g., "1920x1080"
+  url: varchar("url").notNull(),
+  uploadedBy: varchar("uploaded_by").references(() => users.id, { onDelete: "set null" }),
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+  title: varchar("title"),
+  description: text("description"),
+  tags: text("tags").array(),
+  moduleId: varchar("module_id"), // For associating with coaching modules
+  weekNumber: integer("week_number"), // For organizing by weeks
+});
+
 // Marketing Funnel Schema Definitions
 export const insertLeadSchema = createInsertSchema(leads).omit({
   id: true,
@@ -501,3 +521,13 @@ export type EmailSend = typeof emailSends.$inferSelect;
 
 export type InsertConversionEvent = z.infer<typeof insertConversionEventSchema>;
 export type ConversionEvent = typeof conversionEvents.$inferSelect;
+
+// Video Schema
+export const insertVideoSchema = createInsertSchema(videos).omit({
+  id: true,
+  uploadedAt: true
+});
+
+// Video Types
+export type InsertVideo = z.infer<typeof insertVideoSchema>;
+export type Video = typeof videos.$inferSelect;
