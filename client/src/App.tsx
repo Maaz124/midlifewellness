@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { NavHeader } from "@/components/nav-header";
 import { Footer } from "@/components/footer";
 import Dashboard from "@/pages/dashboard";
-import Coaching from "@/pages/coaching-minimal";
+import Coaching from "@/pages/coaching";
 import Journal from "@/pages/journal-new";
 import Progress from "@/pages/progress";
 import Community from "@/pages/community";
