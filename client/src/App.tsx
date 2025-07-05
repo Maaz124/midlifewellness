@@ -13,6 +13,7 @@ import Community from "@/pages/community";
 import About from "@/pages/about";
 import Checkout from "@/pages/checkout";
 import ContactCoaching from "@/pages/contact-coaching";
+import EmailSignatures from "@/pages/email-signatures";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
           <Route path="/about" component={About} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/contact-coaching" component={ContactCoaching} />
+          <Route path="/email-signatures" component={EmailSignatures} />
           <Route component={NotFound} />
         </Switch>
       </main>

@@ -853,6 +853,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send notification email to Dr. Sidra
       const { sendEmail } = require('./email');
+      const { addSignatureToEmail } = require('./email-signatures');
       
       const notificationEmailSent = await sendEmail({
         to: 'coaching@thrivemidlife.com', // Dr. Sidra's coaching email
@@ -905,49 +906,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Send confirmation email to the applicant
+      const confirmationEmailContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="text-align: center; padding: 20px;">
+            <h1 style="color: #8B5CF6; margin-bottom: 10px;">Thank You, ${name}!</h1>
+            <p style="color: #6b7280; font-size: 18px;">Your coaching inquiry has been received</p>
+          </div>
+          
+          <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0;">
+            <h2 style="color: #1e293b; margin-top: 0;">What Happens Next?</h2>
+            <ul style="color: #374151; line-height: 1.6;">
+              <li><strong>Personal Review:</strong> Dr. Sidra Bukhari will personally review your inquiry within 24 hours</li>
+              <li><strong>Initial Response:</strong> You'll receive a personalized response addressing your specific goals and needs</li>
+              <li><strong>Discovery Call:</strong> If there's a good fit, we'll schedule a complimentary 15-minute discovery call</li>
+              <li><strong>Coaching Plan:</strong> Together, we'll design a coaching approach that's perfect for your situation</li>
+            </ul>
+          </div>
+          
+          <div style="background: #8B5CF6; color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Your Inquiry Summary</h3>
+            <p><strong>Coaching Interest:</strong> ${coachingType}</p>
+            <p><strong>Inquiry ID:</strong> #${inquiry.id}</p>
+            <p style="margin-bottom: 0;"><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #6b7280;">
+              If you have any urgent questions, please email us at 
+              <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6;">coaching@thrivemidlife.com</a>
+            </p>
+          </div>
+        </div>
+      `;
+
       const confirmationEmailSent = await sendEmail({
         to: email,
         from: 'noreply@thrivemidlife.com',
         subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="text-align: center; padding: 20px;">
-              <h1 style="color: #8B5CF6; margin-bottom: 10px;">Thank You, ${name}!</h1>
-              <p style="color: #6b7280; font-size: 18px;">Your coaching inquiry has been received</p>
-            </div>
-            
-            <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0;">
-              <h2 style="color: #1e293b; margin-top: 0;">What Happens Next?</h2>
-              <ul style="color: #374151; line-height: 1.6;">
-                <li><strong>Personal Review:</strong> Dr. Sidra Bukhari will personally review your inquiry within 24 hours</li>
-                <li><strong>Initial Response:</strong> You'll receive a personalized response addressing your specific goals and needs</li>
-                <li><strong>Discovery Call:</strong> If there's a good fit, we'll schedule a complimentary 15-minute discovery call</li>
-                <li><strong>Coaching Plan:</strong> Together, we'll design a coaching approach that's perfect for your situation</li>
-              </ul>
-            </div>
-            
-            <div style="background: #8B5CF6; color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="margin-top: 0;">Your Inquiry Summary</h3>
-              <p><strong>Coaching Interest:</strong> ${coachingType}</p>
-              <p><strong>Inquiry ID:</strong> #${inquiry.id}</p>
-              <p style="margin-bottom: 0;"><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <p style="color: #6b7280;">
-                If you have any urgent questions, please email us at 
-                <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6;">coaching@thrivemidlife.com</a>
-              </p>
-            </div>
-            
-            <div style="border-top: 1px solid #e5e7eb; padding: 20px 0; text-align: center;">
-              <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-                Dr. Sidra Bukhari, MD | Psychiatrist, NLP Life Coach & Mindfulness Trainer<br>
-                ThriveMidlife - Empowering Women Through Life's Transitions
-              </p>
-            </div>
-          </div>
-        `
+        html: addSignatureToEmail(confirmationEmailContent, 'personal')
       });
 
       res.status(201).json({ 

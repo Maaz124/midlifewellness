@@ -278,11 +278,18 @@ export default function Dashboard() {
                       Unlock Full Program
                     </Button>
                   </Link>
-                  <Link href="/coaching?admin=true">
-                    <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
-                      Admin Access
-                    </Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link href="/coaching?admin=true">
+                      <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50 text-xs px-3">
+                        Admin Access
+                      </Button>
+                    </Link>
+                    <Link href="/email-signatures">
+                      <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 text-xs px-3">
+                        Email Sigs
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
               <div className="p-6 bg-white/50">
