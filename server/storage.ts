@@ -114,6 +114,7 @@ export interface IStorage {
   createResourcePurchase(purchase: InsertResourcePurchase): Promise<ResourcePurchase>;
   getUserResourcePurchases(userId: string): Promise<ResourcePurchase[]>;
   hasUserPurchasedResource(userId: string, resourceId: number): Promise<boolean>;
+  updateResourcePurchaseStatus(paymentIntentId: string, status: string): Promise<void>;
 
   // Resource Downloads
   createResourceDownload(download: InsertResourceDownload): Promise<ResourceDownload>;

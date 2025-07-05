@@ -1039,6 +1039,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stripe webhook for payment completion
+  app.post('/api/stripe-webhook', async (req, res) => {
+    try {
+      const { type, data } = req.body;
+      
+      if (type === 'payment_intent.succeeded') {
+        const paymentIntent = data.object;
+        await storage.updateResourcePurchaseStatus(paymentIntent.id, 'completed');
+        console.log('Payment completed for:', paymentIntent.id);
+      }
+      
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(400).json({ error: 'Webhook failed' });
+    }
+  });
+
   // Get specific resource by ID
   app.get('/api/resources/:id', async (req, res) => {
     try {

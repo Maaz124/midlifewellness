@@ -255,6 +255,7 @@ export const resourcePurchases = pgTable("resource_purchases", {
   resourceId: integer("resource_id").references(() => digitalResources.id).notNull(),
   paymentIntentId: varchar("payment_intent_id", { length: 255 }),
   amount: integer("amount").notNull(), // Amount paid in cents
+  status: text("status").default("pending").notNull(), // 'pending', 'completed', 'failed'
   purchasedAt: timestamp("purchased_at").defaultNow().notNull(),
 });
 
