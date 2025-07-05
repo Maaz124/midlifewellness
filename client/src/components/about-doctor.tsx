@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Brain, User, Award, BookOpen, Users } from 'lucide-react';
-import drSidraPhoto from '@assets/WhatsApp Image 2025-07-05 at 12.19.30_9b317ef0_1751715850437.jpg';
+import drSidraPhoto from '@assets/WhatsApp Image 2025-07-05 at 12.31.17_f100cf12_1751716760249.jpg';
 
 export function AboutDoctor() {
   const credentials = [
