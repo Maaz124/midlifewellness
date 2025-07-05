@@ -194,10 +194,12 @@ export function Footer() {
           {/* Medical Disclaimer */}
           <div className="mt-6 pt-6 border-t border-gray-800">
             <p className="text-xs text-gray-500 leading-relaxed">
-              <strong>Medical Disclaimer:</strong> The information provided on ThriveMidlife is for educational and informational purposes only. 
-              It is not intended as a substitute for professional medical advice, diagnosis, or treatment. 
-              Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. 
-              Dr. Sidra Bukhari is a licensed medical professional, but individual results may vary and this platform does not establish a doctor-patient relationship.
+              <strong>Important Medical Disclaimer:</strong> This program provides self-help coaching and educational content for personal development. 
+              It is not intended as medical advice or as a substitute for professional healthcare. 
+              If you are experiencing severe mental health symptoms, depression, anxiety, or any serious medical condition, 
+              please consult with your doctor or a qualified healthcare professional before participating. 
+              Dr. Sidra Bukhari is a licensed medical professional, but this platform does not establish a doctor-patient relationship. 
+              Your health and wellbeing are our priority.
             </p>
           </div>
         </div>
