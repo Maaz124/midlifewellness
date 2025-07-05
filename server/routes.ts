@@ -1075,29 +1075,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Download resource endpoint (for free resources or purchased ones)
-  app.get('/api/download-resource/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/download-resource/:id', async (req: any, res) => {
     try {
       const resourceId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
       
       const resource = await storage.getDigitalResourceById(resourceId);
       if (!resource) {
         return res.status(404).json({ message: 'Resource not found' });
       }
 
-      // Check if resource is free or if user has purchased it
+      // Check if resource requires payment
       if (resource.price > 0) {
+        // For paid resources, require authentication
+        if (!req.isAuthenticated()) {
+          return res.status(401).json({ message: 'Authentication required for paid resources' });
+        }
+
+        const userId = req.user.claims.sub;
         const hasPurchased = await storage.hasUserPurchasedResource(userId, resourceId);
         if (!hasPurchased) {
           return res.status(403).json({ message: 'Purchase required to download this resource' });
         }
-      }
 
-      // Track the download
-      await storage.createResourceDownload({
-        userId,
-        resourceId
-      });
+        // Track the download for authenticated users
+        await storage.createResourceDownload({
+          userId,
+          resourceId
+        });
+      }
 
       // Get file path
       const filePath = DigitalResourceManager.getFilePath(resource.filename);
@@ -1107,12 +1112,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'File not found' });
       }
 
-      // Set headers for download
-      res.setHeader('Content-Disposition', `attachment; filename="${resource.originalName || resource.title}.pdf"`);
-      res.setHeader('Content-Type', resource.mimeType);
+      // Read file buffer to ensure clean delivery
+      const fs = await import('fs');
+      const fileBuffer = fs.readFileSync(filePath);
+
+      // Set secure headers that prevent antivirus false positives
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${(resource.originalName || resource.title).replace(/[^a-zA-Z0-9\s._-]/g, '_')}.pdf"`);
+      res.setHeader('Content-Length', fileBuffer.length.toString());
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader('X-Download-Options', 'noopen');
+      res.setHeader('Referrer-Policy', 'no-referrer');
       
-      // Send file
-      res.sendFile(filePath);
+      // Send clean file buffer
+      res.send(fileBuffer);
       
     } catch (error) {
       console.error('Error downloading resource:', error);
