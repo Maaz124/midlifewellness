@@ -1,9 +1,9 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Lazy load individual component types
-const WeekOneComponents = lazy(() => import('./week-one-components'));
-const WeekTwoComponents = lazy(() => import('./week-two-components'));
+// Lazy load individual component types - using dynamic imports for better resolution
+const WeekOneComponents = lazy(() => import('./week-one-components').then(m => ({ default: m.default })));
+const WeekTwoComponents = lazy(() => import('./week-two-components').then(m => ({ default: m.default })));
 
 interface ComponentLoaderProps {
   component: any;

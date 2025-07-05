@@ -1,16 +1,12 @@
-import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
-// Use optimized component loader for better performance
-const ComponentLoader = lazy(() => 
-  import('@/components/coaching/component-loader').then(module => ({
-    default: module.ComponentLoader
-  }))
-);
+// Import the original component but use it more efficiently
+import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-fixed';
 
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules } from '@/lib/coaching-data';
@@ -140,27 +136,15 @@ export default function Coaching() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 to-teal-50 p-4">
         <div className="max-w-6xl mx-auto">
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-screen">
-              <Card className="w-full max-w-md">
-                <CardContent className="p-8 text-center">
-                  <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                  <h3 className="text-lg font-semibold mb-2">Loading Interactive Component</h3>
-                  <p className="text-muted-foreground">Preparing your personalized coaching experience...</p>
-                </CardContent>
-              </Card>
-            </div>
-          }>
-            <ComponentLoader
-              component={activeComponent}
-              moduleId={activeModuleId}
-              onComplete={handleComponentComplete}
-              onClose={() => {
-                setActiveComponent(null);
-                setActiveModuleId(null);
-              }}
-            />
-          </Suspense>
+          <EnhancedCoachingComponentMinimal
+            component={activeComponent}
+            moduleId={activeModuleId}
+            onComplete={handleComponentComplete}
+            onClose={() => {
+              setActiveComponent(null);
+              setActiveModuleId(null);
+            }}
+          />
         </div>
       </div>
     );
