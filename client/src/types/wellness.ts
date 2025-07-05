@@ -70,14 +70,11 @@ export interface CoachingModule {
 
 export interface ModuleComponent {
   id: string;
-  type: 'video' | 'audio' | 'exercise' | 'worksheet' | 'reflection';
+  type: 'exercise' | 'worksheet' | 'reflection';
   title: string;
   description: string;
   duration?: number;
   completed: boolean;
-  mediaUrl?: string;
-  youtubeId?: string;
-  thumbnail?: string;
 }
 
 export interface MoodEntry {

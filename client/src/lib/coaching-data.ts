@@ -12,41 +12,31 @@ export const coachingModules: CoachingModule[] = [
     components: [
       {
         id: 'hormone-symphony',
-        type: 'video',
-        title: 'Understanding Your Hormonal Symphony',
-        description: 'Complete 12-minute video script about hormones and brain changes',
-        duration: 12,
-        completed: false,
-        youtubeId: 'dQw4w9WgXcQ',
-        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
+        type: 'exercise',
+        title: 'Your Personal Hormone Symphony Assessment',
+        description: 'Interactive 12-step hormonal pattern mapping with personalized insights, symptom tracking, and educational content about brain changes during perimenopause',
+        completed: false
       },
       {
         id: 'mental-space-reset',
-        type: 'video',
-        title: 'Resetting Your Mental Space',
-        description: '10-minute guided lesson on brain fog and mental clarity',
-        duration: 10,
-        completed: false,
-        youtubeId: 'oHg5SJYRHA0',
-        thumbnail: 'https://img.youtube.com/vi/oHg5SJYRHA0/maxresdefault.jpg'
+        type: 'exercise',
+        title: 'Mental Clarity Reset Toolkit',
+        description: 'Interactive 10-minute brain fog clearing practice with cognitive exercises, focus techniques, and mental clarity tracking system',
+        completed: false
       },
       {
         id: 'hormone-meditation',
-        type: 'audio',
-        title: 'Hormone Harmony Meditation',
-        description: '15-minute guided meditation for hormonal balance',
-        duration: 15,
-        completed: false,
-        mediaUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        type: 'exercise',
+        title: 'Hormone Harmony Interactive Practice',
+        description: '15-minute guided self-practice with breathing prompts, visualization cues, and hormonal balance tracking for deep relaxation',
+        completed: false
       },
       {
         id: 'cortisol-breathwork',
-        type: 'audio',
-        title: 'Cortisol Reset Breathwork',
-        description: '8-minute breathing practice to lower stress hormones',
-        duration: 8,
-        completed: false,
-        mediaUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        type: 'exercise',
+        title: 'Cortisol Reset Breathing System',
+        description: '8-minute interactive breathing practice with timer, pattern guidance, stress level tracking, and cortisol reduction techniques',
+        completed: false
       },
       {
         id: 'symptom-tracker',
@@ -110,23 +100,18 @@ export const coachingModules: CoachingModule[] = [
     locked: false,
     components: [
       {
-        id: 'w2-cbt-intro-video',
-        type: 'video',
-        title: 'Introduction to CBT for Midlife Women',
-        description: '12-minute educational video explaining cognitive behavioral therapy principles',
-        duration: 12,
-        completed: false,
-        youtubeId: 'hFDcoX7s6rE',
-        thumbnail: 'https://img.youtube.com/vi/hFDcoX7s6rE/maxresdefault.jpg'
+        id: 'w2-cbt-intro-interactive',
+        type: 'exercise',
+        title: 'CBT Discovery Workshop for Midlife Women',
+        description: 'Interactive 12-step cognitive behavioral therapy exploration with examples, self-assessment tools, and personalized insights for midlife challenges',
+        completed: false
       },
       {
-        id: 'w2-mindfulness-audio',
-        type: 'audio',
-        title: 'Mindful Thought Observation Practice',
-        description: '10-minute guided meditation for thought awareness',
-        duration: 10,
-        completed: false,
-        mediaUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        id: 'w2-mindful-thought-tracker',
+        type: 'exercise',
+        title: 'Mindful Thought Observation Interactive Practice',
+        description: '10-minute guided thought awareness exercise with timer, prompts, and real-time tracking of thought patterns and emotional responses',
+        completed: false
       },
       {
         id: 'w2-cbt-reframing',
@@ -229,7 +214,7 @@ export const coachingModules: CoachingModule[] = [
       },
       {
         id: 'w4-meditation',
-        type: 'audio',
+        type: 'exercise',
         title: 'Guided Grounding Meditation',
         description: '12-minute nervous system regulation meditation with body scan and breath awareness',
         duration: 12,
