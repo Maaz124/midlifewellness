@@ -51,6 +51,14 @@ export function NavHeader() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4 flex-shrink-0">
+            <Link href="/contact-coaching">
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium"
+              >
+                Personal Coaching
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm" className="p-2">
               <Bell className="h-5 w-5 text-gray-400" />
             </Button>
@@ -95,6 +103,13 @@ export function NavHeader() {
                   {item.label}
                 </Link>
               ))}
+              <Link
+                href="/contact-coaching"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg transition-colors bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium text-center"
+              >
+                Personal Coaching
+              </Link>
             </nav>
           </div>
         )}
