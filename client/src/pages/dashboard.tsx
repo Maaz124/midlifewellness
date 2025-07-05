@@ -210,13 +210,24 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {data.coachingProgress.length === 0 ? (
-                <div className="text-center py-8">
+              {(data.coachingProgress.completedComponents.length === 0) ? (
+                <div className="text-center py-8 space-y-4">
                   <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-4">Start your coaching journey to track progress</p>
-                  <Link href="/coaching">
-                    <Button className="btn-primary">Begin Coaching</Button>
-                  </Link>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Ready to Transform Your Life?</h3>
+                    <p className="text-gray-500 mb-4">Access the complete 6-week Mind Reset Method coaching program</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Link href="/coaching">
+                      <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold">
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Explore Full Program - $97
+                      </Button>
+                    </Link>
+                    <p className="text-xs text-gray-500">
+                      Includes 24 interactive components, progress tracking, and lifetime access
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <>

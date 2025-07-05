@@ -92,6 +92,7 @@ const CheckoutForm = () => {
 
 export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
@@ -99,14 +100,28 @@ export default function Checkout() {
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
+      })
+      .catch((error) => {
+        console.error('Payment Intent Error:', error);
+        // Redirect back to coaching with error message
+        setLocation('/coaching?error=payment_setup');
       });
   }, []);
 
   if (!clientSecret) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="h-screen flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading"/>
+      <div className="max-w-4xl mx-auto p-8">
+        <div className="text-center space-y-6">
+          <h1 className="text-3xl font-bold text-gray-800">Setting Up Your Payment</h1>
+          <div className="flex items-center justify-center space-x-4">
+            <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full" />
+            <p className="text-gray-600">Preparing secure checkout...</p>
+          </div>
+          <div className="bg-blue-50 p-4 rounded-lg max-w-md mx-auto">
+            <p className="text-sm text-blue-800">
+              <strong>Having trouble?</strong> Try refreshing the page or contact support at coaching@thrivemidlife.com
+            </p>
+          </div>
         </div>
       </div>
     );
