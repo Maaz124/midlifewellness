@@ -348,7 +348,15 @@ export const leads = pgTable("leads", {
   source: varchar("source").notNull(), // landing_page, social_media, referral
   leadMagnet: varchar("lead_magnet"), // free_assessment, hormone_guide
   status: varchar("status").default("active"), // active, converted, unsubscribed
+  leadScore: integer("lead_score").default(0), // 0-100 scoring system
   tags: text("tags").array().default([]),
+  utmSource: varchar("utm_source"),
+  utmMedium: varchar("utm_medium"),
+  utmCampaign: varchar("utm_campaign"),
+  referrerUrl: varchar("referrer_url"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  timeZone: varchar("time_zone"),
   createdAt: timestamp("created_at").defaultNow(),
   convertedAt: timestamp("converted_at"),
   lastEngaged: timestamp("last_engaged").defaultNow()
@@ -384,6 +392,76 @@ export const conversionEvents = pgTable("conversion_events", {
   eventData: jsonb("event_data"),
   value: varchar("value"), // Store as string to avoid decimal issues
   createdAt: timestamp("created_at").defaultNow()
+});
+
+// A/B Testing Tables
+export const abTests = pgTable("ab_tests", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  status: varchar("status").default("active"), // active, paused, completed
+  trafficAllocation: integer("traffic_allocation").default(100), // percentage
+  startDate: timestamp("start_date").defaultNow(),
+  endDate: timestamp("end_date"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const abTestVariants = pgTable("ab_test_variants", {
+  id: serial("id").primaryKey(),
+  testId: integer("test_id").references(() => abTests.id),
+  name: varchar("name").notNull(), // control, variant_a, variant_b
+  trafficPercentage: integer("traffic_percentage").notNull(),
+  config: jsonb("config"), // variant configuration
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const abTestAssignments = pgTable("ab_test_assignments", {
+  id: serial("id").primaryKey(),
+  testId: integer("test_id").references(() => abTests.id),
+  variantId: integer("variant_id").references(() => abTestVariants.id),
+  leadId: integer("lead_id").references(() => leads.id),
+  sessionId: varchar("session_id"),
+  assignedAt: timestamp("assigned_at").defaultNow()
+});
+
+// Behavioral Tracking
+export const behaviorEvents = pgTable("behavior_events", {
+  id: serial("id").primaryKey(),
+  leadId: integer("lead_id").references(() => leads.id),
+  sessionId: varchar("session_id"),
+  eventType: varchar("event_type").notNull(), // page_view, button_click, form_submit, scroll_depth
+  eventData: jsonb("event_data"),
+  pageUrl: varchar("page_url"),
+  timestamp: timestamp("timestamp").defaultNow()
+});
+
+// Lead Scoring Rules
+export const leadScoringRules = pgTable("lead_scoring_rules", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  eventType: varchar("event_type").notNull(),
+  scoreValue: integer("score_value").notNull(),
+  conditions: jsonb("conditions"), // JSON conditions for rule application
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Advanced Email Segmentation
+export const emailSegments = pgTable("email_segments", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  conditions: jsonb("conditions"), // segmentation rules
+  leadCount: integer("lead_count").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const emailSegmentMembers = pgTable("email_segment_members", {
+  id: serial("id").primaryKey(),
+  segmentId: integer("segment_id").references(() => emailSegments.id),
+  leadId: integer("lead_id").references(() => leads.id),
+  addedAt: timestamp("added_at").defaultNow()
 });
 
 // Marketing Funnel Schema Definitions
