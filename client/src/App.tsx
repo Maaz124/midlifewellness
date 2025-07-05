@@ -7,7 +7,7 @@ import { NavHeader } from "@/components/nav-header";
 import { Footer } from "@/components/footer";
 import Dashboard from "@/pages/dashboard";
 import Coaching from "@/pages/coaching";
-import Journal from "@/pages/journal";
+import Journal from "@/pages/journal-new";
 import Progress from "@/pages/progress";
 import Community from "@/pages/community";
 import About from "@/pages/about";
