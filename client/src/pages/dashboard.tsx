@@ -9,8 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, Target, BookOpen, RefreshCw, Sparkles, CreditCard, CheckCircle } from 'lucide-react';
 import { Link } from 'wouter';
 import { Logo } from '@/components/logo';
+import { useSEO } from '@/hooks/use-seo';
 
 export default function Dashboard() {
+  // SEO optimization for dashboard page
+  useSEO('dashboard');
+  
   const { data, updateHealthScores } = useWellnessData();
 
   const handleScoreUpdate = (type: 'mental' | 'physical' | 'cognitive', score: number) => {

@@ -8,6 +8,8 @@ import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules } from '@/lib/coaching-data';
 import { useLocation } from 'wouter';
+import { useSEO } from '@/hooks/use-seo';
+import { structuredDataTemplates } from '@/lib/seo';
 import { 
   Clock, 
   CheckCircle, 
@@ -27,6 +29,9 @@ import {
 } from 'lucide-react';
 
 export default function Coaching() {
+  // SEO optimization with structured data for course
+  useSEO('coaching');
+  
   const { data, updateCoachingProgress, resetCoachingProgress } = useWellnessData();
   const [activeComponent, setActiveComponent] = useState<any>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);

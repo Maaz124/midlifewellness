@@ -420,6 +420,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SEO Routes - Sitemap and Robots.txt
+  app.get('/sitemap.xml', (req, res) => {
+    res.set('Content-Type', 'text/xml');
+    res.send(generateSitemap());
+  });
+
+  app.get('/robots.txt', (req, res) => {
+    res.set('Content-Type', 'text/plain');
+    res.send(generateRobotsTxt());
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
+
+// Import sitemap utilities
+import { generateSitemap, generateRobotsTxt } from "./sitemap";
