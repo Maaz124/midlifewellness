@@ -983,6 +983,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Purchase digital resource
+  app.post('/api/purchase-resource', isAuthenticated, async (req: any, res) => {
+    try {
+      const { resourceId } = req.body;
+      const userId = req.user.claims.sub;
+
+      if (!resourceId) {
+        return res.status(400).json({ message: 'Resource ID is required' });
+      }
+
+      // Get resource details
+      const resource = await storage.getDigitalResourceById(resourceId);
+      if (!resource) {
+        return res.status(404).json({ message: 'Resource not found' });
+      }
+
+      // Check if user already purchased this resource
+      const alreadyPurchased = await storage.hasUserPurchasedResource(userId, resourceId);
+      if (alreadyPurchased) {
+        return res.status(400).json({ message: 'Resource already purchased' });
+      }
+
+      // Create Stripe payment intent for the resource
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(resource.price * 100), // Convert to cents
+        currency: 'usd',
+        metadata: {
+          resourceId: resourceId.toString(),
+          userId: userId,
+          type: 'digital_resource'
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      // Record the purchase attempt
+      await storage.createResourcePurchase({
+        userId,
+        resourceId,
+        amount: resource.price,
+        paymentIntentId: paymentIntent.id
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        resourceId: resourceId,
+        paymentUrl: `/resource-checkout?payment_intent=${paymentIntent.id}&resource_id=${resourceId}`
+      });
+    } catch (error: any) {
+      console.error('Error creating resource purchase:', error);
+      res.status(500).json({ message: 'Failed to process purchase: ' + error.message });
+    }
+  });
+
+  // Get specific resource by ID
+  app.get('/api/resources/:id', async (req, res) => {
+    try {
+      const resourceId = parseInt(req.params.id);
+      const resource = await storage.getDigitalResourceById(resourceId);
+      
+      if (!resource) {
+        return res.status(404).json({ message: 'Resource not found' });
+      }
+      
+      res.json(resource);
+    } catch (error) {
+      console.error('Error fetching resource:', error);
+      res.status(500).json({ message: 'Failed to fetch resource' });
+    }
+  });
+
+  // Get payment intent details
+  app.get('/api/payment-intent/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const paymentIntentId = req.params.id;
+      
+      // Retrieve payment intent from Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        status: paymentIntent.status,
+        amount: paymentIntent.amount
+      });
+    } catch (error: any) {
+      console.error('Error fetching payment intent:', error);
+      res.status(500).json({ message: 'Failed to fetch payment intent: ' + error.message });
+    }
+  });
+
   // Get user's purchased resources
   app.get('/api/my-resources', isAuthenticated, async (req: any, res) => {
     try {
