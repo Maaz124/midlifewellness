@@ -62,9 +62,13 @@ export default function Dashboard() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
             Welcome to Your Wellness Journey
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
             Navigate midlife with confidence through personalized health insights, 
             evidence-based coaching, and supportive tools designed specifically for women.
+          </p>
+          <p className="text-sm text-gray-500 max-w-xl mx-auto">
+            <strong>Please note:</strong> This is a self-help coaching program, not medical advice. 
+            Consult your healthcare provider for serious mental health concerns.
           </p>
         </div>
 
@@ -164,6 +168,9 @@ export default function Dashboard() {
           <div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Health Assessment Dashboard</h2>
             <p className="text-gray-600">Complete your health calculators to get personalized insights and recommendations.</p>
+            <p className="text-xs text-gray-500 mt-1">
+              <em>Note: These assessments are for wellness coaching purposes and do not replace professional medical evaluation.</em>
+            </p>
           </div>
           <Button variant="outline" className="hidden md:flex">
             <RefreshCw className="w-4 h-4 mr-2" />
