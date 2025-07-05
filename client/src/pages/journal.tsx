@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Feather, Calendar, BookOpen, Search, Map, FileText, Download, ShoppingCart, Filter, DollarSign, Star, Lock, CheckCircle } from 'lucide-react';
+import { Feather, Calendar, BookOpen, Search, Map, FileText, Download, ShoppingCart, Filter, DollarSign, Star, Lock, CheckCircle, Heart } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { getTodaysPrompt } from '@/lib/coaching-data';
 import { JournalEntry, MoodEntry } from '@/types/wellness';
