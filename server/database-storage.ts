@@ -7,6 +7,12 @@ import {
   habits,
   moodEntries,
   videos,
+  forumCategories,
+  forumPosts,
+  forumReplies,
+  supportGroups,
+  supportGroupMembers,
+
   type User,
   type InsertUser,
   type UpsertUser,
@@ -26,7 +32,7 @@ import {
   type InsertVideo,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -255,4 +261,225 @@ export class DatabaseStorage implements IStorage {
   async deleteVideo(id: number): Promise<void> {
     await db.update(videos).set({ isActive: false }).where(eq(videos.id, id));
   }
+
+  // Community operations
+  async getForumCategories(): Promise<any[]> {
+    return await db.select().from(forumCategories).where(eq(forumCategories.isActive, true));
+  }
+
+  async getForumPosts(categoryId?: string, search?: string): Promise<any[]> {
+    const posts = await db
+      .select({
+        id: forumPosts.id,
+        title: forumPosts.title,
+        content: forumPosts.content,
+        isAnonymous: forumPosts.isAnonymous,
+        isPinned: forumPosts.isPinned,
+        likes: forumPosts.likes,
+        views: forumPosts.views,
+        replyCount: forumPosts.replyCount,
+        lastActivity: forumPosts.lastActivity,
+        createdAt: forumPosts.createdAt,
+        categoryName: forumCategories.name,
+        categoryId: forumPosts.categoryId,
+        authorName: users.firstName,
+        authorEmail: users.email
+      })
+      .from(forumPosts)
+      .leftJoin(forumCategories, eq(forumPosts.categoryId, forumCategories.id))
+      .leftJoin(users, eq(forumPosts.userId, users.id))
+      .where(eq(forumPosts.isLocked, false));
+
+    // Filter by category if specified
+    let filteredPosts = posts;
+    if (categoryId && categoryId !== 'all') {
+      filteredPosts = posts.filter(post => post.categoryId === parseInt(categoryId));
+    }
+
+    // Sort by pinned status and last activity
+    return filteredPosts.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
+    });
+  }
+
+  async getForumPostById(id: number): Promise<any> {
+    const [post] = await db
+      .select({
+        id: forumPosts.id,
+        title: forumPosts.title,
+        content: forumPosts.content,
+        isAnonymous: forumPosts.isAnonymous,
+        isPinned: forumPosts.isPinned,
+        likes: forumPosts.likes,
+        views: forumPosts.views,
+        replyCount: forumPosts.replyCount,
+        lastActivity: forumPosts.lastActivity,
+        createdAt: forumPosts.createdAt,
+        categoryName: forumCategories.name,
+        categoryId: forumPosts.categoryId,
+        authorName: users.firstName,
+        authorEmail: users.email
+      })
+      .from(forumPosts)
+      .leftJoin(forumCategories, eq(forumPosts.categoryId, forumCategories.id))
+      .leftJoin(users, eq(forumPosts.userId, users.id))
+      .where(eq(forumPosts.id, id));
+    
+    return post;
+  }
+
+  async createForumPost(postData: any): Promise<any> {
+    const [newPost] = await db
+      .insert(forumPosts)
+      .values(postData)
+      .returning();
+    return newPost;
+  }
+
+  async incrementPostViews(postId: number): Promise<void> {
+    await db
+      .update(forumPosts)
+      .set({ views: sql`${forumPosts.views} + 1` })
+      .where(eq(forumPosts.id, postId));
+  }
+
+  async getForumReplies(postId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: forumReplies.id,
+        content: forumReplies.content,
+        isAnonymous: forumReplies.isAnonymous,
+        likes: forumReplies.likes,
+        parentReplyId: forumReplies.parentReplyId,
+        createdAt: forumReplies.createdAt,
+        authorName: users.firstName,
+        authorEmail: users.email
+      })
+      .from(forumReplies)
+      .leftJoin(users, eq(forumReplies.userId, users.id))
+      .where(eq(forumReplies.postId, postId))
+      .orderBy(forumReplies.createdAt);
+  }
+
+  async createForumReply(replyData: any): Promise<any> {
+    const [newReply] = await db
+      .insert(forumReplies)
+      .values(replyData)
+      .returning();
+    
+    // Update reply count on the post
+    await db
+      .update(forumPosts)
+      .set({ 
+        replyCount: sql`${forumPosts.replyCount} + 1`,
+        lastActivity: new Date()
+      })
+      .where(eq(forumPosts.id, replyData.postId));
+    
+    return newReply;
+  }
+
+  async getSupportGroups(): Promise<any[]> {
+    return await db
+      .select({
+        id: supportGroups.id,
+        name: supportGroups.name,
+        description: supportGroups.description,
+        type: supportGroups.type,
+        category: supportGroups.category,
+        maxMembers: supportGroups.maxMembers,
+        currentMembers: supportGroups.currentMembers,
+        meetingSchedule: supportGroups.meetingSchedule,
+        nextMeeting: supportGroups.nextMeeting,
+        facilitatorName: users.firstName,
+        facilitatorEmail: users.email,
+        createdAt: supportGroups.createdAt
+      })
+      .from(supportGroups)
+      .leftJoin(users, eq(supportGroups.facilitatorId, users.id))
+      .where(eq(supportGroups.isActive, true))
+      .orderBy(supportGroups.createdAt);
+  }
+
+  async createSupportGroup(groupData: any): Promise<any> {
+    const [newGroup] = await db
+      .insert(supportGroups)
+      .values(groupData)
+      .returning();
+    
+    // Add creator as facilitator member
+    await db.insert(supportGroupMembers).values({
+      groupId: newGroup.id,
+      userId: groupData.facilitatorId,
+      role: 'facilitator'
+    });
+    
+    return newGroup;
+  }
+
+  async joinSupportGroup(groupId: number, userId: string): Promise<any> {
+    // Check if already a member
+    const [existingMember] = await db
+      .select()
+      .from(supportGroupMembers)
+      .where(and(
+        eq(supportGroupMembers.groupId, groupId),
+        eq(supportGroupMembers.userId, userId),
+        eq(supportGroupMembers.isActive, true)
+      ));
+    
+    if (existingMember) {
+      return null; // Already a member
+    }
+    
+    // Check if group is full
+    const [group] = await db
+      .select()
+      .from(supportGroups)
+      .where(eq(supportGroups.id, groupId));
+    
+    if (group && group.currentMembers && group.maxMembers && group.currentMembers >= group.maxMembers) {
+      return null; // Group is full
+    }
+    
+    // Add member
+    const [newMember] = await db
+      .insert(supportGroupMembers)
+      .values({
+        groupId,
+        userId,
+        role: 'member'
+      })
+      .returning();
+    
+    // Update member count
+    await db
+      .update(supportGroups)
+      .set({ currentMembers: sql`${supportGroups.currentMembers} + 1` })
+      .where(eq(supportGroups.id, groupId));
+    
+    return newMember;
+  }
+
+  async getSupportGroupMembers(groupId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: supportGroupMembers.id,
+        role: supportGroupMembers.role,
+        joinedAt: supportGroupMembers.joinedAt,
+        memberName: users.firstName,
+        memberEmail: users.email
+      })
+      .from(supportGroupMembers)
+      .leftJoin(users, eq(supportGroupMembers.userId, users.id))
+      .where(and(
+        eq(supportGroupMembers.groupId, groupId),
+        eq(supportGroupMembers.isActive, true)
+      ))
+      .orderBy(supportGroupMembers.joinedAt);
+  }
+
+
 }

@@ -197,6 +197,20 @@ export const experienceReactions = pgTable("experience_reactions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const postLikes = pgTable("post_likes", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => forumPosts.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const replyLikes = pgTable("reply_likes", {
+  id: serial("id").primaryKey(),
+  replyId: integer("reply_id").references(() => forumReplies.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
