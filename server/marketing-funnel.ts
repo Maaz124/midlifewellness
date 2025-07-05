@@ -213,7 +213,7 @@ export class MarketingFunnel {
             <a href="/dashboard" style="background: #9333ea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0;">Take My Free Assessment</a>
             
             <p>To your vibrant health,<br>
-            Dr. Sidra Bukhari<br>
+            Dr. Sidra Bukhari, MRCPsych (UK)<br>
             <em>Psychiatrist & Women's Wellness Expert</em></p>
           </div>
         `,
@@ -223,7 +223,7 @@ Your free "5-Day Hormone Reset Guide" is ready for download.
 Visit /dashboard to access your guide and take the wellness assessment.
 
 To your vibrant health,
-Dr. Sidra Bukhari`
+Dr. Sidra Bukhari, MRCPsych (UK)`
       },
 
       assessmentReminder: {
