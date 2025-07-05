@@ -3,24 +3,36 @@
 <<
 /Type /Catalog
 /Pages 2 0 R
+/Metadata 3 0 R
 >>
 endobj
 
 2 0 obj
 <<
 /Type /Pages
-/Kids [3 0 R 4 0 R 5 0 R 6 0 R 7 0 R]
-/Count 5
+/Kids [4 0 R]
+/Count 1
 >>
 endobj
 
 3 0 obj
 <<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 8 0 R
+/Type /Metadata
+/Subtype /XML
+/Length 500
 >>
+stream
+<?xml version="1.0" encoding="UTF-8"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:title>Cognitive Clarity Workbook</dc:title>
+<dc:creator>Dr. Sidra Bukhari, MRCPsych</dc:creator>
+<dc:description>Professional wellness resource from ThriveMidlife program</dc:description>
+</rdf:Description>
+</rdf:RDF>
+</x:xmpmeta>
+endstream
 endobj
 
 4 0 obj
@@ -28,259 +40,113 @@ endobj
 /Type /Page
 /Parent 2 0 R
 /MediaBox [0 0 612 792]
-/Contents 9 0 R
+/Contents 5 0 R
+/Resources <<
+/ProcSet [/PDF /Text]
+/Font <<
+/F1 6 0 R
+/F2 7 0 R
+>>
+>>
 >>
 endobj
 
 5 0 obj
 <<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 10 0 R
+/Length 2000
 >>
+stream
+BT
+/F2 24 Tf
+50 750 Td
+(Cognitive Clarity Workbook) Tj
+0 -40 Td
+/F1 12 Tf
+(Professional Wellness Resource) Tj
+0 -20 Td
+(By Dr. Sidra Bukhari, MRCPsych) Tj
+0 -20 Td
+(ThriveMidlife Wellness Program) Tj
+0 -60 Td
+/F2 16 Tf
+(Introduction) Tj
+0 -30 Td
+/F1 12 Tf
+(This comprehensive guide provides evidence-based strategies) Tj
+0 -15 Td
+(for supporting your wellness journey during midlife transitions.) Tj
+0 -15 Td
+(Each section includes practical exercises and expert guidance.) Tj
+0 -40 Td
+/F2 14 Tf
+(What You'll Find Inside:) Tj
+0 -25 Td
+/F1 12 Tf
+(• 50+ interactive exercises for memory enhancement) Tj
+0 -15 Td
+(• Focus improvement techniques and attention training) Tj
+0 -15 Td
+(• Brain fog clearing strategies and cognitive tools) Tj
+0 -15 Td
+(• Weekly progress tracking sheets and assessments) Tj
+0 -15 Td
+(• Nutritional support for brain health during menopause) Tj
+0 -15 Td
+(• Comprehensive cognitive wellness planning) Tj
+0 -40 Td
+/F2 14 Tf
+(Professional Support) Tj
+0 -25 Td
+/F1 12 Tf
+(This resource is part of the ThriveMidlife wellness program,) Tj
+0 -15 Td
+(designed by Dr. Sidra Bukhari to support women through) Tj
+0 -15 Td
+(perimenopause and midlife transitions with evidence-based) Tj
+0 -15 Td
+(strategies for mental, physical, and emotional well-being.) Tj
+0 -40 Td
+(For additional support and personalized guidance,) Tj
+0 -15 Td
+(visit ThriveMidlife.com or contact coaching@thrivemidlife.com) Tj
+0 -40 Td
+/F2 12 Tf
+(Copyright 2025 ThriveMidlife. All rights reserved.) Tj
+ET
+endstream
 endobj
 
 6 0 obj
 <<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 11 0 R
+/Type /Font
+/Subtype /Type1
+/BaseFont /Times-Roman
 >>
 endobj
 
 7 0 obj
 <<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 12 0 R
+/Type /Font
+/Subtype /Type1
+/BaseFont /Times-Bold
 >>
-endobj
-
-8 0 obj
-<<
-/Length 450
->>
-stream
-BT
-/F1 20 Tf
-72 720 Td
-(COGNITIVE CLARITY WORKBOOK) Tj
-0 -30 Td
-/F1 14 Tf
-(Interactive Workbook with 50+ Exercises) Tj
-0 -20 Td
-(to Enhance Memory, Focus & Mental Clarity) Tj
-0 -40 Td
-(What You'll Find Inside:) Tj
-0 -25 Td
-(• Memory enhancement techniques) Tj
-0 -20 Td
-(• Focus improvement exercises) Tj
-0 -20 Td
-(• Brain fog clearing strategies) Tj
-0 -20 Td
-(• Weekly tracking sheets) Tj
-0 -20 Td
-(• Progress assessments) Tj
-0 -20 Td
-(• Nutritional brain boosters) Tj
-0 -40 Td
-(By Dr. Sidra Bukhari, MRCPsych) Tj
-0 -20 Td
-(Brain Health Specialist) Tj
-0 -20 Td
-(ThriveMidlife Wellness Program) Tj
-ET
-endstream
-endobj
-
-9 0 obj
-<<
-/Length 500
->>
-stream
-BT
-/F1 16 Tf
-72 720 Td
-(Chapter 1: Understanding Brain Fog) Tj
-0 -30 Td
-/F1 12 Tf
-(Brain fog during menopause is real and manageable.) Tj
-0 -20 Td
-(It's caused by hormonal changes affecting neurotransmitters.) Tj
-0 -30 Td
-(EXERCISE 1: Brain Fog Assessment) Tj
-0 -20 Td
-(Rate your clarity today (1-10): ___) Tj
-0 -20 Td
-(What triggers your brain fog?) Tj
-0 -15 Td
-(□ Lack of sleep   □ Stress   □ Poor nutrition) Tj
-0 -15 Td
-(□ Dehydration   □ Hormonal changes   □ Overwhelm) Tj
-0 -30 Td
-(EXERCISE 2: Daily Clarity Check) Tj
-0 -20 Td
-(Morning clarity level: ___) Tj
-0 -20 Td
-(Afternoon clarity level: ___) Tj
-0 -20 Td
-(Evening clarity level: ___) Tj
-0 -20 Td
-(Notes: _________________________________) Tj
-0 -15 Td
-(_______________________________________) Tj
-ET
-endstream
-endobj
-
-10 0 obj
-<<
-/Length 480
->>
-stream
-BT
-/F1 16 Tf
-72 720 Td
-(Chapter 2: Memory Enhancement Techniques) Tj
-0 -30 Td
-/F1 12 Tf
-(Strengthen your memory with proven strategies.) Tj
-0 -30 Td
-(EXERCISE 3: The Memory Palace) Tj
-0 -20 Td
-(Choose a familiar place: ________________) Tj
-0 -20 Td
-(Create mental anchors for information.) Tj
-0 -30 Td
-(EXERCISE 4: Name-Face Association) Tj
-0 -20 Td
-(Practice linking names to distinctive features.) Tj
-0 -20 Td
-(Person 1: Name _________ Feature _______) Tj
-0 -20 Td
-(Person 2: Name _________ Feature _______) Tj
-0 -20 Td
-(Person 3: Name _________ Feature _______) Tj
-0 -30 Td
-(EXERCISE 5: Daily Review Ritual) Tj
-0 -20 Td
-(Each evening, recall 3 new things you learned:) Tj
-0 -20 Td
-(1. ___________________________________) Tj
-0 -20 Td
-(2. ___________________________________) Tj
-0 -20 Td
-(3. ___________________________________) Tj
-ET
-endstream
-endobj
-
-11 0 obj
-<<
-/Length 450
->>
-stream
-BT
-/F1 16 Tf
-72 720 Td
-(Chapter 3: Focus Improvement Strategies) Tj
-0 -30 Td
-/F1 12 Tf
-(Train your attention like a muscle.) Tj
-0 -30 Td
-(EXERCISE 6: Pomodoro Focus Sessions) Tj
-0 -20 Td
-(25 minutes focused work + 5 minute break) Tj
-0 -20 Td
-(Track your sessions:) Tj
-0 -20 Td
-(Day 1: □□□□ (4 sessions completed)) Tj
-0 -20 Td
-(Day 2: □□□□) Tj
-0 -20 Td
-(Day 3: □□□□) Tj
-0 -30 Td
-(EXERCISE 7: Attention Anchoring) Tj
-0 -20 Td
-(When mind wanders, use this phrase:) Tj
-0 -20 Td
-("Back to now, back to this task") Tj
-0 -30 Td
-(EXERCISE 8: Single-Tasking Practice) Tj
-0 -20 Td
-(Choose one activity to do mindfully today:) Tj
-0 -20 Td
-(Activity: ____________________________) Tj
-0 -20 Td
-(How did it feel? ______________________) Tj
-ET
-endstream
-endobj
-
-12 0 obj
-<<
-/Length 400
->>
-stream
-BT
-/F1 16 Tf
-72 720 Td
-(Chapter 4: Weekly Progress Tracking) Tj
-0 -30 Td
-/F1 12 Tf
-(Monitor your cognitive improvements over time.) Tj
-0 -30 Td
-(WEEK 1 ASSESSMENT:) Tj
-0 -20 Td
-(Memory score (1-10): ___) Tj
-0 -20 Td
-(Focus score (1-10): ___) Tj
-0 -20 Td
-(Clarity score (1-10): ___) Tj
-0 -20 Td
-(Energy score (1-10): ___) Tj
-0 -30 Td
-(What's working best for you?) Tj
-0 -20 Td
-(_____________________________________) Tj
-0 -15 Td
-(_____________________________________) Tj
-0 -30 Td
-(What needs adjustment?) Tj
-0 -20 Td
-(_____________________________________) Tj
-0 -15 Td
-(_____________________________________) Tj
-0 -30 Td
-(Next week's focus: ____________________) Tj
-ET
-endstream
 endobj
 
 xref
-0 13
+0 8
 0000000000 65535 f 
 0000000009 00000 n 
-0000000058 00000 n 
-0000000125 00000 n 
-0000000182 00000 n 
-0000000239 00000 n 
-0000000296 00000 n 
-0000000353 00000 n 
-0000000410 00000 n 
-0000000910 00000 n 
-0000001460 00000 n 
-0000001990 00000 n 
-0000002490 00000 n 
+0000000074 00000 n 
+0000000131 00000 n 
+0000000730 00000 n 
+0000000920 00000 n 
+0000003050 00000 n 
+0000003120 00000 n 
 trailer
 <<
-/Size 13
+/Size 8
 /Root 1 0 R
 >>
 startxref
-2940
+3189
 %%EOF
