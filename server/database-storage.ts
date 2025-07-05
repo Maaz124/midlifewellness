@@ -13,6 +13,9 @@ import {
   supportGroups,
   supportGroupMembers,
   coachingInquiries,
+  digitalResources,
+  resourcePurchases,
+  resourceDownloads,
 
   type User,
   type InsertUser,
@@ -31,6 +34,12 @@ import {
   type InsertMoodEntry,
   type Video,
   type InsertVideo,
+  type DigitalResource,
+  type InsertDigitalResource,
+  type ResourcePurchase,
+  type InsertResourcePurchase,
+  type ResourceDownload,
+  type InsertResourceDownload,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, desc } from "drizzle-orm";
@@ -513,5 +522,100 @@ export class DatabaseStorage implements IStorage {
       .where(eq(coachingInquiries.id, id))
       .returning();
     return updatedInquiry;
+  }
+
+  // Digital Resources operations
+  async getDigitalResources(): Promise<DigitalResource[]> {
+    return await db
+      .select()
+      .from(digitalResources)
+      .where(eq(digitalResources.isActive, true))
+      .orderBy(digitalResources.type, digitalResources.title);
+  }
+
+  async getDigitalResourceById(id: number): Promise<DigitalResource | undefined> {
+    const [resource] = await db
+      .select()
+      .from(digitalResources)
+      .where(and(eq(digitalResources.id, id), eq(digitalResources.isActive, true)))
+      .limit(1);
+    return resource;
+  }
+
+  async createDigitalResource(resourceData: InsertDigitalResource): Promise<DigitalResource> {
+    const [newResource] = await db
+      .insert(digitalResources)
+      .values(resourceData)
+      .returning();
+    return newResource;
+  }
+
+  async updateDigitalResource(id: number, updates: Partial<DigitalResource>): Promise<DigitalResource> {
+    const [updatedResource] = await db
+      .update(digitalResources)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(digitalResources.id, id))
+      .returning();
+    return updatedResource;
+  }
+
+  async deleteDigitalResource(id: number): Promise<void> {
+    await db
+      .update(digitalResources)
+      .set({ isActive: false })
+      .where(eq(digitalResources.id, id));
+  }
+
+  // Resource Purchase operations
+  async createResourcePurchase(purchaseData: InsertResourcePurchase): Promise<ResourcePurchase> {
+    const [newPurchase] = await db
+      .insert(resourcePurchases)
+      .values(purchaseData)
+      .returning();
+    return newPurchase;
+  }
+
+  async getUserResourcePurchases(userId: string): Promise<ResourcePurchase[]> {
+    return await db
+      .select()
+      .from(resourcePurchases)
+      .where(eq(resourcePurchases.userId, userId))
+      .orderBy(desc(resourcePurchases.purchasedAt));
+  }
+
+  async hasUserPurchasedResource(userId: string, resourceId: number): Promise<boolean> {
+    const [purchase] = await db
+      .select()
+      .from(resourcePurchases)
+      .where(and(
+        eq(resourcePurchases.userId, userId),
+        eq(resourcePurchases.resourceId, resourceId)
+      ))
+      .limit(1);
+    return !!purchase;
+  }
+
+  // Resource Download operations
+  async createResourceDownload(downloadData: InsertResourceDownload): Promise<ResourceDownload> {
+    const [newDownload] = await db
+      .insert(resourceDownloads)
+      .values(downloadData)
+      .returning();
+    
+    // Update download count
+    await db
+      .update(digitalResources)
+      .set({ downloadCount: sql`${digitalResources.downloadCount} + 1` })
+      .where(eq(digitalResources.id, downloadData.resourceId));
+    
+    return newDownload;
+  }
+
+  async getUserResourceDownloads(userId: string): Promise<ResourceDownload[]> {
+    return await db
+      .select()
+      .from(resourceDownloads)
+      .where(eq(resourceDownloads.userId, userId))
+      .orderBy(desc(resourceDownloads.downloadedAt));
   }
 }

@@ -227,6 +227,45 @@ export const coachingInquiries = pgTable("coaching_inquiries", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Digital Resources (Ebooks & Workbooks)
+export const digitalResources = pgTable("digital_resources", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  type: text("type").notNull(), // 'ebook', 'workbook', 'guide'
+  category: text("category"), // 'wellness', 'mindfulness', 'nutrition', etc.
+  price: integer("price").notNull(), // Price in cents
+  filename: varchar("filename", { length: 255 }).notNull(),
+  originalName: varchar("original_name", { length: 255 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  mimeType: varchar("mime_type", { length: 100 }).notNull(),
+  downloadCount: integer("download_count").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  previewPages: integer("preview_pages").default(0), // Number of free preview pages
+  totalPages: integer("total_pages"),
+  author: varchar("author", { length: 255 }).default("Dr. Sidra Bukhari").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Resource Purchases
+export const resourcePurchases = pgTable("resource_purchases", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  resourceId: integer("resource_id").references(() => digitalResources.id).notNull(),
+  paymentIntentId: varchar("payment_intent_id", { length: 255 }),
+  amount: integer("amount").notNull(), // Amount paid in cents
+  purchasedAt: timestamp("purchased_at").defaultNow().notNull(),
+});
+
+// Resource Downloads (for tracking)
+export const resourceDownloads = pgTable("resource_downloads", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  resourceId: integer("resource_id").references(() => digitalResources.id).notNull(),
+  downloadedAt: timestamp("downloaded_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -261,6 +300,24 @@ export const insertHabitSchema = createInsertSchema(habits).omit({
 export const insertMoodEntrySchema = createInsertSchema(moodEntries).omit({
   id: true,
   createdAt: true,
+});
+
+// Digital Resources insert schemas
+export const insertDigitalResourceSchema = createInsertSchema(digitalResources).omit({
+  id: true,
+  downloadCount: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertResourcePurchaseSchema = createInsertSchema(resourcePurchases).omit({
+  id: true,
+  purchasedAt: true,
+});
+
+export const insertResourceDownloadSchema = createInsertSchema(resourceDownloads).omit({
+  id: true,
+  downloadedAt: true,
 });
 
 // Community insert schemas
@@ -340,6 +397,16 @@ export type Habit = typeof habits.$inferSelect;
 
 export type InsertMoodEntry = z.infer<typeof insertMoodEntrySchema>;
 export type MoodEntry = typeof moodEntries.$inferSelect;
+
+// Digital Resources types
+export type InsertDigitalResource = z.infer<typeof insertDigitalResourceSchema>;
+export type DigitalResource = typeof digitalResources.$inferSelect;
+
+export type InsertResourcePurchase = z.infer<typeof insertResourcePurchaseSchema>;
+export type ResourcePurchase = typeof resourcePurchases.$inferSelect;
+
+export type InsertResourceDownload = z.infer<typeof insertResourceDownloadSchema>;
+export type ResourceDownload = typeof resourceDownloads.$inferSelect;
 
 // Community types
 export type InsertForumCategory = z.infer<typeof insertForumCategorySchema>;
