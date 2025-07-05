@@ -73,7 +73,7 @@ function CheckoutForm({ clientSecret, resourceTitle, resourcePrice }: CheckoutFo
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>Total:</span>
-              <span>${resourcePrice.toFixed(2)}</span>
+              <span>${(resourcePrice / 100).toFixed(2)}</span>
             </div>
           </div>
         </CardContent>
@@ -97,7 +97,7 @@ function CheckoutForm({ clientSecret, resourceTitle, resourcePrice }: CheckoutFo
                   Processing...
                 </>
               ) : (
-                `Complete Purchase - $${resourcePrice.toFixed(2)}`
+                `Complete Purchase - $${(resourcePrice / 100).toFixed(2)}`
               )}
             </Button>
           </form>
