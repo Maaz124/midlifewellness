@@ -190,6 +190,66 @@ export default function PerimenopauseEducation() {
                   </p>
                 </div>
 
+                {/* Genitourinary Health */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                    Genitourinary Health Changes
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">
+                    Declining estrogen levels directly affect the urogenital tract, causing a condition called Genitourinary Syndrome of Menopause (GSM). These changes can significantly impact quality of life but are often treatable.
+                  </p>
+                  
+                  <div className="bg-pink-50 dark:bg-pink-900/20 p-5 rounded-lg border border-pink-200 dark:border-pink-800 space-y-4" data-testid="card-genitourinary-health">
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2 text-pink-900 dark:text-pink-300">Recurrent Urinary Tract Infections (UTIs)</h4>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                        <strong>Why it happens:</strong> Estrogen helps maintain healthy vaginal and urethral tissue. As estrogen declines, the vaginal pH becomes less acidic, reducing protective bacteria and thinning the urethral lining, making infections more likely.
+                      </p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <strong>Symptoms:</strong> Frequent, urgent, or painful urination; cloudy or strong-smelling urine; pelvic discomfort
+                      </p>
+                    </div>
+
+                    <div className="border-t border-pink-200 dark:border-pink-700 pt-4">
+                      <h4 className="font-semibold mb-2 text-pink-900 dark:text-pink-300">Dyspareunia (Painful Intercourse)</h4>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                        <strong>Why it happens:</strong> Reduced estrogen causes vaginal tissue to become thinner, less elastic, and drier (vaginal atrophy). This can lead to discomfort, burning, or pain during sexual activity.
+                      </p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <strong>Symptoms:</strong> Vaginal dryness, burning sensation, pain during penetration, reduced natural lubrication, longer arousal time
+                      </p>
+                    </div>
+
+                    <div className="border-t border-pink-200 dark:border-pink-700 pt-4">
+                      <h4 className="font-semibold mb-2 text-pink-900 dark:text-pink-300">Post-Coital Bleeding</h4>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                        <strong>Why it happens:</strong> The vaginal walls become more fragile and less lubricated due to declining estrogen, making them more susceptible to minor tears or irritation during intercourse.
+                      </p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                        <strong>Important:</strong> While common in perimenopause, post-coital bleeding should always be evaluated by a healthcare provider to rule out other conditions.
+                      </p>
+                    </div>
+
+                    <div className="bg-pink-100 dark:bg-pink-900/40 p-4 rounded-lg mt-4">
+                      <h4 className="font-semibold mb-2 text-pink-900 dark:text-pink-300">Coping Strategies for Genitourinary Issues</h4>
+                      <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                        <li>• <strong>Vaginal moisturizers:</strong> Use regularly (2-3x/week) to maintain tissue hydration, not just during intercourse</li>
+                        <li>• <strong>Water-based lubricants:</strong> Apply generously before and during sexual activity</li>
+                        <li>• <strong>Vaginal estrogen therapy:</strong> Low-dose creams, tablets, or rings can restore vaginal tissue health (consult your doctor)</li>
+                        <li>• <strong>Hydration:</strong> Drink plenty of water to support urinary tract health</li>
+                        <li>• <strong>Pelvic floor exercises:</strong> Strengthen muscles to improve bladder control and sexual function (see exercise section)</li>
+                        <li>• <strong>Cotton underwear:</strong> Breathable fabrics reduce moisture and irritation</li>
+                        <li>• <strong>Avoid irritants:</strong> Perfumed soaps, douches, and harsh detergents can worsen symptoms</li>
+                        <li>• <strong>Regular sexual activity:</strong> Helps maintain vaginal elasticity and blood flow</li>
+                        <li>• <strong>Urinate after intercourse:</strong> Reduces UTI risk by flushing bacteria</li>
+                        <li>• <strong>See a healthcare provider:</strong> Many effective treatments are available; don't suffer in silence</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
               </CardContent>
             </Card>
           </TabsContent>
@@ -482,14 +542,15 @@ export default function PerimenopauseEducation() {
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-lg border border-blue-200 dark:border-blue-800" data-testid="card-exercise-movement">
-                  <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-300">Exercise & Movement</h4>
+                  <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-300">Exercise & Movement Overview</h4>
                   <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <li>• <strong>Strength training:</strong> 2-3x/week to maintain muscle mass</li>
+                    <li>• <strong>Strength training:</strong> 2-3x/week to maintain muscle mass and bone density</li>
                     <li>• <strong>Cardiovascular exercise:</strong> 150 min/week moderate activity</li>
                     <li>• <strong>Yoga or Pilates:</strong> Improves flexibility and stress</li>
                     <li>• <strong>Daily walking:</strong> 30+ minutes for mood and metabolism</li>
-                    <li>• <strong>Balance exercises:</strong> Prevent bone loss risks</li>
+                    <li>• <strong>Balance exercises:</strong> Prevent falls and bone loss risks</li>
                   </ul>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-3 italic">See specialized exercises below for bone density and pelvic floor health</p>
                 </div>
 
                 <div className="bg-purple-50 dark:bg-purple-900/20 p-5 rounded-lg border border-purple-200 dark:border-purple-800" data-testid="card-sleep-hygiene">
@@ -515,6 +576,153 @@ export default function PerimenopauseEducation() {
                   </ul>
                 </div>
 
+              </div>
+            </div>
+
+            {/* Specialized Exercise Programs */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Activity className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                Specialized Exercises for Perimenopausal Women
+              </h3>
+              
+              {/* Bone Density Exercises */}
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-lg border border-indigo-200 dark:border-indigo-800" data-testid="card-bone-density-exercises">
+                <h4 className="font-semibold text-lg mb-3 text-indigo-900 dark:text-indigo-300 flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  Bone Density & Osteoporosis Prevention Exercises
+                </h4>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                  Declining estrogen accelerates bone loss during perimenopause. Weight-bearing and resistance exercises are crucial for maintaining bone density and preventing osteoporosis. Aim for 30-45 minutes, 4-5 times per week.
+                </p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Weight-Bearing Impact Exercises</h5>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 italic">These create stress on bones, stimulating bone formation</p>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 ml-4">
+                      <li>• <strong>Brisk walking or hiking:</strong> 30-45 min, 4-5x/week with varied terrain or inclines</li>
+                      <li>• <strong>Jogging or running:</strong> If joints allow; start gradually with walk-jog intervals</li>
+                      <li>• <strong>Stair climbing:</strong> Use actual stairs or stair-stepper machines</li>
+                      <li>• <strong>Dancing:</strong> Zumba, ballroom, or any upbeat dance style</li>
+                      <li>• <strong>Tennis or pickleball:</strong> Racquet sports with direction changes</li>
+                      <li>• <strong>Jump rope or jumping jacks:</strong> Low-impact jumps if appropriate for fitness level</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t border-indigo-200 dark:border-indigo-700 pt-4">
+                    <h5 className="font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Resistance Training for Bone Strength</h5>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 italic">Build muscle and stimulate bone growth; 2-3x/week</p>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 ml-4">
+                      <li>• <strong>Squats and lunges:</strong> 3 sets of 10-15 reps (targets hips, spine, legs)</li>
+                      <li>• <strong>Deadlifts:</strong> With appropriate weight; strengthens spine and hips</li>
+                      <li>• <strong>Step-ups:</strong> Use a sturdy bench; 3 sets of 12 reps per leg</li>
+                      <li>• <strong>Overhead press:</strong> With dumbbells or resistance bands; strengthens shoulders and spine</li>
+                      <li>• <strong>Chest press:</strong> Protects against spinal fractures</li>
+                      <li>• <strong>Bent-over rows:</strong> Strengthens back and improves posture</li>
+                      <li>• <strong>Bicep curls and tricep extensions:</strong> Maintains arm bone density</li>
+                      <li>• <strong>Plank variations:</strong> Core strength protects spine</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t border-indigo-200 dark:border-indigo-700 pt-4">
+                    <h5 className="font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Balance & Posture Exercises</h5>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 italic">Prevent falls that can cause fractures</p>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 ml-4">
+                      <li>• <strong>Single-leg stands:</strong> Hold for 30 seconds each leg, progress to eyes closed</li>
+                      <li>• <strong>Heel-to-toe walk:</strong> Walk in a straight line, placing heel directly in front of toes</li>
+                      <li>• <strong>Tai Chi:</strong> Gentle movements that improve balance and bone health</li>
+                      <li>• <strong>Yoga tree pose:</strong> Balance on one leg with hands in prayer position</li>
+                      <li>• <strong>Standing on one leg while doing tasks:</strong> Brushing teeth, washing dishes</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-indigo-100 dark:bg-indigo-900/40 p-4 rounded-lg mt-4">
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <strong>Important Tips:</strong> Start slowly if new to exercise. Work with a physical therapist or certified trainer to ensure proper form. Get a bone density scan (DEXA) to establish baseline. Add calcium (1200mg/day) and vitamin D (800-1000 IU/day) supplementation as recommended by your doctor.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pelvic Floor Exercises */}
+              <div className="bg-pink-50 dark:bg-pink-900/20 p-6 rounded-lg border border-pink-200 dark:border-pink-800" data-testid="card-pelvic-floor-exercises">
+                <h4 className="font-semibold text-lg mb-3 text-pink-900 dark:text-pink-300 flex items-center gap-2">
+                  <Heart className="w-5 h-5" />
+                  Pelvic Floor Exercises: Kegels & Beyond
+                </h4>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                  Declining estrogen weakens pelvic floor muscles, leading to urinary incontinence, pelvic organ prolapse, and reduced sexual function. Consistent pelvic floor exercises can prevent and improve these conditions. Practice daily for best results.
+                </p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-semibold text-pink-800 dark:text-pink-300 mb-2">Basic Kegel Exercises</h5>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 italic">Strengthen the muscles that support bladder, uterus, and rectum</p>
+                    <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                      <div>
+                        <p className="font-semibold mb-1">How to Find Your Pelvic Floor Muscles:</p>
+                        <ul className="ml-4 space-y-1">
+                          <li>• Stop urination midstream—those are your pelvic floor muscles (only do this to identify, not as regular practice)</li>
+                          <li>• Or imagine you're trying to hold in gas—you'll feel the muscles tighten</li>
+                          <li>• You should feel a lifting sensation internally, not tightening of buttocks or thighs</li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <p className="font-semibold mb-1">Basic Kegel Technique:</p>
+                        <ul className="ml-4 space-y-1">
+                          <li>• <strong>Contract:</strong> Tighten pelvic floor muscles and hold for 5 seconds</li>
+                          <li>• <strong>Relax:</strong> Release for 5 seconds</li>
+                          <li>• <strong>Repeat:</strong> 10 times per set, 3 sets daily</li>
+                          <li>• <strong>Progress:</strong> Gradually increase hold time to 10 seconds as you get stronger</li>
+                          <li>• <strong>Breathe normally:</strong> Don't hold your breath</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-pink-200 dark:border-pink-700 pt-4">
+                    <h5 className="font-semibold text-pink-800 dark:text-pink-300 mb-2">Advanced Pelvic Floor Exercises</h5>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 ml-4">
+                      <li>• <strong>Quick flicks:</strong> Rapid contract-release (1 second each) for 10 reps; improves muscle response</li>
+                      <li>• <strong>Elevator Kegels:</strong> Contract in stages (floor 1, 2, 3) gradually tightening more, then release in stages</li>
+                      <li>• <strong>Bridge pose with Kegel:</strong> Lie on back, knees bent, lift hips while contracting pelvic floor; hold 10 seconds</li>
+                      <li>• <strong>Squats with Kegel:</strong> At the bottom of a squat, contract pelvic floor before rising</li>
+                      <li>• <strong>Wall sits with Kegel:</strong> Hold wall sit position while doing Kegel contractions</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t border-pink-200 dark:border-pink-700 pt-4">
+                    <h5 className="font-semibold text-pink-800 dark:text-pink-300 mb-2">Functional Pelvic Floor Training</h5>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Practice in real-life scenarios</p>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 ml-4">
+                      <li>• <strong>Pre-emptive contractions:</strong> Tighten pelvic floor BEFORE coughing, sneezing, or lifting</li>
+                      <li>• <strong>During standing activities:</strong> Practice Kegels while washing dishes or waiting in line</li>
+                      <li>• <strong>Posture awareness:</strong> Maintain good posture to support pelvic floor function</li>
+                      <li>• <strong>Deep core engagement:</strong> Coordinate pelvic floor with deep abdominal breathing</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t border-pink-200 dark:border-pink-700 pt-4">
+                    <h5 className="font-semibold text-pink-800 dark:text-pink-300 mb-2">Additional Supports for Incontinence & Prolapse</h5>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 ml-4">
+                      <li>• <strong>Maintain healthy weight:</strong> Reduces pressure on pelvic floor</li>
+                      <li>• <strong>Avoid constipation:</strong> Straining weakens pelvic muscles; eat fiber-rich foods</li>
+                      <li>• <strong>Limit heavy lifting:</strong> Use proper technique and engage core when necessary</li>
+                      <li>• <strong>Avoid high-impact if severe prolapse:</strong> Consult a pelvic floor physical therapist</li>
+                      <li>• <strong>Pelvic floor physical therapy:</strong> Specialized PT can provide biofeedback and personalized exercises</li>
+                      <li>• <strong>Pessary devices:</strong> Medical devices that support prolapsed organs (fitted by doctor)</li>
+                      <li>• <strong>Vaginal estrogen:</strong> Can improve tissue strength and reduce urinary symptoms</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-pink-100 dark:bg-pink-900/40 p-4 rounded-lg mt-4">
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <strong>Important:</strong> If you experience pain, worsening symptoms, or can't identify your pelvic floor muscles, consult a pelvic floor physical therapist. They can assess your specific needs and create a personalized program. Results typically appear within 4-6 weeks of consistent daily practice.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
