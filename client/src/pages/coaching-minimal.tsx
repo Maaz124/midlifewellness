@@ -100,7 +100,7 @@ export default function CoachingMinimal() {
 
   // SEO Configuration
   useSEO({
-    title: "6-Week Mind-Body Reset Coaching Program | ThriveMidlife",
+    title: "6-Week Mind-Body Reset Coaching Program | BloomAfter40",
     description: "Transform your midlife experience with Dr. Sidra's evidence-based 6-week coaching program. Interactive CBT techniques, mindfulness practices, and personalized wellness strategies for women.",
     keywords: "midlife coaching, women's wellness, CBT therapy, mindfulness, perimenopause support, mind-body reset",
     structuredData: structuredDataTemplates.course

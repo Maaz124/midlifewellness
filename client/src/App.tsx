@@ -15,6 +15,7 @@ import Checkout from "@/pages/checkout";
 import ResourceCheckout from "@/pages/resource-checkout";
 import ContactCoaching from "@/pages/contact-coaching";
 import EmailSignatures from "@/pages/email-signatures";
+import PerimenopauseEducation from "@/pages/perimenopause-education";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/coaching" component={Coaching} />
           <Route path="/journal" component={Journal} />
           <Route path="/progress" component={Progress} />
+          <Route path="/perimenopause-guide" component={PerimenopauseEducation} />
           <Route path="/community" component={Community} />
           <Route path="/about" component={About} />
           <Route path="/checkout" component={Checkout} />

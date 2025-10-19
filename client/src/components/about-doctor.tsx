@@ -102,7 +102,7 @@ export function AboutDoctor() {
             </p>
 
             <p className="font-medium text-purple-800">
-              ThriveMidlife represents the culmination of everything I've learned: a comprehensive approach that honors both the 
+              BloomAfter40 represents the culmination of everything I've learned: a comprehensive approach that honors both the 
               science of medicine and the art of transformation. Every technique, every assessment, and every guided practice in 
               this program comes from real clinical experience and genuine understanding of what women need to thrive.
             </p>

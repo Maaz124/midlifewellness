@@ -17,8 +17,8 @@ import { useSEO } from '@/hooks/use-seo';
 export default function FunnelAnalytics() {
   // SEO optimization
   useSEO({
-    title: "Marketing Funnel Analytics - ThriveMidlife Admin",
-    description: "View comprehensive marketing funnel performance metrics, lead conversion rates, and email campaign analytics for ThriveMidlife."
+    title: "Marketing Funnel Analytics - BloomAfter40 Admin",
+    description: "View comprehensive marketing funnel performance metrics, lead conversion rates, and email campaign analytics for BloomAfter40."
   });
 
   // Fetch funnel analytics data

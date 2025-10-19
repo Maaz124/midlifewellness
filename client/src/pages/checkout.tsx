@@ -119,7 +119,7 @@ export default function Checkout() {
           </div>
           <div className="bg-blue-50 p-4 rounded-lg max-w-md mx-auto">
             <p className="text-sm text-blue-800">
-              <strong>Having trouble?</strong> Try refreshing the page or contact support at coaching@thrivemidlife.com
+              <strong>Having trouble?</strong> Try refreshing the page or contact support at coaching@bloomafter40.com
             </p>
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function Checkout() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
-          Complete Your ThriveMidlife Journey
+          Complete Your BloomAfter40 Journey
         </h1>
         <p className="text-xl text-gray-600">
           Secure your access to the complete 6-week Mind-Body Reset coaching program

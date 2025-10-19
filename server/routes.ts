@@ -47,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const welcomeTemplate = emailTemplates.welcome(user.firstName || '');
           await sendEmail({
             to: user.email,
-            from: 'coaching@thrivemidlife.com',
+            from: 'coaching@bloomafter40.com',
             subject: welcomeTemplate.subject,
             html: welcomeTemplate.html,
             text: welcomeTemplate.text
@@ -278,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currency: "usd",
         metadata: {
           service: "coaching_plan",
-          description: "ThriveMidlife 6-Week Mind-Body Reset Coaching Program",
+          description: "BloomAfter40 6-Week Mind-Body Reset Coaching Program",
           userId: userId
         }
       });
@@ -309,7 +309,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         await sendEmail({
           to: user.email,
-          from: 'coaching@thrivemidlife.com',
+          from: 'coaching@bloomafter40.com',
           subject: confirmationTemplate.subject,
           html: confirmationTemplate.html,
           text: confirmationTemplate.text
@@ -368,7 +368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const success = await sendEmail({
         to: email,
-        from: 'coaching@thrivemidlife.com',
+        from: 'coaching@bloomafter40.com',
         subject: template.subject,
         html: template.html,
         text: template.text
@@ -857,8 +857,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { addSignatureToEmail } = require('./email-signatures');
       
       const notificationEmailSent = await sendEmail({
-        to: 'coaching@thrivemidlife.com', // Dr. Sidra's coaching email
-        from: 'coaching@thrivemidlife.com',
+        to: 'coaching@bloomafter40.com', // Dr. Sidra's coaching email
+        from: 'coaching@bloomafter40.com',
         subject: `New Coaching Inquiry from ${name}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -934,7 +934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <div style="text-align: center; margin: 30px 0;">
             <p style="color: #6b7280;">
               If you have any urgent questions, please email us at 
-              <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6;">coaching@thrivemidlife.com</a>
+              <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6;">coaching@bloomafter40.com</a>
             </p>
           </div>
         </div>
@@ -942,7 +942,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const confirmationEmailSent = await sendEmail({
         to: email,
-        from: 'coaching@thrivemidlife.com',
+        from: 'coaching@bloomafter40.com',
         subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
         html: addSignatureToEmail(confirmationEmailContent, 'personal')
       });

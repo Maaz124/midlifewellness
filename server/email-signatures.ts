@@ -1,4 +1,4 @@
-// Professional email signatures for ThriveMidlife communications
+// Professional email signatures for BloomAfter40 communications
 
 export const emailSignatures = {
   // Dr. Sidra's personal signature for coaching inquiries and personal responses
@@ -21,17 +21,17 @@ export const emailSignatures = {
             </p>
             
             <div style="margin-bottom: 15px;">
-              <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-                📧 coaching@thrivemidlife.com
+              <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+                📧 coaching@bloomafter40.com
               </a><br>
-              <a href="https://thrivemidlife.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-                🌐 www.thrivemidlife.com
+              <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+                🌐 www.bloomafter40.com
               </a>
             </div>
             
             <div style="margin-bottom: 10px;">
               <span style="background: linear-gradient(135deg, #8B5CF6, #EC4899); color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold;">
-                ThriveMidlife: Mind-Body Reset for Women
+                BloomAfter40: Mind-Body Reset for Women
               </span>
             </div>
             
@@ -49,7 +49,7 @@ export const emailSignatures = {
   systemAutomated: `
     <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #E5E7EB; font-family: Arial, sans-serif; text-align: center;">
       <div style="margin-bottom: 15px;">
-        <h4 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 16px;">ThriveMidlife</h4>
+        <h4 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 16px;">BloomAfter40</h4>
         <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic;">Mind-Body Reset for Women</p>
       </div>
       
@@ -63,12 +63,12 @@ export const emailSignatures = {
       </div>
       
       <div style="margin-bottom: 15px;">
-        <a href="https://thrivemidlife.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-          www.thrivemidlife.com
+        <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+          www.bloomafter40.com
         </a>
         <span style="color: #D1D5DB; margin: 0 8px;">|</span>
-        <a href="mailto:hello@thrivemidlife.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-          hello@thrivemidlife.com
+        <a href="mailto:hello@bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+          hello@bloomafter40.com
         </a>
       </div>
       
@@ -85,8 +85,8 @@ export const emailSignatures = {
       </div>
       
       <p style="margin: 15px 0 0 0; font-size: 10px; color: #9CA3AF; line-height: 1.3;">
-        This email was sent from ThriveMidlife platform. If you no longer wish to receive these communications, 
-        please contact us at <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6;">coaching@thrivemidlife.com</a>
+        This email was sent from BloomAfter40 platform. If you no longer wish to receive these communications, 
+        please contact us at <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6;">coaching@bloomafter40.com</a>
       </p>
     </div>
   `,
@@ -97,21 +97,21 @@ export const emailSignatures = {
       <div style="display: flex; align-items: center; margin-bottom: 15px;">
         <div style="margin-right: 15px;">
           <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #8B5CF6, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <span style="color: white; font-weight: bold; font-size: 18px;">T</span>
+            <span style="color: white; font-weight: bold; font-size: 18px;">B</span>
           </div>
         </div>
         <div>
-          <h4 style="margin: 0 0 3px 0; color: #374151; font-size: 16px;">ThriveMidlife Support Team</h4>
+          <h4 style="margin: 0 0 3px 0; color: #374151; font-size: 16px;">BloomAfter40 Support Team</h4>
           <p style="margin: 0; color: #6B7280; font-size: 14px;">Technical Support & Customer Care</p>
         </div>
       </div>
       
       <div style="margin-bottom: 15px;">
         <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
-          📧 <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">coaching@thrivemidlife.com</a>
+          📧 <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">coaching@bloomafter40.com</a>
         </p>
         <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
-          🌐 <a href="https://thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">www.thrivemidlife.com</a>
+          🌐 <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">www.bloomafter40.com</a>
         </p>
         <p style="margin: 0; color: #374151; font-size: 14px;">
           ⏰ Response Time: Within 24 hours
@@ -121,7 +121,7 @@ export const emailSignatures = {
       <div style="background: #F3F4F6; padding: 12px; border-radius: 8px; border-left: 4px solid #8B5CF6;">
         <p style="margin: 0; font-size: 12px; color: #6B7280; line-height: 1.4;">
           <strong>Need Personal Coaching?</strong> For coaching inquiries, please contact 
-          <a href="mailto:coaching@thrivemidlife.com" style="color: #8B5CF6;">coaching@thrivemidlife.com</a> 
+          <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6;">coaching@bloomafter40.com</a> 
           or visit our <a href="/contact-coaching" style="color: #8B5CF6;">Personal Coaching page</a>.
         </p>
       </div>
@@ -136,7 +136,7 @@ export const emailSignatures = {
   newsletter: `
     <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #F8FAFC, #F1F5F9); border-radius: 12px; font-family: Arial, sans-serif; text-align: center;">
       <div style="margin-bottom: 20px;">
-        <h3 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 20px; font-weight: bold;">ThriveMidlife</h3>
+        <h3 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 20px; font-weight: bold;">BloomAfter40</h3>
         <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic;">Mind-Body Reset for Women</p>
       </div>
       
@@ -164,12 +164,12 @@ export const emailSignatures = {
       
       <div style="border-top: 1px solid #E5E7EB; padding-top: 15px;">
         <p style="margin: 0 0 5px 0; font-size: 12px; color: #6B7280;">
-          <a href="https://thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">www.thrivemidlife.com</a>
+          <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">www.bloomafter40.com</a>
           <span style="margin: 0 8px; color: #D1D5DB;">|</span>
-          <a href="mailto:hello@thrivemidlife.com" style="color: #8B5CF6; text-decoration: none;">hello@thrivemidlife.com</a>
+          <a href="mailto:hello@bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">hello@bloomafter40.com</a>
         </p>
         <p style="margin: 0; font-size: 10px; color: #9CA3AF;">
-          You're receiving this because you signed up for ThriveMidlife updates. 
+          You're receiving this because you signed up for BloomAfter40 updates. 
           <a href="#" style="color: #8B5CF6;">Unsubscribe</a> | <a href="#" style="color: #8B5CF6;">Update Preferences</a>
         </p>
       </div>

@@ -18,12 +18,12 @@ import {
 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useSEO } from '@/hooks/use-seo';
-import { ThriveMidlifeLogo } from '@/components/ui/logo';
+import { BloomAfter40Logo } from '@/components/ui/logo';
 
 export default function LeadMagnet() {
   // SEO optimization
   useSEO({
-    title: "Free 5-Day Hormone Reset Guide - ThriveMidlife",
+    title: "Free 5-Day Hormone Reset Guide - BloomAfter40",
     description: "Download your free hormone reset guide with daily action steps to balance your hormones naturally. Includes meal plans, sleep strategies, and stress management techniques.",
     keywords: "free hormone reset guide, hormone balance, perimenopause guide, women's health, natural hormone balance"
   });
@@ -57,7 +57,7 @@ export default function LeadMagnet() {
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <ThriveMidlifeLogo size="md" className="mx-auto mb-4" />
+          <BloomAfter40Logo size="md" className="mx-auto mb-4" />
           <Badge className="bg-green-100 text-green-800 mb-4">
             ✓ EMAIL CONFIRMED - ACCESS GRANTED
           </Badge>
