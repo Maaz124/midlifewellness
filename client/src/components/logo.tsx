@@ -119,7 +119,7 @@ export function Logo({ className, size = 'md', variant = 'full' }: LogoProps) {
         ? 'text-white' 
         : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-rose-400 to-sage-600'
       } ${textSize}`}>
-        ThriveMidlife
+        BloomAfter40
       </span>
       {size !== 'sm' && (
         <span className={`text-xs font-medium tracking-wide ${isLight ? 'text-gray-300' : 'text-gray-500'}`}>

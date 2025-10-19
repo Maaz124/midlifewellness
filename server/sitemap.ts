@@ -1,5 +1,5 @@
-// SEO Sitemap Generation for ThriveMidlife
-export function generateSitemap(baseUrl: string = 'https://thrivemidlife.com'): string {
+// SEO Sitemap Generation for BloomAfter40
+export function generateSitemap(baseUrl: string = 'https://bloomafter40.com'): string {
   const currentDate = new Date().toISOString().split('T')[0];
   
   const pages = [
@@ -40,6 +40,12 @@ export function generateSitemap(baseUrl: string = 'https://thrivemidlife.com'): 
       priority: '0.7'
     },
     {
+      url: '/perimenopause-guide',
+      lastmod: currentDate,
+      changefreq: 'monthly',
+      priority: '0.8'
+    },
+    {
       url: '/checkout',
       lastmod: currentDate,
       changefreq: 'monthly',
@@ -60,7 +66,7 @@ ${pages.map(page => `  <url>
   return sitemap;
 }
 
-export function generateRobotsTxt(baseUrl: string = 'https://thrivemidlife.com'): string {
+export function generateRobotsTxt(baseUrl: string = 'https://bloomafter40.com'): string {
   return `User-agent: *
 Allow: /
 

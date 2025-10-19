@@ -6,7 +6,7 @@ interface LogoProps {
   className?: string;
 }
 
-export function ThriveMidlifeLogo({ 
+export function BloomAfter40Logo({ 
   size = 'md', 
   variant = 'full',
   className 
@@ -59,7 +59,7 @@ export function ThriveMidlifeLogo({
 
   const LogoText = () => (
     <div className={cn('font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent', textSizeClasses[size])}>
-      ThriveMidlife
+      BloomAfter40
     </div>
   );
 

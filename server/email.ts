@@ -31,21 +31,21 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   }
 }
 
-// Email templates for ThriveMidlife
+// Email templates for BloomAfter40
 export const emailTemplates = {
   welcome: (firstName: string) => ({
-    subject: "Welcome to ThriveMidlife - Your Wellness Journey Begins!",
+    subject: "Welcome to BloomAfter40 - Your Wellness Journey Begins!",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #8B5CF6; margin-bottom: 10px;">ThriveMidlife</h1>
+          <h1 style="color: #8B5CF6; margin-bottom: 10px;">BloomAfter40</h1>
           <p style="color: #6B7280; font-size: 16px;">Mind-Body Reset for Women</p>
         </div>
         
         <h2 style="color: #374151;">Welcome, ${firstName || 'Welcome'}!</h2>
         
         <p style="color: #6B7280; line-height: 1.6;">
-          Thank you for joining ThriveMidlife, your comprehensive wellness platform designed specifically for women navigating midlife transitions.
+          Thank you for joining BloomAfter40, your comprehensive wellness platform designed specifically for women navigating midlife transitions.
         </p>
         
         <div style="background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -74,15 +74,15 @@ export const emailTemplates = {
         </p>
       </div>
     `,
-    text: `Welcome to ThriveMidlife, ${firstName || ''}! Your comprehensive wellness platform for midlife women is ready. Access free health assessments and discover Dr. Sidra Bukhari's expert guidance for your mind-body transformation.`
+    text: `Welcome to BloomAfter40, ${firstName || ''}! Your comprehensive wellness platform for midlife women is ready. Access free health assessments and discover Dr. Sidra Bukhari's expert guidance for your mind-body transformation.`
   }),
 
   paymentConfirmation: (firstName: string, amount: number) => ({
-    subject: "Payment Confirmed - Full ThriveMidlife Program Unlocked!",
+    subject: "Payment Confirmed - Full BloomAfter40 Program Unlocked!",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #8B5CF6; margin-bottom: 10px;">ThriveMidlife</h1>
+          <h1 style="color: #8B5CF6; margin-bottom: 10px;">BloomAfter40</h1>
           <div style="background: #10B981; color: white; padding: 10px 20px; border-radius: 20px; display: inline-block;">
             ✓ Payment Confirmed
           </div>
@@ -121,15 +121,15 @@ export const emailTemplates = {
         </p>
       </div>
     `,
-    text: `Payment confirmed! Welcome to the complete ThriveMidlife program, ${firstName || ''}. You now have lifetime access to all 24 interactive components and Dr. Sidra Bukhari's 6-week Mind-Body Reset program. Start your transformation today!`
+    text: `Payment confirmed! Welcome to the complete BloomAfter40 program, ${firstName || ''}. You now have lifetime access to all 24 interactive components and Dr. Sidra Bukhari's 6-week Mind-Body Reset program. Start your transformation today!`
   }),
 
   weeklyReminder: (firstName: string, weekNumber: number, weekTitle: string) => ({
-    subject: `Week ${weekNumber} Reminder: ${weekTitle} - ThriveMidlife`,
+    subject: `Week ${weekNumber} Reminder: ${weekTitle} - BloomAfter40`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #8B5CF6; margin-bottom: 10px;">ThriveMidlife</h1>
+          <h1 style="color: #8B5CF6; margin-bottom: 10px;">BloomAfter40</h1>
           <p style="color: #6B7280; font-size: 16px;">Week ${weekNumber} Check-in</p>
         </div>
         
@@ -160,6 +160,6 @@ export const emailTemplates = {
         </p>
       </div>
     `,
-    text: `Week ${weekNumber} reminder: ${weekTitle}. Continue your ThriveMidlife transformation journey today, ${firstName || ''}. Consistency creates lasting change.`
+    text: `Week ${weekNumber} reminder: ${weekTitle}. Continue your BloomAfter40 transformation journey today, ${firstName || ''}. Consistency creates lasting change.`
   })
 };

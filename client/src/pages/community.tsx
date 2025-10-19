@@ -356,7 +356,7 @@ export default function Community() {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">ThriveMidlife Community</h1>
+        <h1 className="text-3xl font-bold text-gray-900">BloomAfter40 Community</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Connect with other women navigating midlife transitions. Share experiences, find support, and build meaningful connections.
         </p>

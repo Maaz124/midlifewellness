@@ -9,27 +9,27 @@ export interface SEOProps {
 }
 
 export const defaultSEO: SEOProps = {
-  title: "ThriveMidlife - Mind-Body Reset for Women | Dr. Sidra Bukhari",
+  title: "BloomAfter40 - Mind-Body Reset for Women | Dr. Sidra Bukhari",
   description: "Transform your midlife journey with Dr. Sidra Bukhari's 6-week Mind-Body Reset program. Evidence-based wellness coaching for perimenopause, hormone balance, and mental clarity.",
   keywords: "midlife wellness, perimenopause support, hormone balance, women's health, mental clarity, stress management, CBT coaching, mindfulness training",
-  image: "https://thrivemidlife.com/og-image.jpg",
-  url: "https://thrivemidlife.com",
+  image: "https://bloomafter40.com/og-image.jpg",
+  url: "https://bloomafter40.com",
   type: "website"
 };
 
 export const pageSEO = {
   dashboard: {
-    title: "Dashboard - ThriveMidlife Wellness Journey",
+    title: "Dashboard - BloomAfter40 Wellness Journey",
     description: "Track your wellness progress with comprehensive health assessments, mood tracking, and personalized insights for your midlife transformation journey.",
     keywords: "wellness dashboard, health tracking, midlife progress, women's health assessment"
   },
   coaching: {
-    title: "6-Week Mind-Body Reset Program - ThriveMidlife",
+    title: "6-Week Mind-Body Reset Program - BloomAfter40",
     description: "Access Dr. Sidra Bukhari's complete 6-week coaching program featuring CBT techniques, nervous system regulation, and evidence-based wellness strategies.",
     keywords: "mind-body reset, 6-week program, CBT coaching, nervous system regulation, midlife wellness"
   },
   checkout: {
-    title: "Secure Checkout - ThriveMidlife Coaching Program",
+    title: "Secure Checkout - BloomAfter40 Coaching Program",
     description: "Complete your purchase for the transformational 6-week Mind-Body Reset program. Secure payment with immediate access to Dr. Bukhari's wellness coaching.",
     keywords: "coaching program purchase, wellness investment, secure checkout, mind-body reset"
   },
@@ -39,12 +39,12 @@ export const pageSEO = {
     keywords: "Dr. Sidra Bukhari, psychiatrist, gynecologist, women's wellness expert, CBT therapist"
   },
   journal: {
-    title: "Wellness Journal - ThriveMidlife Daily Reflections",
+    title: "Wellness Journal - BloomAfter40 Daily Reflections",
     description: "Document your midlife wellness journey with guided journaling prompts, mood tracking, and reflective exercises designed for personal growth.",
     keywords: "wellness journal, daily reflections, mood tracking, personal growth, midlife journaling"
   },
   progress: {
-    title: "Progress Tracking - ThriveMidlife Wellness Analytics",
+    title: "Progress Tracking - BloomAfter40 Wellness Analytics",
     description: "Visualize your wellness transformation with comprehensive progress charts, goal tracking, and health assessment analytics.",
     keywords: "progress tracking, wellness analytics, health charts, goal achievement, transformation metrics"
   }

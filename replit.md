@@ -1,8 +1,8 @@
-# ThriveMidlife: Mind-Body Reset for Women
+# BloomAfter40: Mind-Body Reset for Women
 
 ## Overview
 
-ThriveMidlife is a comprehensive wellness application for women navigating perimenopause and midlife. It offers health assessment tools, journaling, coaching programs, and progress tracking to support mental, physical, and cognitive well-being. The project aims to provide a holistic solution for midlife women, leveraging a full-stack architecture with a React frontend, Express.js backend, and PostgreSQL database, all developed with TypeScript for robustness and maintainability.
+BloomAfter40 is a comprehensive wellness application for women navigating perimenopause and midlife. It offers health assessment tools, journaling, coaching programs, and progress tracking to support mental, physical, and cognitive well-being. The project aims to provide a holistic solution for midlife women, leveraging a full-stack architecture with a React frontend, Express.js backend, and PostgreSQL database, all developed with TypeScript for robustness and maintainability.
 
 ## User Preferences
 

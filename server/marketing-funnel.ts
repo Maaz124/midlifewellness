@@ -163,7 +163,7 @@ export class MarketingFunnel {
       
       const success = await sendEmail({
         to: lead.email,
-        from: 'coaching@thrivemidlife.com',
+        from: 'coaching@bloomafter40.com',
         subject: subject,
         html: emailContent.html,
         text: emailContent.text
@@ -190,7 +190,7 @@ export class MarketingFunnel {
       leadMagnetDelivery: {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #9333ea;">Welcome to ThriveMidlife, ${lead.firstName || 'Beautiful'}!</h1>
+            <h1 style="color: #9333ea;">Welcome to BloomAfter40, ${lead.firstName || 'Beautiful'}!</h1>
             
             <p>I'm so excited you're here! Your journey to vibrant midlife wellness starts now.</p>
             
@@ -217,7 +217,7 @@ export class MarketingFunnel {
             <em>Psychiatrist & Women's Wellness Expert</em></p>
           </div>
         `,
-        text: `Welcome to ThriveMidlife, ${lead.firstName || 'Beautiful'}!
+        text: `Welcome to BloomAfter40, ${lead.firstName || 'Beautiful'}!
         
 Your free "5-Day Hormone Reset Guide" is ready for download.
 Visit /dashboard to access your guide and take the wellness assessment.
