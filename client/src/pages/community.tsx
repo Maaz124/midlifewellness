@@ -1,714 +1,516 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   MessageCircle, 
   Users, 
   Heart, 
-  TrendingUp, 
-  Plus, 
-  Search, 
-  UserPlus,
+  ExternalLink,
   Calendar,
   MapPin,
-  Clock,
-  Star,
-  MessageSquare,
-  Eye,
-  ThumbsUp,
-  Share2
+  Globe,
+  Smartphone,
+  Facebook,
+  UserPlus,
+  BookOpen,
+  Video,
+  Mail
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 
-
-interface ForumPost {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  category: string;
-  isAnonymous: boolean;
-  likes: number;
-  replies: number;
-  views: number;
-  lastActivity: string;
-  isPinned?: boolean;
-}
-
-interface SupportGroup {
+interface ExternalCommunity {
   id: number;
   name: string;
   description: string;
-  category: string;
-  type: 'open' | 'closed' | 'invitation-only';
-  currentMembers: number;
-  maxMembers: number;
-  meetingSchedule: string;
-  nextMeeting: string;
-  facilitator: string;
+  platform: string;
+  type: 'forum' | 'facebook' | 'app' | 'organization';
+  url: string;
+  members?: string;
+  features: string[];
+  cost: 'free' | 'freemium' | 'paid';
+  bestFor: string;
 }
 
-interface SharedExperience {
+interface SupportOrganization {
   id: number;
-  title: string;
-  content: string;
-  author: string;
-  category: 'breakthrough' | 'challenge' | 'tip' | 'question';
-  isAnonymous: boolean;
-  likes: number;
-  supportMessages: number;
-  createdAt: string;
-  tags: string[];
+  name: string;
+  description: string;
+  url: string;
+  services: string[];
+  founded?: string;
+  reach?: string;
 }
 
 export default function Community() {
-  const [activeTab, setActiveTab] = useState('forum');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showNewPostDialog, setShowNewPostDialog] = useState(false);
-  const [newPost, setNewPost] = useState({ title: '', content: '', categoryId: 1, isAnonymous: false });
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState('forums');
 
-  // Fetch real community data
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['/api/community/categories']
-  });
-
-  const { data: forumPosts = [], isLoading: postsLoading } = useQuery({
-    queryKey: ['/api/community/posts', selectedCategory, searchQuery]
-  });
-
-  const { data: supportGroups = [], isLoading: groupsLoading } = useQuery({
-    queryKey: ['/api/community/groups']
-  });
-
-  // Create post mutation
-  const createPostMutation = useMutation({
-    mutationFn: async (postData: { title: string; content: string; categoryId: number; isAnonymous: boolean }) => {
-      return await apiRequest("POST", "/api/community/posts", postData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/community/posts'] });
-      setShowNewPostDialog(false);
-      setNewPost({ title: '', content: '', categoryId: 1, isAnonymous: false });
-      toast({
-        title: "Success",
-        description: "Your post has been created successfully!",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to create post. Please try again.",
-        variant: "destructive"
-      });
-    }
-  });
-  
-  // Handle button clicks
-  const handleReplyClick = (postId: number) => {
-    const post = forumPosts.find((p: any) => p.id === postId);
-    toast({
-      title: "Opening Discussion",
-      description: `Viewing replies for "${post?.title}". This would navigate to a detailed discussion page.`,
-    });
-  };
-
-  const handleJoinGroup = (groupId: number, groupName: string, groupType: string) => {
-    if (groupType === 'open') {
-      toast({
-        title: "Welcome to the Group!",
-        description: `Successfully joined "${groupName}". You'll receive meeting notifications and can participate in discussions.`,
-      });
-    } else if (groupType === 'closed') {
-      toast({
-        title: "Request Sent",
-        description: `Your request to join "${groupName}" has been sent. The facilitator will review and respond within 24 hours.`,
-      });
-    } else {
-      toast({
-        title: "Group Information",
-        description: `Viewing details for "${groupName}". This would show group information and application process.`,
-      });
-    }
-  };
-
-  const handleCreateGroup = () => {
-    toast({
-      title: "Create Support Group",
-      description: "Opening group creation form where you can set up a new support group with custom settings.",
-    });
-  };
-
-  const handleCreatePost = () => {
-    if (newPost.title.trim() && newPost.content.trim()) {
-      toast({
-        title: "Post Created!",
-        description: `"${newPost.title}" has been posted successfully. Your discussion is now live in the forum.`,
-      });
-      setNewPost({ title: '', content: '', categoryId: 1, isAnonymous: false });
-      setShowNewPostDialog(false);
-    } else {
-      toast({
-        title: "Incomplete Post",
-        description: "Please fill in both title and content to create your post.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleShareExperience = () => {
-    toast({
-      title: "Share Your Experience",
-      description: "Opening experience sharing form where you can share breakthroughs, challenges, or helpful tips.",
-    });
-  };
-
-  const handleBrowseProfiles = () => {
-    toast({
-      title: "Browse Peer Profiles",
-      description: "Viewing community member profiles who are open to connections and mentorship opportunities.",
-    });
-  };
-
-  const handleViewConnections = () => {
-    toast({
-      title: "Your Connections",
-      description: "Viewing your current connections, relationships, and conversation history.",
-    });
-  };
-
-  const handleEditProfile = () => {
-    toast({
-      title: "Edit Profile",
-      description: "Opening profile editor where you can update your bio, interests, and connection preferences.",
-    });
-  };
-
-  const handleJoinWaitlist = () => {
-    toast({
-      title: "Added to Waitlist",
-      description: "You'll be notified when advanced peer connection features become available.",
-    });
-  };
-
-  // Mock data - in real app this would come from API
-  const forumCategories = [
-    { id: 'all', name: 'All Topics', color: '#6366f1', count: 48 },
-    { id: 'hormones', name: 'Hormonal Changes', color: '#ec4899', count: 15 },
-    { id: 'career', name: 'Career Transitions', color: '#10b981', count: 12 },
-    { id: 'relationships', name: 'Relationships', color: '#f59e0b', count: 8 },
-    { id: 'wellness', name: 'Wellness & Self-Care', color: '#8b5cf6', count: 13 }
-  ];
-
-  const mockForumPosts: ForumPost[] = [
+  // Real external communities from research
+  const externalCommunities: ExternalCommunity[] = [
     {
       id: 1,
-      title: "How do you handle brain fog during important meetings?",
-      content: "I'm struggling with concentration during work meetings since starting perimenopause. Any tips?",
-      author: "SarahM",
-      category: "hormones",
-      isAnonymous: false,
-      likes: 24,
-      replies: 18,
-      views: 156,
-      lastActivity: "2 hours ago",
-      isPinned: false
+      name: "r/Menopause (Reddit)",
+      description: "Active Reddit community where members discuss symptoms, struggles, and solutions. Great for real-time peer support and candid discussions.",
+      platform: "Reddit",
+      type: 'forum',
+      url: "https://www.reddit.com/r/Menopause/",
+      members: "100,000+",
+      features: ["Anonymous posting", "Daily discussions", "Peer experiences", "Symptom sharing"],
+      cost: 'free',
+      bestFor: "Real-time peer support and candid discussions"
     },
     {
       id: 2,
-      title: "Career change at 45 - feeling scared but excited",
-      content: "After 20 years in the same field, I'm considering a complete career change. Anyone else made a big leap in midlife?",
-      author: "Anonymous",
-      category: "career",
-      isAnonymous: true,
-      likes: 32,
-      replies: 25,
-      views: 203,
-      lastActivity: "4 hours ago",
-      isPinned: true
+      name: "National Menopause Foundation Community",
+      description: "Safe, secure online community partnered with the National Menopause Foundation on the Inspire platform. Medical accuracy backed by healthcare organization.",
+      platform: "Inspire.com",
+      type: 'forum',
+      url: "https://nationalmenopausefoundation.org/community/",
+      members: "5,000+",
+      features: ["Expert-moderated", "Medical accuracy", "Safe environment", "Daily activity"],
+      cost: 'free',
+      bestFor: "Evidence-based information and moderated support"
     },
     {
       id: 3,
-      title: "Sleep routine that actually works",
-      content: "Finally found a sleep routine that helps with night sweats and restless nights. Happy to share what worked for me!",
-      author: "LindaK",
-      category: "wellness",
-      isAnonymous: false,
-      likes: 41,
-      replies: 12,
-      views: 89,
-      lastActivity: "6 hours ago",
-      isPinned: false
+      name: "Red Hot Mamas",
+      description: "Nation's largest menopause education program (est. 1991), offered in 200+ hospitals/practices across US & Canada. Forums, educational resources, and monthly newsletter.",
+      platform: "Web + Inspire",
+      type: 'forum',
+      url: "https://redhotmamas.org/",
+      members: "50,000+",
+      features: ["Educational resources", "Expert articles", "Local programs", "Monthly newsletter"],
+      cost: 'free',
+      bestFor: "Comprehensive education and nationwide community"
+    },
+    {
+      id: 4,
+      name: "Peanut Menopause",
+      description: "Subset of popular women's social network Peanut. Connect with others based on your exact stage (perimenopause, menopause, postmenopause) in a private, mobile-first network.",
+      platform: "Mobile App (iOS/Android)",
+      type: 'app',
+      url: "https://www.peanut-app.io/",
+      members: "10,000+",
+      features: ["Stage-specific matching", "Private network", "Mobile-first", "Live chat"],
+      cost: 'free',
+      bestFor: "Mobile users seeking stage-specific connections"
+    },
+    {
+      id: 5,
+      name: "Menopause Support Group (Facebook)",
+      description: "Private Facebook group started by Gwen Harris with 11,000+ members from 80 countries. ~100 new member requests daily. Common topics include depression/anxiety, weight gain, and insomnia.",
+      platform: "Facebook Private Group",
+      type: 'facebook',
+      url: "https://www.facebook.com/search/groups/?q=menopause%20support%20group",
+      members: "11,000+",
+      features: ["Daily peer support", "Global community", "Privacy settings", "Real-time responses"],
+      cost: 'free',
+      bestFor: "Facebook users seeking daily peer-to-peer support"
+    },
+    {
+      id: 6,
+      name: "Perimenopause Hub - Expert Advice and Peer Support",
+      description: "Active Facebook community offering expert guidance alongside peer support. Regular live Q&A sessions with healthcare professionals.",
+      platform: "Facebook Group",
+      type: 'facebook',
+      url: "https://www.facebook.com/groups/perimenohub/",
+      members: "8,000+",
+      features: ["Expert Q&A sessions", "Peer support", "Educational content", "Live events"],
+      cost: 'free',
+      bestFor: "Combining expert advice with community support"
+    },
+    {
+      id: 7,
+      name: "Menopause Matters Forums",
+      description: "One of the most well-known online forums with daily member posts. Topics covered include HRT experiences, menopausal sex, symptoms, and treatments.",
+      platform: "Web Forum",
+      type: 'forum',
+      url: "https://www.menopausematters.co.uk/forum.php",
+      members: "15,000+",
+      features: ["Daily posts", "HRT discussions", "Detailed symptom threads", "UK & international"],
+      cost: 'free',
+      bestFor: "In-depth discussions about specific symptoms and treatments"
     }
   ];
 
-  const mockSupportGroups: SupportGroup[] = [
+  const supportOrganizations: SupportOrganization[] = [
     {
       id: 1,
-      name: "Perimenopause Support Circle",
-      description: "A safe space to discuss hormonal changes, symptoms, and coping strategies with women going through similar experiences.",
-      category: "hormones",
-      type: "open",
-      currentMembers: 24,
-      maxMembers: 30,
-      meetingSchedule: "Every Tuesday 7:00 PM EST",
-      nextMeeting: "Tomorrow, 7:00 PM",
-      facilitator: "Dr. Maria Santos"
+      name: "The Menopause Society (Formerly NAMS)",
+      description: "Leading nonprofit organization dedicated to promoting women's health and wellness through all stages of midlife. Provides evidence-based information and resources.",
+      url: "https://menopause.org/",
+      services: ["Find a menopause practitioner", "Educational resources", "Clinical practice guidelines", "Certification programs"],
+      founded: "1989",
+      reach: "Global"
     },
     {
       id: 2,
-      name: "Midlife Career Pivots",
-      description: "For women navigating career changes, starting businesses, or returning to work after breaks. Weekly accountability and support.",
-      category: "career",
-      type: "open",
-      currentMembers: 18,
-      maxMembers: 25,
-      meetingSchedule: "Every Thursday 6:30 PM EST",
-      nextMeeting: "Thu, Jan 4, 6:30 PM",
-      facilitator: "Jennifer Walsh"
+      name: "Red Hot Mamas",
+      description: "Nation's largest menopause education program with in-person meetings at 200+ hospitals and medical practices across US and Canada.",
+      url: "https://redhotmamas.org/",
+      services: ["Local support groups", "Educational programs", "Healthcare provider partnership", "Monthly newsletter"],
+      founded: "1991",
+      reach: "US & Canada"
     },
     {
       id: 3,
-      name: "Empty Nest Transitions",
-      description: "Closed group for mothers adjusting to children leaving home. Focus on rediscovering identity and purpose.",
-      category: "relationships",
-      type: "closed",
-      currentMembers: 12,
-      maxMembers: 15,
-      meetingSchedule: "Bi-weekly Sundays 3:00 PM EST",
-      nextMeeting: "Sun, Jan 7, 3:00 PM",
-      facilitator: "Carol Thompson"
+      name: "National Menopause Foundation",
+      description: "Nonprofit organization providing education, support, and advocacy for women experiencing menopause. Partners with Inspire for online community support.",
+      url: "https://nationalmenopausefoundation.org/",
+      services: ["Online community", "Educational resources", "Research initiatives", "Advocacy programs"],
+      reach: "National (US)"
+    },
+    {
+      id: 4,
+      name: "My Menopause Centre",
+      description: "Free evidence-based support with monthly live Q&A sessions with experts and weekly peer support sessions.",
+      url: "https://www.mymenopausecentre.com/",
+      services: ["Free Facebook group", "Monthly expert Q&A", "Weekly live support sessions", "Educational resources"],
+      reach: "International"
     }
   ];
 
-  const mockSharedExperiences: SharedExperience[] = [
+  const localResources = [
     {
       id: 1,
-      title: "My breakthrough with morning anxiety",
-      content: "After months of waking up with racing thoughts, I discovered a 5-minute breathing routine that completely changed my mornings...",
-      author: "Michelle",
-      category: "breakthrough",
-      isAnonymous: false,
-      likes: 67,
-      supportMessages: 23,
-      createdAt: "3 days ago",
-      tags: ["anxiety", "breathing", "morning-routine"]
+      name: "Meetup.com - Menopause Support Groups",
+      description: "Find in-person and virtual local menopause support groups in your area. Many cities have active groups meeting monthly.",
+      url: "https://www.meetup.com/topics/menopause-support/",
+      icon: <MapPin className="w-5 h-5" />
     },
     {
       id: 2,
-      title: "Struggling with energy levels - need encouragement",
-      content: "Some days I feel like I'm moving through molasses. Everything takes twice as long and I'm exhausted by noon...",
-      author: "Anonymous",
-      category: "challenge",
-      isAnonymous: true,
-      likes: 45,
-      supportMessages: 31,
-      createdAt: "1 day ago",
-      tags: ["fatigue", "energy", "support-needed"]
-    },
-    {
-      id: 3,
-      title: "Game-changing supplement routine",
-      content: "After working with my doctor, we found a supplement combination that helped with my brain fog and energy...",
-      author: "Dr.Lisa",
-      category: "tip",
-      isAnonymous: false,
-      likes: 89,
-      supportMessages: 17,
-      createdAt: "5 days ago",
-      tags: ["supplements", "brain-fog", "energy"]
+      name: "WorkLife Central Menopause Peer Support",
+      description: "Bi-monthly virtual peer support sessions covering symptoms, treatment struggles, and work/life impact. Focused on working women.",
+      url: "https://www.worklifecentral.com/Resource-Hub--Menopause.htm",
+      icon: <Video className="w-5 h-5" />
     }
   ];
 
-  const filteredPosts = mockForumPosts.filter(post => {
-    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-    const matchesSearch = searchQuery === '' || 
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const getCategoryColor = (categoryId: string) => {
-    const category = forumCategories.find(cat => cat.id === categoryId);
-    return category?.color || '#6366f1';
+  const getPlatformIcon = (type: string) => {
+    switch (type) {
+      case 'forum': return <MessageCircle className="w-5 h-5 text-blue-600" />;
+      case 'facebook': return <Facebook className="w-5 h-5 text-blue-600" />;
+      case 'app': return <Smartphone className="w-5 h-5 text-purple-600" />;
+      default: return <Globe className="w-5 h-5 text-green-600" />;
+    }
   };
 
-  const getExperienceIcon = (category: string) => {
-    switch (category) {
-      case 'breakthrough': return <Star className="w-4 h-4 text-yellow-500" />;
-      case 'challenge': return <Heart className="w-4 h-4 text-red-500" />;
-      case 'tip': return <TrendingUp className="w-4 h-4 text-green-500" />;
-      case 'question': return <MessageCircle className="w-4 h-4 text-blue-500" />;
-      default: return <MessageCircle className="w-4 h-4" />;
-    }
+  const getCostBadge = (cost: string) => {
+    const colors = {
+      free: 'bg-green-100 text-green-800',
+      freemium: 'bg-blue-100 text-blue-800',
+      paid: 'bg-orange-100 text-orange-800'
+    };
+    return colors[cost as keyof typeof colors] || colors.free;
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">BloomAfter40 Community</h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Connect with other women navigating midlife transitions. Share experiences, find support, and build meaningful connections.
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white" data-testid="heading-community">
+          Community Support Resources
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Connect with thousands of women navigating perimenopause and midlife transitions through these trusted online communities and support organizations. All resources listed below are external platforms where you can find peer support, expert guidance, and shared experiences.
         </p>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 max-w-2xl mx-auto">
+          <p className="text-sm text-blue-900 dark:text-blue-300">
+            <strong>Note:</strong> These are external communities maintained by other organizations. Click the links to join discussions, find support groups, and connect with women worldwide.
+          </p>
+        </div>
       </div>
 
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="forum" className="flex items-center gap-2">
+          <TabsTrigger value="forums" className="flex items-center gap-2" data-testid="tab-forums">
             <MessageCircle className="w-4 h-4" />
-            Forum
+            Online Forums
           </TabsTrigger>
-          <TabsTrigger value="groups" className="flex items-center gap-2">
+          <TabsTrigger value="organizations" className="flex items-center gap-2" data-testid="tab-organizations">
             <Users className="w-4 h-4" />
-            Support Groups
+            Organizations
           </TabsTrigger>
-          <TabsTrigger value="experiences" className="flex items-center gap-2">
+          <TabsTrigger value="social" className="flex items-center gap-2" data-testid="tab-social">
             <Heart className="w-4 h-4" />
-            Shared Experiences
+            Social Communities
           </TabsTrigger>
-          <TabsTrigger value="connections" className="flex items-center gap-2">
-            <UserPlus className="w-4 h-4" />
-            Peer Connections
+          <TabsTrigger value="local" className="flex items-center gap-2" data-testid="tab-local">
+            <MapPin className="w-4 h-4" />
+            Local Groups
           </TabsTrigger>
         </TabsList>
 
-        {/* Forum Tab */}
-        <TabsContent value="forum" className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="flex flex-wrap gap-2">
-              {forumCategories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
-                  className="flex items-center gap-2"
-                  style={selectedCategory === category.id ? 
-                    { backgroundColor: category.color, borderColor: category.color } : 
-                    { borderColor: category.color, color: category.color }
-                  }
-                >
-                  {category.name}
-                  <Badge variant="secondary" className="text-xs">
-                    {category.count}
-                  </Badge>
-                </Button>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search discussions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-              <Dialog open={showNewPostDialog} onOpenChange={setShowNewPostDialog}>
-                <DialogTrigger asChild>
-                  <Button className="flex items-center gap-2">
-                    <Plus className="w-4 h-4" />
-                    New Post
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Create New Discussion</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input
-                      placeholder="Discussion title..."
-                      value={newPost.title}
-                      onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                    />
-                    <Textarea
-                      placeholder="Share your thoughts, questions, or experiences..."
-                      value={newPost.content}
-                      onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                      rows={6}
-                    />
-                    <div className="flex gap-4">
-                      <select
-                        value={newPost.categoryId.toString()}
-                        onChange={(e) => setNewPost({...newPost, categoryId: parseInt(e.target.value)})}
-                        className="px-3 py-2 border rounded-md"
-                      >
-                        <option value="general">General Discussion</option>
-                        <option value="hormones">Hormonal Changes</option>
-                        <option value="career">Career Transitions</option>
-                        <option value="relationships">Relationships</option>
-                        <option value="wellness">Wellness & Self-Care</option>
-                      </select>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={newPost.isAnonymous}
-                          onChange={(e) => setNewPost({...newPost, isAnonymous: e.target.checked})}
-                        />
-                        Post anonymously
-                      </label>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setShowNewPostDialog(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={handleCreatePost}>
-                        Post Discussion
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-
-          {/* Forum Posts */}
+        {/* Online Forums Tab */}
+        <TabsContent value="forums" className="space-y-6">
           <div className="space-y-4">
-            {filteredPosts.map((post) => (
-              <Card key={post.id} className={`hover:shadow-md transition-shadow cursor-pointer ${post.isPinned ? 'ring-2 ring-blue-200' : ''}`}>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      {post.isPinned && (
-                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
-                          Pinned
-                        </Badge>
-                      )}
-                      <Badge 
-                        variant="outline" 
-                        className="text-xs"
-                        style={{ borderColor: getCategoryColor(post.category), color: getCategoryColor(post.category) }}
-                      >
-                        {forumCategories.find(cat => cat.id === post.category)?.name}
-                      </Badge>
-                    </div>
-                    <span className="text-sm text-gray-500">{post.lastActivity}</span>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{post.content}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span>by {post.isAnonymous ? 'Anonymous' : post.author}</span>
-                      <div className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        {post.views}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MessageSquare className="w-4 h-4" />
-                        {post.replies}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <ThumbsUp className="w-4 h-4" />
-                        {post.likes}
-                      </div>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex items-center gap-1"
-                      onClick={() => handleReplyClick(post.id)}
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Reply
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Support Groups Tab */}
-        <TabsContent value="groups" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Support Groups</h2>
-            <Button 
-              className="flex items-center gap-2"
-              onClick={handleCreateGroup}
-            >
-              <Plus className="w-4 h-4" />
-              Create Group
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockSupportGroups.map((group) => (
-              <Card key={group.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{group.name}</CardTitle>
-                    <Badge variant={group.type === 'open' ? 'default' : group.type === 'closed' ? 'secondary' : 'outline'}>
-                      {group.type}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-gray-600 text-sm">{group.description}</p>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-500" />
-                      <span>{group.currentMembers}/{group.maxMembers} members</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span>{group.meetingSchedule}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span>Next: {group.nextMeeting}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-gray-500" />
-                      <span>Facilitated by {group.facilitator}</span>
-                    </div>
-                  </div>
-
-                  <Button 
-                    className="w-full" 
-                    variant={group.type === 'open' ? 'default' : 'outline'}
-                    onClick={() => handleJoinGroup(group.id, group.name, group.type)}
-                  >
-                    {group.type === 'open' ? 'Join Group' : group.type === 'closed' ? 'Request to Join' : 'Learn More'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Shared Experiences Tab */}
-        <TabsContent value="experiences" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Shared Experiences</h2>
-            <Button 
-              className="flex items-center gap-2"
-              onClick={handleShareExperience}
-            >
-              <Plus className="w-4 h-4" />
-              Share Experience
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {mockSharedExperiences.map((experience) => (
-              <Card key={experience.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      {getExperienceIcon(experience.category)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{experience.title}</h3>
-                        <Badge variant="outline" className="text-xs capitalize">
-                          {experience.category}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-gray-600 mb-3 line-clamp-2">{experience.content}</p>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <span>by {experience.isAnonymous ? 'Anonymous' : experience.author}</span>
-                          <span>{experience.createdAt}</span>
-                          <div className="flex items-center gap-1">
-                            <Heart className="w-4 h-4" />
-                            {experience.likes}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MessageCircle className="w-4 h-4" />
-                            {experience.supportMessages}
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-1">
-                          {experience.tags.slice(0, 2).map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              #{tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Peer Connections Tab */}
-        <TabsContent value="connections" className="space-y-6">
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold">Peer Connections</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Connect one-on-one with other women for mentorship, accountability partnerships, or friendship. 
-              Find someone who shares your interests and goals.
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Online Forums & Discussion Boards</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Join active online communities where you can ask questions, share experiences, and find support from women at similar life stages.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <UserPlus className="w-5 h-5" />
-                  Find a Connection
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-gray-600">
-                  Browse profiles of women open to new connections. Filter by interests, location, or support areas.
-                </p>
-                <Button className="w-full" onClick={handleBrowseProfiles}>Browse Profiles</Button>
-              </CardContent>
-            </Card>
+            {externalCommunities.filter(c => c.type === 'forum' || c.type === 'app').map((community) => (
+              <Card key={community.id} className="hover:shadow-lg transition-shadow" data-testid={`card-community-${community.id}`}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      {getPlatformIcon(community.type)}
+                      <div>
+                        <CardTitle className="text-lg">{community.name}</CardTitle>
+                        <CardDescription className="text-xs mt-1">{community.platform}</CardDescription>
+                      </div>
+                    </div>
+                    <Badge className={getCostBadge(community.cost)}>
+                      {community.cost}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{community.description}</p>
+                  
+                  {community.members && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <Users className="w-4 h-4" />
+                      <span>{community.members} members</span>
+                    </div>
+                  )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Your Connections
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-gray-600">
-                  Manage your existing connections, view pending requests, and update your profile.
-                </p>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full" onClick={handleViewConnections}>View My Connections</Button>
-                  <Button variant="outline" className="w-full" onClick={handleEditProfile}>Edit My Profile</Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Features:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {community.features.map((feature, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <strong>Best for:</strong> {community.bestFor}
+                    </p>
+                  </div>
+
+                  <Button 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => window.open(community.url, '_blank')}
+                    data-testid={`button-visit-${community.id}`}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Visit Community
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Organizations Tab */}
+        <TabsContent value="organizations" className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Support Organizations</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Nonprofit organizations and educational programs providing evidence-based resources, professional guidance, and advocacy.
+            </p>
           </div>
 
-          {/* Coming Soon Features */}
-          <div className="bg-gray-50 rounded-lg p-6 text-center">
-            <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
-            <p className="text-gray-600 mb-4">
-              We're working on enhanced peer connection features including mentorship matching, 
-              accountability partnerships, and virtual coffee chat scheduling.
+          <div className="grid grid-cols-1 gap-6">
+            {supportOrganizations.map((org) => (
+              <Card key={org.id} className="hover:shadow-lg transition-shadow" data-testid={`card-organization-${org.id}`}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-xl flex items-center gap-2">
+                        <BookOpen className="w-5 h-5 text-blue-600" />
+                        {org.name}
+                      </CardTitle>
+                      {org.founded && (
+                        <CardDescription className="text-xs mt-1">
+                          Founded {org.founded} • {org.reach}
+                        </CardDescription>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-gray-700 dark:text-gray-300">{org.description}</p>
+                  
+                  <div className="space-y-2">
+                    <p className="font-semibold text-sm text-gray-700 dark:text-gray-300">Services Offered:</p>
+                    <ul className="space-y-1">
+                      {org.services.map((service, idx) => (
+                        <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                          {service}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Button 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => window.open(org.url, '_blank')}
+                    data-testid={`button-visit-org-${org.id}`}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Visit Website
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Social Communities Tab */}
+        <TabsContent value="social" className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Facebook Groups & Social Communities</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Join private Facebook groups and social networks for daily peer support, expert Q&A sessions, and real-time discussions.
             </p>
-            <Button variant="outline" onClick={handleJoinWaitlist}>Join Waitlist</Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {externalCommunities.filter(c => c.type === 'facebook').map((community) => (
+              <Card key={community.id} className="hover:shadow-lg transition-shadow" data-testid={`card-social-${community.id}`}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <Facebook className="w-6 h-6 text-blue-600" />
+                      <div>
+                        <CardTitle className="text-lg">{community.name}</CardTitle>
+                        <CardDescription className="text-xs mt-1">{community.platform}</CardDescription>
+                      </div>
+                    </div>
+                    <Badge className={getCostBadge(community.cost)}>
+                      {community.cost}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{community.description}</p>
+                  
+                  {community.members && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <Users className="w-4 h-4" />
+                      <span>{community.members} members</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Features:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {community.features.map((feature, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                    <p className="text-xs text-blue-900 dark:text-blue-300">
+                      <strong>Best for:</strong> {community.bestFor}
+                    </p>
+                  </div>
+
+                  <Button 
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => window.open(community.url, '_blank')}
+                    data-testid={`button-visit-social-${community.id}`}
+                  >
+                    <Facebook className="w-4 h-4" />
+                    Join on Facebook
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+            <p className="text-sm text-yellow-900 dark:text-yellow-300">
+              <strong>Privacy Note:</strong> Most Facebook groups are private, requiring you to request to join. Your participation will only be visible to group members, not your general Facebook friends.
+            </p>
+          </div>
+        </TabsContent>
+
+        {/* Local Groups Tab */}
+        <TabsContent value="local" className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Find Local Support Groups</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Connect with women in your area through in-person meetups or location-based virtual support sessions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6">
+            {localResources.map((resource) => (
+              <Card key={resource.id} className="hover:shadow-lg transition-shadow" data-testid={`card-local-${resource.id}`}>
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    {resource.icon}
+                    {resource.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-gray-700 dark:text-gray-300">{resource.description}</p>
+                  
+                  <Button 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => window.open(resource.url, '_blank')}
+                    data-testid={`button-visit-local-${resource.id}`}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Find Groups Near You
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6 space-y-4">
+            <h3 className="font-semibold text-lg text-purple-900 dark:text-purple-300 flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Tips for Finding Local Groups
+            </h3>
+            <ul className="space-y-2 text-sm text-purple-900 dark:text-purple-300">
+              <li>• Check with your healthcare provider or local hospital for support group recommendations</li>
+              <li>• Search community centers, women's health clinics, and wellness centers in your area</li>
+              <li>• Many libraries and community colleges host free health-focused support groups</li>
+              <li>• Ask your OBGYN or menopause specialist if they know of local resources</li>
+              <li>• Use the Red Hot Mamas website to find programs at hospitals near you</li>
+            </ul>
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Bottom Info Card */}
+      <Card className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-pink-200 dark:border-pink-800">
+        <CardContent className="p-6">
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-3">
+            Why Join a Community?
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700 dark:text-gray-300">
+            <div>
+              <strong className="block mb-1">Reduce Isolation</strong>
+              Connect with thousands of women experiencing similar symptoms and life changes.
+            </div>
+            <div>
+              <strong className="block mb-1">Get Practical Tips</strong>
+              Learn strategies that work from real women, not just textbooks.
+            </div>
+            <div>
+              <strong className="block mb-1">Feel Validated</strong>
+              Realize you're not alone and your experiences are completely normal.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
