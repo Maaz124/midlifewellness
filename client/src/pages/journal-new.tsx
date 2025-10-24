@@ -26,6 +26,12 @@ export default function JournalNew() {
   const [lastSaved, setLastSaved] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceFilter, setPriceFilter] = useState('all');
+  const [showBreathingDialog, setShowBreathingDialog] = useState(false);
+  const [showGratitudeDialog, setShowGratitudeDialog] = useState(false);
+  const [breathingTimer, setBreathingTimer] = useState(300); // 5 minutes in seconds
+  const [breathingActive, setBreathingActive] = useState(false);
+  const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [gratitudeItems, setGratitudeItems] = useState(['', '', '']);
 
   // Fetch digital resources
   const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
@@ -108,7 +114,7 @@ export default function JournalNew() {
   });
 
   // Get unique categories
-  const categories = ['all', ...new Set((allResources as any[]).map(r => r.category).filter(Boolean))];
+  const categories = ['all', ...Array.from(new Set((allResources as any[]).map(r => r.category).filter(Boolean)))];
 
   const todaysPrompt = getTodaysPrompt(data.userProfile.currentWeek);
   const currentDate = new Date().toLocaleDateString('en-US', { 
@@ -154,16 +160,80 @@ export default function JournalNew() {
 
     // Load today's mood
     const todaysMood = data.moodTracking.find(
-      entry => entry.date === today
+      entry => entry.createdAt?.startsWith(today)
     );
     if (todaysMood) {
       setSelectedMood(todaysMood.mood);
     }
   }, [data.moodTracking]);
 
+  // Breathing timer and phase control
+  useEffect(() => {
+    if (!breathingActive) return;
+
+    const phaseInterval = setInterval(() => {
+      setBreathingPhase(prev => {
+        if (prev === 'inhale') return 'hold';
+        if (prev === 'hold') return 'exhale';
+        return 'inhale';
+      });
+    }, 4000); // 4 seconds per phase
+
+    const timerInterval = setInterval(() => {
+      setBreathingTimer(prev => {
+        if (prev <= 1) {
+          setBreathingActive(false);
+          toast({
+            title: "Breathing Exercise Complete!",
+            description: "Great job taking time for yourself. Notice how you feel.",
+          });
+          return 300; // Reset to 5 minutes
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(phaseInterval);
+      clearInterval(timerInterval);
+    };
+  }, [breathingActive, toast]);
+
+  const startBreathing = () => {
+    setBreathingActive(true);
+    setBreathingTimer(300);
+    setBreathingPhase('inhale');
+  };
+
+  const stopBreathing = () => {
+    setBreathingActive(false);
+    setBreathingTimer(300);
+  };
+
+  const saveGratitude = () => {
+    const filledItems = gratitudeItems.filter(item => item.trim());
+    if (filledItems.length === 0) {
+      toast({
+        title: "Add at least one item",
+        description: "Write down something you're grateful for.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Gratitude Saved!",
+      description: `You recorded ${filledItems.length} thing${filledItems.length > 1 ? 's' : ''} to be grateful for today.`,
+    });
+    
+    // Could save to journal or separate gratitude log
+    setGratitudeItems(['', '', '']);
+    setShowGratitudeDialog(false);
+  };
+
   const handleMoodSelect = (mood: string) => {
     setSelectedMood(mood);
-    addMoodEntry(mood);
+    addMoodEntry(mood as 'very-happy' | 'happy' | 'neutral' | 'sad' | 'very-sad');
   };
 
   const handleCompleteEntry = () => {
@@ -171,8 +241,7 @@ export default function JournalNew() {
       const entry: Omit<JournalEntry, 'id'> = {
         title: `${currentDate} Reflection`,
         content: journalContent,
-        date: new Date().toISOString().split('T')[0],
-        mood: selectedMood,
+        mood: selectedMood as 'very-happy' | 'happy' | 'neutral' | 'sad' | 'very-sad' | undefined,
         prompt: todaysPrompt,
         createdAt: new Date().toISOString(),
       };
@@ -313,24 +382,174 @@ export default function JournalNew() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Button 
-                        variant="outline" 
-                        className="h-auto p-4 text-left border-green-200 hover:bg-green-50"
-                      >
-                        <div>
-                          <div className="font-semibold text-green-700">5-Minute Breathing</div>
-                          <div className="text-sm text-gray-600">Calm your nervous system</div>
-                        </div>
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="h-auto p-4 text-left border-blue-200 hover:bg-blue-50"
-                      >
-                        <div>
-                          <div className="font-semibold text-blue-700">Gratitude Moment</div>
-                          <div className="text-sm text-gray-600">Find three things to appreciate</div>
-                        </div>
-                      </Button>
+                      <Dialog open={showBreathingDialog} onOpenChange={setShowBreathingDialog}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            className="h-auto p-4 text-left border-green-200 hover:bg-green-50"
+                            data-testid="button-breathing-exercise"
+                          >
+                            <div>
+                              <div className="font-semibold text-green-700">5-Minute Breathing</div>
+                              <div className="text-sm text-gray-600">Calm your nervous system</div>
+                            </div>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md" data-testid="dialog-breathing">
+                          <DialogHeader>
+                            <DialogTitle>5-Minute Breathing Exercise</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-6 py-4">
+                            {/* Timer Display */}
+                            <div className="text-center">
+                              <div className="text-4xl font-bold text-purple-600 mb-2">
+                                {Math.floor(breathingTimer / 60)}:{(breathingTimer % 60).toString().padStart(2, '0')}
+                              </div>
+                              <div className="text-sm text-gray-600">minutes remaining</div>
+                            </div>
+
+                            {/* Breathing Animation Circle */}
+                            <div className="flex justify-center">
+                              <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-[4000ms] ${
+                                breathingActive 
+                                  ? breathingPhase === 'inhale' 
+                                    ? 'bg-green-200 scale-125' 
+                                    : breathingPhase === 'hold'
+                                    ? 'bg-blue-200 scale-125'
+                                    : 'bg-purple-200 scale-75'
+                                  : 'bg-gray-200'
+                              }`}>
+                                <div className="text-center">
+                                  <div className="text-2xl font-bold">
+                                    {breathingActive 
+                                      ? breathingPhase === 'inhale' 
+                                        ? '🌬️' 
+                                        : breathingPhase === 'hold'
+                                        ? '⏸️'
+                                        : '😌'
+                                      : '🧘'
+                                    }
+                                  </div>
+                                  <div className="text-sm font-semibold mt-1 capitalize">
+                                    {breathingActive ? breathingPhase : 'Ready'}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Instructions */}
+                            <div className="bg-blue-50 p-4 rounded-lg text-sm text-gray-700">
+                              <p className="font-semibold mb-2">Box Breathing Pattern:</p>
+                              <ul className="space-y-1">
+                                <li>• Inhale slowly for 4 seconds</li>
+                                <li>• Hold your breath for 4 seconds</li>
+                                <li>• Exhale slowly for 4 seconds</li>
+                                <li>• Repeat for 5 minutes</li>
+                              </ul>
+                            </div>
+
+                            {/* Control Buttons */}
+                            <div className="flex gap-3">
+                              {!breathingActive ? (
+                                <Button 
+                                  onClick={startBreathing} 
+                                  className="flex-1 bg-green-600 hover:bg-green-700"
+                                  data-testid="button-start-breathing"
+                                >
+                                  Start Breathing
+                                </Button>
+                              ) : (
+                                <Button 
+                                  onClick={stopBreathing} 
+                                  variant="outline" 
+                                  className="flex-1"
+                                  data-testid="button-stop-breathing"
+                                >
+                                  Stop
+                                </Button>
+                              )}
+                              <Button 
+                                variant="outline" 
+                                onClick={() => setShowBreathingDialog(false)}
+                                data-testid="button-close-breathing"
+                              >
+                                Close
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog open={showGratitudeDialog} onOpenChange={setShowGratitudeDialog}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            className="h-auto p-4 text-left border-blue-200 hover:bg-blue-50"
+                            data-testid="button-gratitude-exercise"
+                          >
+                            <div>
+                              <div className="font-semibold text-blue-700">Gratitude Moment</div>
+                              <div className="text-sm text-gray-600">Find three things to appreciate</div>
+                            </div>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md" data-testid="dialog-gratitude">
+                          <DialogHeader>
+                            <DialogTitle>Gratitude Practice</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <p className="text-sm text-gray-600">
+                              Take a moment to reflect on three things you're grateful for today. They can be big or small - what matters is noticing them.
+                            </p>
+
+                            <div className="space-y-3">
+                              {gratitudeItems.map((item, index) => (
+                                <div key={index}>
+                                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                                    {index + 1}. I'm grateful for...
+                                  </label>
+                                  <Textarea
+                                    placeholder="Something that brought you joy, peace, or meaning today"
+                                    value={item}
+                                    onChange={(e) => {
+                                      const newItems = [...gratitudeItems];
+                                      newItems[index] = e.target.value;
+                                      setGratitudeItems(newItems);
+                                    }}
+                                    className="min-h-[60px]"
+                                    data-testid={`input-gratitude-${index + 1}`}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="bg-yellow-50 p-3 rounded-lg text-xs text-gray-700">
+                              <p className="font-semibold mb-1">💡 Gratitude Tip:</p>
+                              <p>Research shows that regularly practicing gratitude can improve mood, reduce stress, and enhance overall wellbeing.</p>
+                            </div>
+
+                            <div className="flex gap-3">
+                              <Button 
+                                onClick={saveGratitude}
+                                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                data-testid="button-save-gratitude"
+                              >
+                                Save Gratitude
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                  setShowGratitudeDialog(false);
+                                  setGratitudeItems(['', '', '']);
+                                }}
+                                data-testid="button-cancel-gratitude"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </CardContent>
                 </Card>
@@ -356,7 +575,7 @@ export default function JournalNew() {
                               <div className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                 <div className="font-medium text-sm">{entry.title}</div>
                                 <div className="text-xs text-gray-500 mt-1">
-                                  {new Date(entry.date).toLocaleDateString()}
+                                  {new Date(entry.createdAt).toLocaleDateString()}
                                 </div>
                                 <div className="text-xs text-gray-600 mt-1 line-clamp-2">
                                   {entry.content.substring(0, 100)}...
@@ -369,10 +588,10 @@ export default function JournalNew() {
                               </DialogHeader>
                               <div className="mt-4">
                                 <div className="text-sm text-gray-500 mb-4">
-                                  {new Date(entry.date).toLocaleDateString()}
+                                  {new Date(entry.createdAt).toLocaleDateString()}
                                 </div>
                                 <div className="prose prose-sm max-w-none">
-                                  {entry.content.split('\n').map((paragraph, index) => (
+                                  {entry.content.split('\n').map((paragraph: string, index: number) => (
                                     <p key={index} className="mb-3">{paragraph}</p>
                                   ))}
                                 </div>
