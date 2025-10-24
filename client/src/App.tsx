@@ -16,6 +16,10 @@ import ResourceCheckout from "@/pages/resource-checkout";
 import ContactCoaching from "@/pages/contact-coaching";
 import EmailSignatures from "@/pages/email-signatures";
 import PerimenopauseEducation from "@/pages/perimenopause-education";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
+import MedicalDisclaimer from "@/pages/medical-disclaimer";
+import Accessibility from "@/pages/accessibility";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -35,6 +39,10 @@ function Router() {
           <Route path="/resource-checkout" component={ResourceCheckout} />
           <Route path="/contact-coaching" component={ContactCoaching} />
           <Route path="/email-signatures" component={EmailSignatures} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/terms-of-service" component={TermsOfService} />
+          <Route path="/medical-disclaimer" component={MedicalDisclaimer} />
+          <Route path="/accessibility" component={Accessibility} />
           <Route component={NotFound} />
         </Switch>
       </main>
