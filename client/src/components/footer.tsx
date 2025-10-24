@@ -171,26 +171,26 @@ export function Footer() {
             <div className="mt-4 md:mt-0">
               <ul className="flex flex-wrap space-x-6 text-sm text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-purple-400 transition-colors flex items-center space-x-1">
+                  <Link href="/privacy-policy" className="hover:text-purple-400 transition-colors flex items-center space-x-1" data-testid="link-privacy-policy">
                     <Shield className="w-4 h-4" />
                     <span>Privacy Policy</span>
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-purple-400 transition-colors flex items-center space-x-1">
+                  <Link href="/terms-of-service" className="hover:text-purple-400 transition-colors flex items-center space-x-1" data-testid="link-terms-of-service">
                     <FileText className="w-4 h-4" />
                     <span>Terms of Service</span>
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-purple-400 transition-colors">
+                  <Link href="/medical-disclaimer" className="hover:text-purple-400 transition-colors" data-testid="link-medical-disclaimer">
                     Medical Disclaimer
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-purple-400 transition-colors">
+                  <Link href="/accessibility" className="hover:text-purple-400 transition-colors" data-testid="link-accessibility">
                     Accessibility
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
