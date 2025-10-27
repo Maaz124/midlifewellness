@@ -40,13 +40,14 @@ export default function Register() {
     try {
       await apiRequest("POST", "/api/auth/register", data);
 
+      // Invalidate and refetch user query
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+
       toast({
         title: "Registration successful!",
         description: "Welcome to BloomAfter40",
       });
-
-      // Invalidate user query to refetch
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
 
       // Redirect to home page
       setLocation("/");
