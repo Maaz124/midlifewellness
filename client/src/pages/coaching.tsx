@@ -13,6 +13,7 @@ import { coachingModules } from '@/lib/coaching-data';
 import { useLocation } from 'wouter';
 import { useSEO } from '@/hooks/use-seo';
 import { structuredDataTemplates } from '@/lib/seo';
+import { useAuth } from '@/hooks/use-auth';
 import { 
   Clock, 
   CheckCircle, 
@@ -37,25 +38,10 @@ export default function Coaching() {
   const [activeComponent, setActiveComponent] = useState<any>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [openWeeks, setOpenWeeks] = useState<string[]>(['week-1', 'week-2']); // Week 1 and 2 open by default
-  const [hasAccess, setHasAccess] = useState(false);
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  useEffect(() => {
-    // Check for payment access, admin access, or payment success from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentSuccess = urlParams.get('payment') === 'success';
-    const adminAccess = urlParams.get('admin') === 'true';
-    const storedAccess = localStorage.getItem('coachingAccess') === 'true';
-    
-    if (paymentSuccess || adminAccess) {
-      localStorage.setItem('coachingAccess', 'true');
-      setHasAccess(true);
-    } else if (storedAccess) {
-      setHasAccess(true);
-    } else {
-      setHasAccess(false);
-    }
-  }, []);
+  const hasAccess = isAuthenticated && user?.hasCoachingAccess;
 
   const handleComponentComplete = (componentId: string, responseData?: any) => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
@@ -174,23 +160,24 @@ export default function Coaching() {
                 <div className="text-sm text-purple-200 line-through">Regular: $297</div>
                 <div className="text-green-200 font-semibold mb-2">Save 67% Today</div>
                 <div className="space-y-2">
-                  <Button 
-                    onClick={() => setLocation('/checkout')}
-                    className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Secure Checkout - $97
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      localStorage.setItem('coachingAccess', 'true');
-                      setHasAccess(true);
-                    }}
-                    variant="outline"
-                    className="w-full bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 text-xs"
-                  >
-                    Demo Access (For Testing)
-                  </Button>
+                  {isAuthenticated ? (
+                    <Button 
+                      onClick={() => setLocation('/checkout')}
+                      className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
+                      data-testid="button-checkout"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Secure Checkout - $97
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => setLocation('/login')}
+                      className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
+                      data-testid="button-login-to-purchase"
+                    >
+                      Sign In to Purchase
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -530,27 +517,26 @@ export default function Coaching() {
                   </div>
                   <div className="text-center">
                     <div className="space-y-3">
-                      <Button 
-                        onClick={() => setLocation('/checkout')}
-                        size="lg"
-                        className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
-                      >
-                        <CreditCard className="w-5 h-5 mr-3" />
-                        Get Instant Access Now
-                      </Button>
-                      <div>
+                      {isAuthenticated ? (
                         <Button 
-                          onClick={() => {
-                            localStorage.setItem('coachingAccess', 'true');
-                            setHasAccess(true);
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                          onClick={() => setLocation('/checkout')}
+                          size="lg"
+                          className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
+                          data-testid="button-checkout-bottom"
                         >
-                          Try Demo Access (Testing)
+                          <CreditCard className="w-5 h-5 mr-3" />
+                          Get Instant Access Now
                         </Button>
-                      </div>
+                      ) : (
+                        <Button 
+                          onClick={() => setLocation('/login')}
+                          size="lg"
+                          className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
+                          data-testid="button-login-bottom"
+                        >
+                          Sign In to Get Access
+                        </Button>
+                      )}
                       <p className="text-xs text-purple-200">30-day money-back guarantee</p>
                     </div>
                   </div>
