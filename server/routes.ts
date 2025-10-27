@@ -73,9 +73,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/journal-entries", async (req, res) => {
+  app.post("/api/journal-entries", isAuthenticated, hasPayment, async (req: any, res) => {
     try {
-      const validatedData = insertJournalEntrySchema.parse(req.body);
+      const userId = req.session.userId;
+      const validatedData = insertJournalEntrySchema.parse({
+        ...req.body,
+        userId,
+      });
       const entry = await storage.createJournalEntry(validatedData);
       res.json(entry);
     } catch (error) {
@@ -83,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/journal-entries/:id", async (req, res) => {
+  app.delete("/api/journal-entries/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteJournalEntry(id);
