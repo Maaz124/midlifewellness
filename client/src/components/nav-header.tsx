@@ -1,8 +1,9 @@
 import { Link, useLocation } from "wouter";
-import { Bell, User, Menu, X } from 'lucide-react';
+import { Bell, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
+import { UserMenu } from '@/components/user-menu';
 
 export function NavHeader() {
   const [location] = useLocation();
@@ -56,16 +57,15 @@ export function NavHeader() {
               <Button 
                 size="sm" 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium"
+                data-testid="button-personal-coaching"
               >
                 Personal Coaching
               </Button>
             </Link>
-            <Button variant="ghost" size="sm" className="p-2">
+            <Button variant="ghost" size="sm" className="p-2" data-testid="button-notifications">
               <Bell className="h-5 w-5 text-gray-400" />
             </Button>
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <User className="h-4 w-4 text-primary" />
-            </div>
+            <UserMenu />
           </div>
 
           {/* Mobile Menu Button */}
