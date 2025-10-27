@@ -278,6 +278,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       
       if (paymentIntent.status === 'succeeded' && user && user.email) {
+        // Grant coaching access to the user
+        await storage.upsertUser({
+          ...user,
+          hasCoachingAccess: true,
+          coachingAccessGrantedAt: new Date(),
+        });
+        
         // Send payment confirmation email
         const confirmationTemplate = emailTemplates.paymentConfirmation(
           user.firstName || '',
@@ -294,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('Failed to send payment confirmation email:', error);
         });
         
-        res.json({ success: true, message: "Payment confirmed and email sent" });
+        res.json({ success: true, message: "Payment confirmed, access granted, and email sent" });
       } else {
         res.status(400).json({ success: false, message: "Payment not confirmed" });
       }
