@@ -23,6 +23,8 @@ export const users = pgTable("users", {
   phone: varchar("phone", { length: 20 }),
   profileImageUrl: varchar("profile_image_url"),
   emailVerified: boolean("email_verified").default(false),
+  hasCoachingAccess: boolean("has_coaching_access").default(false),
+  coachingAccessGrantedAt: timestamp("coaching_access_granted_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
