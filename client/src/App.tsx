@@ -20,6 +20,8 @@ import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import MedicalDisclaimer from "@/pages/medical-disclaimer";
 import Accessibility from "@/pages/accessibility";
+import Register from "@/pages/register";
+import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -43,6 +45,8 @@ function Router() {
           <Route path="/terms-of-service" component={TermsOfService} />
           <Route path="/medical-disclaimer" component={MedicalDisclaimer} />
           <Route path="/accessibility" component={Accessibility} />
+          <Route path="/register" component={Register} />
+          <Route path="/login" component={Login} />
           <Route component={NotFound} />
         </Switch>
       </main>
