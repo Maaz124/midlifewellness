@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { DatabaseStorage } from "./database-storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupCustomAuth, isAuthenticated, hasPayment } from "./auth";
+import { getSession } from "./replitAuth";
 import { uploadVideo, VideoManager } from "./video-upload";
 import { uploadPDF, DigitalResourceManager } from "./digital-resources";
 import path from "path";
@@ -27,42 +28,18 @@ import { sendEmail, emailTemplates } from "./email";
 import { marketingFunnel } from "./marketing-funnel";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize database storage and authentication
+  // Initialize database storage and sessions
   const storage = new DatabaseStorage();
-  await setupAuth(app);
+  
+  // Setup session management (needed for custom auth)
+  app.set("trust proxy", 1);
+  app.use(getSession());
+  
+  // Setup custom authentication routes
+  await setupCustomAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      // Send welcome email for first-time users
-      if (user && user.email && user.createdAt) {
-        const createdDate = new Date(user.createdAt);
-        const daysSinceCreation = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
-        
-        // Send welcome email if user was created within the last day
-        if (daysSinceCreation < 1) {
-          const welcomeTemplate = emailTemplates.welcome(user.firstName || '');
-          await sendEmail({
-            to: user.email,
-            from: 'coaching@bloomafter40.com',
-            subject: welcomeTemplate.subject,
-            html: welcomeTemplate.html,
-            text: welcomeTemplate.text
-          }).catch(error => {
-            console.error('Failed to send welcome email:', error);
-          });
-        }
-      }
-      
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Note: /api/auth/user, /api/auth/login, /api/auth/register, /api/auth/logout 
+  // are now handled in auth.ts via setupCustomAuth
 
   // Health Assessments (keeping free access)
   app.get("/api/health-assessments/:userId", async (req, res) => {
@@ -88,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Journal Entries
   app.get("/api/journal-entries", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const entries = await storage.getJournalEntriesByUser(userId);
       res.json(entries);
     } catch (error) {
@@ -119,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Coaching Progress
   app.get("/api/coaching-progress", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const progress = await storage.getCoachingProgressByUser(userId);
       res.json(progress);
     } catch (error) {
@@ -151,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Goals
   app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const goals = await storage.getGoalsByUser(userId);
       res.json(goals);
     } catch (error) {
@@ -193,7 +170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Habits
   app.get("/api/habits", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const habits = await storage.getHabitsByUser(userId);
       res.json(habits);
     } catch (error) {
@@ -235,7 +212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mood Entries
   app.get("/api/mood-entries", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const entries = await storage.getMoodEntriesByUser(userId);
       res.json(entries);
     } catch (error) {
@@ -256,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User Management
   app.get("/api/users/me", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -271,7 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
       const { amount } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
@@ -294,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/payment-success", isAuthenticated, async (req: any, res) => {
     try {
       const { paymentIntentId, amount } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const user = await storage.getUser(userId);
       
       // Verify payment intent with Stripe
@@ -387,7 +364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics endpoint
   app.get("/api/analytics", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       
       // Fetch all relevant data for analytics
       const [assessments, journalEntries, moodEntries, goals, habits] = await Promise.all([
@@ -674,7 +651,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/community/posts', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const { title, content, categoryId, isAnonymous } = req.body;
       
       if (!title?.trim() || !content?.trim() || !categoryId) {
@@ -729,7 +706,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/community/posts/:id/replies', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const postId = parseInt(req.params.id);
       const { content, isAnonymous, parentReplyId } = req.body;
       
@@ -765,7 +742,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/community/groups', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const { name, description, type, category, maxMembers, meetingSchedule } = req.body;
       
       if (!name?.trim() || !description?.trim() || !type || !category) {
@@ -791,7 +768,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/community/groups/:id/join', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const groupId = parseInt(req.params.id);
       
       const membership = await storage.joinSupportGroup(groupId, userId);
@@ -987,7 +964,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/purchase-resource', isAuthenticated, async (req: any, res) => {
     try {
       const { resourceId } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
 
       if (!resourceId) {
         return res.status(400).json({ message: 'Resource ID is required' });
@@ -1091,7 +1068,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(401).json({ message: 'Authentication required for paid resources' });
         }
 
-        const userId = req.user.claims.sub;
+        const userId = req.session.userId;
         const hasPurchased = await storage.hasUserPurchasedResource(userId, resourceId);
         if (!hasPurchased) {
           return res.status(403).json({ message: 'Purchase required to download this resource' });
@@ -1159,7 +1136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's purchased resources
   app.get('/api/my-resources', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const purchases = await storage.getUserResourcePurchases(userId);
       
       // Get resource details for each purchase

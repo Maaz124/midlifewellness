@@ -116,14 +116,14 @@ export const forumPosts = pgTable("forum_posts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const forumReplies = pgTable("forum_replies", {
+export const forumReplies: any = pgTable("forum_replies", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").references(() => forumPosts.id).notNull(),
   userId: varchar("user_id").references(() => users.id).notNull(),
   content: text("content").notNull(),
   isAnonymous: boolean("is_anonymous").default(false),
   likes: integer("likes").default(0),
-  parentReplyId: integer("parent_reply_id").references(() => forumReplies.id),
+  parentReplyId: integer("parent_reply_id").references((): any => forumReplies.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
