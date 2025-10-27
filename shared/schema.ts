@@ -13,13 +13,16 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table for Replit Auth
+// User storage table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
+  email: varchar("email").unique().notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
+  phone: varchar("phone", { length: 20 }),
   profileImageUrl: varchar("profile_image_url"),
+  emailVerified: boolean("email_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -269,8 +272,30 @@ export const resourceDownloads = pgTable("resource_downloads", {
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  emailVerified: true,
   createdAt: true,
   updatedAt: true,
+});
+
+// Registration schema with password validation
+export const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string()
+    .min(10, "Password must be at least 10 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  phone: z.string().optional(),
+});
+
+// Login schema
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export const insertHealthAssessmentSchema = createInsertSchema(healthAssessments).omit({
@@ -380,6 +405,8 @@ export const insertExperienceReactionSchema = createInsertSchema(experienceReact
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type UpsertUser = typeof users.$inferInsert;
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
 
 export type InsertHealthAssessment = z.infer<typeof insertHealthAssessmentSchema>;
 export type HealthAssessment = typeof healthAssessments.$inferSelect;
