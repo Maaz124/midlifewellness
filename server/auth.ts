@@ -46,14 +46,30 @@ export async function setupCustomAuth(app: Express) {
         emailVerified: false,
       }).returning();
 
-      // Create session
-      req.session.userId = newUser.id;
+      // Regenerate session to prevent session fixation attacks
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error('Session regeneration error:', err);
+          return res.status(500).json({ message: "Registration failed - session error" });
+        }
 
-      // Return user without password hash
-      const { passwordHash: _, ...userWithoutPassword } = newUser;
-      res.status(201).json({ 
-        message: "Registration successful", 
-        user: userWithoutPassword 
+        // Set user ID in new session
+        req.session.userId = newUser.id;
+
+        // Save session before responding
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('Session save error:', saveErr);
+            return res.status(500).json({ message: "Registration failed - session save error" });
+          }
+
+          // Return user without password hash
+          const { passwordHash: _, ...userWithoutPassword } = newUser;
+          res.status(201).json({ 
+            message: "Registration successful", 
+            user: userWithoutPassword 
+          });
+        });
       });
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -93,14 +109,30 @@ export async function setupCustomAuth(app: Express) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Create session
-      req.session.userId = user.id;
+      // Regenerate session to prevent session fixation attacks
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error('Session regeneration error:', err);
+          return res.status(500).json({ message: "Login failed - session error" });
+        }
 
-      // Return user without password hash
-      const { passwordHash: _, ...userWithoutPassword } = user;
-      res.json({ 
-        message: "Login successful", 
-        user: userWithoutPassword 
+        // Set user ID in new session
+        req.session.userId = user.id;
+
+        // Save session before responding
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('Session save error:', saveErr);
+            return res.status(500).json({ message: "Login failed - session save error" });
+          }
+
+          // Return user without password hash
+          const { passwordHash: _, ...userWithoutPassword } = user;
+          res.json({ 
+            message: "Login successful", 
+            user: userWithoutPassword 
+          });
+        });
       });
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -145,7 +177,7 @@ export async function setupCustomAuth(app: Express) {
 
       // Return user without password hash
       const { passwordHash: _, ...userWithoutPassword } = user;
-      res.json({ user: userWithoutPassword });
+      res.json(userWithoutPassword);
     } catch (error) {
       console.error('Get user error:', error);
       res.status(500).json({ message: "Failed to get user" });

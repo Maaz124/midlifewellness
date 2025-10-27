@@ -37,13 +37,14 @@ export default function Login() {
     try {
       await apiRequest("POST", "/api/auth/login", data);
 
+      // Invalidate and refetch user query
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+
       toast({
         title: "Login successful!",
         description: "Welcome back to BloomAfter40",
       });
-
-      // Invalidate user query to refetch
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
 
       // Redirect to home page
       setLocation("/");
