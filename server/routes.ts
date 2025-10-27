@@ -1062,35 +1062,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Download resource endpoint (for free resources or purchased ones)
-  app.get('/api/download-resource/:id', async (req: any, res) => {
+  // Download resource endpoint (requires coaching access)
+  app.get('/api/download-resource/:id', isAuthenticated, hasPayment, async (req: any, res) => {
     try {
       const resourceId = parseInt(req.params.id);
+      const userId = req.session.userId;
       
       const resource = await storage.getDigitalResourceById(resourceId);
       if (!resource) {
         return res.status(404).json({ message: 'Resource not found' });
       }
 
-      // Check if resource requires payment
+      // Check if resource requires additional payment beyond coaching access
       if (resource.price > 0) {
-        // For paid resources, require authentication
-        if (!req.isAuthenticated()) {
-          return res.status(401).json({ message: 'Authentication required for paid resources' });
-        }
-
-        const userId = req.session.userId;
         const hasPurchased = await storage.hasUserPurchasedResource(userId, resourceId);
         if (!hasPurchased) {
           return res.status(403).json({ message: 'Purchase required to download this resource' });
         }
-
-        // Track the download for authenticated users
-        await storage.createResourceDownload({
-          userId,
-          resourceId
-        });
       }
+
+      // Track the download
+      await storage.createResourceDownload({
+        userId,
+        resourceId
+      });
 
       // Get file path
       const filePath = DigitalResourceManager.getFilePath(resource.filename);
