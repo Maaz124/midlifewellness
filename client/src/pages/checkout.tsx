@@ -10,10 +10,8 @@ import { useLocation } from 'wouter';
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const publicKey = (import.meta.env.VITE_STRIPE_PUBLIC_KEY as string | undefined) || undefined;
+const stripePromise = publicKey ? loadStripe(publicKey) : null;
 
 const CheckoutForm = () => {
   const stripe = useStripe();
@@ -95,7 +93,10 @@ export default function Checkout() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    // Create PaymentIntent as soon as the page loads
+    // Skip creating PaymentIntent if Stripe is not configured in dev
+    if (!publicKey) {
+      return;
+    }
     apiRequest("POST", "/api/create-payment-intent", { amount: 97 })
       .then((res) => res.json())
       .then((data) => {
@@ -103,10 +104,20 @@ export default function Checkout() {
       })
       .catch((error) => {
         console.error('Payment Intent Error:', error);
-        // Redirect back to coaching with error message
         setLocation('/coaching?error=payment_setup');
       });
   }, []);
+
+  if (!publicKey) {
+    return (
+      <div className="max-w-3xl mx-auto p-8">
+        <div className="space-y-4 text-center">
+          <h1 className="text-2xl font-semibold">Payments Not Configured</h1>
+          <p className="text-gray-600">Add <code>VITE_STRIPE_PUBLIC_KEY</code> to your .env to enable checkout.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!clientSecret) {
     return (

@@ -1,0 +1,2458 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThriveMidlife: Mind-Body Reset for Women</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#8B5CF6',
+                        'secondary': '#10B981',
+                        'accent': '#F97316',
+                        'blue-accent': '#3B82F6',
+                        'warm-gray': '#64748B',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-purple-50 via-white to-emerald-50 min-h-screen">
+    <!-- @COMPONENT: Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-purple-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                        <i class="fas fa-leaf text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">ThriveMidlife</h1>
+                        <p class="text-xs text-warm-gray">Mind-Body Reset</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <button class="nav-btn text-primary border-b-2 border-primary" data-section="dashboard">Dashboard</button>
+                    <button class="nav-btn text-warm-gray hover:text-primary" data-section="calculators">Health Check</button>
+                    <button class="nav-btn text-warm-gray hover:text-primary" data-section="coaching">Coaching</button>
+                    <button class="nav-btn text-warm-gray hover:text-primary" data-section="progress">Progress</button>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-warm-gray hover:text-primary">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- @COMPONENT: Dashboard Section -->
+        <section id="dashboard" class="section-content">
+            <!-- Welcome Header -->
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Welcome to Your Wellness Journey</h2>
+                <p class="text-lg text-warm-gray max-w-2xl mx-auto">Track your mental, physical, and cognitive health while building resilience through our guided coaching program.</p>
+            </div>
+
+            <!-- Health Scores Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Mental Health Score -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Emotional Balance</h3>
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-heart text-primary text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="relative w-24 h-24 mx-auto mb-4">
+                        <svg class="w-24 h-24 transform -rotate-90">
+                            <circle cx="48" cy="48" r="40" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                            <circle cx="48" cy="48" r="40" stroke="#8B5CF6" stroke-width="8" fill="none" 
+                                    stroke-dasharray="251.2" stroke-dashoffset="75.36" stroke-linecap="round"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-primary" data-bind="mentalHealthScore">70</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-warm-gray text-center">Good progress! Focus on sleep routine.</p>
+                </div>
+
+                <!-- Physical Health Score -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-emerald-100 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Vitality Index</h3>
+                        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-bolt text-secondary text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="relative w-24 h-24 mx-auto mb-4">
+                        <svg class="w-24 h-24 transform -rotate-90">
+                            <circle cx="48" cy="48" r="40" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                            <circle cx="48" cy="48" r="40" stroke="#10B981" stroke-width="8" fill="none" 
+                                    stroke-dasharray="251.2" stroke-dashoffset="100.48" stroke-linecap="round"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-secondary" data-bind="physicalHealthScore">60</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-warm-gray text-center">Consider gentle exercise routine.</p>
+                </div>
+
+                <!-- Cognitive Health Score -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Cognitive Clarity</h3>
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-brain text-blue-accent text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="relative w-24 h-24 mx-auto mb-4">
+                        <svg class="w-24 h-24 transform -rotate-90">
+                            <circle cx="48" cy="48" r="40" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                            <circle cx="48" cy="48" r="40" stroke="#3B82F6" stroke-width="8" fill="none" 
+                                    stroke-dasharray="251.2" stroke-dashoffset="50.24" stroke-linecap="round"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-blue-accent" data-bind="cognitiveHealthScore">80</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-warm-gray text-center">Excellent focus! Keep it up.</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                <button class="quick-action-btn bg-gradient-to-r from-primary to-purple-600 text-white" data-action="take-assessment">
+                    <i class="fas fa-clipboard-check text-2xl mb-2"></i>
+                    <span class="font-medium">Take Assessment</span>
+                </button>
+                <button class="quick-action-btn bg-gradient-to-r from-secondary to-emerald-600 text-white" data-action="continue-coaching">
+                    <i class="fas fa-play-circle text-2xl mb-2"></i>
+                    <span class="font-medium">Continue Coaching</span>
+                </button>
+                <button class="quick-action-btn bg-gradient-to-r from-accent to-orange-600 text-white" data-action="journal">
+                    <i class="fas fa-journal-whills text-2xl mb-2"></i>
+                    <span class="font-medium">Journal Entry</span>
+                </button>
+                <button class="quick-action-btn bg-gradient-to-r from-blue-accent to-indigo-600 text-white" data-action="meditation">
+                    <i class="fas fa-meditation text-2xl mb-2"></i>
+                    <span class="font-medium">Meditation</span>
+                </button>
+            </div>
+
+            <!-- Recent Progress -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Your Progress This Week</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Completed Week 2: Rewiring Thoughts</p>
+                                <p class="text-sm text-warm-gray">2 days ago</p>
+                            </div>
+                        </div>
+                        <span class="text-primary font-medium">100%</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-emerald-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Week 3: Emotion Regulation</p>
+                                <p class="text-sm text-warm-gray">In progress</p>
+                            </div>
+                        </div>
+                        <span class="text-secondary font-medium">60%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: Dashboard Section -->
+
+        <!-- @COMPONENT: Health Calculators Section -->
+        <section id="calculators" class="section-content hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Health Assessment</h2>
+                <p class="text-lg text-warm-gray max-w-2xl mx-auto">Take our comprehensive health assessments to understand your current well-being across mental, physical, and cognitive dimensions.</p>
+            </div>
+
+            <!-- Calculator Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Mental Health Calculator -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100">
+                    <div class="bg-gradient-to-r from-primary to-purple-600 p-6 text-white">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <i class="fas fa-heart text-2xl"></i>
+                            <h3 class="text-xl font-semibold">Mental Health</h3>
+                        </div>
+                        <p class="text-purple-100">PHQ-9 & GAD-7 based assessment</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Mood evaluation</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Sleep quality assessment</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Anxiety & stress levels</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Emotional regulation</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors" data-calculator="mental">
+                            Start Assessment
+                        </button>
+                        <p class="text-xs text-warm-gray mt-2 text-center">Takes 5-7 minutes</p>
+                    </div>
+                </div>
+
+                <!-- Physical Health Calculator -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-emerald-100">
+                    <div class="bg-gradient-to-r from-secondary to-emerald-600 p-6 text-white">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <i class="fas fa-bolt text-2xl"></i>
+                            <h3 class="text-xl font-semibold">Physical Health</h3>
+                        </div>
+                        <p class="text-emerald-100">Comprehensive vitality assessment</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Energy levels</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Hot flashes & symptoms</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Joint pain & mobility</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Overall vitality</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-secondary text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors" data-calculator="physical">
+                            Start Assessment
+                        </button>
+                        <p class="text-xs text-warm-gray mt-2 text-center">Takes 4-6 minutes</p>
+                    </div>
+                </div>
+
+                <!-- Cognitive Health Calculator -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100">
+                    <div class="bg-gradient-to-r from-blue-accent to-indigo-600 p-6 text-white">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <i class="fas fa-brain text-2xl"></i>
+                            <h3 class="text-xl font-semibold">Cognitive Health</h3>
+                        </div>
+                        <p class="text-blue-100">Mental clarity & focus evaluation</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Memory & recall</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Focus & concentration</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Word-finding ability</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                                <span class="text-sm text-warm-gray">Mental clarity</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-blue-accent text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors" data-calculator="cognitive">
+                            Start Assessment
+                        </button>
+                        <p class="text-xs text-warm-gray mt-2 text-center">Takes 3-5 minutes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessment Modal -->
+            <div id="assessmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" id="modalTitle">Mental Health Assessment</h3>
+                            <button class="text-warm-gray hover:text-gray-900" onclick="closeModal()">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="mt-4">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%" id="progressBar"></div>
+                            </div>
+                            <p class="text-sm text-warm-gray mt-2"><span id="currentQuestion">1</span> of <span id="totalQuestions">9</span> questions</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="questionContainer">
+                            <!-- Questions will be dynamically loaded here -->
+                        </div>
+                        <div class="flex justify-between mt-6">
+                            <button class="px-6 py-2 text-warm-gray border border-gray-300 rounded-lg hover:bg-gray-50" id="prevBtn" onclick="previousQuestion()">Previous</button>
+                            <button class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-purple-700" id="nextBtn" onclick="nextQuestion()">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: Health Calculators Section -->
+
+        <!-- @COMPONENT: Coaching Program Section -->
+        <section id="coaching" class="section-content hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">The Mind Reset Method</h2>
+                <p class="text-lg text-warm-gray max-w-2xl mx-auto">A 6-week interactive coaching journey designed specifically for women navigating midlife transitions.</p>
+            </div>
+
+            <!-- Program Overview -->
+            <div class="bg-gradient-to-r from-primary to-purple-600 rounded-2xl p-8 text-white mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-alt text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2">6 Weeks</h3>
+                        <p class="text-purple-100">Structured program</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-video text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2">Video Content</h3>
+                        <p class="text-purple-100">Expert guidance</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2">Progress Tracking</h3>
+                        <p class="text-purple-100">Monitor your journey</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Modules -->
+            <div class="space-y-6">
+                <!-- Week 1 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Hormones & Headspace</h3>
+                                    <p class="text-sm text-warm-gray">Understanding perimenopause brain shifts</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <span class="text-sm text-secondary font-medium">Completed</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-play-circle text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Video Content</p>
+                                <p class="text-xs text-warm-gray">15 min</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-journal-whills text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Journal Exercise</p>
+                                <p class="text-xs text-warm-gray">"What am I carrying?"</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-chart-bar text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Mood Tracking</p>
+                                <p class="text-xs text-warm-gray">Daily awareness</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-lightbulb text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Thought Awareness</p>
+                                <p class="text-xs text-warm-gray">Daily task</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 rounded-full h-2 mb-2">
+                            <div class="bg-secondary h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <p class="text-sm text-warm-gray">Progress: 100% Complete</p>
+                    </div>
+                </div>
+
+                <!-- Week 2 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Rewiring Thoughts</h3>
+                                    <p class="text-sm text-warm-gray">CBT & NLP reframing techniques</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <span class="text-sm text-secondary font-medium">Completed</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-brain text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">CBT Techniques</p>
+                                <p class="text-xs text-warm-gray">Reframing</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-mirror text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Mirror Work</p>
+                                <p class="text-xs text-warm-gray">Affirmations</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-clipboard-list text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Thought Audit</p>
+                                <p class="text-xs text-warm-gray">Tracker tool</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <i class="fas fa-heart text-primary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Self-Compassion</p>
+                                <p class="text-xs text-warm-gray">Replace criticism</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 rounded-full h-2 mb-2">
+                            <div class="bg-secondary h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <p class="text-sm text-warm-gray">Progress: 100% Complete</p>
+                    </div>
+                </div>
+
+                <!-- Week 3 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-primary border-2 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Emotion Regulation & Boundaries</h3>
+                                    <p class="text-sm text-warm-gray">Managing overwhelm and setting limits</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                                    <i class="fas fa-play text-white text-sm"></i>
+                                </div>
+                                <span class="text-sm text-accent font-medium">In Progress</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-emerald-50 p-4 rounded-lg">
+                                <i class="fas fa-pause-circle text-secondary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Pause-Label-Shift</p>
+                                <p class="text-xs text-warm-gray">Technique</p>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-lg">
+                                <i class="fas fa-shield-alt text-secondary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Boundaries</p>
+                                <p class="text-xs text-warm-gray">Worksheet</p>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-lg">
+                                <i class="fas fa-map text-secondary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Mood Mapping</p>
+                                <p class="text-xs text-warm-gray">Weekly tool</p>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-lg">
+                                <i class="fas fa-wave-square text-secondary mb-2"></i>
+                                <p class="text-sm font-medium text-gray-900">Overwhelm Patterns</p>
+                                <p class="text-xs text-warm-gray">Identification</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 rounded-full h-2 mb-2">
+                            <div class="bg-accent h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <p class="text-sm text-warm-gray">Progress: 60% Complete</p>
+                        <button class="mt-4 bg-primary text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                            Continue Week 3
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Week 4 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden opacity-75">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-bold">4</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-600">Nervous System Reset</h3>
+                                    <p class="text-sm text-warm-gray">Somatic practices and breathwork</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-warm-gray">Locked</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-wind text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Breathwork</p>
+                                <p class="text-xs text-warm-gray">Vagus nerve reset</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-spa text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Grounding</p>
+                                <p class="text-xs text-warm-gray">Somatic practices</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-home text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Calm Corner</p>
+                                <p class="text-xs text-warm-gray">Planning</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-headphones text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Meditation</p>
+                                <p class="text-xs text-warm-gray">Guided audio</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Week 5 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden opacity-75">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-bold">5</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-600">Clarity & Cognitive Flow</h3>
+                                    <p class="text-sm text-warm-gray">Focus and memory enhancement</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-warm-gray">Locked</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-bullseye text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Focus Rituals</p>
+                                <p class="text-xs text-warm-gray">Memory boost</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-apple-alt text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Brain Nutrition</p>
+                                <p class="text-xs text-warm-gray">Support guide</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-calendar-check text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Focus Planner</p>
+                                <p class="text-xs text-warm-gray">Weekly tool</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-sort-amount-down text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Prioritization</p>
+                                <p class="text-xs text-warm-gray">Mind-dump tool</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Week 6 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden opacity-75">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-bold">6</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-600">Future Self & Goal Mapping</h3>
+                                    <p class="text-sm text-warm-gray">Vision and goal setting</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-warm-gray">Locked</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-images text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Vision Board</p>
+                                <p class="text-xs text-warm-gray">Digital design</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-target text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">SMART Goals</p>
+                                <p class="text-xs text-warm-gray">Value-aligned</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-cogs text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Reverse Engineer</p>
+                                <p class="text-xs text-warm-gray">Action steps</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <i class="fas fa-infinity text-gray-400 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600">Habit Loop</p>
+                                <p class="text-xs text-warm-gray">Creator tool</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: Coaching Program Section -->
+
+        <!-- @COMPONENT: Progress Section -->
+        <section id="progress" class="section-content hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Your Progress Journey</h2>
+                <p class="text-lg text-warm-gray max-w-2xl mx-auto">Track your wellness transformation across all dimensions of health.</p>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Health Scores Over Time -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Health Scores Trend</h3>
+                    <div class="h-64">
+                        <canvas id="healthTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Coaching Progress -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Coaching Program Progress</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-warm-gray">Overall Progress</span>
+                            <span class="font-semibold text-primary">33%</span>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-3">
+                            <div class="bg-gradient-to-r from-primary to-purple-600 h-3 rounded-full" style="width: 33%"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-primary">2</div>
+                                <div class="text-sm text-warm-gray">Weeks Completed</div>
+                            </div>
+                            <div class="text-center p-4 bg-emerald-50 rounded-lg">
+                                <div class="text-2xl font-bold text-secondary">12</div>
+                                <div class="text-sm text-warm-gray">Days Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal Entries -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Recent Journal Entries</h3>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>New Entry
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div class="border-l-4 border-primary pl-4 py-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-medium text-gray-900">Week 3 Reflection</h4>
+                            <span class="text-sm text-warm-gray">2 days ago</span>
+                        </div>
+                        <p class="text-warm-gray text-sm" data-mock="true">Feeling more aware of my emotional triggers. The pause-label-shift technique is becoming more natural...</p>
+                    </div>
+                    <div class="border-l-4 border-secondary pl-4 py-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-medium text-gray-900">Boundary Setting Success</h4>
+                            <span class="text-sm text-warm-gray">5 days ago</span>
+                        </div>
+                        <p class="text-warm-gray text-sm" data-mock="true">Successfully said no to a commitment that would have overwhelmed me. Proud of this progress!</p>
+                    </div>
+                    <div class="border-l-4 border-accent pl-4 py-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-medium text-gray-900">Morning Routine Thoughts</h4>
+                            <span class="text-sm text-warm-gray">1 week ago</span>
+                        </div>
+                        <p class="text-warm-gray text-sm" data-mock="true">Creating a calm morning routine is helping me start the day with more clarity and intention...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals & Habits -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Current Goals -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Current Goals</h3>
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-gray-900">Improve Sleep Quality</h4>
+                                <span class="text-sm text-primary font-medium">75%</span>
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-2 mb-2">
+                                <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <p class="text-sm text-warm-gray">Target: 7-8 hours consistently</p>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-gray-900">Daily Mindfulness Practice</h4>
+                                <span class="text-sm text-secondary font-medium">60%</span>
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-2 mb-2">
+                                <div class="bg-secondary h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                            <p class="text-sm text-warm-gray">10 minutes meditation daily</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-gray-900">Exercise Routine</h4>
+                                <span class="text-sm text-blue-accent font-medium">40%</span>
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-2 mb-2">
+                                <div class="bg-blue-accent h-2 rounded-full" style="width: 40%"></div>
+                            </div>
+                            <p class="text-sm text-warm-gray">3x per week gentle movement</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habit Tracker -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Habit Tracker</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <span class="font-medium text-gray-900">Morning meditation</span>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <span class="font-medium text-gray-900">Gratitude journaling</span>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation text-white text-sm"></i>
+                                </div>
+                                <span class="font-medium text-gray-900">Evening walk</span>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-secondary rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: Progress Section -->
+
+    </main>
+    <!-- @END_COMPONENT: Main Content Container -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-gray-900 text-white mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                            <i class="fas fa-leaf text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">ThriveMidlife</h3>
+                            <p class="text-sm text-gray-400">Mind-Body Reset for Women</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-4">Empowering women through midlife transitions with science-based wellness tools and personalized coaching.</p>
+                    <div class="flex space-x-4">
+                        <button class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Health Assessments</a></li>
+                        <li><a href="#" class="hover:text-white">Coaching Program</a></li>
+                        <li><a href="#" class="hover:text-white">Progress Tracking</a></li>
+                        <li><a href="#" class="hover:text-white">Support Community</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 ThriveMidlife. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // TODO: Implement proper state management and API integration
+        
+        (function() {
+            // Navigation functionality
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section-content');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Update active nav button
+                    navButtons.forEach(btn => {
+                        btn.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                        btn.classList.add('text-warm-gray', 'hover:text-primary');
+                    });
+                    this.classList.remove('text-warm-gray', 'hover:text-primary');
+                    this.classList.add('text-primary', 'border-b-2', 'border-primary');
+                    
+                    // Show target section
+                    sections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    document.getElementById(targetSection).classList.remove('hidden');
+                });
+            });
+
+            // Health Calculator functionality
+            const<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThriveMidlife: Mind-Body Reset for Women</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: {
+                        50: '#F5F3FF',
+                        100: '#EDE9FE',
+                        200: '#DDD6FE',
+                        300: '#C4B5FD',
+                        400: '#A78BFA',
+                        500: '#8B7CC8',
+                        600: '#7C5FD4',
+                        700: '#6D28D9',
+                        800: '#5B21B6',
+                        900: '#4C1D95'
+                    },
+                    sage: {
+                        50: '#F0F9F4',
+                        100: '#DCFCE7',
+                        200: '#BBF7D0',
+                        300: '#86EFAC',
+                        400: '#4ADE80',
+                        500: '#9DB5A5',
+                        600: '#16A34A',
+                        700: '#15803D',
+                        800: '#166534',
+                        900: '#14532D'
+                    },
+                    coral: {
+                        50: '#FEF2F2',
+                        100: '#FEE2E2',
+                        200: '#FECACA',
+                        300: '#FCA5A5',
+                        400: '#F87171',
+                        500: '#F4A598',
+                        600: '#DC2626',
+                        700: '#B91C1C',
+                        800: '#991B1B',
+                        900: '#7F1D1D'
+                    },
+                    warm: '#FDFCF8',
+                    warmGray: '#F5F3F0'
+                },
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif']
+                }
+            }
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-warm font-inter">
+    <!-- @COMPONENT: NavigationHeader -->
+    <header class="bg-white shadow-sm border-b border-warmGray sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-sage-400 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-lotus text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-800">ThriveMidlife</h1>
+                        <p class="text-xs text-gray-500">Mind-Body Reset</p>
+                    </div>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#dashboard" class="text-primary-600 font-medium border-b-2 border-primary-500 pb-4">Dashboard</a>
+                    <a href="#coaching" class="text-gray-600 hover:text-primary-600 transition-colors pb-4">Coaching</a>
+                    <a href="#journal" class="text-gray-600 hover:text-primary-600 transition-colors pb-4">Journal</a>
+                    <a href="#progress" class="text-gray-600 hover:text-primary-600 transition-colors pb-4">Progress</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell text-lg"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-primary-600 text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: NavigationHeader -->
+
+    <!-- @COMPONENT: WelcomeSection -->
+    <section class="bg-gradient-to-br from-primary-50 via-white to-sage-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                    Welcome to Your Wellness Journey
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Navigate midlife with confidence through personalized health insights, 
+                    evidence-based coaching, and supportive tools designed specifically for women.
+                </p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" data-mock="true">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-primary-600 text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-primary-600" data-bind="user.overallScore">78</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-1">Overall Wellness</h3>
+                    <p class="text-sm text-gray-500">+12 points this month</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-sage-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-calendar-check text-sage-600 text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-sage-600" data-bind="user.weekProgress">3/6</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-1">Coaching Progress</h3>
+                    <p class="text-sm text-gray-500">Week 3: Emotion Regulation</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-coral-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-fire text-coral-500 text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-coral-500" data-bind="user.streak">14</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-1">Day Streak</h3>
+                    <p class="text-sm text-gray-500">Daily check-ins</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: WelcomeSection -->
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- @COMPONENT: HealthCalculatorsDashboard -->
+        <section id="dashboard" class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Health Assessment Dashboard</h2>
+                    <p class="text-gray-600">Complete your health calculators to get personalized insights and recommendations.</p>
+                </div>
+                <button class="bg-primary-500 text-white px-6 py-3 rounded-xl hover:bg-primary-600 transition-colors font-medium">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Refresh All
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Mental Health Calculator -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-500 to-primary-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-brain text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold" data-bind="user.mentalHealthScore">72</div>
+                                <div class="text-sm opacity-90">Emotional Balance</div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Mental Health</h3>
+                        <p class="text-sm opacity-90">Mood, sleep, anxiety & emotional regulation</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-600">Progress</span>
+                                <span class="text-sm text-primary-600 font-medium">72/100</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full transition-all duration-500" style="width: 72%"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Sleep Quality</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Mood Stability</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Anxiety Level</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full bg-primary-100 text-primary-700 py-3 rounded-xl hover:bg-primary-200 transition-colors font-medium" data-event="click:openMentalHealthAssessment">
+                            <i class="fas fa-edit mr-2"></i>
+                            Retake Assessment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Physical Health Calculator -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-coral-500 to-coral-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-heartbeat text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold" data-bind="user.physicalHealthScore">68</div>
+                                <div class="text-sm opacity-90">Vitality Index</div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Physical Health</h3>
+                        <p class="text-sm opacity-90">Energy, hormones, joint health & vitality</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-600">Progress</span>
+                                <span class="text-sm text-coral-600 font-medium">68/100</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-coral-500 h-2 rounded-full transition-all duration-500" style="width: 68%"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Energy Levels</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Hot Flashes</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Joint Health</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-coral-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full bg-coral-100 text-coral-700 py-3 rounded-xl hover:bg-coral-200 transition-colors font-medium" data-event="click:openPhysicalHealthAssessment">
+                            <i class="fas fa-edit mr-2"></i>
+                            Retake Assessment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cognitive Health Calculator -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-sage-500 to-sage-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-lightbulb text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold" data-bind="user.cognitiveHealthScore">81</div>
+                                <div class="text-sm opacity-90">Clarity Score</div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Cognitive Health</h3>
+                        <p class="text-sm opacity-90">Memory, focus, clarity & mental sharpness</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-600">Progress</span>
+                                <span class="text-sm text-sage-600 font-medium">81/100</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-sage-500 h-2 rounded-full transition-all duration-500" style="width: 81%"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Memory</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Focus</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Word Finding</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-sage-500 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full bg-sage-100 text-sage-700 py-3 rounded-xl hover:bg-sage-200 transition-colors font-medium" data-event="click:openCognitiveHealthAssessment">
+                            <i class="fas fa-edit mr-2"></i>
+                            Retake Assessment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: HealthCalculatorsDashboard -->
+
+        <!-- @COMPONENT: CoachingProgram -->
+        <section id="coaching" class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">The Mind Reset Method</h2>
+                    <p class="text-gray-600">A 6-week interactive coaching journey designed specifically for midlife women.</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500 mb-1">Week 3 of 6</div>
+                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-500" style="width: 50%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Current Week -->
+                <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-8 border-2 border-primary-200">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                                3
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">Emotion Regulation & Boundaries</h3>
+                                <p class="text-sm text-primary-600 font-medium">Current Week</p>
+                            </div>
+                        </div>
+                        <div class="text-primary-500">
+                            <i class="fas fa-play-circle text-3xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <span class="text-gray-700">Identify emotional overwhelm patterns</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
+                                <div class="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
+                            <span class="text-gray-700">Learn the "Pause-Label-Shift" technique</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full"></div>
+                            <span class="text-gray-500">Complete boundaries worksheet</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full"></div>
+                            <span class="text-gray-500">Create weekly mood map</span>
+                        </div>
+                    </div>
+
+                    <button class="w-full bg-primary-500 text-white py-3 rounded-xl hover:bg-primary-600 transition-colors font-medium" data-event="click:continueCurrentWeek">
+                        Continue Week 3
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Progress Overview -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Your Progress Journey</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Week 1 - Completed -->
+                        <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-xl border border-green-200">
+                            <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white font-bold">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Week 1: Hormones & Headspace</h4>
+                                <p class="text-sm text-gray-600">Completed 5 days ago</p>
+                            </div>
+                            <div class="text-green-500">
+                                <i class="fas fa-medal text-lg"></i>
+                            </div>
+                        </div>
+
+                        <!-- Week 2 - Completed -->
+                        <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-xl border border-green-200">
+                            <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white font-bold">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Week 2: Rewiring Thoughts</h4>
+                                <p class="text-sm text-gray-600">Completed 2 days ago</p>
+                            </div>
+                            <div class="text-green-500">
+                                <i class="fas fa-medal text-lg"></i>
+                            </div>
+                        </div>
+
+                        <!-- Week 3 - Current -->
+                        <div class="flex items-center space-x-4 p-4 bg-primary-50 rounded-xl border border-primary-200">
+                            <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold">
+                                3
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Week 3: Emotion Regulation</h4>
+                                <p class="text-sm text-primary-600">In progress - 50% complete</p>
+                            </div>
+                            <div class="w-8 bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full" style="width: 50%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming weeks -->
+                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200 opacity-60">
+                            <div class="w-10 h-10 bg-gray-300 rounded-xl flex items-center justify-center text-gray-600 font-bold">
+                                4
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-700">Week 4: Nervous System Reset</h4>
+                                <p class="text-sm text-gray-500">Unlocks in 4 days</p>
+                            </div>
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Modules Overview -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">Complete Program Overview</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- @MAP: weeklyModules.map(module => ( -->
+                    <div class="bg-gradient-to-br from-primary-50 to-white rounded-xl p-6 border border-primary-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold">
+                                4
+                            </div>
+                            <i class="fas fa-spa text-primary-400 text-xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Nervous System Reset</h4>
+                        <p class="text-sm text-gray-600 mb-4">Somatic grounding, breathwork & vagus nerve techniques</p>
+                        <div class="space-y-2 text-xs text-gray-500">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-play-circle text-primary-400"></i>
+                                <span>Guided grounding meditation</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-edit text-primary-400"></i>
+                                <span>Create "Calm Corner" plan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-sage-50 to-white rounded-xl p-6 border border-sage-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-sage-500 rounded-xl flex items-center justify-center text-white font-bold">
+                                5
+                            </div>
+                            <i class="fas fa-brain text-sage-400 text-xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Clarity & Cognitive Flow</h4>
+                        <p class="text-sm text-gray-600 mb-4">Focus rituals, memory support & mental clarity tools</p>
+                        <div class="space-y-2 text-xs text-gray-500">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-utensils text-sage-400"></i>
+                                <span>Nutritional brain support guide</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-calendar text-sage-400"></i>
+                                <span>Weekly focus planner</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-coral-50 to-white rounded-xl p-6 border border-coral-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-coral-500 rounded-xl flex items-center justify-center text-white font-bold">
+                                6
+                            </div>
+                            <i class="fas fa-target text-coral-400 text-xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Future Self & Goal Mapping</h4>
+                        <p class="text-sm text-gray-600 mb-4">Vision boarding, SMART goals & habit creation</p>
+                        <div class="space-y-2 text-xs text-gray-500">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-image text-coral-400"></i>
+                                <span>Digital vision board</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-sync text-coral-400"></i>
+                                <span>Habit loop creator</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: CoachingProgram -->
+
+        <!-- @COMPONENT: JournalingInterface -->
+        <section id="journal" class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Daily Reflections & Journal</h2>
+                    <p class="text-gray-600">Track your thoughts, emotions, and insights throughout your journey.</p>
+                </div>
+                <button class="bg-primary-500 text-white px-6 py-3 rounded-xl hover:bg-primary-600 transition-colors font-medium">
+                    <i class="fas fa-plus mr-2"></i>
+                    New Entry
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Today's Prompt -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-feather text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">Today's Reflection</h3>
+                                <p class="text-sm text-gray-500" data-bind="currentDate">December 15, 2024</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-primary-50 rounded-xl p-6 mb-6">
+                            <h4 class="font-semibold text-primary-800 mb-3">Guided Prompt:</h4>
+                            <p class="text-primary-700 mb-4" data-mock="true">
+                                "What emotions have I been carrying today, and what would it feel like to set one of them down? 
+                                How can I create more emotional space for myself?"
+                            </p>
+                            <div class="text-xs text-primary-600">
+                                <i class="fas fa-lightbulb mr-1"></i>
+                                Week 3: Emotion Regulation Focus
+                            </div>
+                        </div>
+
+                        <textarea 
+                            class="w-full h-40 p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                            placeholder="Start writing your thoughts here..."
+                            data-implementation="Connect to local storage for persistence"
+                        ></textarea>
+
+                        <div class="flex items-center justify-between mt-4">
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                <span data-bind="wordCount">0 words</span>
+                                <span>•</span>
+                                <span>Auto-saved <span data-bind="lastSaved">just now</span></span>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                                    <i class="fas fa-save mr-1"></i>
+                                    Save Draft
+                                </button>
+                                <button class="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                                    Complete Entry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Journal History & Tools -->
+                <div class="space-y-6">
+                    <!-- Mood Tracking -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Today's Mood</h3>
+                        <div class="grid grid-cols-5 gap-2 mb-4">
+                            <button class="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors" data-event="click:setMood" data-mood="very-happy">
+                                <div class="text-2xl mb-1">😊</div>
+                                <span class="text-xs text-gray-600">Great</span>
+                            </button>
+                            <button class="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors" data-event="click:setMood" data-mood="happy">
+                                <div class="text-2xl mb-1">🙂</div>
+                                <span class="text-xs text-gray-600">Good</span>
+                            </button>
+                            <button class="flex flex-col items-center p-3 rounded-xl bg-primary-50 border border-primary-200 transition-colors" data-event="click:setMood" data-mood="neutral">
+                                <div class="text-2xl mb-1">😐</div>
+                                <span class="text-xs text-primary-600 font-medium">Okay</span>
+                            </button>
+                            <button class="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors" data-event="click:setMood" data-mood="sad">
+                                <div class="text-2xl mb-1">😔</div>
+                                <span class="text-xs text-gray-600">Low</span>
+                            </button>
+                            <button class="flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-colors" data-event="click:setMood" data-mood="very-sad">
+                                <div class="text-2xl mb-1">😢</div>
+                                <span class="text-xs text-gray-600">Tough</span>
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            7-day streak • Last week average: Good
+                        </div>
+                    </div>
+
+                    <!-- Recent Entries -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Recent Entries</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg" data-mock="true">
+                                <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-xs font-medium text-primary-600">
+                                    14
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-medium text-gray-800 truncate">Setting boundaries with family</div>
+                                    <div class="text-xs text-gray-500">Yesterday • 142 words</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg" data-mock="true">
+                                <div class="w-8 h-8 bg-sage-100 rounded-full flex items-center justify-center text-xs font-medium text-sage-600">
+                                    13
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-medium text-gray-800 truncate">Rewiring negative self-talk</div>
+                                    <div class="text-xs text-gray-500">2 days ago • 89 words</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg" data-mock="true">
+                                <div class="w-8 h-8 bg-coral-100 rounded-full flex items-center justify-center text-xs font-medium text-coral-600">
+                                    12
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-medium text-gray-800 truncate">Morning brain fog experience</div>
+                                    <div class="text-xs text-gray-500">3 days ago • 201 words</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 text-sm text-primary-600 hover:text-primary-800 font-medium transition-colors">
+                            View All Entries
+                        </button>
+                    </div>
+
+                    <!-- Quick Tools -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Quick Tools</h3>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center space-x-3 p-3 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors text-left" data-event="click:openThoughtAudit">
+                                <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-search text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">Thought Audit</div>
+                                    <div class="text-xs text-gray-500">Identify negative patterns</div>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full flex items-center space-x-3 p-3 bg-sage-50 rounded-lg hover:bg-sage-100 transition-colors text-left" data-event="click:openMoodMap">
+                                <div class="w-8 h-8 bg-sage-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-map text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">Mood Map</div>
+                                    <div class="text-xs text-gray-500">Weekly emotional patterns</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: JournalingInterface -->
+
+        <!-- @COMPONENT: ProgressTracking -->
+        <section id="progress" class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Progress & Insights</h2>
+                    <p class="text-gray-600">Track your wellness journey with detailed analytics and personalized insights.</p>
+                </div>
+                <div class="flex space-x-3">
+                    <select class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option>Last 30 days</option>
+                        <option>Last 7 days</option>
+                        <option>Last 3 months</option>
+                    </select>
+                    <button class="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors">
+                        <i class="fas fa-download mr-2"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Overall Progress Chart -->
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800">Wellness Trends</h3>
+                        <div class="flex items-center space-x-4 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-primary-500 rounded-full"></div>
+                                <span class="text-gray-600">Mental Health</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-coral-500 rounded-full"></div>
+                                <span class="text-gray-600">Physical Health</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-sage-500 rounded-full"></div>
+                                <span class="text-gray-600">Cognitive Health</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="progressChart" class="w-full h-full"></canvas>
+                        <!-- @FUNCTIONALITY: Chart showing 30-day health score trends using Chart.js -->
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">This Month</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Avg. Wellness Score</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-lg font-bold text-gray-800" data-bind="monthlyAverage">74</span>
+                                    <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">+8</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Journal Entries</span>
+                                <span class="text-lg font-bold text-gray-800" data-bind="journalCount">18</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Mood Check-ins</span>
+                                <span class="text-lg font-bold text-gray-800" data-bind="moodCheckins">22</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Goals Achieved</span>
+                                <span class="text-lg font-bold text-gray-800" data-bind="goalsAchieved">3/5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Achievements</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-star text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">Week 2 Complete</div>
+                                    <div class="text-xs text-gray-500">Rewiring Thoughts mastery</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 p-3 bg-primary-50 rounded-lg">
+                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-fire text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">14-Day Streak</div>
+                                    <div class="text-xs text-gray-500">Daily mood tracking</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analytics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Mood Patterns -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Mood Patterns</h3>
+                    <div class="h-48">
+                        <canvas id="moodChart" class="w-full h-full"></canvas>
+                        <!-- @FUNCTIONALITY: Weekly mood distribution chart -->
+                    </div>
+                    <div class="mt-6 grid grid-cols-5 gap-2 text-center">
+                        <div>
+                            <div class="text-2xl mb-1">😊</div>
+                            <div class="text-xs text-gray-500">32%</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">🙂</div>
+                            <div class="text-xs text-gray-500">28%</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">😐</div>
+                            <div class="text-xs text-gray-500">25%</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">😔</div>
+                            <div class="text-xs text-gray-500">12%</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">😢</div>
+                            <div class="text-xs text-gray-500">3%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Activity -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Weekly Activity</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Monday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">85%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Tuesday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 92%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">92%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Wednesday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 78%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">78%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Thursday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 88%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">88%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Friday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 95%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">95%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Saturday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 72%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">72%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Sunday</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full" style="width: 81%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8">81%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ProgressTracking -->
+
+        <!-- @COMPONENT: GoalSetting -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Goals & Habits</h2>
+                    <p class="text-gray-600">Set meaningful goals and build positive habits that support your midlife wellness journey.</p>
+                </div>
+                <button class="bg-primary-500 text-white px-6 py-3 rounded-xl hover:bg-primary-600 transition-colors font-medium">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Goal
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Active Goals -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Active Goals</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Goal 1 -->
+                        <div class="border border-gray-200 rounded-xl p-6" data-mock="true">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800 mb-1">Improve Sleep Quality</h4>
+                                    <p class="text-sm text-gray-600">Get 7-8 hours of quality sleep by establishing a bedtime routine</p>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-moon text-primary-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-medium text-gray-600">Progress</span>
+                                <span class="text-sm text-primary-600 font-medium">12/21 days</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                                <div class="bg-primary-500 h-2 rounded-full transition-all duration-500" style="width: 57%"></div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Target: March 15, 2024</span>
+                                <span class="text-green-600 font-medium">On track</span>
+                            </div>
+                        </div>
+
+                        <!-- Goal 2 -->
+                        <div class="border border-gray-200 rounded-xl p-6" data-mock="true">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800 mb-1">Daily Mindfulness Practice</h4>
+                                    <p class="text-sm text-gray-600">Meditate for 10 minutes daily using breathing exercises</p>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="w-12 h-12 bg-sage-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-spa text-sage-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-medium text-gray-600">Progress</span>
+                                <span class="text-sm text-sage-600 font-medium">28/30 days</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                                <div class="bg-sage-500 h-2 rounded-full transition-all duration-500" style="width: 93%"></div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Target: February 28, 2024</span>
+                                <span class="text-green-600 font-medium">Ahead</span>
+                            </div>
+                        </div>
+
+                        <!-- Goal 3 -->
+                        <div class="border border-gray-200 rounded-xl p-6" data-mock="true">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800 mb-1">Weekly Self-Care Ritual</h4>
+                                    <p class="text-sm text-gray-600">Dedicate 2 hours each weekend to personal care activities</p>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="w-12 h-12 bg-coral-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-heart text-coral-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-medium text-gray-600">Progress</span>
+                                <span class="text-sm text-coral-600 font-medium">3/8 weeks</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                                <div class="bg-coral-500 h-2 rounded-full transition-all duration-500" style="width: 38%"></div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Target: April 1, 2024</span>
+                                <span class="text-yellow-600 font-medium">Behind</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habit Tracker -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Daily Habits</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Habit 1 -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Morning journaling</h4>
+                                    <p class="text-xs text-gray-500">14-day streak</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-primary-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Habit 2 -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-sage-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Evening meditation</h4>
+                                    <p class="text-xs text-gray-500">9-day streak</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-sage-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-sage-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-sage-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-sage-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Habit 3 -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-coral-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Gratitude practice</h4>
+                                    <p class="text-xs text-gray-500">21-day streak</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-coral-500 rounded-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Habit 4 -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-walking text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Daily walk</h4>
+                                    <p class="text-xs text-gray-500">3-day streak</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-6 h-6 bg-primary-300 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-300 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-primary-300 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h4 class="font-semibold text-gray-800 mb-4">Quick Actions</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="flex items-center justify-center space-x-2 p-3 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors">
+                                <i class="fas fa-plus text-sm"></i>
+                                <span class="text-sm font-medium">Add Habit</span>
+                            </button>
+                            <button class="flex items-center justify-center space-x-2 p-3 bg-sage-50 text-sage-700 rounded-lg hover:bg-sage-100 transition-colors">
+                                <i class="fas fa-chart-bar text-sm"></i>
+                                <span class="text-sm font-medium">View Stats</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: GoalSetting -->
+
+        <!-- @COMPONENT: MeditationTimer -->
+        <section class="mb-12">
+            <div class="bg-gradient-to-br from-sage-50 via-white to-primary-50 rounded-3xl p-8 shadow-lg border border-gray-100">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="flex items-center justify-center space-x-3 mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-br from-sage-400 to-sage-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-spa text-white text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Mindfulness & Breathing</h2>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-8 max-w-2xl mx-auto">
+                        Take a moment to center yourself with guided breathing exercises and meditation practices 
+                        designed to support nervous system regulation.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Breathing Exercise -->
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <div class="w-16 h-16 bg-sage-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-wind text-sage-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-2">4-7-8 Breathing</h3>
+                            <p class="text-sm text-gray-600 mb-4">Calm your nervous system with this simple breathing pattern</p>
+                            <div class="text-3xl font-bold text-sage-600 mb-4" id="breathingTimer" data-bind="breathingPhase">Inhale</div>
+                            <button class="w-full bg-sage-500 text-white py-3 rounded-xl hover:bg-sage-600 transition-colors font-medium" data-event="click:startBreathing">
+                                Start Session
+                            </button>
+                        </div>
+
+                        <!-- Meditation Timer -->
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-lotus text-primary-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Meditation Timer</h3>
+                            <p class="text-sm text-gray-600 mb-4">Set a timer for your personal meditation practice</p>
+                            
+                            <div class="flex items-center justify-center space-x-4 mb-4">
+                                <button class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors" data-event="click:decreaseTime">
+                                    <i class="fas fa-minus text-sm"></i>
+                                </button>
+                                <div class="text-3xl font-bold text-primary-600" data-bind="meditationTime">10:00</div>
+                                <button class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors" data-event="click:increaseTime">
+                                    <i class="fas fa-plus text-sm"></i>
+                                </button>
+                            </div>
+                            
+                            <button class="w-full bg-primary-500 text-white py-3 rounded-xl hover:bg-primary-600 transition-colors font-medium" data-event="click:startMeditation">
+                                Start Timer
+                            </button>
+                        </div>
+
+                        <!-- Grounding Exercise -->
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <div class="w-16 h-16 bg-coral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-hand-paper text-coral-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-2">5-4-3-2-1 Grounding</h3>
+                            <p class="text-sm text-gray-600 mb-4">Ground yourself using your five senses</p>
+                            <div class="text-lg font-medium text-coral-600 mb-4" data-bind="groundingStep">5 things you can see</div>
+                            <button class="w-full bg-coral-500 text-white py-3 rounded-xl hover:bg-coral-600 transition-colors font-medium" data-event="click:startGrounding">
+                                Begin Exercise
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Audio Controls -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 max-w-2xl mx-auto">
+                        <h3 class="font-semibold text-gray-800 mb-4">Guided Meditation</h3>
+                        <div class="flex items-center justify-center space-x-6 mb-4">
+                            <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors" data-event="click:previousTrack">
+                                <i class="fas fa-step-backward text-gray-600"></i>
+                            </button>
+                            <button class="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors" data-event="click:playPause">
+                                <i class="fas fa-play text-white text-xl"></i>
+                            </button>
+                            <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors" data-event="click:nextTrack">
+                                <i class="fas fa-step-forward text-gray-600"></i>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-medium text-gray-800 mb-2" data-bind="currentTrack">Week 4: Nervous System Reset</div>
+                            <div class="text-sm text-gray-500">Guided grounding meditation • 12:30</div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
+                            <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 0%" data-bind="audioProgress"></div>
+                        </div>
+                        <!-- @STATE: isPlaying:boolean = false -->
+                        <!-- @STATE: currentTime:number = 0 -->
+                        <!-- @STATE: duration:number = 750 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: MeditationTimer -->
+    </main>
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-sage-400 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-lotus text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-white">ThriveMidlife</h3>
+                            <p class="text-sm text-gray-400">Mind-Body Reset for Women</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-4 max-w-md">
+                        Supporting women through midlife transitions with evidence-based tools, 
+                        personalized coaching, and a supportive community focused on holistic wellness.
+                    </p>
+                    <div class="flex space-x-4">
+                        <button class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-facebook text-primary-400"></i>
+                        </button>
+                        <button class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-instagram text-primary-400"></i>
+                        </button>
+                        <button class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-twitter text-primary-400"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition-colors">Health Calculators</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Coaching Program</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Meditation Library</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Research & Articles</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">
+                    © 2024 ThriveMidlife. All rights reserved. 
+                    <span class="text-sm">Made with 💜 for midlife women everywhere.</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Initialize charts when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeCharts();
+                initializeLocalStorage();
+                setupEventListeners();
+            });
+
+            function initializeCharts() {
+                // Progress Chart
+                const progressCtx = document.getElementById('progressChart');
+                if (progressCtx) {
+                    new Chart(progressCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                            datasets: [{
+                                label: 'Mental Health',
+                                data: [65, 68, 72, 75],
+                                borderColor: '#8B7CC8',
+                                backgroundColor: 'rgba(139, 124, 200, 0.1)',
+                                tension: 0.4
+                            }, {
+                                label: 'Physical Health',
+                                data: [60, 63, 68, 70],
+                                borderColor: '#F4A598',
+                                backgroundColor: 'rgba(244, 165, 152, 0.1)',
+                                tension: 0.4
+                            }, {
+                                label: 'Cognitive Health',
+                                data: [75, 78, 81, 83],
+                                borderColor: '#9DB5A5',
+                                backgroundColor: 'rgba(157, 181, 165, 0.1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Mood Chart
+                const moodCtx = document.getElementById('moodChart');
+                if (moodCtx) {
+                    new Chart(moodCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Great', 'Good', 'Okay', 'Low', 'Tough'],
+                            datasets: [{
+                                data: [32, 28, 25, 12, 3],
+                                backgroundColor: [
+                                    '#68D391',
+                                    '#9DB5A5',
+                                    '#8B7CC8',
+                                    '#F4A598',
+                                    '#FC8181'
+                                ],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            function initializeLocalStorage() {
+                // Initialize user data structure
+                if (!localStorage.getItem('thriveMidlifeData')) {
+                    const initialData = {
+                        userProfile: {
+                            name: '',
+                            startDate: new Date().toISOString(),
+                            currentWeek: 3
+                        },
+                        healthScores: {
+                            mental: 72,
+                            physical: 68,
+                            cognitive: 81,
+                            overall: 74
+                        },
+                        journalEntries: [],
+                        moodTracking: [],
+                        goals: [],
+                        habits: [],
+                        progress: {
+                            completedWeeks: 2,
+                            currentStreak: 14,
+                            totalSessions: 45
+                        }
+                    };
+                    localStorage.setItem('thriveMidlifeData', JSON.stringify(initialData));
+                }
+            }
+
+            function setupEventListeners() {
+                // Health calculator buttons
+                document.querySelectorAll('[data-event*="Assessment"]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const assessmentType = this.getAttribute('data-event').split(':')[1];
+                        // TODO: Open assessment modal/page
+                        console.log(`Opening ${assessmentType}`);
+                    });
+                });
+
+                // Meditation and breathing controls
+                document.querySelectorAll('[data-event*="start"]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const action = this.getAttribute('data-event').split(':')[1];
+                        handleMeditationAction(action);
+                    });
+                });
+
+                // Mood tracking
+                document.querySelectorAll('[data-event="click:setMood"]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const mood = this.getAttribute('data-mood');
+                        setDailyMood(mood);
+                    });
+                });
+            }
+
+            function handleMeditationAction(action) {
+                switch(action) {
+                    case 'startBreathing':
+                        startBreathingExercise();
+                        break;
+                    case 'startMeditation':
+                        startMeditationTimer();
+                        break;
+                    case 'startGrounding':
+                        startGroundingExercise();
+                        break;
+                    case 'playPause':
+                        toggleAudioPlayback();
+                        break;
+                }
+            }
+
+            function startBreathingExercise() {
+                // TODO: Implement 4-7-8 breathing exercise timer
+                console.log('Starting breathing exercise');
+            }
+
+            function startMeditationTimer() {
+                // TODO: Implement meditation timer with sound notifications
+                console.log('Starting meditation timer');
+            }
+
+            function startGroundingExercise() {
+                // TODO: Implement 5-4-3-2-1 grounding exercise guide
+                console.log('Starting grounding exercise');
+            }
+
+            function toggleAudioPlayback() {
+                // TODO: Implement audio player controls
+                console.log('Toggling audio playback');
+            }
+
+            function setDailyMood(mood) {
+                const data = JSON.parse(localStorage.getItem('thriveMidlifeData'));
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Remove existing mood entry for today
+                data.moodTracking = data.moodTracking.filter(entry => entry.date !== today);
+                
+                // Add new mood entry
+                data.moodTracking.push({
+                    date: today,
+                    mood: mood,
+                    timestamp: new Date().toISOString()
+                });
+
+                localStorage.setItem('thriveMidlifeData', JSON.stringify(data));
+                
+                // Update UI to reflect selection
+                document.querySelectorAll('[data-event="click:setMood"]').forEach(btn => {
+                    btn.classList.remove('bg-primary-50', 'border-primary-200');
+                });
+                event.target.closest('button').classList.add('bg-primary-50', 'border-primary-200');
+            }
+
+            // Auto-save journal entries
+            const journalTextarea = document.querySelector('textarea');
+            if (journalTextarea) {
+                let saveTimeout;
+                journalTextarea.addEventListener('input', function() {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => {
+                        saveJournalDraft(this.value);
+                    }, 1000);
+                });
+            }
+
+            function saveJournalDraft(content) {
+                const data = JSON.parse(localStorage.getItem('thriveMidlifeData'));
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Save as draft
+                localStorage.setItem(`journal_draft_${today}`, content);
+                
+                // Update word count and save indicator
+                const wordCount = content.trim().split(/\s+/).length;
+                const wordCountElement = document.querySelector('[data-bind="wordCount"]');
+                const lastSavedElement = document.querySelector('[data-bind="lastSaved"]');
+                
+                if (wordCountElement) wordCountElement.textContent = `${wordCount} words`;
+                if (lastSavedElement) lastSavedElement.textContent = 'just now';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -10,12 +10,12 @@ import path from "path";
 
 const storage = new DatabaseStorage();
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+let stripe: Stripe | null = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-06-30.basil",
+  });
 }
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-06-30.basil",
-});
 import { 
   insertHealthAssessmentSchema,
   insertJournalEntrySchema, 
@@ -251,6 +251,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment endpoint for coaching access
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
+      if (!stripe) {
+        return res.status(503).json({ message: "Payments are not configured" });
+      }
       const { amount } = req.body;
       const userId = req.session.userId;
       
@@ -279,6 +282,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       
       // Verify payment intent with Stripe
+      if (!stripe) {
+        return res.status(503).json({ success: false, message: "Payments are not configured" });
+      }
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       
       if (paymentIntent.status === 'succeeded' && user && user.email) {
@@ -994,6 +1000,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Create Stripe payment intent for the resource
+      if (!stripe) {
+        return res.status(503).json({ message: 'Payments are not configured' });
+      }
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(resource.price * 100), // Convert to cents
         currency: 'usd',
@@ -1126,6 +1135,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentIntentId = req.params.id;
       
       // Retrieve payment intent from Stripe
+      if (!stripe) {
+        return res.status(503).json({ message: 'Payments are not configured' });
+      }
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       
       res.json({

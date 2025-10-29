@@ -8,10 +8,6 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { DatabaseStorage } from "./database-storage";
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
-}
-
 const storage = new DatabaseStorage();
 
 const getOidcConfig = memoize(
@@ -25,6 +21,7 @@ const getOidcConfig = memoize(
 );
 
 export function getSession() {
+  const isDev = (process.env.NODE_ENV ?? "development") === "development";
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
@@ -34,13 +31,13 @@ export function getSession() {
     tableName: "sessions",
   });
   return session({
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET ?? "dev-session-secret",
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: !isDev,
       maxAge: sessionTtl,
     },
   });
@@ -69,6 +66,10 @@ async function upsertUser(
 }
 
 export async function setupAuth(app: Express) {
+  if (!process.env.REPLIT_DOMAINS || !process.env.REPL_ID) {
+    // Skip OIDC setup when not configured (e.g., local development)
+    return;
+  }
   app.set("trust proxy", 1);
   app.use(getSession());
   app.use(passport.initialize());
