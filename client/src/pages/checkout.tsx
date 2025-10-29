@@ -1,7 +1,7 @@
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,8 @@ const CheckoutForm = () => {
           paymentIntentId: paymentIntent.id,
           amount: 97
         });
+        // Refresh auth user so hasCoachingAccess updates immediately
+        await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
         
         // Store payment success in localStorage
         localStorage.setItem('coachingAccess', 'true');
@@ -61,6 +63,7 @@ const CheckoutForm = () => {
       } catch (emailError) {
         // Payment succeeded but email failed - still grant access
         localStorage.setItem('coachingAccess', 'true');
+        await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
         
         toast({
           title: "Payment Successful!",
