@@ -76,15 +76,20 @@ export function useCoachingProgress() {
       let maxWeek = 1;
 
       dbProgress.forEach(record => {
-        if (record.completed) {
-          completedComponents.push(record.moduleId);
-          // Merge responseData from DB with metadata
-          responseData[record.moduleId] = {
-            ...(record.responseData || {}),
+        // Flatten per-component data from response_data
+        const componentsInRecord = Object.keys(record.responseData || {});
+        componentsInRecord.forEach(componentId => {
+          if (!completedComponents.includes(componentId)) {
+            completedComponents.push(componentId);
+          }
+          responseData[componentId] = {
+            ...(record.responseData?.[componentId] || {}),
             completedAt: record.completedAt,
-            progress: record.progress
+            progress: record.progress,
+            moduleId: record.moduleId,
+            weekNumber: record.weekNumber,
           };
-        }
+        });
         maxWeek = Math.max(maxWeek, record.weekNumber);
       });
 
@@ -189,15 +194,19 @@ export function useCoachingProgress() {
       let maxWeek = 1;
 
       dbProgress.forEach(record => {
-        if (record.completed) {
-          completedComponents.push(record.moduleId);
-          // Merge responseData from DB with metadata
-          responseData[record.moduleId] = {
-            ...(record.responseData || {}),
+        const componentsInRecord = Object.keys(record.responseData || {});
+        componentsInRecord.forEach(componentId => {
+          if (!completedComponents.includes(componentId)) {
+            completedComponents.push(componentId);
+          }
+          responseData[componentId] = {
+            ...(record.responseData?.[componentId] || {}),
             completedAt: record.completedAt,
-            progress: record.progress
+            progress: record.progress,
+            moduleId: record.moduleId,
+            weekNumber: record.weekNumber,
           };
-        }
+        });
         maxWeek = Math.max(maxWeek, record.weekNumber);
       });
 

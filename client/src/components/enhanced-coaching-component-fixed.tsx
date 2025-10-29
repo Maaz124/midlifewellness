@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ArrowLeft, Play, Pause, CheckCircle, Calendar, Clock, Heart, Brain, Sparkles, FileText, Target, Eye, ChevronDown, TrendingUp, RotateCcw } from 'lucide-react';
+import { useCoachingProgress } from '@/hooks/use-coaching-progress';
 // Hormone content - inline data for now
 const hormoneContent = {
   intro: "Your body is experiencing a complex symphony of hormonal changes during this phase of life. Understanding these changes is the first step toward reclaiming your vitality and mental clarity.",
@@ -6073,6 +6074,7 @@ function SomaticGroundingPractices({ onComplete, onClose }: { onComplete: (id: s
 
 // Understanding Your Hormonal Symphony Component
 function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentSection, setCurrentSection] = useState('intro');
   const [assessmentData, setAssessmentData] = useState({
     preScore: 0,
@@ -6081,6 +6083,19 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
     insights: '',
     videoWatched: false
   });
+
+  // Prefill from saved DB data if available
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['hormone-symphony'];
+    if (saved && typeof saved === 'object') {
+      setAssessmentData(prev => ({
+        ...prev,
+        ...saved,
+      }));
+      // Jump to completion view for already completed entries
+      setCurrentSection('completion');
+    }
+  }, [progressData]);
 
   const updateAssessment = (key: string, value: any) => {
     setAssessmentData(prev => ({ ...prev, [key]: value }));
