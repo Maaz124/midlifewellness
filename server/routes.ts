@@ -141,10 +141,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Cannot change userId" });
       }
       
-      const progress = await storage.updateCoachingProgress(id, updates);
+      // Whitelist fields to update and normalize types
+      const safeUpdates: any = {};
+      if (typeof updates.completed === "boolean") safeUpdates.completed = updates.completed;
+      if (typeof updates.progress === "number") safeUpdates.progress = updates.progress;
+      if (updates.completedAt) {
+        try {
+          safeUpdates.completedAt = new Date(updates.completedAt);
+        } catch {}
+      }
+      if (typeof updates.responseData === "object" && updates.responseData !== null) {
+        safeUpdates.responseData = updates.responseData;
+      }
+      
+      const progress = await storage.updateCoachingProgress(id, safeUpdates);
       res.json(progress);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update coaching progress" });
+    } catch (error: any) {
+      console.error('Error updating coaching progress:', error?.stack || error, '\nRequest body:', req.body);
+      res.status(500).json({ 
+        message: "Failed to update coaching progress",
+        error: error?.message || String(error)
+      });
     }
   });
 

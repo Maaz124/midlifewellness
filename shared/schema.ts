@@ -56,6 +56,7 @@ export const coachingProgress = pgTable("coaching_progress", {
   completed: boolean("completed").default(false),
   completedAt: timestamp("completed_at"),
   progress: integer("progress").default(0), // 0-100
+  responseData: jsonb("response_data"), // Store component-specific response data (e.g., assessment answers, insights)
 });
 
 export const goals = pgTable("goals", {

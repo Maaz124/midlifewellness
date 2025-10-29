@@ -17,6 +17,7 @@ interface CoachingProgressFromDB {
   completed: boolean;
   completedAt: string | null;
   progress: number;
+  responseData?: any; // JSONB field from DB
 }
 
 export function useCoachingProgress() {
@@ -77,12 +78,12 @@ export function useCoachingProgress() {
       dbProgress.forEach(record => {
         if (record.completed) {
           completedComponents.push(record.moduleId);
-          if (record.completedAt) {
-            responseData[record.moduleId] = {
-              completedAt: record.completedAt,
-              progress: record.progress
-            };
-          }
+          // Merge responseData from DB with metadata
+          responseData[record.moduleId] = {
+            ...(record.responseData || {}),
+            completedAt: record.completedAt,
+            progress: record.progress
+          };
         }
         maxWeek = Math.max(maxWeek, record.weekNumber);
       });
@@ -113,25 +114,37 @@ export function useCoachingProgress() {
       // Save to backend
       if (updates.componentId && updates.moduleId && updates.weekNumber) {
         // Create or update progress record for this component
+        // Note: We use moduleId for the DB record, but store component-specific data in responseData
         const existingProgress = dbProgress?.find(
           p => p.moduleId === updates.moduleId && p.weekNumber === updates.weekNumber
         );
 
+        // Merge component response data (keyed by componentId)
+        const componentResponseData = {
+          [updates.componentId]: updates.responseData || {}
+        };
+        
+        const mergedResponseData = existingProgress?.responseData 
+          ? { ...existingProgress.responseData, ...componentResponseData }
+          : componentResponseData;
+
         if (existingProgress) {
-          // Update existing record
+          // Update existing record with merged response data
           await apiRequest('PUT', `/api/coaching-progress/${existingProgress.id}`, {
             completed: true,
             completedAt: new Date().toISOString(),
-            progress: 100
+            progress: 100,
+            responseData: mergedResponseData
           });
         } else {
-          // Create new record
+          // Create new record with response data
           await apiRequest('POST', '/api/coaching-progress', {
             weekNumber: updates.weekNumber,
             moduleId: updates.moduleId,
             completed: true,
             completedAt: new Date().toISOString(),
-            progress: 100
+            progress: 100,
+            responseData: mergedResponseData
           });
         }
       }
@@ -178,12 +191,12 @@ export function useCoachingProgress() {
       dbProgress.forEach(record => {
         if (record.completed) {
           completedComponents.push(record.moduleId);
-          if (record.completedAt) {
-            responseData[record.moduleId] = {
-              completedAt: record.completedAt,
-              progress: record.progress
-            };
-          }
+          // Merge responseData from DB with metadata
+          responseData[record.moduleId] = {
+            ...(record.responseData || {}),
+            completedAt: record.completedAt,
+            progress: record.progress
+          };
         }
         maxWeek = Math.max(maxWeek, record.weekNumber);
       });
