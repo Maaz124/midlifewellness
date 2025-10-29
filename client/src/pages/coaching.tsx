@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-fixed';
 
 import { useWellnessData } from '@/hooks/use-local-storage';
+import { useCoachingProgress } from '@/hooks/use-coaching-progress';
 import { coachingModules } from '@/lib/coaching-data';
 import { useLocation } from 'wouter';
 import { useSEO } from '@/hooks/use-seo';
@@ -34,7 +35,8 @@ export default function Coaching() {
   // SEO optimization with structured data for course
   useSEO('coaching');
   
-  const { data, updateCoachingProgress, resetCoachingProgress } = useWellnessData();
+  const { data: wellnessData } = useWellnessData(); // Keep for other wellness data
+  const { data: coachingData, updateCoachingProgress: updateCoachingProgressDB, resetCoachingProgress: resetCoachingProgressDB } = useCoachingProgress();
   const [activeComponent, setActiveComponent] = useState<any>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [openWeeks, setOpenWeeks] = useState<string[]>(['week-1', 'week-2']); // Week 1 and 2 open by default
@@ -42,23 +44,57 @@ export default function Coaching() {
   const [, setLocation] = useLocation();
 
   const hasAccess = isAuthenticated && user?.hasCoachingAccess;
+  
+  // Use coaching progress from new hook (database-backed) or fallback to wellness data
+  const data = {
+    ...wellnessData,
+    coachingProgress: coachingData?.coachingProgress || wellnessData.coachingProgress
+  };
+  const updateCoachingProgress = updateCoachingProgressDB;
+  const resetCoachingProgress = resetCoachingProgressDB;
+
+  // Scroll to top when component opens
+  useEffect(() => {
+    if (activeComponent && activeModuleId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activeComponent, activeModuleId]);
 
   const handleComponentComplete = (componentId: string, responseData?: any) => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
     if (!completedComponents.includes(componentId)) {
-      updateCoachingProgress({
-        completedComponents: [...completedComponents, componentId],
-        currentWeek: data.userProfile.currentWeek,
-        responseData: responseData || {}
-      });
+      // Find the module for this component to get weekNumber
+      const module = coachingModules.find(m => 
+        m.components.some(c => c.id === componentId)
+      );
+      
+      if (module) {
+        updateCoachingProgress({
+          componentId,
+          moduleId: module.id,
+          weekNumber: module.weekNumber,
+          responseData: responseData || {}
+        });
+      } else {
+        // Fallback if module not found
+        updateCoachingProgress({
+          completedComponents: [...completedComponents, componentId],
+          currentWeek: data.userProfile?.currentWeek || 1,
+          responseData: responseData || {}
+        });
+      }
     }
     setActiveComponent(null);
     setActiveModuleId(null);
+    // Scroll to top when closing component to return to module list
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleStartComponent = (component: any, moduleId: string) => {
     setActiveComponent(component);
     setActiveModuleId(moduleId);
+    // Scroll to top when opening a component
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const getComponentIcon = (type: string) => {
@@ -429,11 +465,11 @@ export default function Coaching() {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setLocation('/checkout')}
+                                    onClick={() => setLocation(isAuthenticated ? '/checkout' : '/login')}
                                     className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
                                   >
                                     <Lock className="w-3 h-3" />
-                                    Unlock
+                                    {isAuthenticated ? 'Unlock' : 'Sign in to unlock'}
                                   </Button>
                                 ) : (
                                   <Button

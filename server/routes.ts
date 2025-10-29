@@ -108,9 +108,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/coaching-progress", async (req, res) => {
+  app.post("/api/coaching-progress", isAuthenticated, async (req: any, res) => {
     try {
-      const validatedData = insertCoachingProgressSchema.parse(req.body);
+      const userId = req.session.userId;
+      const validatedData = insertCoachingProgressSchema.parse({
+        ...req.body,
+        userId,
+      });
       const progress = await storage.createCoachingProgress(validatedData);
       res.json(progress);
     } catch (error) {
@@ -118,10 +122,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/coaching-progress/:id", async (req, res) => {
+  app.put("/api/coaching-progress/:id", isAuthenticated, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = req.session.userId;
+      
+      // Verify the progress record belongs to this user
+      const existingProgress = await storage.getCoachingProgressByUser(userId);
+      const progressRecord = existingProgress.find(p => p.id === id);
+      
+      if (!progressRecord) {
+        return res.status(403).json({ message: "Access denied: Progress record not found or does not belong to you" });
+      }
+      
       const updates = req.body;
+      // Ensure userId cannot be changed
+      if (updates.userId && updates.userId !== userId) {
+        return res.status(403).json({ message: "Cannot change userId" });
+      }
+      
       const progress = await storage.updateCoachingProgress(id, updates);
       res.json(progress);
     } catch (error) {
