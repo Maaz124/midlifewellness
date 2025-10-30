@@ -275,13 +275,7 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
     }
   }, [currentPhase]);
 
-  // Clear technique selection when entering technique-selection to allow re-selection
-  useEffect(() => {
-    if (currentPhase === 'technique-selection') {
-      // Clear selected technique so user can choose a different one
-      setBreathingData(prev => ({ ...prev, selectedTechnique: '' }));
-    }
-  }, [currentPhase]);
+  // Keep previous selection when returning to technique-selection; user can still choose a different one by clicking a card
 
   // Timer effect for breathing session
   useEffect(() => {
@@ -387,12 +381,11 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
               <div className="grid gap-6">
                 {Object.entries(breathingTechniques).map(([key, technique]) => (
                   <div key={key} 
-                       className={`border rounded-lg p-6 cursor-pointer transition-all ${
-                         breathingData.selectedTechnique === key 
-                           ? 'border-red-500 bg-red-50' 
-                           : 'border-gray-200 hover:border-red-300'
-                       }`}
-                       onClick={() => updateBreathingData('selectedTechnique', key)}>
+                       className={`border rounded-lg p-6 cursor-pointer transition-all border-gray-200 hover:border-red-300`}
+                       onClick={() => {
+                         updateBreathingData('selectedTechnique', key);
+                         setTimeout(() => setCurrentPhase('practice'), 0);
+                       }}>
                     <h4 className="font-semibold mb-2">{technique.name}</h4>
                     <p className="text-gray-600 mb-4">{technique.description}</p>
                     <div className="space-y-2">
@@ -406,13 +399,7 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
                   </div>
                 ))}
               </div>
-              <Button 
-                onClick={() => setCurrentPhase('practice')}
-                disabled={!breathingData.selectedTechnique}
-                className="w-full mt-6"
-              >
-                Start Breathing Practice
-              </Button>
+              {/* Start button removed: clicking a technique starts the practice */}
             </div>
           )}
 

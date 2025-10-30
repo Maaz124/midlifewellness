@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function JournalNew() {
-  const { data, addJournalEntry, addMoodEntry } = useWellnessData();
+  const { data, upsertTodayJournalEntry, addMoodEntry } = useWellnessData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -124,6 +124,10 @@ export default function JournalNew() {
     day: 'numeric' 
   });
 
+  const todayIso = new Date().toISOString().split('T')[0];
+  const todaysEntry = data.journalEntries.find((e: any) => new Date(e.createdAt).toISOString().split('T')[0] === todayIso);
+  const hasTodaysEntry = Boolean(todaysEntry);
+
   const moodOptions = [
     { value: 'very-happy', emoji: '😊', label: 'Great', color: 'bg-green-100 border-green-200' },
     { value: 'happy', emoji: '🙂', label: 'Good', color: 'bg-green-50 border-green-100' },
@@ -150,22 +154,20 @@ export default function JournalNew() {
     setWordCount(words);
   }, [journalContent]);
 
-  // Load draft on mount
+  // Load today's entry (or draft if none) on changes
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
-    const draft = localStorage.getItem(`journal_draft_${today}`);
-    if (draft) {
-      setJournalContent(draft);
+    const todaysEntry = data.journalEntries.find((e: any) => new Date(e.createdAt).toISOString().split('T')[0] === today);
+    if (todaysEntry) {
+      setJournalContent(todaysEntry.content || '');
+      if (todaysEntry.mood) setSelectedMood(todaysEntry.mood);
+    } else {
+      const draft = localStorage.getItem(`journal_draft_${today}`);
+      if (draft) setJournalContent(draft);
+      const todaysMood = data.moodTracking.find((entry: any) => entry.date === today || entry.createdAt?.startsWith(today));
+      if (todaysMood) setSelectedMood(todaysMood.mood);
     }
-
-    // Load today's mood
-    const todaysMood = data.moodTracking.find(
-      entry => entry.createdAt?.startsWith(today)
-    );
-    if (todaysMood) {
-      setSelectedMood(todaysMood.mood);
-    }
-  }, [data.moodTracking]);
+  }, [data.journalEntries, data.moodTracking]);
 
   // Breathing timer and phase control
   useEffect(() => {
@@ -237,24 +239,17 @@ export default function JournalNew() {
   };
 
   const handleCompleteEntry = () => {
-    if (journalContent.trim()) {
-      const entry: Omit<JournalEntry, 'id'> = {
-        title: `${currentDate} Reflection`,
-        content: journalContent,
-        mood: selectedMood as 'very-happy' | 'happy' | 'neutral' | 'sad' | 'very-sad' | undefined,
-        prompt: todaysPrompt,
-        createdAt: new Date().toISOString(),
-      };
-
-      addJournalEntry(entry);
-      
-      // Clear form
-      const today = new Date().toISOString().split('T')[0];
-      localStorage.removeItem(`journal_draft_${today}`);
-      
-      setJournalContent('');
-      setSelectedMood('');
-    }
+    if (!journalContent.trim()) return;
+    const entry: Omit<JournalEntry, 'id'> = {
+      title: `${currentDate} Reflection`,
+      content: journalContent,
+      mood: selectedMood as 'very-happy' | 'happy' | 'neutral' | 'sad' | 'very-sad' | undefined,
+      prompt: todaysPrompt,
+      createdAt: new Date().toISOString(),
+    };
+    upsertTodayJournalEntry(entry);
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.removeItem(`journal_draft_${today}`);
   };
 
   return (
@@ -359,7 +354,7 @@ export default function JournalNew() {
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         disabled={!journalContent.trim()}
                       >
-                        Complete Entry
+                        {hasTodaysEntry ? 'Save Changes' : 'Complete Entry'}
                       </Button>
                       <Button 
                         variant="outline" 

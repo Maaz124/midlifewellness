@@ -99,6 +99,33 @@ export function useWellnessData() {
     }));
   };
 
+  const upsertTodayJournalEntry = (entry: any) => {
+    const today = new Date().toISOString().split('T')[0];
+    setData(prev => {
+      const existingIndex = prev.journalEntries.findIndex((e: any) => {
+        const d = new Date(e.createdAt).toISOString().split('T')[0];
+        return d === today;
+      });
+      if (existingIndex >= 0) {
+        const updated = [...prev.journalEntries];
+        const existing = updated[existingIndex];
+        updated[existingIndex] = { ...existing, ...entry };
+        return { ...prev, journalEntries: updated };
+      }
+      return {
+        ...prev,
+        journalEntries: [...prev.journalEntries, { ...entry, id: Date.now() }]
+      };
+    });
+  };
+
+  const updateJournalEntry = (id: number, updates: any) => {
+    setData(prev => ({
+      ...prev,
+      journalEntries: prev.journalEntries.map((e: any) => e.id === id ? { ...e, ...updates } : e)
+    }));
+  };
+
   const addMoodEntry = (mood: string, notes?: string) => {
     const today = new Date().toISOString().split('T')[0];
     setData(prev => ({
@@ -167,6 +194,8 @@ export function useWellnessData() {
     data,
     updateHealthScores,
     addJournalEntry,
+    upsertTodayJournalEntry,
+    updateJournalEntry,
     addMoodEntry,
     updateGoal,
     addGoal,
