@@ -318,6 +318,9 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
   const [completedMeals, setCompletedMeals] = useState<string[]>([]);
   const [nutritionGoals, setNutritionGoals] = useState<Record<string, boolean>>({});
   const [shoppingList, setShoppingList] = useState<string[]>([]);
+  const [isLoadingPlan, setIsLoadingPlan] = useState(false);
+  const [isSavingPlan, setIsSavingPlan] = useState(false);
+  const [planSaveMessage, setPlanSaveMessage] = useState<string | null>(null);
 
   const nutritionPlans = {
     cognitive: {
@@ -452,7 +455,7 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
   const generateShoppingList = (plan: string) => {
     const selectedPlan = nutritionPlans[plan as keyof typeof nutritionPlans];
     const allIngredients = selectedPlan.dailyMeals.flatMap(meal => meal.ingredients);
-    const uniqueIngredients = [...new Set(allIngredients)];
+    const uniqueIngredients = Array.from(new Set(allIngredients));
     setShoppingList(uniqueIngredients);
   };
 
@@ -461,6 +464,62 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
       setCompletedMeals(completedMeals.filter(id => id !== mealId));
     } else {
       setCompletedMeals([...completedMeals, mealId]);
+    }
+  };
+
+  // Load saved plan from API whenever plan selection changes
+  useEffect(() => {
+    const controller = new AbortController();
+    const load = async () => {
+      try {
+        setIsLoadingPlan(true);
+        setPlanSaveMessage(null);
+        const res = await fetch(`/api/meal-plans?planKey=${encodeURIComponent(selectedMealPlan)}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.planKey === selectedMealPlan) {
+            if (Array.isArray(data.completedMeals)) setCompletedMeals(data.completedMeals);
+            if (data.nutritionGoals && typeof data.nutritionGoals === 'object') setNutritionGoals(data.nutritionGoals);
+            if (Array.isArray(data.shoppingList)) setShoppingList(data.shoppingList);
+          }
+        }
+      } catch (_) {
+        // ignore
+      } finally {
+        setIsLoadingPlan(false);
+      }
+    };
+    load();
+    return () => controller.abort();
+  }, [selectedMealPlan]);
+
+  const savePlanToDb = async () => {
+    try {
+      setIsSavingPlan(true);
+      setPlanSaveMessage(null);
+      const payload = {
+        planKey: selectedMealPlan,
+        completedMeals,
+        nutritionGoals,
+        shoppingList,
+        savedAt: new Date().toISOString()
+      };
+      const res = await fetch('/api/meal-plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Save failed');
+      setPlanSaveMessage('Saved');
+    } catch (e) {
+      setPlanSaveMessage('Save failed');
+    } finally {
+      setIsSavingPlan(false);
+      setTimeout(() => setPlanSaveMessage(null), 2000);
     }
   };
 
@@ -675,6 +734,18 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
           >
             Save Progress ({completedMeals.length} meals completed)
           </Button>
+        </div>
+
+        {/* Persist Controls */}
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-xs text-gray-500">
+            {isLoadingPlan ? 'Loading saved plan…' : planSaveMessage || ''}
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={savePlanToDb} disabled={isSavingPlan} className="bg-green-600 hover:bg-green-700">
+              {isSavingPlan ? 'Saving…' : 'Save to My Plan'}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -2702,7 +2773,8 @@ import {
   FileText
 } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
-import { videoScripts, audioScripts, detailedExercises } from '@/lib/hormone-headspace-content';
+// Removed unused imports that also caused missing export errors
+// import { videoScripts, audioScripts, detailedExercises } from '@/lib/hormone-headspace-content';
 import type { ModuleComponent } from '@/types/wellness';
 
 interface EnhancedCoachingComponentMinimalProps {
@@ -2810,7 +2882,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
     const toggleTrigger = (triggerId: string) => {
       const newTriggers = overwhelmTriggers.includes(triggerId)
-        ? overwhelmTriggers.filter(id => id !== triggerId)
+        ? overwhelmTriggers.filter((id: string) => id !== triggerId)
         : [...overwhelmTriggers, triggerId];
       setOverwhelmTriggers(newTriggers);
       updateResponses({ overwhelmTriggers: newTriggers });
@@ -3009,7 +3081,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                 <div>
                   <h4 className="font-semibold text-blue-900 mb-2">Your Top Triggers:</h4>
                   <ul className="space-y-1">
-                    {overwhelmTriggers.slice(0, 5).map(triggerId => {
+                    {overwhelmTriggers.slice(0, 5).map((triggerId: string) => {
                       const trigger = overwhelmTriggerOptions.find(t => t.id === triggerId);
                       return trigger ? (
                         <li key={triggerId} className="text-blue-700">• {trigger.name}</li>
@@ -3836,13 +3908,13 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     };
 
     const getAverageMood = () => {
-      const allMoods = moodData.flatMap(day => [day.morning.mood, day.afternoon.mood, day.evening.mood]);
-      return (allMoods.reduce((sum, mood) => sum + mood, 0) / allMoods.length).toFixed(1);
+      const allMoods = moodData.flatMap((day: any) => [day.morning.mood, day.afternoon.mood, day.evening.mood]);
+      return (allMoods.reduce((sum: number, mood: number) => sum + mood, 0) / allMoods.length).toFixed(1);
     };
 
     const getAverageEnergy = () => {
-      const allEnergy = moodData.flatMap(day => [day.morning.energy, day.afternoon.energy, day.evening.energy]);
-      return (allEnergy.reduce((sum, energy) => sum + energy, 0) / allEnergy.length).toFixed(1);
+      const allEnergy = moodData.flatMap((day: any) => [day.morning.energy, day.afternoon.energy, day.evening.energy]);
+      return (allEnergy.reduce((sum: number, energy: number) => sum + energy, 0) / allEnergy.length).toFixed(1);
     };
 
     return (
@@ -4025,7 +4097,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     const [currentSection, setCurrentSection] = useState(responses.currentSection || 'intro');
     const [videoProgress, setVideoProgress] = useState(responses.videoProgress || 0);
     const [notes, setNotes] = useState(responses.notes || '');
-    const [keyInsights, setKeyInsights] = useState(responses.keyInsights || []);
+    const [keyInsights, setKeyInsights] = useState<string[]>(responses.keyInsights || []);
     const [personalReflections, setPersonalReflections] = useState(responses.personalReflections || '');
 
     const updateResponses = (newData: any) => {
@@ -4087,7 +4159,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
               <div className="bg-rose-50 border border-rose-200 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-rose-800 mb-4">Your Key Insights</h3>
                 <div className="space-y-2 mb-4">
-                  {keyInsights.map((insight, index) => (
+                  {keyInsights.map((insight: string, index: number) => (
                     <div key={index} className="bg-white border border-rose-200 rounded-lg p-3">
                       <p className="text-rose-700">{insight}</p>
                     </div>
@@ -4184,7 +4256,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                   <div className="bg-white border border-rose-200 rounded-lg p-4">
                     <h4 className="font-semibold text-rose-800 mb-2">Your Insights So Far:</h4>
                     <div className="space-y-1">
-                      {keyInsights.map((insight, index) => (
+                {keyInsights.map((insight: string, index: number) => (
                         <p key={index} className="text-sm text-rose-700">• {insight}</p>
                       ))}
                     </div>
@@ -4585,7 +4657,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                     />
                   </div>
 
-                  {practiceExercises.map((exercise, index) => (
+                  {practiceExercises.map((exercise: any, index: number) => (
                     <Card key={exercise.id} className="border-indigo-200">
                       <CardContent className="p-4">
                         <div className="space-y-4">
@@ -4602,11 +4674,10 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                               placeholder="Example: 'I'm adjusting to changes in my life. Some areas are challenging while others show growth.'"
                               value={exercise.reframedThought}
                               onChange={(e) => {
-                                const updated = practiceExercises.map(ex => 
+                                const updated = practiceExercises.map((ex: any) => 
                                   ex.id === exercise.id ? { ...ex, reframedThought: e.target.value } : ex
                                 );
                                 setPracticeExercises(updated);
-                                updateResponses({ practiceExercises: updated });
                               }}
                               rows={3}
                             />
@@ -4704,7 +4775,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
 
   // Week 2: Thought Audit Tracker
   if (component.id === 'w2-audit') {
-    const [thoughtEntries, setThoughtEntries] = useState(responses.thoughtEntries || []);
+    const [thoughtEntries, setThoughtEntries] = useState<any[]>(responses.thoughtEntries || []);
     const [dailyPatterns, setDailyPatterns] = useState(responses.dailyPatterns || '');
     const [actionCommitments, setActionCommitments] = useState(responses.actionCommitments || []);
 
@@ -4726,15 +4797,13 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
       };
       const updated = [...thoughtEntries, newEntry];
       setThoughtEntries(updated);
-      updateResponses({ thoughtEntries: updated });
     };
 
     const updateThoughtEntry = (id: number, field: string, value: any) => {
-      const updated = thoughtEntries.map(entry => 
+      const updated = thoughtEntries.map((entry: any) => 
         entry.id === id ? { ...entry, [field]: value } : entry
       );
       setThoughtEntries(updated);
-      updateResponses({ thoughtEntries: updated });
     };
 
     return (
@@ -4764,7 +4833,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
             </div>
 
             <div className="space-y-4">
-              {thoughtEntries.map((entry) => (
+              {thoughtEntries.map((entry: any) => (
                 <Card key={entry.id} className="border-purple-200">
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -4869,7 +4938,6 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                         value={dailyPatterns}
                         onChange={(e) => {
                           setDailyPatterns(e.target.value);
-                          updateResponses({ dailyPatterns: e.target.value });
                         }}
                         rows={3}
                       />
@@ -4886,7 +4954,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                           <span className="text-blue-700">Average intensity reduction:</span>
                           <span className="font-bold ml-2">
                             {thoughtEntries.length > 0 
-                              ? (thoughtEntries.reduce((sum, entry) => sum + (entry.intensity - entry.newIntensity), 0) / thoughtEntries.length).toFixed(1)
+                              ? (thoughtEntries.reduce((sum: number, entry: any) => sum + (entry.intensity - entry.newIntensity), 0) / thoughtEntries.length).toFixed(1)
                               : 0}
                           </span>
                         </div>
@@ -4900,7 +4968,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                           dailyPatterns,
                           totalEntries: thoughtEntries.length,
                           averageReduction: thoughtEntries.length > 0 
-                            ? thoughtEntries.reduce((sum, entry) => sum + (entry.intensity - entry.newIntensity), 0) / thoughtEntries.length
+                            ? thoughtEntries.reduce((sum: number, entry: any) => sum + (entry.intensity - entry.newIntensity), 0) / thoughtEntries.length
                             : 0,
                           completedAt: new Date().toISOString()
                         })}
@@ -5316,7 +5384,16 @@ Key Takeaways:
       return () => clearInterval(interval);
     }, [isActive, breathCount, breathingPattern]);
 
-    const breathingPatterns = {
+    const breathingPatterns: Record<string, {
+      name: string;
+      description: string;
+      inhale: number;
+      hold: number;
+      exhale: number;
+      pause?: number;
+      benefits: string[];
+      instructions: string[];
+    }> = {
       '4-7-8': {
         name: '4-7-8 Technique',
         description: 'Perfect for cortisol reduction and nervous system regulation',
@@ -5502,7 +5579,7 @@ Key Takeaways:
                   <div>
                     <h4 className="font-semibold text-blue-700 mb-3">How to Practice:</h4>
                     <ol className="space-y-2">
-                      {breathingPatterns[breathingPattern].instructions.map((instruction, idx) => (
+                      {breathingPatterns[breathingPattern].instructions.map((instruction: string, idx: number) => (
                         <li key={idx} className="flex gap-3">
                           <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                             {idx + 1}
@@ -5852,7 +5929,7 @@ Key Takeaways:
 
   // Week 1: Morning Ritual Creator
   if (component.id === 'morning-ritual') {
-    const [ritualElements, setRitualElements] = useState(responses.ritualElements || []);
+    const [ritualElements, setRitualElements] = useState<string[]>(responses.ritualElements || []);
     const [customRitual, setCustomRitual] = useState(responses.customRitual || '');
     const [practiceCommitment, setPracticeCommitment] = useState(responses.practiceCommitment || '');
 
@@ -5873,15 +5950,15 @@ Key Takeaways:
 
     const toggleElement = (elementId: string) => {
       const updated = ritualElements.includes(elementId)
-        ? ritualElements.filter(id => id !== elementId)
+        ? ritualElements.filter((id: string) => id !== elementId)
         : [...ritualElements, elementId];
       setRitualElements(updated);
       updateResponses({ ritualElements: updated });
     };
 
     const getTotalTime = () => {
-      return ritualElements.reduce((total, elementId) => {
-        const element = availableElements.find(el => el.id === elementId);
+      return ritualElements.reduce((total: number, elementId: string) => {
+        const element = availableElements.find((el: any) => el.id === elementId);
         return total + parseInt(element?.time || '0');
       }, 0);
     };
@@ -5929,7 +6006,7 @@ Key Takeaways:
                 <div className="mt-6 p-4 bg-white border border-amber-200 rounded-lg">
                   <h4 className="font-semibold text-amber-800 mb-2">Your Morning Ritual ({getTotalTime()} minutes)</h4>
                   <div className="space-y-2">
-                    {ritualElements.map((elementId, index) => {
+                {ritualElements.map((elementId: string, index: number) => {
                       const element = availableElements.find(el => el.id === elementId);
                       return (
                         <div key={elementId} className="flex items-center gap-3">
@@ -5979,7 +6056,7 @@ Key Takeaways:
                   customRitual, 
                   practiceCommitment,
                   totalTime: getTotalTime(),
-                  selectedElements: ritualElements.map(id => availableElements.find(el => el.id === id)?.name),
+                  selectedElements: ritualElements.map((id: string) => availableElements.find(el => el.id === id)?.name),
                   completedAt: new Date().toISOString()
                 })}
                 disabled={ritualElements.length === 0 || !practiceCommitment.trim()}
@@ -5997,7 +6074,7 @@ Key Takeaways:
 
   // Week 1: Energy Mapping Exercise
   if (component.id === 'energy-mapping') {
-    const [energyData, setEnergyData] = useState(responses.energyData || {
+    const [energyData, setEnergyData] = useState<{ weekdays: any[]; weekend: any[] }>(responses.energyData || {
       weekdays: Array(5).fill(null).map(() => ({
         morning: 5, afternoon: 5, evening: 5, activities: '', drains: '', boosts: ''
       })),
@@ -6038,7 +6115,7 @@ Key Takeaways:
             <div>
               <h3 className="text-lg font-semibold text-yellow-800 mb-4">Weekday Energy Patterns</h3>
               <div className="space-y-4">
-                {energyData.weekdays.map((day, index) => (
+                {energyData.weekdays.map((day: any, index: number) => (
                   <Card key={index} className="border-yellow-200">
                     <CardHeader>
                       <CardTitle className="text-base">{dayNames[index]}</CardTitle>
@@ -6110,7 +6187,7 @@ Key Takeaways:
             <div>
               <h3 className="text-lg font-semibold text-blue-800 mb-4">Weekend Energy Patterns</h3>
               <div className="space-y-4">
-                {energyData.weekend.map((day, index) => (
+                {energyData.weekend.map((day: any, index: number) => (
                   <Card key={index} className="border-blue-200">
                     <CardHeader>
                       <CardTitle className="text-base">{dayNames[index + 5]}</CardTitle>
@@ -6218,8 +6295,8 @@ Key Takeaways:
                       energyData, 
                       patterns, 
                       energyPlan,
-                      averageWeekdayEnergy: (energyData.weekdays.reduce((sum, day) => sum + day.morning + day.afternoon + day.evening, 0) / 15).toFixed(1),
-                      averageWeekendEnergy: (energyData.weekend.reduce((sum, day) => sum + day.morning + day.afternoon + day.evening, 0) / 6).toFixed(1),
+                      averageWeekdayEnergy: (energyData.weekdays.reduce((sum: number, day: any) => sum + day.morning + day.afternoon + day.evening, 0) / 15).toFixed(1),
+                      averageWeekendEnergy: (energyData.weekend.reduce((sum: number, day: any) => sum + day.morning + day.afternoon + day.evening, 0) / 6).toFixed(1),
                       completedAt: new Date().toISOString()
                     })}
                     disabled={!patterns.trim() || !energyPlan.trim()}
@@ -6239,7 +6316,7 @@ Key Takeaways:
 
   // Week 2: Mirror Work & Affirmations
   if (component.id === 'w2-mirror') {
-    const [affirmations, setAffirmations] = useState(responses.affirmations || []);
+    const [affirmations, setAffirmations] = useState<string[]>(responses.affirmations || []);
     const [personalAffirmations, setPersonalAffirmations] = useState(responses.personalAffirmations || '');
     const [mirrorPractice, setMirrorPractice] = useState(responses.mirrorPractice || '');
     const [commitmentPlan, setCommitmentPlan] = useState(responses.commitmentPlan || '');
@@ -6263,7 +6340,7 @@ Key Takeaways:
 
     const toggleAffirmation = (affirmation: string) => {
       const updated = affirmations.includes(affirmation)
-        ? affirmations.filter(a => a !== affirmation)
+        ? affirmations.filter((a: string) => a !== affirmation)
         : [...affirmations, affirmation];
       setAffirmations(updated);
       updateResponses({ affirmations: updated });
@@ -6318,7 +6395,7 @@ Key Takeaways:
                 <div className="mt-6 p-4 bg-white border border-pink-200 rounded-lg">
                   <h4 className="font-semibold text-pink-800 mb-2">Your Selected Affirmations:</h4>
                   <div className="space-y-2">
-                    {affirmations.map((affirmation, index) => (
+                  {affirmations.map((affirmation: string, index: number) => (
                       <p key={index} className="text-pink-700">• {affirmation}</p>
                     ))}
                   </div>
@@ -6639,7 +6716,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {lessonSections.findIndex(s => s.id === currentPhase) + 1}
+                      {lessonSections.findIndex((s: any) => s.id === currentPhase) + 1}
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-purple-800">{getCurrentLesson().title}</h3>
@@ -6647,7 +6724,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                     </div>
                   </div>
                   <div className="text-sm text-purple-600">
-                    {lessonSections.findIndex(s => s.id === currentPhase) + 1} of {lessonSections.length - 1}
+                    {lessonSections.findIndex((s: any) => s.id === currentPhase) + 1} of {lessonSections.length - 1}
                   </div>
                 </div>
 
@@ -6661,7 +6738,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                   <div className="bg-purple-50 rounded-lg p-4">
                     <h4 className="font-semibold text-purple-800 mb-2">Key Takeaways:</h4>
                     <ul className="space-y-1">
-                      {getCurrentLesson().keyPoints.map((point, idx) => (
+                      {getCurrentLesson().keyPoints.map((point: string, idx: number) => (
                         <li key={idx} className="text-purple-700 text-sm flex items-start gap-2">
                           <span className="text-purple-600 mt-1">•</span>
                           <span>{point}</span>
@@ -6674,7 +6751,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                 <div className="flex justify-between">
                   <Button 
                     onClick={() => {
-                      const currentIndex = lessonSections.findIndex(s => s.id === currentPhase);
+                      const currentIndex = lessonSections.findIndex((s: any) => s.id === currentPhase);
                       if (currentIndex > 0) {
                         setCurrentPhase(lessonSections[currentIndex - 1].id);
                       }
@@ -6686,7 +6763,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                   </Button>
                   <Button 
                     onClick={() => {
-                      const currentIndex = lessonSections.findIndex(s => s.id === currentPhase);
+                      const currentIndex = lessonSections.findIndex((s: any) => s.id === currentPhase);
                       if (currentIndex < lessonSections.length - 2) {
                         setCurrentPhase(lessonSections[currentIndex + 1].id);
                       } else {
@@ -6746,7 +6823,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                           onClick={() => {
                             const isSelected = clarityAssessment.fogSymptoms.includes(symptom.id);
                             const updated = isSelected
-                              ? clarityAssessment.fogSymptoms.filter(id => id !== symptom.id)
+                              ? clarityAssessment.fogSymptoms.filter((id: string) => id !== symptom.id)
                               : [...clarityAssessment.fogSymptoms, symptom.id];
                             updateClarityAssessment('fogSymptoms', updated);
                           }}
@@ -6862,12 +6939,12 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                   <div>
                     <Label className="text-sm font-medium mb-2 block">How effective was this technique?</Label>
                     <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating: number) => (
                         <Button
                           key={rating}
                           variant={practiceSession.effectiveness === rating ? "default" : "outline"}
                           size="sm"
-                          onClick={() => setPracticeSession(prev => ({ ...prev, effectiveness: rating }))}
+                          onClick={() => setPracticeSession((prev: any) => ({ ...prev, effectiveness: rating }))}
                           className={`w-10 h-10 p-0 ${
                             practiceSession.effectiveness === rating 
                               ? 'bg-green-600 hover:bg-green-700' 
@@ -6891,7 +6968,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                       rows={3}
                       placeholder="How did you feel? What did you notice? Any insights?"
                       value={practiceSession.notes}
-                      onChange={(e) => setPracticeSession(prev => ({ ...prev, notes: e.target.value }))}
+                      onChange={(e) => setPracticeSession((prev: any) => ({ ...prev, notes: e.target.value }))}
                     />
                   </div>
                 </div>
@@ -7000,7 +7077,7 @@ When estrogen fluctuates during perimenopause, your brain has to work harder to 
                   </Button>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         </CardContent>
       </Card>

@@ -1359,10 +1359,19 @@ function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: strin
 
   useEffect(() => {
     const saved =
-      progressData?.coachingProgress?.responseData?.['thought-awareness'] ||
-      progressData?.coachingProgress?.responseData?.['w2-mindful-thought-tracker'];
+      progressData?.coachingProgress?.responseData?.['w2-mindful-thought-tracker'] ||
+      progressData?.coachingProgress?.responseData?.['thought-awareness'];
     if (saved && typeof saved === 'object') {
       if (Array.isArray(saved.thoughts)) setThoughts(saved.thoughts);
+      if (Array.isArray(saved.thoughts) && saved.thoughts.length > 0) {
+        // Prefill inputs with the most recent entry for immediate visibility on the form
+        const last = saved.thoughts[saved.thoughts.length - 1];
+        setCurrentThought({
+          trigger: last.trigger || '',
+          thought: last.thought || '',
+          reframe: last.reframe || ''
+        });
+      }
     }
   }, [progressData]);
 
@@ -1446,7 +1455,7 @@ function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: strin
           )}
 
           <Button 
-            onClick={() => onComplete('thought-awareness', {thoughts})}
+            onClick={() => onComplete('w2-mindful-thought-tracker', {thoughts})}
             className="w-full"
             disabled={thoughts.length === 0}
           >
@@ -1625,9 +1634,10 @@ function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: strin
 }
 
 // CBT Reframing Techniques Component
-function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+function CBTThoughtTransformationSystem({ onComplete, onClose, completeId }: { onComplete: (id: string, data?: any) => void; onClose: () => void; completeId?: string }) {
   const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
+  const initializedFromSaved = useRef(false);
   const [thoughtData, setThoughtData] = useState({
     situation: '',
     automaticThought: '',
@@ -1641,12 +1651,14 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
 
   // Prefill from saved week 2 CBT entries
   useEffect(() => {
+    if (initializedFromSaved.current) return;
     const saved =
       progressData?.coachingProgress?.responseData?.['w2-cbt-reframing'] ||
       progressData?.coachingProgress?.responseData?.['w2-cbt-intro-interactive'];
     if (saved && typeof saved === 'object') {
       setThoughtData(prev => ({ ...prev, ...saved }));
       setCurrentStep(7);
+      initializedFromSaved.current = true;
     }
   }, [progressData]);
 
@@ -1729,6 +1741,18 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
           <Brain className="w-6 h-6 text-blue-600" />
           CBT Reframing Techniques
         </CardTitle>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {cbtSteps.map((s, idx) => (
+            <Button
+              key={s.title}
+              variant={idx === currentStep ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCurrentStep(idx)}
+            >
+              {idx + 1}
+            </Button>
+          ))}
+        </div>
         <div className="flex items-center gap-2 mt-2">
           <div className="flex-1 bg-gray-200 rounded-full h-2">
             <div 
@@ -1800,7 +1824,7 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
               </Button>
             ) : (
               <Button 
-                onClick={() => onComplete('w2-cbt-reframing', thoughtData)}
+                onClick={() => onComplete(completeId || 'w2-cbt-reframing', thoughtData)}
                 disabled={!canProceed(currentStep)}
                 className="ml-auto"
               >
@@ -14728,12 +14752,26 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                   {p.actionPlan ? <li>Action plan: {p.actionPlan}</li> : null}
                 </ul>
               );
-            case 'w2-mindful-thought-tracker':
+            case 'w2-mindful-thought-tracker': {
+              const items = Array.isArray(p.thoughts) ? p.thoughts : [];
+              const preview = items.slice(-3); // show last 3 entries
               return (
-                <ul className="text-sm text-emerald-800 space-y-1">
-                  <li>Thought entries: <strong>{Array.isArray(p.thoughts) ? p.thoughts.length : 0}</strong></li>
-                </ul>
+                <div className="space-y-2">
+                  <div className="text-sm text-emerald-800">Thought entries: <strong>{items.length}</strong></div>
+                  {preview.length > 0 && (
+                    <div className="space-y-2">
+                      {preview.map((t: any, idx: number) => (
+                        <div key={idx} className="bg-white border border-emerald-200 rounded-md p-3">
+                          {t.trigger ? <div className="text-sm"><strong>Trigger:</strong> {t.trigger}</div> : null}
+                          {t.thought ? <div className="text-sm text-red-700"><strong>Thought:</strong> {t.thought}</div> : null}
+                          {t.reframe ? <div className="text-sm text-green-700"><strong>Reframe:</strong> {t.reframe}</div> : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               );
+            }
             case 'w2-mirror-affirmations':
               return (
                 <ul className="text-sm text-emerald-800 space-y-1">
@@ -15050,7 +15088,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return <>
       {savedBanner}
       {savedSummary}
-      <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} />
+      <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} completeId="w2-cbt-reframing" />
     </>;
   }
 
@@ -15058,7 +15096,7 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
     return <>
       {savedBanner}
       {savedSummary}
-      <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} />
+      <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} completeId="w2-cbt-intro-interactive" />
     </>;
   }
 

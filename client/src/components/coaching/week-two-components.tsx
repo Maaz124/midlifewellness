@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
 interface WeekTwoComponentsProps {
@@ -11,10 +13,67 @@ interface WeekTwoComponentsProps {
 
 export default function WeekTwoComponents({ component, onComplete, onClose }: WeekTwoComponentsProps) {
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const defaultMinutes = useMemo(() => Number(component?.duration) || 10, [component?.duration]);
+  const [remainingSeconds, setRemainingSeconds] = useState(defaultMinutes * 60);
+
+  // Local-only editable fields (prevent parent rehydration from locking inputs)
+  const [awarenessNotes, setAwarenessNotes] = useState('');
+  const [thoughtLabels, setThoughtLabels] = useState('');
+  const [emotionNotes, setEmotionNotes] = useState('');
+
+  // Hydrate from previously saved data (editable afterwards)
+  useEffect(() => {
+    const saved = (component as any)?.data?.mindfulObservation;
+    if (saved) {
+      if (typeof saved.awarenessNotes === 'string') setAwarenessNotes(saved.awarenessNotes);
+      if (typeof saved.thoughtLabels === 'string') setThoughtLabels(saved.thoughtLabels);
+      if (typeof saved.emotionNotes === 'string') setEmotionNotes(saved.emotionNotes);
+      if (typeof saved.durationMinutes === 'number') {
+        const secs = Math.max(0, Math.floor(saved.durationMinutes * 60));
+        setRemainingSeconds(secs);
+      }
+    }
+  }, [component]);
+
+  const formatTime = (totalSeconds: number) => {
+    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  useEffect(() => {
+    if (!isTimerActive || remainingSeconds <= 0) return;
+    const id = setInterval(() => {
+      setRemainingSeconds(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isTimerActive, remainingSeconds]);
+
+  const startTimer = () => {
+    setRemainingSeconds(defaultMinutes * 60);
+    setIsTimerActive(true);
+  };
+
+  const pauseTimer = () => setIsTimerActive(false);
+  const resetTimer = () => {
+    setIsTimerActive(false);
+    setRemainingSeconds(defaultMinutes * 60);
+  };
 
   const handleComplete = () => {
     setIsCompleted(true);
-    onComplete(component.id, { completed: true });
+    onComplete(component.id, {
+      completed: true,
+      mindfulObservation: {
+        durationMinutes: defaultMinutes,
+        timeRemainingSeconds: remainingSeconds,
+        awarenessNotes,
+        thoughtLabels,
+        emotionNotes,
+        completedAt: new Date().toISOString()
+      }
+    });
   };
 
   return (
@@ -57,19 +116,57 @@ export default function WeekTwoComponents({ component, onComplete, onClose }: We
               </div>
 
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h4 className="font-semibold text-gray-900 mb-3">Interactive CBT Exercise</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">Mindful Thought Observation — 10-minute Interactive Practice</h4>
                 <p className="text-gray-700 mb-4">
-                  Practice identifying thought patterns and reframing them for more empowering perspectives.
+                  Guided thought awareness with timer, prompts, and real-time tracking of thought patterns and emotional responses.
                 </p>
-                
-                <div className="text-center py-8">
-                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-purple-900 mb-2">
-                      Interactive Component Loading...
-                    </h3>
-                    <p className="text-purple-700">
-                      The full CBT worksheet and interactive exercises will load here.
-                    </p>
+
+                {/* Timer */}
+                <div className="flex items-center justify-between p-4 rounded-lg border bg-gray-50 mb-6">
+                  <div>
+                    <div className="text-sm text-gray-600">Session Timer</div>
+                    <div className="text-2xl font-bold text-gray-900">{formatTime(remainingSeconds)}</div>
+                  </div>
+                  <div className="flex gap-2">
+                    {!isTimerActive ? (
+                      <Button onClick={startTimer} className="bg-purple-600 hover:bg-purple-700">Start</Button>
+                    ) : (
+                      <Button variant="outline" onClick={pauseTimer}>Pause</Button>
+                    )}
+                    <Button variant="outline" onClick={resetTimer}>Reset</Button>
+                  </div>
+                </div>
+
+                {/* Prompts */}
+                <div className="grid gap-6">
+                  <div>
+                    <Label className="text-sm font-medium">Observe and note what arises (stream of thoughts)</Label>
+                    <Textarea
+                      placeholder="Write freely. When you notice a thought, you can simply label it 'thinking' and continue observing."
+                      value={awarenessNotes}
+                      onChange={(e) => setAwarenessNotes(e.target.value)}
+                      className="min-h-[120px] mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">Thought labels (e.g., planning, judging, worrying)</Label>
+                    <Textarea
+                      placeholder="Optionally, label categories you notice: planning, judging, future-casting, self-criticism, etc."
+                      value={thoughtLabels}
+                      onChange={(e) => setThoughtLabels(e.target.value)}
+                      className="min-h-[80px] mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">Emotional responses</Label>
+                    <Textarea
+                      placeholder="Note shifts in emotion as you observe (e.g., anxious → neutral, tense → calmer)."
+                      value={emotionNotes}
+                      onChange={(e) => setEmotionNotes(e.target.value)}
+                      className="min-h-[80px] mt-2"
+                    />
                   </div>
                 </div>
               </div>
