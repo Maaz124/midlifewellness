@@ -188,6 +188,7 @@ function InteractiveFocusMemoryRituals({ onComplete, onClose }: { onComplete: (i
 
 // Cortisol Reset Breathwork Component
 function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentPhase, setCurrentPhase] = useState('assessment');
   const [breathingData, setBreathingData] = useState({
     preStressLevel: 0,
@@ -202,6 +203,13 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
   const [breathPhase, setBreathPhase] = useState('inhale');
   const [cycleCount, setCycleCount] = useState(0);
   const [sessionTime, setSessionTime] = useState(0);
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['cortisol-breathwork'];
+    if (saved && typeof saved === 'object') {
+      setBreathingData(prev => ({ ...prev, ...saved }));
+    }
+  }, [progressData]);
 
   const breathingTechniques = {
     '4-7-8': {
@@ -507,6 +515,7 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
 
 // Resetting Your Mental Space Component  
 function ResettingYourMentalSpace({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentPhase, setCurrentPhase] = useState('intro');
   const [clarityData, setClarityData] = useState({
     preMentalClarity: 0,
@@ -517,6 +526,14 @@ function ResettingYourMentalSpace({ onComplete, onClose }: { onComplete: (id: st
     effectiveness: 0,
     insights: ''
   });
+
+  // Prefill from saved data
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['mental-space-reset'];
+    if (saved && typeof saved === 'object') {
+      setClarityData(prev => ({ ...prev, ...saved }));
+    }
+  }, [progressData]);
 
   const fogSymptoms = [
     'Difficulty concentrating',
@@ -884,6 +901,7 @@ function ResettingYourMentalSpace({ onComplete, onClose }: { onComplete: (id: st
 
 // Interactive Symptom Tracker Component
 function InteractiveSymptomTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [symptoms, setSymptoms] = useState({
     hotFlashes: 0,
     brainFog: 0,
@@ -893,6 +911,14 @@ function InteractiveSymptomTracker({ onComplete, onClose }: { onComplete: (id: s
     anxiety: 0
   });
   const [insights, setInsights] = useState('');
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['symptom-tracker'];
+    if (saved && typeof saved === 'object') {
+      if (saved.symptoms) setSymptoms(saved.symptoms);
+      if (typeof saved.insights === 'string') setInsights(saved.insights);
+    }
+  }, [progressData]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -953,8 +979,17 @@ function InteractiveSymptomTracker({ onComplete, onClose }: { onComplete: (id: s
 
 // Morning Ritual Creator Component
 function MorningRitualCreator({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [selectedPractices, setSelectedPractices] = useState<string[]>([]);
   const [customRitual, setCustomRitual] = useState('');
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['morning-ritual'];
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.selectedPractices)) setSelectedPractices(saved.selectedPractices);
+      if (typeof saved.customRitual === 'string') setCustomRitual(saved.customRitual);
+    }
+  }, [progressData]);
 
   const ritualOptions = [
     'Morning sunlight exposure (5 min)',
@@ -1028,6 +1063,7 @@ function MorningRitualCreator({ onComplete, onClose }: { onComplete: (id: string
 
 // Brain Fog Clearing Practice Component
 function BrainFogClearingPractice({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [practiceData, setPracticeData] = useState({
     preFogLevel: 0,
@@ -1035,6 +1071,15 @@ function BrainFogClearingPractice({ onComplete, onClose }: { onComplete: (id: st
     completedTechniques: [] as string[],
     effectiveness: 0
   });
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['brain-fog-exercise'];
+    if (saved && typeof saved === 'object') {
+      setPracticeData(prev => ({ ...prev, ...saved }));
+      // Jump to final step if user already completed the practice
+      setCurrentStep(2);
+    }
+  }, [progressData]);
 
   const techniques = [
     'Cold water on wrists (30 seconds)',
@@ -1172,6 +1217,7 @@ function BrainFogClearingPractice({ onComplete, onClose }: { onComplete: (id: st
 
 // Energy Pattern Mapper Component
 function EnergyPatternMapper({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [energyLevels, setEnergyLevels] = useState({
     morning: 0,
     midday: 0,
@@ -1179,6 +1225,14 @@ function EnergyPatternMapper({ onComplete, onClose }: { onComplete: (id: string,
     evening: 0
   });
   const [patterns, setPatterns] = useState('');
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['energy-mapping'];
+    if (saved && typeof saved === 'object') {
+      if (saved.energyLevels) setEnergyLevels(saved.energyLevels);
+      if (typeof saved.patterns === 'string') setPatterns(saved.patterns);
+    }
+  }, [progressData]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -1240,8 +1294,18 @@ function EnergyPatternMapper({ onComplete, onClose }: { onComplete: (id: string,
 
 // Thought Pattern Tracker Component
 function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [thoughts, setThoughts] = useState<{trigger: string, thought: string, reframe: string}[]>([]);
   const [currentThought, setCurrentThought] = useState({trigger: '', thought: '', reframe: ''});
+
+  useEffect(() => {
+    const saved =
+      progressData?.coachingProgress?.responseData?.['thought-awareness'] ||
+      progressData?.coachingProgress?.responseData?.['w2-mindful-thought-tracker'];
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.thoughts)) setThoughts(saved.thoughts);
+    }
+  }, [progressData]);
 
   const addThought = () => {
     if (currentThought.trigger && currentThought.thought) {
@@ -1337,8 +1401,17 @@ function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: strin
 
 // Nutrition Planning Tool Component
 function NutritionPlanningTool({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
   const [mealPlan, setMealPlan] = useState('');
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['nutrition-planning'];
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.selectedFoods)) setSelectedFoods(saved.selectedFoods);
+      if (typeof saved.mealPlan === 'string') setMealPlan(saved.mealPlan);
+    }
+  }, [progressData]);
 
   const hormoneFoods = [
     'Wild salmon', 'Avocados', 'Leafy greens', 'Berries', 'Nuts and seeds',
@@ -1409,8 +1482,17 @@ function NutritionPlanningTool({ onComplete, onClose }: { onComplete: (id: strin
 
 // Evening Routine Creator Component
 function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [routineSteps, setRoutineSteps] = useState<string[]>([]);
   const [customSteps, setCustomSteps] = useState('');
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['evening-wind-down'];
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.routineSteps)) setRoutineSteps(saved.routineSteps);
+      if (typeof saved.customSteps === 'string') setCustomSteps(saved.customSteps);
+    }
+  }, [progressData]);
 
   const routineOptions = [
     'Dim lights 1 hour before bed',
@@ -1485,6 +1567,7 @@ function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: strin
 
 // CBT Reframing Techniques Component
 function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [thoughtData, setThoughtData] = useState({
     situation: '',
@@ -1496,6 +1579,17 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
     newEmotions: [] as string[],
     actionPlan: ''
   });
+
+  // Prefill from saved week 2 CBT entries
+  useEffect(() => {
+    const saved =
+      progressData?.coachingProgress?.responseData?.['w2-cbt-reframing'] ||
+      progressData?.coachingProgress?.responseData?.['w2-cbt-intro-interactive'];
+    if (saved && typeof saved === 'object') {
+      setThoughtData(prev => ({ ...prev, ...saved }));
+      setCurrentStep(7);
+    }
+  }, [progressData]);
 
   const emotionOptions = [
     'Anxious', 'Sad', 'Angry', 'Frustrated', 'Overwhelmed', 'Guilty', 
@@ -1647,7 +1741,7 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
               </Button>
             ) : (
               <Button 
-                onClick={() => onComplete('w2-cbt', thoughtData)}
+                onClick={() => onComplete('w2-cbt-reframing', thoughtData)}
                 disabled={!canProceed(currentStep)}
                 className="ml-auto"
               >
@@ -1677,6 +1771,7 @@ function CBTThoughtTransformationSystem({ onComplete, onClose }: { onComplete: (
 
 // Mirror Work & Affirmations Component
 function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
   const [customAffirmation, setCustomAffirmation] = useState('');
@@ -1723,6 +1818,16 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
       description: 'Reflect on your experience and any insights that came up'
     }
   ];
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['w2-mirror-affirmations'];
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.selectedAffirmations)) setSelectedAffirmations(saved.selectedAffirmations);
+      if (typeof saved.customAffirmation === 'string') setCustomAffirmation(saved.customAffirmation);
+      if (typeof saved.reflectionNotes === 'string') setReflectionNotes(saved.reflectionNotes);
+      setCurrentStep(2);
+    }
+  }, [progressData]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -1883,7 +1988,7 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
               </Button>
             ) : (
               <Button 
-                onClick={() => onComplete('w2-mirror', {
+                onClick={() => onComplete('w2-mirror-affirmations', {
                   selectedAffirmations,
                   customAffirmation,
                   reflectionNotes
@@ -1903,6 +2008,7 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
 
 // Thought Audit Tracker Component
 function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [thoughts, setThoughts] = useState<{
     time: string;
     trigger: string;
@@ -1912,6 +2018,13 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
     intensity: number;
     newIntensity: number;
   }[]>([]);
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['w2-thought-audit'];
+    if (saved && typeof saved === 'object' && Array.isArray(saved.thoughts)) {
+      setThoughts(saved.thoughts);
+    }
+  }, [progressData]);
 
   const [currentThought, setCurrentThought] = useState({
     time: '',
@@ -2132,6 +2245,7 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
 
 // NLP Reframing Practice Component
 function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentTechnique, setCurrentTechnique] = useState(0);
   const [practiceData, setPracticeData] = useState({
     anchoringResults: { trigger: '', positiveState: '', effectiveness: 0 },
@@ -2139,6 +2253,14 @@ function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string
     visualizationResults: { goal: '', obstacles: [] as string[], solutions: [] as string[], clarity: 0 },
     languageResults: { limitingBeliefs: [] as string[], empoweringBeliefs: [] as string[], integration: '' }
   });
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['w2-nlp-reframing'];
+    if (saved && typeof saved === 'object') {
+      setPracticeData(prev => ({ ...prev, ...saved }));
+      setCurrentTechnique(3);
+    }
+  }, [progressData]);
 
   const techniques = [
     {
@@ -2537,7 +2659,7 @@ function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string
               </Button>
             ) : (
               <Button 
-                onClick={() => onComplete('w2-nlp', practiceData)}
+                onClick={() => onComplete('w2-nlp-reframing', practiceData)}
                 className="ml-auto"
               >
                 Complete NLP Practice
@@ -2552,6 +2674,7 @@ function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string
 
 // Hormone Harmony Meditation Component
 function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [activeSection, setActiveSection] = useState('check-in');
   const [meditationData, setMeditationData] = useState({
     preAssessment: {
@@ -2577,6 +2700,14 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
   ];
 
   const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['hormone-meditation'];
+    if (saved && typeof saved === 'object') {
+      setMeditationData(prev => ({ ...prev, ...saved }));
+      setActiveSection('reflection');
+    }
+  }, [progressData]);
 
   const meditationPhases = [
     {
@@ -14469,147 +14600,571 @@ function HabitLoopMastery({ onComplete, onClose }: { onComplete: (id: string, da
 }
 
 export function EnhancedCoachingComponentMinimal({ component, moduleId, onComplete, onClose }: EnhancedCoachingComponentMinimalProps) {
+  const { data: progressData } = useCoachingProgress();
+  // Resolve saved payload with alias fallbacks (week 2 components that reuse week 1 data keys, etc.)
+  const aliasKeys: Record<string, string[]> = {
+    'w2-cbt-intro-interactive': ['w2-cbt-reframing'],
+    'w2-mindful-thought-tracker': ['thought-awareness'],
+  };
+  const resolveSaved = (): any => {
+    const store = progressData?.coachingProgress?.responseData || {};
+    if (store[component.id]) return store[component.id];
+    const candidates = aliasKeys[component.id] || [];
+    for (const k of candidates) {
+      if (store[k]) return store[k];
+    }
+    return undefined;
+  };
+  const savedPayload: any = resolveSaved();
+  const savedBanner = savedPayload ? (
+    <div className="max-w-4xl mx-auto mb-4">
+      <div className="bg-green-50 border border-green-200 text-green-800 rounded px-4 py-3">
+        <span className="font-medium">✓ Saved:</span> Your previous responses were loaded
+        {savedPayload.completedAt ? (
+          <span> (completed {new Date(savedPayload.completedAt).toLocaleString()})</span>
+        ) : null}
+        . You can review or update anything below.
+      </div>
+    </div>
+  ) : null;
+
+  // Render a compact summary of saved data similar to Week 1 UI
+  const savedSummary = savedPayload ? (
+    <div className="max-w-4xl mx-auto mb-4">
+      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+        <h4 className="font-semibold text-emerald-900 mb-2">Saved Summary</h4>
+        {(() => {
+          const p = savedPayload;
+          // Helper for generic object rendering
+          const renderGeneric = (obj: any) => {
+            if (!obj || typeof obj !== 'object') return null;
+            const entries = Object.entries(obj).slice(0, 8);
+            return (
+              <ul className="text-sm text-emerald-800 space-y-1">
+                {entries.map(([k, v]) => (
+                  <li key={k} className="capitalize">
+                    {k.replace(/([A-Z])/g, ' $1').trim()}: <strong>{
+                      Array.isArray(v)
+                        ? `${v.length} items`
+                        : typeof v === 'object' && v !== null
+                          ? JSON.stringify(v).slice(0, 60) + (JSON.stringify(v).length > 60 ? '…' : '')
+                          : String(v)
+                    }</strong>
+                  </li>
+                ))}
+              </ul>
+            );
+          };
+          switch (component.id) {
+            // ===== Week 2 summaries =====
+            case 'w2-cbt-intro-interactive':
+            case 'w2-cbt-reframing':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  {p.situation ? <li>Situation: {p.situation}</li> : null}
+                  {p.automaticThought ? <li>Automatic thought: {p.automaticThought}</li> : null}
+                  {Array.isArray(p.emotions) ? <li>Original emotions: <strong>{p.emotions.length}</strong></li> : null}
+                  {p.balancedThought ? <li>Balanced thought: {p.balancedThought}</li> : null}
+                  {Array.isArray(p.newEmotions) ? <li>New emotions: <strong>{p.newEmotions.length}</strong></li> : null}
+                  {p.actionPlan ? <li>Action plan: {p.actionPlan}</li> : null}
+                </ul>
+              );
+            case 'w2-mindful-thought-tracker':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Thought entries: <strong>{Array.isArray(p.thoughts) ? p.thoughts.length : 0}</strong></li>
+                </ul>
+              );
+            case 'w2-mirror-affirmations':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Selected affirmations: <strong>{Array.isArray(p.selectedAffirmations) ? p.selectedAffirmations.length : 0}</strong></li>
+                  {p.customAffirmation ? <li>Custom: {p.customAffirmation}</li> : null}
+                  {p.reflectionNotes ? <li>Reflection: {p.reflectionNotes}</li> : null}
+                </ul>
+              );
+            case 'w2-thought-audit':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Audit entries: <strong>{Array.isArray(p.thoughts) ? p.thoughts.length : 0}</strong></li>
+                </ul>
+              );
+            case 'w2-nlp-reframing':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  {p.anchoringResults ? <li>Anchoring effectiveness: <strong>{Number(p.anchoringResults.effectiveness ?? 0)}</strong>/10</li> : null}
+                  {p.reframingResults ? <li>Confidence: <strong>{Number(p.reframingResults.confidence ?? 0)}</strong>/10</li> : null}
+                  {p.visualizationResults ? <li>Clarity: <strong>{Number(p.visualizationResults.clarity ?? 0)}</strong>/10</li> : null}
+                </ul>
+              );
+            // ===== Week 3 summaries =====
+            case 'w3-patterns':
+              return renderGeneric(p);
+            case 'w3-technique':
+              return renderGeneric(p);
+            case 'w3-boundaries':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Boundary scripts: <strong>{Array.isArray(p.boundaries) ? p.boundaries.length : 0}</strong></li>
+                </ul>
+              );
+            case 'w3-mood-map':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Entries: <strong>{Array.isArray(p.entries) ? p.entries.length : 0}</strong></li>
+                </ul>
+              );
+            // ===== Week 4 summaries =====
+            case 'w4-grounding':
+              return renderGeneric(p);
+            case 'w4-breathwork':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  {typeof p.preLevel !== 'undefined' ? <li>Pre level: <strong>{Number(p.preLevel)}</strong></li> : null}
+                  {typeof p.postLevel !== 'undefined' ? <li>Post level: <strong>{Number(p.postLevel)}</strong></li> : null}
+                  {typeof p.effectiveness !== 'undefined' ? <li>Effectiveness: <strong>{Number(p.effectiveness)}</strong>/10</li> : null}
+                </ul>
+              );
+            case 'w4-calm-corner':
+              return renderGeneric(p);
+            case 'w4-meditation':
+              return renderGeneric(p);
+            // ===== Week 5 summaries =====
+            case 'w5-assessment':
+              return renderGeneric(p);
+            case 'w5-rituals':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Rituals configured: <strong>{Array.isArray(p.rituals) ? p.rituals.length : 0}</strong></li>
+                </ul>
+              );
+            case 'w5-nutrition':
+              return renderGeneric(p);
+            case 'w5-mind-management':
+              return renderGeneric(p);
+            // ===== Week 6 summaries =====
+            case 'w6-vision':
+              return renderGeneric(p);
+            case 'w6-goals':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Goals: <strong>{Array.isArray(p.goals) ? p.goals.length : 0}</strong></li>
+                </ul>
+              );
+            case 'w6-reverse':
+              return renderGeneric(p);
+            case 'w6-habits':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Habits: <strong>{Array.isArray(p.habits) ? p.habits.length : 0}</strong></li>
+                </ul>
+              );
+            case 'hormone-symphony':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Initial rating: <strong>{p.preScore}</strong>/10</li>
+                  <li>Symptoms identified: <strong>{Array.isArray(p.symptoms) ? p.symptoms.length : 0}</strong></li>
+                  <li>Video completed: <strong>{p.videoWatched ? 'Yes' : 'No'}</strong></li>
+                  {p.insights ? <li>Insights: {p.insights}</li> : null}
+                </ul>
+              );
+            case 'mental-space-reset':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Pre clarity: <strong>{p.preMentalClarity}</strong>/10</li>
+                  <li>Post clarity: <strong>{p.postMentalClarity}</strong>/10</li>
+                  <li>Techniques completed: <strong>{Array.isArray(p.completedTechniques) ? p.completedTechniques.length : 0}</strong></li>
+                  {p.effectiveness ? <li>Effectiveness: <strong>{p.effectiveness}</strong>/10</li> : null}
+                  {p.insights ? <li>Insights: {p.insights}</li> : null}
+                </ul>
+              );
+            case 'hormone-meditation':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Calmness change: <strong>{Number(p.postAssessment?.calmness ?? 0) - Number(p.preAssessment?.calmness ?? 0)}</strong></li>
+                  <li>Body awareness: <strong>{Number(p.preAssessment?.bodyAwareness ?? 0)}</strong>/10</li>
+                  <li>Emotional balance: <strong>{Number(p.preAssessment?.emotionalBalance ?? 0)}</strong>/10</li>
+                  {p.postAssessment?.intention ? <li>Intention: {p.postAssessment.intention}</li> : null}
+                </ul>
+              );
+            case 'cortisol-breathwork':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Pre stress: <strong>{p.preStressLevel}</strong></li>
+                  <li>Post stress: <strong>{p.postStressLevel}</strong></li>
+                  {p.selectedTechnique ? <li>Technique: <strong>{p.selectedTechnique}</strong></li> : null}
+                  {p.sessionDuration ? <li>Duration: <strong>{p.sessionDuration}</strong> min</li> : null}
+                  {p.completedCycles ? <li>Cycles: <strong>{p.completedCycles}</strong></li> : null}
+                  {p.effectiveness ? <li>Effectiveness: <strong>{p.effectiveness}</strong>/10</li> : null}
+                </ul>
+              );
+            case 'symptom-tracker':
+              return (
+                <div className="text-sm text-emerald-800 space-y-1">
+                  {p.symptoms ? (
+                    <ul className="grid grid-cols-2 gap-2 list-disc ml-5">
+                      {Object.entries(p.symptoms).map(([k, v]: any) => (
+                        <li key={k} className="capitalize">{k.replace(/([A-Z])/g, ' $1').trim()}: <strong>{String(v)}</strong></li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {p.insights ? <div>Insights: {p.insights}</div> : null}
+                </div>
+              );
+            case 'morning-ritual':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Selected practices: <strong>{Array.isArray(p.selectedPractices) ? p.selectedPractices.length : 0}</strong></li>
+                  {Array.isArray(p.selectedPractices) && p.selectedPractices.length > 0 ? (
+                    <li className="text-emerald-700">{p.selectedPractices.slice(0,3).join(', ')}{p.selectedPractices.length>3?'…':''}</li>
+                  ) : null}
+                  {p.customRitual ? <li>Custom: {p.customRitual}</li> : null}
+                </ul>
+              );
+            case 'brain-fog-exercise':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Pre level: <strong>{p.preFogLevel}</strong></li>
+                  <li>Post level: <strong>{p.postFogLevel}</strong></li>
+                  <li>Effectiveness: <strong>{p.effectiveness}</strong>/10</li>
+                  <li>Techniques: <strong>{Array.isArray(p.completedTechniques) ? p.completedTechniques.length : 0}</strong></li>
+                </ul>
+              );
+            case 'energy-mapping':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  {p.energyLevels ? (
+                    <>
+                      <li>Morning: <strong>{Number(p.energyLevels.morning ?? 0)}</strong></li>
+                      <li>Midday: <strong>{Number(p.energyLevels.midday ?? 0)}</strong></li>
+                      <li>Afternoon: <strong>{Number(p.energyLevels.afternoon ?? 0)}</strong></li>
+                      <li>Evening: <strong>{Number(p.energyLevels.evening ?? 0)}</strong></li>
+                    </>
+                  ) : null}
+                  {p.patterns ? <li>Patterns: {p.patterns}</li> : null}
+                </ul>
+              );
+            case 'thought-awareness':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Thought entries: <strong>{Array.isArray(p.thoughts) ? p.thoughts.length : 0}</strong></li>
+                </ul>
+              );
+            case 'nutrition-planning':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Foods picked: <strong>{Array.isArray(p.selectedFoods) ? p.selectedFoods.length : 0}</strong></li>
+                  {p.mealPlan ? (() => { const mp = typeof p.mealPlan === 'string' ? p.mealPlan : String(p.mealPlan); return (<li>Plan: {mp.slice(0,120)}{mp.length>120?'…':''}</li>); })() : null}
+                </ul>
+              );
+            case 'evening-wind-down':
+              return (
+                <ul className="text-sm text-emerald-800 space-y-1">
+                  <li>Routine steps: <strong>{Array.isArray(p.routineSteps) ? p.routineSteps.length : 0}</strong></li>
+                  {p.customSteps ? <li>Custom: {p.customSteps}</li> : null}
+                </ul>
+              );
+            default:
+              // Intelligent fallback: show top-level fields or counts
+              return renderGeneric(p);
+          }
+        })()}
+      </div>
+    </div>
+  ) : null;
   // Handle special interactive components
   if (component.id === 'focus-memory-rituals') {
-    return <InteractiveFocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <InteractiveFocusMemoryRituals onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'nutrition-plan') {
-    return <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'mind-management') {
-    return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <MindManagementSystem onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'hormone-symphony') {
-    return <UnderstandingYourHormonalSymphony onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <UnderstandingYourHormonalSymphony onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'hormone-meditation') {
-    return <HormoneHarmonyMeditation onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <HormoneHarmonyMeditation onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'cortisol-breathwork') {
-    return <CortisolResetBreathwork onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <CortisolResetBreathwork onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'mental-space-reset') {
-    return <ResettingYourMentalSpace onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <ResettingYourMentalSpace onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Add handlers for Week 1 interactive components
   if (component.id === 'symptom-tracker') {
-    return <InteractiveSymptomTracker onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <InteractiveSymptomTracker onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'morning-ritual') {
-    return <MorningRitualCreator onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <MorningRitualCreator onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'brain-fog-exercise') {
-    return <BrainFogClearingPractice onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <BrainFogClearingPractice onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'energy-mapping') {
-    return <EnergyPatternMapper onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <EnergyPatternMapper onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'thought-awareness') {
-    return <ThoughtPatternTracker onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <ThoughtPatternTracker onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'nutrition-planning') {
-    return <NutritionPlanningTool onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <NutritionPlanningTool onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'evening-wind-down') {
-    return <EveningRoutineCreator onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <EveningRoutineCreator onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Week 2 Components
   if (component.id === 'w2-cbt-reframing') {
-    return <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} />
+    </>;
+  }
+
+  if (component.id === 'w2-cbt-intro-interactive') {
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <CBTThoughtTransformationSystem onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w2-mirror-affirmations') {
-    return <MirrorWorkEmpowermentAffirmations onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <MirrorWorkEmpowermentAffirmations onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w2-thought-audit') {
-    return <ThoughtAuditTracker onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <ThoughtAuditTracker onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w2-nlp-reframing') {
-    return <NLPReframingPractice onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <NLPReframingPractice onComplete={onComplete} onClose={onClose} />
+    </>;
+  }
+
+  if (component.id === 'w2-mindful-thought-tracker') {
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <ThoughtPatternTracker onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Week 3 Components
   if (component.id === 'w3-patterns') {
-    return <OverwhelmPatternAnalysis onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <OverwhelmPatternAnalysis onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w3-technique') {
-    return <PauseLabelShiftTechnique onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <PauseLabelShiftTechnique onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w3-boundaries') {
-    return <BoundariesWorksheet onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <BoundariesWorksheet onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w3-mood-map') {
-    return <WeeklyMoodMap onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <WeeklyMoodMap onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Week 4 Components
   if (component.id === 'w4-grounding') {
-    return <SomaticGroundingPractices onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <SomaticGroundingPractices onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w4-breathwork') {
-    return <BreathworkVagusReset onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <BreathworkVagusReset onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w4-calm-corner') {
-    return <CreateCalmCorner onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <CreateCalmCorner onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w4-meditation') {
-    return <GuidedGroundingMeditation onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <GuidedGroundingMeditation onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Week 5 Components
   if (component.id === 'w5-assessment') {
-    return <EnhancedCognitiveAssessment onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <EnhancedCognitiveAssessment onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w5-rituals') {
-    return <FocusMemoryRituals onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <FocusMemoryRituals onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w5-nutrition') {
-    return <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <BrainBoostingNutritionPlan onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w5-mind-management') {
-    return <MindManagementSystem onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <MindManagementSystem onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Week 6 Components
   if (component.id === 'w6-vision') {
-    return <FutureSelfVisualization onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <FutureSelfVisualization onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w6-goals') {
-    return <SmartGoalArchitecture onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <SmartGoalArchitecture onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w6-reverse') {
-    return <ReverseEngineeringSuccess onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <ReverseEngineeringSuccess onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   if (component.id === 'w6-habits') {
-    return <HabitLoopMastery onComplete={onComplete} onClose={onClose} />;
+    return <>
+      {savedBanner}
+      {savedSummary}
+      <HabitLoopMastery onComplete={onComplete} onClose={onClose} />
+    </>;
   }
 
   // Default fallback for any other components
