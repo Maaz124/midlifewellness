@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -203,6 +203,8 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
   const [breathPhase, setBreathPhase] = useState('inhale');
   const [cycleCount, setCycleCount] = useState(0);
   const [sessionTime, setSessionTime] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const practicePhaseInitialized = useRef(false);
 
   useEffect(() => {
     const saved = progressData?.coachingProgress?.responseData?.['cortisol-breathwork'];
@@ -211,6 +213,7 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
     }
   }, [progressData]);
 
+  // Define breathing techniques
   const breathingTechniques = {
     '4-7-8': {
       name: '4-7-8 Technique',
@@ -256,6 +259,70 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Reset session state when entering practice phase (only once)
+  useEffect(() => {
+    if (currentPhase === 'practice' && !practicePhaseInitialized.current) {
+      setIsBreathing(false);
+      setSessionTime(0);
+      setCycleCount(0);
+      setBreathPhase('inhale');
+      practicePhaseInitialized.current = true;
+    }
+    // Reset the ref when leaving practice phase
+    if (currentPhase !== 'practice') {
+      practicePhaseInitialized.current = false;
+    }
+  }, [currentPhase]);
+
+  // Clear technique selection when entering technique-selection to allow re-selection
+  useEffect(() => {
+    if (currentPhase === 'technique-selection') {
+      // Clear selected technique so user can choose a different one
+      setBreathingData(prev => ({ ...prev, selectedTechnique: '' }));
+    }
+  }, [currentPhase]);
+
+  // Timer effect for breathing session
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    
+    if (isBreathing) {
+      interval = setInterval(() => {
+        setSessionTime(prev => {
+          const newTime = prev + 1;
+          
+          // Update breath phase based on selected technique
+          const technique = breathingTechniques[breathingData.selectedTechnique as keyof typeof breathingTechniques];
+          if (technique) {
+            const totalCycleTime = technique.inhale + technique.hold + technique.exhale + (technique.pause || 0);
+            const cyclePosition = newTime % totalCycleTime;
+            
+            if (cyclePosition < technique.inhale) {
+              setBreathPhase('inhale');
+            } else if (cyclePosition < technique.inhale + technique.hold) {
+              setBreathPhase('hold');
+            } else if (cyclePosition < technique.inhale + technique.hold + technique.exhale) {
+              setBreathPhase('exhale');
+            } else {
+              setBreathPhase('pause');
+            }
+            
+            // Update cycle count when we complete a full cycle
+            if (cyclePosition === 0 && newTime > 0) {
+              setCycleCount(prev => prev + 1);
+            }
+          }
+          
+          return newTime;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isBreathing, breathingData.selectedTechnique]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -385,11 +452,16 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
 
                 <div className="flex justify-center gap-4">
                   <Button
-                    onClick={() => setIsBreathing(!isBreathing)}
+                    onClick={() => {
+                      if (!hasStarted) {
+                        setHasStarted(true);
+                      }
+                      setIsBreathing(!isBreathing);
+                    }}
                     className={isBreathing ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}
                   >
                     {isBreathing ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-                    {isBreathing ? 'Pause' : 'Start'}
+                    {isBreathing ? 'Pause' : hasStarted ? 'Resume' : 'Start'}
                   </Button>
                   <Button 
                     variant="outline"
