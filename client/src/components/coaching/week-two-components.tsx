@@ -21,9 +21,12 @@ export default function WeekTwoComponents({ component, onComplete, onClose }: We
   const [awarenessNotes, setAwarenessNotes] = useState('');
   const [thoughtLabels, setThoughtLabels] = useState('');
   const [emotionNotes, setEmotionNotes] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Hydrate from previously saved data (editable afterwards)
+  // Hydrate from previously saved data once on initial load only
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = (component as any)?.data?.mindfulObservation;
     if (saved) {
       if (typeof saved.awarenessNotes === 'string') setAwarenessNotes(saved.awarenessNotes);
@@ -34,7 +37,9 @@ export default function WeekTwoComponents({ component, onComplete, onClose }: We
         setRemainingSeconds(secs);
       }
     }
-  }, [component]);
+    
+    setHasInitialized(true);
+  }, [component, hasInitialized]);
 
   const formatTime = (totalSeconds: number) => {
     const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');

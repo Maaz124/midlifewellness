@@ -32,6 +32,7 @@ export default function JournalNew() {
   const [breathingActive, setBreathingActive] = useState(false);
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
   const [gratitudeItems, setGratitudeItems] = useState(['', '', '']);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Fetch digital resources
   const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
@@ -154,8 +155,10 @@ export default function JournalNew() {
     setWordCount(words);
   }, [journalContent]);
 
-  // Load today's entry (or draft if none) on changes
+  // Load today's entry (or draft if none) - only once on initial load
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const today = new Date().toISOString().split('T')[0];
     const todaysEntry = data.journalEntries.find((e: any) => new Date(e.createdAt).toISOString().split('T')[0] === today);
     if (todaysEntry) {
@@ -167,7 +170,9 @@ export default function JournalNew() {
       const todaysMood = data.moodTracking.find((entry: any) => entry.date === today || entry.createdAt?.startsWith(today));
       if (todaysMood) setSelectedMood(todaysMood.mood);
     }
-  }, [data.journalEntries, data.moodTracking]);
+    
+    setHasInitialized(true);
+  }, [data.journalEntries, data.moodTracking, hasInitialized]);
 
   // Breathing timer and phase control
   useEffect(() => {

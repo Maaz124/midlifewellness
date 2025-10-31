@@ -34,6 +34,7 @@ interface EnhancedCoachingComponentMinimalProps {
 
 // Interactive Focus & Memory Rituals Component
 function InteractiveFocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [ritualData, setRitualData] = useState({
     selectedRituals: [] as string[],
@@ -41,6 +42,25 @@ function InteractiveFocusMemoryRituals({ onComplete, onClose }: { onComplete: (i
     effectiveness: 0,
     notes: ''
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['focus-memory-rituals'];
+    if (saved && typeof saved === 'object') {
+      setRitualData(prev => ({
+        ...prev,
+        selectedRituals: Array.isArray(saved.selectedRituals) ? saved.selectedRituals : prev.selectedRituals,
+        practiceTime: saved.practiceTime || prev.practiceTime,
+        effectiveness: saved.effectiveness || prev.effectiveness,
+        notes: saved.notes || prev.notes
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const rituals = [
     {
@@ -205,13 +225,19 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
   const [sessionTime, setSessionTime] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const practicePhaseInitialized = useRef(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['cortisol-breathwork'];
     if (saved && typeof saved === 'object') {
       setBreathingData(prev => ({ ...prev, ...saved }));
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   // Define breathing techniques
   const breathingTechniques = {
@@ -221,6 +247,7 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
       inhale: 4,
       hold: 7,
       exhale: 8,
+      pause: 0,
       benefits: ['Reduces cortisol', 'Activates parasympathetic nervous system', 'Promotes deep relaxation'],
       instructions: [
         'Find a comfortable seated position',
@@ -289,7 +316,7 @@ function CortisolResetBreathwork({ onComplete, onClose }: { onComplete: (id: str
           // Update breath phase based on selected technique
           const technique = breathingTechniques[breathingData.selectedTechnique as keyof typeof breathingTechniques];
           if (technique) {
-            const totalCycleTime = technique.inhale + technique.hold + technique.exhale + (technique.pause || 0);
+            const totalCycleTime = technique.inhale + technique.hold + technique.exhale + technique.pause;
             const cyclePosition = newTime % totalCycleTime;
             
             if (cyclePosition < technique.inhale) {
@@ -585,14 +612,20 @@ function ResettingYourMentalSpace({ onComplete, onClose }: { onComplete: (id: st
     effectiveness: 0,
     insights: ''
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Prefill from saved data
+  // Prefill from saved data once on initial load only
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['mental-space-reset'];
     if (saved && typeof saved === 'object') {
       setClarityData(prev => ({ ...prev, ...saved }));
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const fogSymptoms = [
     'Difficulty concentrating',
@@ -970,14 +1003,20 @@ function InteractiveSymptomTracker({ onComplete, onClose }: { onComplete: (id: s
     anxiety: 0
   });
   const [insights, setInsights] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['symptom-tracker'];
     if (saved && typeof saved === 'object') {
       if (saved.symptoms) setSymptoms(saved.symptoms);
       if (typeof saved.insights === 'string') setInsights(saved.insights);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -1041,14 +1080,20 @@ function MorningRitualCreator({ onComplete, onClose }: { onComplete: (id: string
   const { data: progressData } = useCoachingProgress();
   const [selectedPractices, setSelectedPractices] = useState<string[]>([]);
   const [customRitual, setCustomRitual] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['morning-ritual'];
     if (saved && typeof saved === 'object') {
       if (Array.isArray(saved.selectedPractices)) setSelectedPractices(saved.selectedPractices);
       if (typeof saved.customRitual === 'string') setCustomRitual(saved.customRitual);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const ritualOptions = [
     'Morning sunlight exposure (5 min)',
@@ -1130,15 +1175,21 @@ function BrainFogClearingPractice({ onComplete, onClose }: { onComplete: (id: st
     completedTechniques: [] as string[],
     effectiveness: 0
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['brain-fog-exercise'];
     if (saved && typeof saved === 'object') {
       setPracticeData(prev => ({ ...prev, ...saved }));
       // Jump to final step if user already completed the practice
       setCurrentStep(2);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const techniques = [
     'Cold water on wrists (30 seconds)',
@@ -1284,14 +1335,20 @@ function EnergyPatternMapper({ onComplete, onClose }: { onComplete: (id: string,
     evening: 0
   });
   const [patterns, setPatterns] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['energy-mapping'];
     if (saved && typeof saved === 'object') {
       if (saved.energyLevels) setEnergyLevels(saved.energyLevels);
       if (typeof saved.patterns === 'string') setPatterns(saved.patterns);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -1356,8 +1413,11 @@ function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: strin
   const { data: progressData } = useCoachingProgress();
   const [thoughts, setThoughts] = useState<{trigger: string, thought: string, reframe: string}[]>([]);
   const [currentThought, setCurrentThought] = useState({trigger: '', thought: '', reframe: ''});
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved =
       progressData?.coachingProgress?.responseData?.['w2-mindful-thought-tracker'] ||
       progressData?.coachingProgress?.responseData?.['thought-awareness'];
@@ -1373,7 +1433,10 @@ function ThoughtPatternTracker({ onComplete, onClose }: { onComplete: (id: strin
         });
       }
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const addThought = () => {
     if (currentThought.trigger && currentThought.thought) {
@@ -1472,14 +1535,20 @@ function NutritionPlanningTool({ onComplete, onClose }: { onComplete: (id: strin
   const { data: progressData } = useCoachingProgress();
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
   const [mealPlan, setMealPlan] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['nutrition-planning'];
     if (saved && typeof saved === 'object') {
       if (Array.isArray(saved.selectedFoods)) setSelectedFoods(saved.selectedFoods);
       if (typeof saved.mealPlan === 'string') setMealPlan(saved.mealPlan);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const hormoneFoods = [
     'Wild salmon', 'Avocados', 'Leafy greens', 'Berries', 'Nuts and seeds',
@@ -1553,14 +1622,20 @@ function EveningRoutineCreator({ onComplete, onClose }: { onComplete: (id: strin
   const { data: progressData } = useCoachingProgress();
   const [routineSteps, setRoutineSteps] = useState<string[]>([]);
   const [customSteps, setCustomSteps] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['evening-wind-down'];
     if (saved && typeof saved === 'object') {
       if (Array.isArray(saved.routineSteps)) setRoutineSteps(saved.routineSteps);
       if (typeof saved.customSteps === 'string') setCustomSteps(saved.customSteps);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const routineOptions = [
     'Dim lights 1 hour before bed',
@@ -1660,7 +1735,8 @@ function CBTThoughtTransformationSystem({ onComplete, onClose, completeId }: { o
       setCurrentStep(7);
       initializedFromSaved.current = true;
     }
-  }, [progressData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const emotionOptions = [
     'Anxious', 'Sad', 'Angry', 'Frustrated', 'Overwhelmed', 'Guilty', 
@@ -1859,6 +1935,7 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
   const [selectedAffirmations, setSelectedAffirmations] = useState<string[]>([]);
   const [customAffirmation, setCustomAffirmation] = useState('');
   const [reflectionNotes, setReflectionNotes] = useState('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const affirmationCategories = {
     'Self-Worth': [
@@ -1903,6 +1980,8 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
   ];
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['w2-mirror-affirmations'];
     if (saved && typeof saved === 'object') {
       if (Array.isArray(saved.selectedAffirmations)) setSelectedAffirmations(saved.selectedAffirmations);
@@ -1910,7 +1989,10 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
       if (typeof saved.reflectionNotes === 'string') setReflectionNotes(saved.reflectionNotes);
       setCurrentStep(2);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   return (
     <Card className="max-w-4xl mx-auto">
@@ -2093,6 +2175,7 @@ function MirrorWorkEmpowermentAffirmations({ onComplete, onClose }: { onComplete
 function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
   const { data: progressData } = useCoachingProgress();
   const [thoughts, setThoughts] = useState<{
+    id: number;
     time: string;
     trigger: string;
     thought: string;
@@ -2101,13 +2184,24 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
     intensity: number;
     newIntensity: number;
   }[]>([]);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['w2-thought-audit'];
     if (saved && typeof saved === 'object' && Array.isArray(saved.thoughts)) {
-      setThoughts(saved.thoughts);
+      // Add IDs if missing for editability
+      const withIds = saved.thoughts.map((t: any, idx: number) => ({
+        ...t,
+        id: t.id || Date.now() + idx
+      }));
+      setThoughts(withIds);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const [currentThought, setCurrentThought] = useState({
     time: '',
@@ -2134,7 +2228,12 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
 
   const addThought = () => {
     if (currentThought.thought && currentThought.replacement) {
-      setThoughts([...thoughts, { ...currentThought, time: new Date().toLocaleTimeString() }]);
+      const newThought = { 
+        ...currentThought, 
+        id: Date.now(),
+        time: new Date().toLocaleTimeString() 
+      };
+      setThoughts([...thoughts, newThought]);
       setCurrentThought({
         time: '',
         trigger: '',
@@ -2145,6 +2244,14 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
         newIntensity: 5
       });
     }
+  };
+
+  const updateThought = (id: number, field: string, value: any) => {
+    setThoughts(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
+  };
+
+  const deleteThought = (id: number) => {
+    setThoughts(prev => prev.filter(t => t.id !== id));
   };
 
   return (
@@ -2263,18 +2370,94 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
 
           {thoughts.length > 0 && (
             <div className="space-y-4">
-              <h4 className="font-semibold">Tracked Thoughts ({thoughts.length})</h4>
-              <div className="space-y-3">
-                {thoughts.map((thought, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 bg-gray-50">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-sm font-medium">{thought.time}</span>
-                      <span className="text-sm bg-blue-100 px-2 py-1 rounded">{thought.distortion}</span>
+              <h4 className="font-semibold">Your Thought Entries ({thoughts.length})</h4>
+              <div className="space-y-4">
+                {thoughts.map((thought) => (
+                  <div key={thought.id} className="border-2 border-green-200 rounded-lg p-4 bg-white">
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="text-sm font-medium text-gray-600">{thought.time}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteThought(thought.id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        Delete
+                      </Button>
                     </div>
-                    <div className="space-y-2 text-sm">
-                      <div><strong>Trigger:</strong> {thought.trigger}</div>
-                      <div><strong>Negative:</strong> {thought.thought} (Intensity: {thought.intensity})</div>
-                      <div><strong>Balanced:</strong> {thought.replacement} (Intensity: {thought.newIntensity})</div>
+                    
+                    <div className="space-y-3">
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium mb-1 text-gray-600">Trigger/Situation</label>
+                          <input
+                            type="text"
+                            value={thought.trigger}
+                            onChange={(e) => updateThought(thought.id, 'trigger', e.target.value)}
+                            placeholder="What happened?"
+                            className="w-full p-2 text-sm border rounded-md"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium mb-1 text-gray-600">Cognitive Distortion</label>
+                          <select
+                            value={thought.distortion}
+                            onChange={(e) => updateThought(thought.id, 'distortion', e.target.value)}
+                            className="w-full p-2 text-sm border rounded-md"
+                          >
+                            <option value="">Select pattern...</option>
+                            {cognitiveDistortions.map(d => (
+                              <option key={d} value={d}>{d}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Negative Thought</label>
+                        <Textarea
+                          value={thought.thought}
+                          onChange={(e) => updateThought(thought.id, 'thought', e.target.value)}
+                          placeholder="What self-critical thought came up?"
+                          rows={2}
+                          className="text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Intensity (1-10): {thought.intensity}</label>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={thought.intensity}
+                          onChange={(e) => updateThought(thought.id, 'intensity', parseInt(e.target.value))}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Balanced Replacement Thought</label>
+                        <Textarea
+                          value={thought.replacement}
+                          onChange={(e) => updateThought(thought.id, 'replacement', e.target.value)}
+                          placeholder="What's a more balanced, compassionate way to think about this?"
+                          rows={2}
+                          className="text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">New Intensity (1-10): {thought.newIntensity}</label>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={thought.newIntensity}
+                          onChange={(e) => updateThought(thought.id, 'newIntensity', parseInt(e.target.value))}
+                          className="w-full"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -2313,13 +2496,15 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
             </div>
           )}
 
-          <Button 
-            onClick={() => onComplete('w2-thought-audit', { thoughts })}
-            className="w-full"
-            disabled={thoughts.length === 0}
-          >
-            Complete Thought Audit
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              onClick={() => onComplete('w2-thought-audit', { thoughts })}
+              className="flex-1 bg-green-600 hover:bg-green-700"
+              disabled={thoughts.length === 0}
+            >
+              Save & Complete
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -2336,14 +2521,20 @@ function NLPReframingPractice({ onComplete, onClose }: { onComplete: (id: string
     visualizationResults: { goal: '', obstacles: [] as string[], solutions: [] as string[], clarity: 0 },
     languageResults: { limitingBeliefs: [] as string[], empoweringBeliefs: [] as string[], integration: '' }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['w2-nlp-reframing'];
     if (saved && typeof saved === 'object') {
       setPracticeData(prev => ({ ...prev, ...saved }));
       setCurrentTechnique(3);
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const techniques = [
     {
@@ -2783,14 +2974,20 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
   ];
 
   const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['hormone-meditation'];
     if (saved && typeof saved === 'object') {
       setMeditationData(prev => ({ ...prev, ...saved }));
       setActiveSection('reflection');
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const meditationPhases = [
     {
@@ -3182,6 +3379,7 @@ function HormoneHarmonyMeditation({ onComplete, onClose }: { onComplete: (id: st
 
 // Overwhelm Pattern Analysis Component
 function OverwhelmPatternAnalysis({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [analysisData, setAnalysisData] = useState({
     triggers: {
@@ -3223,6 +3421,27 @@ function OverwhelmPatternAnalysis({ onComplete, onClose }: { onComplete: (id: st
       recovery: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w3-patterns'];
+    if (saved && typeof saved === 'object') {
+      setAnalysisData(prev => ({
+        ...prev,
+        triggers: saved.triggers || prev.triggers,
+        physicalSymptoms: saved.physicalSymptoms || prev.physicalSymptoms,
+        emotionalSymptoms: saved.emotionalSymptoms || prev.emotionalSymptoms,
+        currentStrategies: saved.currentStrategies || prev.currentStrategies,
+        effectiveStrategies: Array.isArray(saved.effectiveStrategies) ? saved.effectiveStrategies : prev.effectiveStrategies,
+        personalizedPlan: saved.personalizedPlan || prev.personalizedPlan
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Overwhelm Triggers Assessment',
@@ -3601,6 +3820,7 @@ function OverwhelmPatternAnalysis({ onComplete, onClose }: { onComplete: (id: st
 
 // Pause-Label-Shift Technique Component
 function PauseLabelShiftTechnique({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [practiceData, setPracticeData] = useState({
     scenarios: {} as Record<string, { pause?: string; label?: string; shift?: string }>,
@@ -3614,6 +3834,26 @@ function PauseLabelShiftTechnique({ onComplete, onClose }: { onComplete: (id: st
     confidenceLevel: 5,
     commitments: [] as string[]
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Load saved data from DB once on initial load only
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w3-technique'];
+    if (saved && typeof saved === 'object') {
+      setPracticeData(prev => ({
+        ...prev,
+        scenarios: saved.scenarios || prev.scenarios,
+        personalPractice: saved.personalPractice || prev.personalPractice,
+        confidenceLevel: saved.confidenceLevel || prev.confidenceLevel,
+        commitments: Array.isArray(saved.commitments) ? saved.commitments : prev.commitments
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Learn the Technique',
@@ -4044,6 +4284,7 @@ function PauseLabelShiftTechnique({ onComplete, onClose }: { onComplete: (id: st
 
 // Boundaries Worksheet Component
 function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [boundariesData, setBoundariesData] = useState({
     assessment: {
@@ -4083,6 +4324,28 @@ function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string,
     practiceScenarios: {} as Record<string, { situation: string; script: string; confidence: number }>,
     practiceCommitments: [] as string[]
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w3-boundaries'];
+    if (saved && typeof saved === 'object') {
+      setBoundariesData(prev => ({
+        ...prev,
+        assessment: saved.assessment || prev.assessment,
+        timeScripts: saved.timeScripts || prev.timeScripts,
+        emotionalScripts: saved.emotionalScripts || prev.emotionalScripts,
+        familyScripts: saved.familyScripts || prev.familyScripts,
+        digitalScripts: saved.digitalScripts || prev.digitalScripts,
+        practiceScenarios: saved.practiceScenarios || prev.practiceScenarios,
+        practiceCommitments: Array.isArray(saved.practiceCommitments) ? saved.practiceCommitments : prev.practiceCommitments
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Boundary Assessment',
@@ -4761,6 +5024,7 @@ function BoundariesWorksheet({ onComplete, onClose }: { onComplete: (id: string,
 
 // Weekly Mood Map Component
 function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [moodData, setMoodData] = useState({
     weeklyGoals: {
@@ -4795,6 +5059,25 @@ function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?
       boundarySuccess: 5
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w3-mood-map'];
+    if (saved && typeof saved === 'object') {
+      setMoodData(prev => ({
+        ...prev,
+        weeklyGoals: saved.weeklyGoals || prev.weeklyGoals,
+        dailyMoods: saved.dailyMoods || prev.dailyMoods,
+        weeklyReflection: saved.weeklyReflection || prev.weeklyReflection,
+        progressTracking: saved.progressTracking || prev.progressTracking
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Set Weekly Intentions',
@@ -5370,6 +5653,7 @@ function WeeklyMoodMap({ onComplete, onClose }: { onComplete: (id: string, data?
 
 // Somatic Grounding Practices Component
 function SomaticGroundingPractices({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [practiceData, setPracticeData] = useState({
     nervousSystemAssessment: {
@@ -5394,6 +5678,24 @@ function SomaticGroundingPractices({ onComplete, onClose }: { onComplete: (id: s
       progressGoals: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w4-grounding'];
+    if (saved && typeof saved === 'object') {
+      setPracticeData(prev => ({
+        ...prev,
+        nervousSystemAssessment: saved.nervousSystemAssessment || prev.nervousSystemAssessment,
+        techniqueProgress: saved.techniqueProgress || prev.techniqueProgress,
+        personalPlan: saved.personalPlan || prev.personalPlan
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Nervous System Assessment',
@@ -6297,9 +6599,12 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
     insights: '',
     videoWatched: false
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Prefill from saved DB data if available
+  // Prefill from saved DB data once on initial load only
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['hormone-symphony'];
     if (saved && typeof saved === 'object') {
       setAssessmentData(prev => ({
@@ -6309,7 +6614,10 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
       // Jump to completion view for already completed entries
       setCurrentSection('completion');
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const updateAssessment = (key: string, value: any) => {
     setAssessmentData(prev => ({ ...prev, [key]: value }));
@@ -6474,6 +6782,7 @@ function UnderstandingYourHormonalSymphony({ onComplete, onClose }: { onComplete
 
 // Week 5 Component 1: Enhanced Cognitive Clarity Assessment
 function EnhancedCognitiveAssessment({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [assessmentData, setAssessmentData] = useState({
     cognitiveBaseline: {
@@ -6510,6 +6819,29 @@ function EnhancedCognitiveAssessment({ onComplete, onClose }: { onComplete: (id:
       successMetrics: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w5-assessment'];
+    if (saved && typeof saved === 'object') {
+      setAssessmentData(prev => ({
+        ...prev,
+        cognitiveBaseline: saved.cognitiveBaseline || prev.cognitiveBaseline,
+        dailyPatterns: saved.dailyPatterns || prev.dailyPatterns,
+        lifestyle: saved.lifestyle || prev.lifestyle,
+        personalizedInsights: saved.personalizedInsights || prev.personalizedInsights
+      }));
+      // If data exists, jump to last step to show all saved data
+      if (saved.cognitiveBaseline || saved.dailyPatterns) {
+        setCurrentStep(3);
+      }
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Cognitive Baseline Assessment',
@@ -7223,6 +7555,7 @@ function EnhancedCognitiveAssessment({ onComplete, onClose }: { onComplete: (id:
 
 // Week 5 Component 2: Focus & Memory Rituals
 function FocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedRituals, setSelectedRituals] = useState<string[]>([]);
   const [customRituals, setCustomRituals] = useState<string[]>([]);
@@ -7245,6 +7578,32 @@ function FocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, 
       consistency: 'beginner'
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w5-rituals'];
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.selectedRituals)) setSelectedRituals(saved.selectedRituals);
+      if (Array.isArray(saved.customRituals)) setCustomRituals(saved.customRituals);
+      setRitualData(prev => ({
+        ...prev,
+        currentChallenges: Array.isArray(saved.currentChallenges) ? saved.currentChallenges : prev.currentChallenges,
+        preferredTimes: Array.isArray(saved.preferredTimes) ? saved.preferredTimes : prev.preferredTimes,
+        selectedTechniques: Array.isArray(saved.selectedTechniques) ? saved.selectedTechniques : prev.selectedTechniques,
+        personalRoutine: saved.personalRoutine || prev.personalRoutine,
+        practiceSchedule: saved.practiceSchedule || prev.practiceSchedule
+      }));
+      // If data exists, jump to last step to show all saved data
+      if (saved.currentChallenges || saved.selectedTechniques) {
+        setCurrentStep(3);
+      }
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Cognitive Challenge Assessment',
@@ -7909,6 +8268,7 @@ function FocusMemoryRituals({ onComplete, onClose }: { onComplete: (id: string, 
 
 // Week 5 Component 3: Brain-Boosting Nutrition Plan
 function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [nutritionData, setNutritionData] = useState({
     currentDiet: {
@@ -7935,6 +8295,29 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
       successMetrics: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w5-nutrition'];
+    if (saved && typeof saved === 'object') {
+      setNutritionData(prev => ({
+        ...prev,
+        currentDiet: saved.currentDiet || prev.currentDiet,
+        cognitiveGoals: Array.isArray(saved.cognitiveGoals) ? saved.cognitiveGoals : prev.cognitiveGoals,
+        mealPlan: saved.mealPlan || prev.mealPlan,
+        implementation: saved.implementation || prev.implementation
+      }));
+      // If data exists, jump to last step to show all saved data
+      if (saved.currentDiet || saved.cognitiveGoals) {
+        setCurrentStep(3);
+      }
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Current Diet Assessment',
@@ -8598,6 +8981,7 @@ function BrainBoostingNutritionPlan({ onComplete, onClose }: { onComplete: (id: 
 
 // Week 5 Component 4: Mind Management System
 function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [systemData, setSystemData] = useState({
     currentChallenges: [] as string[],
@@ -8620,6 +9004,32 @@ function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string
       barriers: [] as string[]
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w5-mind-management'];
+    if (saved && typeof saved === 'object') {
+      setSystemData(prev => ({
+        ...prev,
+        currentChallenges: Array.isArray(saved.currentChallenges) ? saved.currentChallenges : prev.currentChallenges,
+        organizationStyle: saved.organizationStyle || prev.organizationStyle,
+        digitalTools: Array.isArray(saved.digitalTools) ? saved.digitalTools : prev.digitalTools,
+        mindManagementGoals: Array.isArray(saved.mindManagementGoals) ? saved.mindManagementGoals : prev.mindManagementGoals,
+        selectedSystems: saved.selectedSystems || prev.selectedSystems,
+        customSystems: Array.isArray(saved.customSystems) ? saved.customSystems : prev.customSystems,
+        implementation: saved.implementation || prev.implementation
+      }));
+      // If data exists, jump to last step to show all saved data
+      if (saved.currentChallenges || saved.organizationStyle) {
+        setCurrentStep(3);
+      }
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Mental Load Assessment',
@@ -9339,6 +9749,7 @@ function MindManagementSystem({ onComplete, onClose }: { onComplete: (id: string
 // Main Enhanced Coaching Component
 // Breathwork & Vagus Nerve Reset Component
 function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [isBreathingActive, setIsBreathingActive] = useState(false);
   const [breathingTimer, setBreathingTimer] = useState(0);
@@ -9368,6 +9779,24 @@ function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string
       progressTracking: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w4-breathwork'];
+    if (saved && typeof saved === 'object') {
+      setBreathingData(prev => ({
+        ...prev,
+        vagusNerveAssessment: saved.vagusNerveAssessment || prev.vagusNerveAssessment,
+        techniqueProgress: saved.techniqueProgress || prev.techniqueProgress,
+        personalProtocol: saved.personalProtocol || prev.personalProtocol
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Vagus Nerve Assessment',
@@ -10479,6 +10908,7 @@ function BreathworkVagusReset({ onComplete, onClose }: { onComplete: (id: string
 
 // Create Your Calm Corner Component
 function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [calmCornerData, setCalmCornerData] = useState({
     spaceAssessment: {
@@ -10516,6 +10946,20 @@ function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, da
       boundaryMaintenance: ''
     }
   });
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['w4-calm-corner'];
+    if (saved && typeof saved === 'object') {
+      setCalmCornerData(prev => ({
+        ...prev,
+        spaceAssessment: saved.spaceAssessment || prev.spaceAssessment,
+        sensoryDesign: saved.sensoryDesign || prev.sensoryDesign,
+        essentialItems: saved.essentialItems || prev.essentialItems,
+        ritualPractices: saved.ritualPractices || prev.ritualPractices,
+        maintenancePlan: saved.maintenancePlan || prev.maintenancePlan
+      }));
+    }
+  }, [progressData]);
 
   const steps = [
     'Space Assessment & Planning',
@@ -11321,6 +11765,7 @@ function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, da
 
 // Guided Grounding Meditation Component
 function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [meditationTimer, setMeditationTimer] = useState(0);
@@ -11359,6 +11804,19 @@ function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: s
       reminderSystems: ''
     }
   });
+
+  useEffect(() => {
+    const saved = progressData?.coachingProgress?.responseData?.['w4-meditation'];
+    if (saved && typeof saved === 'object') {
+      setMeditationData(prev => ({
+        ...prev,
+        personalAssessment: saved.personalAssessment || prev.personalAssessment,
+        meditationPreferences: saved.meditationPreferences || prev.meditationPreferences,
+        sessionExperience: saved.sessionExperience || prev.sessionExperience,
+        practiceIntegration: saved.practiceIntegration || prev.practiceIntegration
+      }));
+    }
+  }, [progressData]);
 
   const steps = [
     'Personal Meditation Assessment',
@@ -12226,6 +12684,7 @@ function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: s
 
 // Week 6 Component 1: Future Self Visualization & Values Mapping
 function FutureSelfVisualization({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [visionData, setVisionData] = useState({
     coreValues: {
@@ -12264,6 +12723,25 @@ function FutureSelfVisualization({ onComplete, onClose }: { onComplete: (id: str
       visionReminders: [] as string[]
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w6-vision'];
+    if (saved && typeof saved === 'object') {
+      setVisionData(prev => ({
+        ...prev,
+        coreValues: saved.coreValues || prev.coreValues,
+        lifeWheelAssessment: saved.lifeWheelAssessment || prev.lifeWheelAssessment,
+        futureVision: saved.futureVision || prev.futureVision,
+        implementationPlan: saved.implementationPlan || prev.implementationPlan
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Core Values Discovery',
@@ -12383,38 +12861,43 @@ function FutureSelfVisualization({ onComplete, onClose }: { onComplete: (id: str
           { key: 'funRecreation', label: 'Fun & Recreation', description: 'Hobbies, leisure, play, creativity, joy' },
           { key: 'physicalEnvironment', label: 'Physical Environment', description: 'Home, workspace, community, surroundings' },
           { key: 'contribution', label: 'Contribution', description: 'Giving back, volunteering, making a difference' }
-        ].map(area => (
-          <div key={area.key} className="space-y-3">
-            <div>
-              <h5 className="font-medium">{area.label}</h5>
-              <p className="text-sm text-gray-600">{area.description}</p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Current satisfaction level:</span>
-                <span className="font-medium">{visionData.lifeWheelAssessment[area.key as keyof typeof visionData.lifeWheelAssessment]}/10</span>
+        ].map(area => {
+          const currentValue = visionData.lifeWheelAssessment[area.key as keyof typeof visionData.lifeWheelAssessment];
+          const numericValue = typeof currentValue === 'number' ? currentValue : 5;
+          
+          return (
+            <div key={area.key} className="space-y-3">
+              <div>
+                <h5 className="font-medium">{area.label}</h5>
+                <p className="text-sm text-gray-600">{area.description}</p>
               </div>
-              <div className="flex gap-2">
-                {[1,2,3,4,5,6,7,8,9,10].map(num => (
-                  <Button
-                    key={num}
-                    variant={visionData.lifeWheelAssessment[area.key as keyof typeof visionData.lifeWheelAssessment] === num ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setVisionData(prev => ({
-                      ...prev,
-                      lifeWheelAssessment: {
-                        ...prev.lifeWheelAssessment,
-                        [area.key]: num
-                      }
-                    }))}
-                  >
-                    {num}
-                  </Button>
-                ))}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Current satisfaction level:</span>
+                  <span className="font-medium">{numericValue}/10</span>
+                </div>
+                <div className="flex gap-2">
+                  {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                    <Button
+                      key={num}
+                      variant={numericValue === num ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setVisionData(prev => ({
+                        ...prev,
+                        lifeWheelAssessment: {
+                          ...prev.lifeWheelAssessment,
+                          [area.key]: num
+                        }
+                      }))}
+                    >
+                      {num}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="bg-amber-50 p-4 rounded-lg">
@@ -12422,19 +12905,21 @@ function FutureSelfVisualization({ onComplete, onClose }: { onComplete: (id: str
         <div className="text-sm text-amber-800">
           <p className="mb-2">
             <strong>Average Life Satisfaction:</strong> {(
-              Object.values(visionData.lifeWheelAssessment).reduce((a, b) => a + b, 0) / 8
+              Object.values(visionData.lifeWheelAssessment).filter(v => typeof v === 'number').reduce((a, b) => a + b, 0) / 8
             ).toFixed(1)}/10
           </p>
           <p className="mb-2">
             <strong>Highest Areas:</strong> {Object.entries(visionData.lifeWheelAssessment)
-              .sort(([,a], [,b]) => b - a)
+              .filter(([, v]) => typeof v === 'number')
+              .sort(([,a], [,b]) => (b as number) - (a as number))
               .slice(0, 2)
               .map(([key]) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
               .join(', ')}
           </p>
           <p>
             <strong>Growth Opportunities:</strong> {Object.entries(visionData.lifeWheelAssessment)
-              .sort(([,a], [,b]) => a - b)
+              .filter(([, v]) => typeof v === 'number')
+              .sort(([,a], [,b]) => (a as number) - (b as number))
               .slice(0, 2)
               .map(([key]) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
               .join(', ')}
@@ -12789,6 +13274,7 @@ function FutureSelfVisualization({ onComplete, onClose }: { onComplete: (id: str
 
 // Week 6 Component 2: SMART Goal Architecture System
 function SmartGoalArchitecture({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [goalData, setGoalData] = useState({
     goalSelection: {
@@ -12821,6 +13307,25 @@ function SmartGoalArchitecture({ onComplete, onClose }: { onComplete: (id: strin
       rewardSystem: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w6-goals'];
+    if (saved && typeof saved === 'object') {
+      setGoalData(prev => ({
+        ...prev,
+        goalSelection: saved.goalSelection || prev.goalSelection,
+        smartFramework: saved.smartFramework || prev.smartFramework,
+        obstacleAnticipation: saved.obstacleAnticipation || prev.obstacleAnticipation,
+        actionPlanning: saved.actionPlanning || prev.actionPlanning
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Goal Selection & Foundation',
@@ -13040,7 +13545,7 @@ function SmartGoalArchitecture({ onComplete, onClose }: { onComplete: (id: strin
         <h5 className="font-medium text-purple-900 mb-2">SMART Goal Assessment</h5>
         <div className="text-sm text-purple-800">
           <p className="mb-2">
-            <strong>Completion:</strong> {Object.values(goalData.smartFramework).filter(v => v.length > 0).length}/5 elements defined
+            <strong>Completion:</strong> {Object.values(goalData.smartFramework).filter(v => typeof v === 'string' && v.length > 0).length}/5 elements defined
           </p>
           <p>
             Strong SMART goals increase achievement probability by 42% compared to vague intentions. 
@@ -13412,6 +13917,7 @@ function SmartGoalArchitecture({ onComplete, onClose }: { onComplete: (id: strin
 
 // Week 6 Component 3: Reverse Engineering Success Method
 function ReverseEngineeringSuccess({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [reverseData, setReverseData] = useState({
     goalDefinition: {
@@ -13444,6 +13950,25 @@ function ReverseEngineeringSuccess({ onComplete, onClose }: { onComplete: (id: s
       criticalPathActions: [] as string[]
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w6-reverse'];
+    if (saved && typeof saved === 'object') {
+      setReverseData(prev => ({
+        ...prev,
+        goalDefinition: saved.goalDefinition || prev.goalDefinition,
+        backwardMapping: saved.backwardMapping || prev.backwardMapping,
+        resourceIdentification: saved.resourceIdentification || prev.resourceIdentification,
+        actionSequencing: saved.actionSequencing || prev.actionSequencing
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Goal Definition & End State',
@@ -14102,6 +14627,7 @@ function ReverseEngineeringSuccess({ onComplete, onClose }: { onComplete: (id: s
 
 // Week 6 Component 4: Habit Loop Mastery System
 function HabitLoopMastery({ onComplete, onClose }: { onComplete: (id: string, data?: any) => void; onClose: () => void }) {
+  const { data: progressData } = useCoachingProgress();
   const [currentStep, setCurrentStep] = useState(0);
   const [habitData, setHabitData] = useState({
     habitSelection: {
@@ -14134,6 +14660,25 @@ function HabitLoopMastery({ onComplete, onClose }: { onComplete: (id: string, da
       adaptationPlan: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (hasInitialized) return;
+    
+    const saved = progressData?.coachingProgress?.responseData?.['w6-habits'];
+    if (saved && typeof saved === 'object') {
+      setHabitData(prev => ({
+        ...prev,
+        habitSelection: saved.habitSelection || prev.habitSelection,
+        loopDesign: saved.loopDesign || prev.loopDesign,
+        implementationStrategy: saved.implementationStrategy || prev.implementationStrategy,
+        trackingSystem: saved.trackingSystem || prev.trackingSystem
+      }));
+    }
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Habit Selection & Goal Alignment',
@@ -14592,10 +15137,10 @@ function HabitLoopMastery({ onComplete, onClose }: { onComplete: (id: string, da
           <div><strong>Tracking:</strong> {habitData.trackingSystem.trackingMethod || 'Not selected'}</div>
           <div className="mt-2 text-purple-700">
             <strong>System completion:</strong> {Math.round(
-              (Object.values(habitData.habitSelection).filter(v => v.length > 0).length +
-               Object.values(habitData.loopDesign).filter(v => v.length > 0).length +
-               Object.values(habitData.implementationStrategy).filter(v => v.length > 0).length +
-               Object.values(habitData.trackingSystem).filter(v => v.length > 0 || v === true).length) / 18 * 100
+              (Object.values(habitData.habitSelection).filter(v => typeof v === 'string' && v.length > 0).length +
+               Object.values(habitData.loopDesign).filter(v => typeof v === 'string' && v.length > 0).length +
+               Object.values(habitData.implementationStrategy).filter(v => typeof v === 'string' && v.length > 0).length +
+               Object.values(habitData.trackingSystem).filter(v => (typeof v === 'string' && v.length > 0) || v === true).length) / 18 * 100
             )}%
           </div>
         </div>
