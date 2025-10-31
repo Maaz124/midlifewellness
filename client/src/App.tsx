@@ -11,6 +11,7 @@ import Journal from "@/pages/journal-new";
 import Progress from "@/pages/progress";
 import Community from "@/pages/community";
 import About from "@/pages/about";
+import ProfileSettings from "@/pages/profile";
 import Checkout from "@/pages/checkout";
 import ResourceCheckout from "@/pages/resource-checkout";
 import ContactCoaching from "@/pages/contact-coaching";
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/perimenopause-guide" component={PerimenopauseEducation} />
           <Route path="/community" component={Community} />
           <Route path="/about" component={About} />
+          <Route path="/profile" component={ProfileSettings} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/resource-checkout" component={ResourceCheckout} />
           <Route path="/contact-coaching" component={ContactCoaching} />

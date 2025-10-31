@@ -363,7 +363,19 @@ export function getTodaysPrompt(weekNumber: number): string {
   const weekPrompts = journalPrompts.find(p => p.week === weekNumber);
   if (!weekPrompts) return "What am I grateful for today, and how can I build on that feeling?";
   
-  const dayIndex = Math.floor(Math.random() * weekPrompts.prompts.length);
+  // Use today's date as a seed to ensure the same prompt all day
+  const today = new Date();
+  const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  
+  // Simple hash function to convert date string to a number
+  let hash = 0;
+  for (let i = 0; i < dateString.length; i++) {
+    hash = ((hash << 5) - hash) + dateString.charCodeAt(i);
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  // Use absolute value to ensure positive index
+  const dayIndex = Math.abs(hash) % weekPrompts.prompts.length;
   return weekPrompts.prompts[dayIndex];
 }
 

@@ -284,6 +284,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user profile
+  app.put("/api/users/me", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Whitelist fields that can be updated
+      const { firstName, lastName, phone, profileImageUrl } = req.body;
+      
+      const updates: any = {};
+      if (firstName !== undefined) updates.firstName = firstName;
+      if (lastName !== undefined) updates.lastName = lastName;
+      if (phone !== undefined) updates.phone = phone;
+      if (profileImageUrl !== undefined) updates.profileImageUrl = profileImageUrl;
+
+      // Update user
+      const updatedUser = await storage.upsertUser({
+        ...user,
+        ...updates,
+        updatedAt: new Date()
+      });
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update user profile" });
+    }
+  });
+
   // Payment endpoint for coaching access
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
