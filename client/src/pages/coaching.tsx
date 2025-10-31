@@ -43,6 +43,9 @@ export default function Coaching() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
+  // Check login status first, then payment status
+  const needsLogin = !isAuthenticated;
+  const needsPayment = isAuthenticated && !user?.hasCoachingAccess;
   const hasAccess = isAuthenticated && user?.hasCoachingAccess;
   
   // Use coaching progress from new hook (database-backed) or fallback to wellness data
@@ -178,7 +181,7 @@ export default function Coaching() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-teal-50 p-4">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Payment Banner for Preview Mode */}
+        {/* Login/Payment Banner for Preview Mode */}
         {showPreview && (
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-lg shadow-lg border border-purple-400">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -187,16 +190,37 @@ export default function Coaching() {
                   <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">🔒 Program Preview - Full Content Below</h2>
-                  <p className="text-purple-100">Browse all 6 weeks and 24 components, then unlock to start your transformation</p>
+                  {needsLogin ? (
+                    <>
+                      <h2 className="text-xl font-bold">🔒 Sign In to View Full Program</h2>
+                      <p className="text-purple-100">Create a free account to browse all 6 weeks and 24 components</p>
+                    </>
+                  ) : needsPayment ? (
+                    <>
+                      <h2 className="text-xl font-bold">🔒 Program Preview - Full Content Below</h2>
+                      <p className="text-purple-100">Browse all 6 weeks and 24 components, then unlock to start your transformation</p>
+                    </>
+                  ) : null}
                 </div>
               </div>
               <div className="text-center bg-white/10 p-4 rounded-lg space-y-3">
-                <div className="text-3xl font-bold">$97</div>
-                <div className="text-sm text-purple-200 line-through">Regular: $297</div>
-                <div className="text-green-200 font-semibold mb-2">Save 67% Today</div>
-                <div className="space-y-2">
-                  {isAuthenticated ? (
+                {needsLogin ? (
+                  <>
+                    <div className="text-2xl font-bold">Start Your Journey</div>
+                    <p className="text-sm text-purple-200">Free to browse • $97 to unlock</p>
+                    <Button 
+                      onClick={() => setLocation('/login')}
+                      className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
+                      data-testid="button-login-to-browse"
+                    >
+                      Sign In / Create Account
+                    </Button>
+                  </>
+                ) : needsPayment ? (
+                  <>
+                    <div className="text-3xl font-bold">$97</div>
+                    <div className="text-sm text-purple-200 line-through">Regular: $297</div>
+                    <div className="text-green-200 font-semibold mb-2">Save 67% Today</div>
                     <Button 
                       onClick={() => setLocation('/checkout')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
@@ -205,16 +229,8 @@ export default function Coaching() {
                       <CreditCard className="w-4 h-4 mr-2" />
                       Secure Checkout - $97
                     </Button>
-                  ) : (
-                    <Button 
-                      onClick={() => setLocation('/login')}
-                      className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
-                      data-testid="button-login-to-purchase"
-                    >
-                      Sign In to Purchase
-                    </Button>
-                  )}
-                </div>
+                  </>
+                ) : null}
               </div>
             </div>
           </div>
@@ -462,15 +478,27 @@ export default function Coaching() {
 
                               <div className="flex items-center gap-2">
                                 {showPreview ? (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setLocation(isAuthenticated ? '/checkout' : '/login')}
-                                    className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
-                                  >
-                                    <Lock className="w-3 h-3" />
-                                    {isAuthenticated ? 'Unlock' : 'Sign in to unlock'}
-                                  </Button>
+                                  needsLogin ? (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setLocation('/login')}
+                                      className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
+                                    >
+                                      <Lock className="w-3 h-3" />
+                                      Sign in first
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setLocation('/checkout')}
+                                      className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
+                                    >
+                                      <Lock className="w-3 h-3" />
+                                      Unlock ($97)
+                                    </Button>
+                                  )
                                 ) : (
                                   <Button
                                     variant={isCompleted ? "outline" : "default"}
@@ -553,7 +581,16 @@ export default function Coaching() {
                   </div>
                   <div className="text-center">
                     <div className="space-y-3">
-                      {isAuthenticated ? (
+                      {needsLogin ? (
+                        <Button 
+                          onClick={() => setLocation('/login')}
+                          size="lg"
+                          className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
+                          data-testid="button-login-bottom"
+                        >
+                          Sign In to Continue
+                        </Button>
+                      ) : needsPayment ? (
                         <Button 
                           onClick={() => setLocation('/checkout')}
                           size="lg"
@@ -563,16 +600,7 @@ export default function Coaching() {
                           <CreditCard className="w-5 h-5 mr-3" />
                           Get Instant Access Now
                         </Button>
-                      ) : (
-                        <Button 
-                          onClick={() => setLocation('/login')}
-                          size="lg"
-                          className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
-                          data-testid="button-login-bottom"
-                        >
-                          Sign In to Get Access
-                        </Button>
-                      )}
+                      ) : null}
                       <p className="text-xs text-purple-200">30-day money-back guarantee</p>
                     </div>
                   </div>
