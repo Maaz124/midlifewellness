@@ -2314,7 +2314,7 @@ function ThoughtAuditTracker({ onComplete, onClose }: { onComplete: (id: string,
           )}
 
           <Button 
-            onClick={() => onComplete('w2-audit', { thoughts })}
+            onClick={() => onComplete('w2-thought-audit', { thoughts })}
             className="w-full"
             disabled={thoughts.length === 0}
           >
@@ -14753,10 +14753,28 @@ export function EnhancedCoachingComponentMinimal({ component, moduleId, onComple
                 </ul>
               );
             case 'w2-mindful-thought-tracker': {
-              const items = Array.isArray(p.thoughts) ? p.thoughts : [];
+              // Support both array-based trackers and the Week 2 "mindfulObservation" shape
+              const mo = (p && typeof p === 'object' && p.mindfulObservation && typeof p.mindfulObservation === 'object')
+                ? p.mindfulObservation
+                : p;
+
+              const items = Array.isArray(mo.thoughts) ? mo.thoughts : [];
+              const hasNotes = !!(mo.awarenessNotes || mo.thoughtLabels || mo.emotionNotes);
               const preview = items.slice(-3); // show last 3 entries
+
               return (
                 <div className="space-y-2">
+                  {hasNotes ? (
+                    <ul className="text-sm text-emerald-800 space-y-1">
+                      {mo.awarenessNotes ? <li>Awareness: {mo.awarenessNotes}</li> : null}
+                      {mo.thoughtLabels ? <li>Labels: {mo.thoughtLabels}</li> : null}
+                      {mo.emotionNotes ? <li>Emotions: {mo.emotionNotes}</li> : null}
+                      {typeof mo.durationMinutes === 'number' ? (
+                        <li>Duration: <strong>{Number(mo.durationMinutes)}</strong> min</li>
+                      ) : null}
+                    </ul>
+                  ) : null}
+
                   <div className="text-sm text-emerald-800">Thought entries: <strong>{items.length}</strong></div>
                   {preview.length > 0 && (
                     <div className="space-y-2">
