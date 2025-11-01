@@ -147,6 +147,12 @@ export default function Login() {
                   Create account
                 </Link>
               </div>
+
+              <div className="text-center text-sm pt-2">
+                <Link href="/admin/login" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 text-xs" data-testid="link-to-admin-login">
+                  Admin Login
+                </Link>
+              </div>
             </form>
           </Form>
         </CardContent>

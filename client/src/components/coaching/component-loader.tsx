@@ -1,9 +1,12 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Lazy load individual component types - using dynamic imports for better resolution
-const WeekOneComponents = lazy(() => import('./week-one-components').then(m => ({ default: m.default })));
-const WeekTwoComponents = lazy(() => import('./week-two-components').then(m => ({ default: m.default })));
+// Lazy load week component modules
+const Week1Components = lazy(() => import('./week1'));
+const Week2Components = lazy(() => import('./week2'));
+const Week3Components = lazy(() => import('./week3'));
+const Week4Components = lazy(() => import('./week4'));
+const Week5Components = lazy(() => import('./week5'));
 
 interface ComponentLoaderProps {
   component: any;
@@ -40,25 +43,42 @@ export function ComponentLoader({ component, moduleId, onComplete, onClose }: Co
 
   // Route to the appropriate component based on module and component type
   const getComponent = () => {
+    const componentProps = {
+      component,
+      onComplete,
+      onClose,
+    };
+
     switch (moduleId) {
       case 'week1':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <WeekOneComponents 
-              component={component}
-              onComplete={onComplete}
-              onClose={onClose}
-            />
+            <Week1Components {...componentProps} />
           </Suspense>
         );
       case 'week2':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <WeekTwoComponents 
-              component={component}
-              onComplete={onComplete}
-              onClose={onClose}
-            />
+            <Week2Components {...componentProps} />
+          </Suspense>
+        );
+      case 'week3':
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Week3Components {...componentProps} />
+          </Suspense>
+        );
+      case 'week4':
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Week4Components {...componentProps} />
+          </Suspense>
+        );
+      case 'week5':
+      case 'week6':
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <Week5Components {...componentProps} />
           </Suspense>
         );
       default:
