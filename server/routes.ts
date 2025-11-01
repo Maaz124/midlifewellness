@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { DatabaseStorage } from "./database-storage";
-import { setupCustomAuth, isAuthenticated, hasPayment } from "./auth";
+import { setupCustomAuth, setupAdminAuth, isAuthenticated, hasPayment, isAdmin } from "./auth";
 import { getSession } from "./replitAuth";
 import { uploadVideo, VideoManager } from "./video-upload";
 import { uploadPDF, DigitalResourceManager } from "./digital-resources";
@@ -37,9 +37,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Setup custom authentication routes
   await setupCustomAuth(app);
+  
+  // Setup admin authentication routes
+  await setupAdminAuth(app);
 
   // Note: /api/auth/user, /api/auth/login, /api/auth/register, /api/auth/logout 
   // are now handled in auth.ts via setupCustomAuth
+  // Note: /api/admin/login, /api/admin/logout, /api/admin/user
+  // are now handled in auth.ts via setupAdminAuth
+
+  // Health check endpoint
+  app.get("/api/health", async (req, res) => {
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      server: "running"
+    });
+  });
 
   // Health Assessments (keeping free access)
   app.get("/api/health-assessments/:userId", async (req, res) => {
@@ -1238,6 +1252,204 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching user resources:', error);
       res.status(500).json({ message: 'Failed to fetch user resources' });
+    }
+  });
+
+  // ========== ADMIN ROUTES ==========
+  
+  // Get all users (admin only)
+  app.get("/api/admin/users", isAdmin, async (req: any, res) => {
+    try {
+      const { db } = await import("./db");
+      const { users } = await import("@shared/schema");
+      const { desc } = await import("drizzle-orm");
+      
+      const allUsers = await db
+        .select({
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          phone: users.phone,
+          emailVerified: users.emailVerified,
+          hasCoachingAccess: users.hasCoachingAccess,
+          isAdmin: users.isAdmin,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .orderBy(desc(users.createdAt));
+      
+      // Ensure JSON content type is set explicitly
+      res.setHeader('Content-Type', 'application/json');
+      res.json(allUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Get admin statistics
+  app.get("/api/admin/stats", isAdmin, async (req: any, res) => {
+    try {
+      const { db } = await import("./db");
+      const { users, resourcePurchases } = await import("@shared/schema");
+      const { count, eq } = await import("drizzle-orm");
+      
+      // Total users count
+      const totalUsersResult = await db
+        .select({ count: count() })
+        .from(users);
+      const totalUsers = totalUsersResult[0]?.count || 0;
+      
+      // Users with payments (hasCoachingAccess or has resource purchases)
+      const usersWithAccess = await db
+        .select({ count: count() })
+        .from(users)
+        .where(eq(users.hasCoachingAccess, true));
+      const usersWithCoachingAccess = usersWithAccess[0]?.count || 0;
+      
+      const usersWithPurchasesResult = await db
+        .selectDistinct({ userId: resourcePurchases.userId })
+        .from(resourcePurchases)
+        .where(eq(resourcePurchases.status, 'completed'));
+      const uniqueUsersWithPurchases = new Set(usersWithPurchasesResult.map(p => p.userId)).size;
+      
+      // Users without payments = total users - (users with coaching access OR users with purchases)
+      // Note: A user might have both, so we need to calculate unique users with any payment
+      const usersWithAnyPayment = usersWithCoachingAccess + uniqueUsersWithPurchases;
+      // Simple calculation: users without payments = total - those with payments
+      // (This is approximate since a user could have both coaching access and purchases)
+      const usersWithoutPayments = Math.max(0, totalUsers - Math.max(usersWithCoachingAccess, uniqueUsersWithPurchases));
+      
+      res.json({
+        totalUsers,
+        usersWithPayments: usersWithCoachingAccess + uniqueUsersWithPurchases,
+        usersWithoutPayments: Math.max(0, usersWithoutPayments),
+        usersWithCoachingAccess,
+        usersWithResourcePurchases: uniqueUsersWithPurchases
+      });
+    } catch (error) {
+      console.error('Error fetching admin stats:', error);
+      res.status(500).json({ message: "Failed to fetch admin statistics" });
+    }
+  });
+  
+  // Get Stripe keys from admin config
+  app.get("/api/admin/stripe-keys", isAdmin, async (req: any, res) => {
+    try {
+      const { db } = await import("./db");
+      const { adminConfig } = await import("@shared/schema");
+      const { eq } = await import("drizzle-orm");
+      
+      const publishableKey = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_publishable_key'))
+        .limit(1);
+      
+      const secretKey = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_secret_key'))
+        .limit(1);
+      
+      // Also check environment variables as fallback
+      const envPublishableKey = process.env.STRIPE_PUBLISHABLE_KEY || '';
+      const envSecretKey = process.env.STRIPE_SECRET_KEY ? '***hidden***' : '';
+      
+      res.json({
+        publishableKey: publishableKey[0]?.value || envPublishableKey,
+        secretKey: secretKey[0]?.value ? '***hidden***' : envSecretKey,
+        source: publishableKey[0] || secretKey[0] ? 'database' : 'environment'
+      });
+    } catch (error) {
+      console.error('Error fetching Stripe keys:', error);
+      res.status(500).json({ message: "Failed to fetch Stripe keys" });
+    }
+  });
+  
+  // Update Stripe keys in admin config (and optionally sync to .env)
+  app.put("/api/admin/stripe-keys", isAdmin, async (req: any, res) => {
+    try {
+      const { publishableKey, secretKey } = req.body;
+      
+      if (!publishableKey || !secretKey) {
+        return res.status(400).json({ message: "Both publishable and secret keys are required" });
+      }
+      
+      const { db } = await import("./db");
+      const { adminConfig } = await import("@shared/schema");
+      const { eq } = await import("drizzle-orm");
+      const userId = req.session.userId;
+      
+      // Update or insert publishable key
+      const existingPubKey = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_publishable_key'))
+        .limit(1);
+      
+      if (existingPubKey.length > 0) {
+        await db
+          .update(adminConfig)
+          .set({
+            value: publishableKey,
+            updatedBy: userId,
+            updatedAt: new Date()
+          })
+          .where(eq(adminConfig.key, 'stripe_publishable_key'));
+      } else {
+        await db.insert(adminConfig).values({
+          key: 'stripe_publishable_key',
+          value: publishableKey,
+          description: 'Stripe Publishable Key',
+          updatedBy: userId
+        });
+      }
+      
+      // Update or insert secret key
+      const existingSecretKey = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_secret_key'))
+        .limit(1);
+      
+      if (existingSecretKey.length > 0) {
+        await db
+          .update(adminConfig)
+          .set({
+            value: secretKey,
+            updatedBy: userId,
+            updatedAt: new Date()
+          })
+          .where(eq(adminConfig.key, 'stripe_secret_key'));
+      } else {
+        await db.insert(adminConfig).values({
+          key: 'stripe_secret_key',
+          value: secretKey,
+          description: 'Stripe Secret Key (sensitive)',
+          updatedBy: userId
+        });
+      }
+      
+      // Update Stripe instance with new secret key
+      if (secretKey) {
+        stripe = new Stripe(secretKey, {
+          apiVersion: "2025-06-30.basil",
+        });
+      }
+      
+      res.json({ 
+        message: "Stripe keys updated successfully",
+        note: "Keys are stored in database. Server restart may be required for full effect."
+      });
+    } catch (error: any) {
+      console.error('Error updating Stripe keys:', error);
+      res.status(500).json({ 
+        message: "Failed to update Stripe keys",
+        error: error.message 
+      });
     }
   });
 

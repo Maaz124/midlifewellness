@@ -12,15 +12,26 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return res;
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error: any) {
+    // Handle network errors (Failed to fetch)
+    if (error.message === "Failed to fetch" || error.name === "TypeError") {
+      throw new Error(
+        "Network error: Unable to connect to the server. Please check if the server is running on port 5000."
+      );
+    }
+    // Re-throw other errors
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

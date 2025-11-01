@@ -23,37 +23,52 @@ import MedicalDisclaimer from "@/pages/medical-disclaimer";
 import Accessibility from "@/pages/accessibility";
 import Register from "@/pages/register";
 import Login from "@/pages/login";
+import AdminLogin from "@/pages/admin-login";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <NavHeader />
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <Switch>
-          <Route path="/" component={Dashboard} />
-          <Route path="/coaching" component={Coaching} />
-          <Route path="/journal" component={Journal} />
-          <Route path="/progress" component={Progress} />
-          <Route path="/perimenopause-guide" component={PerimenopauseEducation} />
-          <Route path="/community" component={Community} />
-          <Route path="/about" component={About} />
-          <Route path="/profile" component={ProfileSettings} />
-          <Route path="/checkout" component={Checkout} />
-          <Route path="/resource-checkout" component={ResourceCheckout} />
-          <Route path="/contact-coaching" component={ContactCoaching} />
-          <Route path="/email-signatures" component={EmailSignatures} />
-          <Route path="/privacy-policy" component={PrivacyPolicy} />
-          <Route path="/terms-of-service" component={TermsOfService} />
-          <Route path="/medical-disclaimer" component={MedicalDisclaimer} />
-          <Route path="/accessibility" component={Accessibility} />
-          <Route path="/register" component={Register} />
-          <Route path="/login" component={Login} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
-      <Footer />
-    </div>
+    <Switch>
+      {/* Admin pages - no nav/footer */}
+      <Route path="/admin/login">
+        <AdminLogin />
+      </Route>
+      <Route path="/admin/dashboard">
+        <AdminDashboard />
+      </Route>
+      
+      {/* Regular pages - with nav/footer */}
+      <Route>
+        <div className="min-h-screen flex flex-col">
+          <NavHeader />
+          <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+            <Switch>
+              <Route path="/" component={Dashboard} />
+              <Route path="/coaching" component={Coaching} />
+              <Route path="/journal" component={Journal} />
+              <Route path="/progress" component={Progress} />
+              <Route path="/perimenopause-guide" component={PerimenopauseEducation} />
+              <Route path="/community" component={Community} />
+              <Route path="/about" component={About} />
+              <Route path="/profile" component={ProfileSettings} />
+              <Route path="/checkout" component={Checkout} />
+              <Route path="/resource-checkout" component={ResourceCheckout} />
+              <Route path="/contact-coaching" component={ContactCoaching} />
+              <Route path="/email-signatures" component={EmailSignatures} />
+              <Route path="/privacy-policy" component={PrivacyPolicy} />
+              <Route path="/terms-of-service" component={TermsOfService} />
+              <Route path="/medical-disclaimer" component={MedicalDisclaimer} />
+              <Route path="/accessibility" component={Accessibility} />
+              <Route path="/register" component={Register} />
+              <Route path="/login" component={Login} />
+              <Route component={NotFound} />
+            </Switch>
+          </main>
+          <Footer />
+        </div>
+      </Route>
+    </Switch>
   );
 }
 

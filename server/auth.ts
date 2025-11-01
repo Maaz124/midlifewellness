@@ -11,6 +11,7 @@ const SALT_ROUNDS = 12;
 declare module 'express-session' {
   interface SessionData {
     userId?: string;
+    isAdmin?: boolean;
   }
 }
 
@@ -221,4 +222,146 @@ export const hasPayment: RequestHandler = async (req, res, next) => {
     console.error('Payment check error:', error);
     res.status(500).json({ message: "Payment verification failed" });
   }
+};
+
+// Admin login endpoint
+export async function setupAdminAuth(app: Express) {
+  app.post('/api/admin/login', async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+
+      // Find user by email
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, validatedData.email))
+        .limit(1);
+
+      if (!user || !user.passwordHash) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Check if user is admin
+      if (!user.isAdmin) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(
+        validatedData.password, 
+        user.passwordHash
+      );
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Regenerate session
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error('Session regeneration error:', err);
+          return res.status(500).json({ message: "Login failed - session error" });
+        }
+
+        // Set admin session
+        req.session.userId = user.id;
+        req.session.isAdmin = true;
+
+        // Save session
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('Session save error:', saveErr);
+            return res.status(500).json({ message: "Login failed - session save error" });
+          }
+
+          // Return user without password hash
+          const { passwordHash: _, ...userWithoutPassword } = user;
+          res.json({ 
+            message: "Admin login successful", 
+            user: userWithoutPassword 
+          });
+        });
+      });
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      console.error('Admin login error:', error);
+      res.status(500).json({ message: "Admin login failed" });
+    }
+  });
+
+  // Admin logout endpoint
+  app.post('/api/admin/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.clearCookie('connect.sid');
+      res.json({ message: "Admin logout successful" });
+    });
+  });
+
+  // Get current admin user
+  app.get('/api/admin/user', async (req, res) => {
+    // In development, allow direct access without authentication
+    const isDev = process.env.NODE_ENV === 'development';
+    
+    if (isDev && (!req.session.userId || !req.session.isAdmin)) {
+      // Return mock admin user in development
+      return res.json({
+        id: "dev-admin",
+        email: "admin@dev.local",
+        firstName: "Admin",
+        lastName: "User",
+        isAdmin: true
+      });
+    }
+
+    if (!req.session.userId || !req.session.isAdmin) {
+      return res.status(401).json({ message: "Not authenticated as admin" });
+    }
+
+    try {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, req.session.userId))
+        .limit(1);
+
+      if (!user || !user.isAdmin) {
+        req.session.destroy(() => {});
+        return res.status(401).json({ message: "Admin user not found" });
+      }
+
+      // Return user without password hash
+      const { passwordHash: _, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error('Get admin user error:', error);
+      res.status(500).json({ message: "Failed to get admin user" });
+    }
+  });
+}
+
+// Admin authentication middleware
+export const isAdmin: RequestHandler = (req, res, next) => {
+  // In development, allow access without authentication
+  const isDev = process.env.NODE_ENV === 'development';
+  if (isDev) {
+    // Set mock admin session in development
+    if (!req.session.userId) {
+      req.session.userId = "dev-admin";
+      req.session.isAdmin = true;
+    }
+    return next();
+  }
+  
+  if (!req.session.userId || !req.session.isAdmin) {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  next();
 };

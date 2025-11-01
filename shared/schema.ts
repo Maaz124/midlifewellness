@@ -25,6 +25,7 @@ export const users = pgTable("users", {
   emailVerified: boolean("email_verified").default(false),
   hasCoachingAccess: boolean("has_coaching_access").default(false),
   coachingAccessGrantedAt: timestamp("coaching_access_granted_at"),
+  isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -668,3 +669,21 @@ export const insertCoachingInquirySchema = createInsertSchema(coachingInquiries)
 
 export type InsertCoachingInquiry = z.infer<typeof insertCoachingInquirySchema>;
 export type CoachingInquiry = typeof coachingInquiries.$inferSelect;
+
+// Admin Config Table (for storing sensitive configuration like Stripe keys)
+export const adminConfig = pgTable("admin_config", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 100 }).unique().notNull(), // e.g., 'stripe_publishable_key', 'stripe_secret_key'
+  value: text("value"), // Encrypted or plain value (admin-only access)
+  description: text("description"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedBy: varchar("updated_by").references(() => users.id),
+});
+
+export const insertAdminConfigSchema = createInsertSchema(adminConfig).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertAdminConfig = z.infer<typeof insertAdminConfigSchema>;
+export type AdminConfig = typeof adminConfig.$inferSelect;
