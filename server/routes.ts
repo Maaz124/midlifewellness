@@ -24,6 +24,7 @@ import {
   insertHabitSchema,
   insertMoodEntrySchema
 } from "@shared/schema";
+import * as schema from "@shared/schema";
 import { sendEmail, emailTemplates } from "./email";
 import { marketingFunnel } from "./marketing-funnel";
 
@@ -331,14 +332,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get coaching program price (public endpoint)
+  app.get("/api/coaching-price", async (req, res) => {
+    try {
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      
+      const priceConfig = await db
+        .select()
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+      
+      // Default to 150 if not found in database
+      const price = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
+      
+      res.json({ price });
+    } catch (error) {
+      console.error('Error fetching coaching price:', error);
+      // Return default price on error
+      res.json({ price: 150 });
+    }
+  });
+
   // Payment endpoint for coaching access
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
       if (!stripe) {
         return res.status(503).json({ message: "Payments are not configured" });
       }
-      const { amount } = req.body;
       const userId = req.session.userId;
+      
+      // Get price from database
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      
+      const priceConfig = await db
+        .select()
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+      
+      // Default to 150 if not found in database
+      const amount = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
       
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
@@ -1339,19 +1375,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/stripe-keys", isAdmin, async (req: any, res) => {
     try {
       const { db } = await import("./db");
-      const { adminConfig } = await import("@shared/schema");
       const { eq } = await import("drizzle-orm");
       
       const publishableKey = await db
         .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'stripe_publishable_key'))
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'stripe_publishable_key'))
         .limit(1);
       
       const secretKey = await db
         .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'stripe_secret_key'))
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'stripe_secret_key'))
         .limit(1);
       
       // Also check environment variables as fallback
@@ -1379,28 +1414,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const { db } = await import("./db");
-      const { adminConfig } = await import("@shared/schema");
       const { eq } = await import("drizzle-orm");
       const userId = req.session.userId;
       
       // Update or insert publishable key
       const existingPubKey = await db
         .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'stripe_publishable_key'))
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'stripe_publishable_key'))
         .limit(1);
       
       if (existingPubKey.length > 0) {
         await db
-          .update(adminConfig)
+          .update(schema.adminConfig)
           .set({
             value: publishableKey,
             updatedBy: userId,
             updatedAt: new Date()
           })
-          .where(eq(adminConfig.key, 'stripe_publishable_key'));
+          .where(eq(schema.adminConfig.key, 'stripe_publishable_key'));
       } else {
-        await db.insert(adminConfig).values({
+        await db.insert(schema.adminConfig).values({
           key: 'stripe_publishable_key',
           value: publishableKey,
           description: 'Stripe Publishable Key',
@@ -1411,21 +1445,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update or insert secret key
       const existingSecretKey = await db
         .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'stripe_secret_key'))
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'stripe_secret_key'))
         .limit(1);
       
       if (existingSecretKey.length > 0) {
         await db
-          .update(adminConfig)
+          .update(schema.adminConfig)
           .set({
             value: secretKey,
             updatedBy: userId,
             updatedAt: new Date()
           })
-          .where(eq(adminConfig.key, 'stripe_secret_key'));
+          .where(eq(schema.adminConfig.key, 'stripe_secret_key'));
       } else {
-        await db.insert(adminConfig).values({
+        await db.insert(schema.adminConfig).values({
           key: 'stripe_secret_key',
           value: secretKey,
           description: 'Stripe Secret Key (sensitive)',
@@ -1448,6 +1482,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error updating Stripe keys:', error);
       res.status(500).json({ 
         message: "Failed to update Stripe keys",
+        error: error.message 
+      });
+    }
+  });
+
+  // Get coaching program price (admin only)
+  app.get("/api/admin/coaching-price", isAdmin, async (req: any, res) => {
+    try {
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      
+      const priceConfig = await db
+        .select()
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+      
+      const price = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
+      
+      res.json({ price });
+    } catch (error) {
+      console.error('Error fetching coaching price:', error);
+      res.status(500).json({ message: "Failed to fetch coaching price" });
+    }
+  });
+
+  // Update coaching program price (admin only)
+  app.put("/api/admin/coaching-price", isAdmin, async (req: any, res) => {
+    try {
+      const { price } = req.body;
+      
+      console.log('[Price Update] Received request:', { price, type: typeof price });
+      
+      if (!price || typeof price !== 'number' || price <= 0) {
+        return res.status(400).json({ message: "Valid price is required (must be a positive number)" });
+      }
+      
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      const userId = req.session.userId;
+      
+      console.log('[Price Update] User ID:', userId);
+      
+      // Update or insert coaching price
+      const existingPrice = await db
+        .select()
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+      
+      console.log('[Price Update] Existing price:', existingPrice);
+      
+      if (existingPrice.length > 0) {
+        const updateResult = await db
+          .update(schema.adminConfig)
+          .set({
+            value: price.toString(),
+            updatedBy: userId,
+            updatedAt: new Date()
+          })
+          .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+          .returning();
+        
+        console.log('[Price Update] Update result:', updateResult);
+      } else {
+        const insertResult = await db.insert(schema.adminConfig).values({
+          key: 'coaching_program_price',
+          value: price.toString(),
+          description: 'Coaching Program Price in USD',
+          updatedBy: userId
+        }).returning();
+        
+        console.log('[Price Update] Insert result:', insertResult);
+      }
+      
+      // Verify the update
+      const verifyPrice = await db
+        .select()
+        .from(schema.adminConfig)
+        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+      
+      console.log('[Price Update] Verified price:', verifyPrice);
+      
+      res.json({ 
+        message: "Coaching price updated successfully",
+        price: price
+      });
+    } catch (error: any) {
+      console.error('[Price Update] Error updating coaching price:', error);
+      console.error('[Price Update] Error stack:', error.stack);
+      res.status(500).json({ 
+        message: "Failed to update coaching price",
         error: error.message 
       });
     }

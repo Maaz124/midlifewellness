@@ -10,10 +10,21 @@ import { TrendingUp, Calendar, Target, BookOpen, RefreshCw, Sparkles, CreditCard
 import { Link } from 'wouter';
 import { Logo } from '@/components/logo';
 import { useSEO } from '@/hooks/use-seo';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Dashboard() {
   // SEO optimization for dashboard page
   useSEO('dashboard');
+  
+  // Fetch coaching price from database
+  const { data: priceData } = useQuery({
+    queryKey: ['/api/coaching-price'],
+    queryFn: async () => {
+      const res = await fetch('/api/coaching-price');
+      return res.json();
+    },
+  });
+  const price = priceData?.price || 150; // Default to 150 if not loaded
   
   const { data, updateHealthScores } = useWellnessData();
 
@@ -221,7 +232,7 @@ export default function Dashboard() {
                     <Link href="/coaching">
                       <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold">
                         <Sparkles className="w-4 h-4 mr-2" />
-                        Explore Full Program - $97
+                        Explore Full Program - ${price.toFixed(2)}
                       </Button>
                     </Link>
                     <p className="text-xs text-gray-500">
@@ -285,7 +296,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-4">
                   <div className="text-sm text-gray-600">
                     <span className="line-through">$297</span>
-                    <span className="text-2xl font-bold text-purple-700 ml-2">$97</span>
+                    <span className="text-2xl font-bold text-purple-700 ml-2">${price.toFixed(2)}</span>
                   </div>
                   <Badge variant="secondary" className="bg-green-100 text-green-800">67% OFF</Badge>
                 </div>

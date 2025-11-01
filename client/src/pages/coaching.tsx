@@ -15,6 +15,7 @@ import { useLocation } from 'wouter';
 import { useSEO } from '@/hooks/use-seo';
 import { structuredDataTemplates } from '@/lib/seo';
 import { useAuth } from '@/hooks/use-auth';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Clock, 
   CheckCircle, 
@@ -42,6 +43,16 @@ export default function Coaching() {
   const [openWeeks, setOpenWeeks] = useState<string[]>(['week-1', 'week-2']); // Week 1 and 2 open by default
   const { user, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Fetch coaching price from database
+  const { data: priceData } = useQuery({
+    queryKey: ['/api/coaching-price'],
+    queryFn: async () => {
+      const res = await fetch('/api/coaching-price');
+      return res.json();
+    },
+  });
+  const price = priceData?.price || 150; // Default to 150 if not loaded
 
   // Check login status first, then payment status
   const needsLogin = !isAuthenticated;
@@ -207,7 +218,7 @@ export default function Coaching() {
                 {needsLogin ? (
                   <>
                     <div className="text-2xl font-bold">Start Your Journey</div>
-                    <p className="text-sm text-purple-200">Free to browse • $97 to unlock</p>
+                    <p className="text-sm text-purple-200">Free to browse • ${price.toFixed(2)} to unlock</p>
                     <Button 
                       onClick={() => setLocation('/login')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
@@ -218,16 +229,16 @@ export default function Coaching() {
                   </>
                 ) : needsPayment ? (
                   <>
-                    <div className="text-3xl font-bold">$97</div>
+                    <div className="text-3xl font-bold">${price.toFixed(2)}</div>
                     <div className="text-sm text-purple-200 line-through">Regular: $297</div>
-                    <div className="text-green-200 font-semibold mb-2">Save 67% Today</div>
+                    <div className="text-green-200 font-semibold mb-2">Save {Math.round((1 - price / 297) * 100)}% Today</div>
                     <Button 
                       onClick={() => setLocation('/checkout')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
                       data-testid="button-checkout"
                     >
                       <CreditCard className="w-4 h-4 mr-2" />
-                      Secure Checkout - $97
+                      Secure Checkout - ${price.toFixed(2)}
                     </Button>
                   </>
                 ) : null}
@@ -496,7 +507,7 @@ export default function Coaching() {
                                       className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
                                     >
                                       <Lock className="w-3 h-3" />
-                                      Unlock ($97)
+                                      Unlock (${price.toFixed(2)})
                                     </Button>
                                   )
                                 ) : (
@@ -575,9 +586,9 @@ export default function Coaching() {
                 </div>
                 <div className="flex items-center justify-center gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold">$97</div>
+                    <div className="text-3xl font-bold">${price.toFixed(2)}</div>
                     <div className="text-sm text-purple-200 line-through">Regular: $297</div>
-                    <div className="text-lg font-semibold">Save $200 Today</div>
+                    <div className="text-lg font-semibold">Save ${(297 - price).toFixed(2)} Today</div>
                   </div>
                   <div className="text-center">
                     <div className="space-y-3">

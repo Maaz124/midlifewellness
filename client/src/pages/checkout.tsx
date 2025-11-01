@@ -7,13 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Sparkles, Brain, Heart, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
 const publicKey = (import.meta.env.VITE_STRIPE_PUBLIC_KEY as string | undefined) || undefined;
 const stripePromise = publicKey ? loadStripe(publicKey) : null;
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ price }: { price: number }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -46,7 +47,7 @@ const CheckoutForm = () => {
         // Confirm payment success with backend
         await apiRequest('POST', '/api/payment-success', {
           paymentIntentId: paymentIntent.id,
-          amount: 97
+          amount: price
         });
         // Refresh auth user so hasCoachingAccess updates immediately
         await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -85,7 +86,7 @@ const CheckoutForm = () => {
         disabled={!stripe || isProcessing}
         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
       >
-        {isProcessing ? 'Processing...' : 'Complete Purchase - $97'}
+        {isProcessing ? 'Processing...' : `Complete Purchase - $${price.toFixed(2)}`}
       </Button>
     </form>
   );
@@ -95,12 +96,24 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
   const [, setLocation] = useLocation();
 
+  // Fetch coaching price from database
+  const { data: priceData, isLoading: priceLoading } = useQuery({
+    queryKey: ['/api/coaching-price'],
+    queryFn: async () => {
+      const res = await fetch('/api/coaching-price');
+      return res.json();
+    },
+  });
+
+  const price = priceData?.price || 150; // Default to 150 if not loaded
+
   useEffect(() => {
     // Skip creating PaymentIntent if Stripe is not configured in dev
-    if (!publicKey) {
+    if (!publicKey || priceLoading) {
       return;
     }
-    apiRequest("POST", "/api/create-payment-intent", { amount: 97 })
+    // Price is now read from database in the backend, so no need to pass it
+    apiRequest("POST", "/api/create-payment-intent", {})
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
@@ -109,7 +122,7 @@ export default function Checkout() {
         console.error('Payment Intent Error:', error);
         setLocation('/coaching?error=payment_setup');
       });
-  }, []);
+  }, [priceLoading, setLocation]);
 
   if (!publicKey) {
     return (
@@ -196,7 +209,7 @@ export default function Checkout() {
             </div>
             <div className="mt-6 p-4 bg-white/70 rounded-lg">
               <p className="text-center text-lg font-bold text-purple-700">
-                One-Time Payment: $97
+                One-Time Payment: ${price.toFixed(2)}
               </p>
               <p className="text-center text-sm text-gray-600 mt-1">
                 (Regular value: $297)
@@ -215,7 +228,7 @@ export default function Checkout() {
           </CardHeader>
           <CardContent>
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm />
+              <CheckoutForm price={price} />
             </Elements>
           </CardContent>
         </Card>

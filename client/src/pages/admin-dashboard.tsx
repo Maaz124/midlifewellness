@@ -21,6 +21,7 @@ import {
   EyeOff,
   Mail,
   User as UserIcon,
+  Tag,
 } from "lucide-react";
 
 interface AdminStats {
@@ -59,6 +60,8 @@ function AdminDashboard() {
     secretKey: "",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [coachingPrice, setCoachingPrice] = useState<string>("");
+  const [isSavingPrice, setIsSavingPrice] = useState(false);
 
   // Check if we're in development mode (for bypassing auth)
   const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
@@ -172,6 +175,26 @@ function AdminDashboard() {
     retry: false,
   });
 
+  // Fetch coaching price
+  const { 
+    data: priceData, 
+    isLoading: isLoadingPrice, 
+    error: priceError,
+    refetch: refetchPrice 
+  } = useQuery<{ price: number }>({
+    queryKey: ["/api/admin/coaching-price"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/coaching-price", { credentials: "include" });
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => res.statusText);
+        throw new Error(`Failed to fetch coaching price: ${errorText}`);
+      }
+      return res.json();
+    },
+    enabled: true,
+    retry: false,
+  });
+
   // Fetch all users
   const { 
     data: allUsers, 
@@ -247,6 +270,12 @@ function AdminDashboard() {
     }
   }, [currentKeys]);
 
+  useEffect(() => {
+    if (priceData) {
+      setCoachingPrice(priceData.price.toString());
+    }
+  }, [priceData]);
+
   // Redirect if not authenticated (only in production) - must be before any conditional returns
   useEffect(() => {
     if (!isDev && !isLoadingUser && !adminUser && !adminUserError) {
@@ -293,6 +322,48 @@ function AdminDashboard() {
       await updateKeysMutation.mutateAsync(stripeKeys);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Update coaching price mutation
+  const updatePriceMutation = useMutation({
+    mutationFn: async (price: number) => {
+      return apiRequest("PUT", "/api/admin/coaching-price", { price });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Coaching price updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching-price"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/coaching-price"] }); // Also invalidate public endpoint cache
+      refetchPrice();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update coaching price",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSavePrice = async () => {
+    const priceValue = parseFloat(coachingPrice);
+    if (!coachingPrice || isNaN(priceValue) || priceValue <= 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid positive number for the price",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSavingPrice(true);
+    try {
+      await updatePriceMutation.mutateAsync(priceValue);
+    } finally {
+      setIsSavingPrice(false);
     }
   };
 
@@ -461,6 +532,14 @@ function AdminDashboard() {
           </div>
         )}
 
+        {priceError && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-800">
+              <strong>Error loading coaching price:</strong> {priceError instanceof Error ? priceError.message : "Unknown error"}
+            </p>
+          </div>
+        )}
+
         {usersError && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">
@@ -476,14 +555,94 @@ function AdminDashboard() {
             onClick={() => {
               refetchStats();
               refetchKeys();
+              refetchPrice();
               refetchUsers();
             }}
-            disabled={isLoadingStats || isLoadingKeys || isLoadingUsers}
+            disabled={isLoadingStats || isLoadingKeys || isLoadingPrice || isLoadingUsers}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingStats || isLoadingKeys || isLoadingUsers ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingStats || isLoadingKeys || isLoadingPrice || isLoadingUsers ? "animate-spin" : ""}`} />
             Refresh All Data
           </Button>
         </div>
+
+        {/* Coaching Price Management */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Tag className="w-5 h-5 text-purple-600" />
+                  Coaching Program Price Management
+                </CardTitle>
+                <CardDescription className="mt-2">
+                  Set the price for the coaching program. This price will be used across all checkout pages and payment processing.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isLoadingPrice ? (
+              <div className="flex items-center justify-center py-4">
+                <RefreshCw className="w-5 h-5 animate-spin text-purple-600 mr-2" />
+                <p className="text-gray-600">Loading price...</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="coaching-price">Current Coaching Program Price (USD)</Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-gray-700">$</span>
+                    <Input
+                      id="coaching-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="150.00"
+                      value={coachingPrice}
+                      onChange={(e) => setCoachingPrice(e.target.value)}
+                      disabled={isLoadingPrice || isSavingPrice}
+                      className="text-lg font-semibold"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Enter the price in USD (e.g., 150.00 for $150.00)
+                  </p>
+                  {priceData && (
+                    <p className="text-sm text-gray-600">
+                      Current price: <span className="font-semibold">${priceData.price.toFixed(2)}</span>
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleSavePrice}
+                    disabled={isLoadingPrice || isSavingPrice}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {isSavingPrice ? "Saving..." : "Save Price"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => refetchPrice()}
+                    disabled={isLoadingPrice || isSavingPrice}
+                  >
+                    <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingPrice ? "animate-spin" : ""}`} />
+                    Refresh
+                  </Button>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> Changes to the price will be reflected immediately across all pages. 
+                    The price update affects all new checkout sessions and payment intents.
+                  </p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Users List */}
         <Card className="mb-6">
