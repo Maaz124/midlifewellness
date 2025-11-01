@@ -27,6 +27,7 @@ import {
 import * as schema from "@shared/schema";
 import { sendEmail, emailTemplates } from "./email";
 import { marketingFunnel } from "./marketing-funnel";
+import { normalizeTimestamp } from "./timestamp-utils";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database storage and sessions
@@ -91,21 +92,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/journal-entries", isAuthenticated, hasPayment, async (req: any, res) => {
     try {
       const userId = req.session.userId;
-      const validatedData = insertJournalEntrySchema.parse({
-        ...req.body,
-        userId,
-      });
-      const entry = await storage.createJournalEntry(validatedData);
+      
+      // Parse and validate the entry data
+      let validatedData;
+      try {
+        validatedData = insertJournalEntrySchema.parse({
+          ...req.body,
+          userId,
+        });
+      } catch (validationError: any) {
+        console.error('[routes.ts] Validation error:', validationError);
+        return res.status(400).json({ 
+          message: "Invalid journal entry data",
+          error: validationError.errors || validationError.message,
+          details: validationError
+        });
+      }
+      
+      // Normalize createdAt timestamp
+      const entryData: any = {
+        ...validatedData,
+        createdAt: req.body.createdAt ? normalizeTimestamp(req.body.createdAt) : new Date(),
+      };
+      
+      // Use upsert to update today's entry if it exists, or create new one
+      const entry = await storage.upsertJournalEntryForToday(entryData);
       res.json(entry);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid journal entry data" });
+    } catch (error: any) {
+      console.error('Error saving journal entry:', error);
+      console.error('Error stack:', error.stack);
+      res.status(400).json({ 
+        message: "Invalid journal entry data",
+        error: error.message,
+        details: error
+      });
     }
   });
 
-  app.delete("/api/journal-entries/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/journal-entries/:id", isAuthenticated, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      await storage.deleteJournalEntry(id);
+      const userId = req.session.userId;
+      
+      // Verify the entry belongs to this user
+      const userEntries = await storage.getJournalEntriesByUser(userId);
+      const entry = userEntries.find(e => e.id === id);
+      
+      if (!entry) {
+        return res.status(403).json({ message: "Access denied: Journal entry not found or does not belong to you" });
+      }
+      
+      await storage.deleteJournalEntry(id, userId);
       res.json({ message: "Journal entry deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete journal entry" });
@@ -161,9 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (typeof updates.completed === "boolean") safeUpdates.completed = updates.completed;
       if (typeof updates.progress === "number") safeUpdates.progress = updates.progress;
       if (updates.completedAt) {
-        try {
-          safeUpdates.completedAt = new Date(updates.completedAt);
-        } catch {}
+        safeUpdates.completedAt = normalizeTimestamp(updates.completedAt);
       }
       if (typeof updates.responseData === "object" && updates.responseData !== null) {
         safeUpdates.responseData = updates.responseData;
@@ -335,13 +370,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get coaching program price (public endpoint)
   app.get("/api/coaching-price", async (req, res) => {
     try {
-      const { db } = await import("./db");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
       const { eq } = await import("drizzle-orm");
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
       
       const priceConfig = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
       
       // Default to 150 if not found in database
@@ -364,13 +402,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.session.userId;
       
       // Get price from database
-      const { db } = await import("./db");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
       const { eq } = await import("drizzle-orm");
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
       
       const priceConfig = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
       
       // Default to 150 if not found in database
@@ -1296,8 +1337,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all users (admin only)
   app.get("/api/admin/users", isAdmin, async (req: any, res) => {
     try {
-      const { db } = await import("./db");
-      const { users } = await import("@shared/schema");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
+      const schemaModule: any = await import("@shared/schema");
+      const users = schemaModule.users;
       const { desc } = await import("drizzle-orm");
       
       const allUsers = await db
@@ -1328,8 +1371,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get admin statistics
   app.get("/api/admin/stats", isAdmin, async (req: any, res) => {
     try {
-      const { db } = await import("./db");
-      const { users, resourcePurchases } = await import("@shared/schema");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
+      const schemaModule: any = await import("@shared/schema");
+      const users = schemaModule.users;
+      const resourcePurchases = schemaModule.resourcePurchases;
       const { count, eq } = await import("drizzle-orm");
       
       // Total users count
@@ -1349,7 +1395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .selectDistinct({ userId: resourcePurchases.userId })
         .from(resourcePurchases)
         .where(eq(resourcePurchases.status, 'completed'));
-      const uniqueUsersWithPurchases = new Set(usersWithPurchasesResult.map(p => p.userId)).size;
+      const uniqueUsersWithPurchases = new Set(usersWithPurchasesResult.map((p: any) => p.userId)).size;
       
       // Users without payments = total users - (users with coaching access OR users with purchases)
       // Note: A user might have both, so we need to calculate unique users with any payment
@@ -1374,19 +1420,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get Stripe keys from admin config
   app.get("/api/admin/stripe-keys", isAdmin, async (req: any, res) => {
     try {
-      const { db } = await import("./db");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
       const { eq } = await import("drizzle-orm");
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
       
       const publishableKey = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'stripe_publishable_key'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_publishable_key'))
         .limit(1);
       
       const secretKey = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'stripe_secret_key'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_secret_key'))
         .limit(1);
       
       // Also check environment variables as fallback
@@ -1413,28 +1462,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Both publishable and secret keys are required" });
       }
       
-      const { db } = await import("./db");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
       const { eq } = await import("drizzle-orm");
       const userId = req.session.userId;
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
       
       // Update or insert publishable key
       const existingPubKey = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'stripe_publishable_key'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_publishable_key'))
         .limit(1);
       
       if (existingPubKey.length > 0) {
         await db
-          .update(schema.adminConfig)
+          .update(adminConfig)
           .set({
             value: publishableKey,
             updatedBy: userId,
             updatedAt: new Date()
           })
-          .where(eq(schema.adminConfig.key, 'stripe_publishable_key'));
+          .where(eq(adminConfig.key, 'stripe_publishable_key'));
       } else {
-        await db.insert(schema.adminConfig).values({
+        await db.insert(adminConfig).values({
           key: 'stripe_publishable_key',
           value: publishableKey,
           description: 'Stripe Publishable Key',
@@ -1445,21 +1497,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update or insert secret key
       const existingSecretKey = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'stripe_secret_key'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'stripe_secret_key'))
         .limit(1);
       
       if (existingSecretKey.length > 0) {
         await db
-          .update(schema.adminConfig)
+          .update(adminConfig)
           .set({
             value: secretKey,
             updatedBy: userId,
             updatedAt: new Date()
           })
-          .where(eq(schema.adminConfig.key, 'stripe_secret_key'));
+          .where(eq(adminConfig.key, 'stripe_secret_key'));
       } else {
-        await db.insert(schema.adminConfig).values({
+        await db.insert(adminConfig).values({
           key: 'stripe_secret_key',
           value: secretKey,
           description: 'Stripe Secret Key (sensitive)',
@@ -1490,13 +1542,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get coaching program price (admin only)
   app.get("/api/admin/coaching-price", isAdmin, async (req: any, res) => {
     try {
-      const { db } = await import("./db");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
       const { eq } = await import("drizzle-orm");
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
       
       const priceConfig = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
       
       const price = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
@@ -1519,35 +1574,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Valid price is required (must be a positive number)" });
       }
       
-      const { db } = await import("./db");
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
       const { eq } = await import("drizzle-orm");
       const userId = req.session.userId;
       
       console.log('[Price Update] User ID:', userId);
       
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
+      
       // Update or insert coaching price
       const existingPrice = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
       
       console.log('[Price Update] Existing price:', existingPrice);
       
       if (existingPrice.length > 0) {
         const updateResult = await db
-          .update(schema.adminConfig)
+          .update(adminConfig)
           .set({
             value: price.toString(),
             updatedBy: userId,
             updatedAt: new Date()
           })
-          .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+          .where(eq(adminConfig.key, 'coaching_program_price'))
           .returning();
         
         console.log('[Price Update] Update result:', updateResult);
       } else {
-        const insertResult = await db.insert(schema.adminConfig).values({
+        const insertResult = await db.insert(adminConfig).values({
           key: 'coaching_program_price',
           value: price.toString(),
           description: 'Coaching Program Price in USD',
@@ -1560,8 +1619,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify the update
       const verifyPrice = await db
         .select()
-        .from(schema.adminConfig)
-        .where(eq(schema.adminConfig.key, 'coaching_program_price'))
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
       
       console.log('[Price Update] Verified price:', verifyPrice);

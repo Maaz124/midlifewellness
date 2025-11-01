@@ -42,8 +42,9 @@ import {
   type InsertResourceDownload,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc, gte, lte } from "drizzle-orm";
 import { IStorage } from "./storage";
+import { normalizeTimestamp, normalizeTimestamps } from "./timestamp-utils";
 
 export class DatabaseStorage implements IStorage {
   // User operations for Replit Auth
@@ -115,16 +116,74 @@ export class DatabaseStorage implements IStorage {
       .orderBy(journalEntries.createdAt);
   }
 
-  async createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry> {
+  async createJournalEntry(entry: InsertJournalEntry | any): Promise<JournalEntry> {
+    // Normalize timestamp fields to Date objects
+    const entryData: any = normalizeTimestamps(entry, ['createdAt']);
+    
     const [newEntry] = await db
       .insert(journalEntries)
-      .values(entry)
+      .values(entryData)
       .returning();
     return newEntry;
   }
 
-  async deleteJournalEntry(id: number): Promise<void> {
-    await db.delete(journalEntries).where(eq(journalEntries.id, id));
+  async upsertJournalEntryForToday(entry: InsertJournalEntry | any): Promise<JournalEntry> {
+    // Normalize createdAt timestamp to Date object
+    const entryAny = entry as any;
+    const entryDate = entryAny.createdAt ? normalizeTimestamp(entryAny.createdAt) : new Date();
+    const entryDateStr = entryDate.toISOString().split('T')[0];
+    
+    // Create start and end of day timestamps for the entry date
+    const startOfDay = new Date(entryDateStr + 'T00:00:00.000Z');
+    const endOfDay = new Date(entryDateStr + 'T23:59:59.999Z');
+    
+    // Use SQL to find existing entry for this user on this date
+    // This query checks in the database directly to avoid race conditions
+    // Use date range comparison to find entries within the same day
+    const existingEntries = await db
+      .select()
+      .from(journalEntries)
+      .where(
+        and(
+          eq(journalEntries.userId, entry.userId),
+          gte(journalEntries.createdAt, startOfDay),
+          lte(journalEntries.createdAt, endOfDay)
+        )
+      )
+      .limit(1);
+    
+    if (existingEntries.length > 0) {
+      // Update existing entry - use the first one found (most recent)
+      const existingEntry = existingEntries[0];
+      const [updatedEntry] = await db
+        .update(journalEntries)
+        .set({
+          title: entry.title,
+          content: entry.content,
+          mood: entry.mood,
+          prompt: entry.prompt,
+        })
+        .where(eq(journalEntries.id, existingEntry.id))
+        .returning();
+      return updatedEntry;
+    } else {
+      // Create new entry - use the validated entryDate as createdAt (already a Date object)
+      // Cast to any to allow createdAt since InsertJournalEntry omits it in schema
+      const entryWithValidDate: any = {
+        ...entry,
+        createdAt: entryDate // Use the validated Date object from above
+      };
+      
+      return await this.createJournalEntry(entryWithValidDate);
+    }
+  }
+
+  async deleteJournalEntry(id: number, userId: string): Promise<void> {
+    await db.delete(journalEntries)
+      .where(and(
+        eq(journalEntries.id, id),
+        eq(journalEntries.userId, userId)
+      ));
   }
 
   // Coaching Progress
@@ -136,17 +195,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCoachingProgress(progress: InsertCoachingProgress): Promise<CoachingProgress> {
+    const normalizedProgress = normalizeTimestamps(progress, ['completedAt']);
     const [newProgress] = await db
       .insert(coachingProgress)
-      .values(progress)
+      .values(normalizedProgress)
       .returning();
     return newProgress;
   }
 
   async updateCoachingProgress(id: number, updates: Partial<CoachingProgress>): Promise<CoachingProgress> {
+    const normalizedUpdates = normalizeTimestamps(updates, ['completedAt']);
     const [updatedProgress] = await db
       .update(coachingProgress)
-      .set(updates)
+      .set(normalizedUpdates)
       .where(eq(coachingProgress.id, id))
       .returning();
     return updatedProgress;
@@ -162,17 +223,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createGoal(goal: InsertGoal): Promise<Goal> {
+    const normalizedGoal = normalizeTimestamps(goal, ['createdAt', 'targetDate']);
     const [newGoal] = await db
       .insert(goals)
-      .values(goal)
+      .values(normalizedGoal)
       .returning();
     return newGoal;
   }
 
   async updateGoal(id: number, updates: Partial<Goal>): Promise<Goal> {
+    const normalizedUpdates = normalizeTimestamps(updates, ['createdAt', 'targetDate']);
     const [updatedGoal] = await db
       .update(goals)
-      .set(updates)
+      .set(normalizedUpdates)
       .where(eq(goals.id, id))
       .returning();
     return updatedGoal;
@@ -192,17 +255,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createHabit(habit: InsertHabit): Promise<Habit> {
+    const normalizedHabit = normalizeTimestamps(habit, ['createdAt', 'lastCompleted']);
     const [newHabit] = await db
       .insert(habits)
-      .values(habit)
+      .values(normalizedHabit)
       .returning();
     return newHabit;
   }
 
   async updateHabit(id: number, updates: Partial<Habit>): Promise<Habit> {
+    const normalizedUpdates = normalizeTimestamps(updates, ['createdAt', 'lastCompleted']);
     const [updatedHabit] = await db
       .update(habits)
-      .set(updates)
+      .set(normalizedUpdates)
       .where(eq(habits.id, id))
       .returning();
     return updatedHabit;
@@ -222,9 +287,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMoodEntry(entry: InsertMoodEntry): Promise<MoodEntry> {
+    const normalizedEntry = normalizeTimestamps(entry, ['createdAt']);
     const [newEntry] = await db
       .insert(moodEntries)
-      .values(entry)
+      .values(normalizedEntry)
       .returning();
     return newEntry;
   }

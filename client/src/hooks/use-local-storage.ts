@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -22,6 +23,15 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   };
 
   return [storedValue, setValue] as const;
+}
+
+// Hook to get current user for localStorage keys
+function useCurrentUserId(): string | null {
+  const { data: user } = useQuery({
+    queryKey: ["/api/auth/user"],
+    retry: false,
+  });
+  return user?.id || null;
 }
 
 interface WellnessData {
@@ -55,7 +65,11 @@ interface WellnessData {
 }
 
 export function useWellnessData() {
-  const [data, setData] = useLocalStorage<WellnessData>('wellness-data', {
+  // Get current user ID for user-specific storage
+  const userId = useCurrentUserId();
+  const storageKey = userId ? `wellness-data-${userId}` : 'wellness-data-guest';
+  
+  const [data, setData] = useLocalStorage<WellnessData>(storageKey, {
     userProfile: {
       name: 'Sarah',
       email: 'sarah@example.com',

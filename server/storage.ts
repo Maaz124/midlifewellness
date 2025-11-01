@@ -71,7 +71,8 @@ export interface IStorage {
   // Journal Entries
   getJournalEntriesByUser(userId: string): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
-  deleteJournalEntry(id: number): Promise<void>;
+  upsertJournalEntryForToday(entry: InsertJournalEntry): Promise<JournalEntry>;
+  deleteJournalEntry(id: number, userId: string): Promise<void>;
 
   // Coaching Progress
   getCoachingProgressByUser(userId: string): Promise<CoachingProgress[]>;
@@ -208,8 +209,37 @@ export class MemStorage implements IStorage {
     return entry;
   }
 
-  async deleteJournalEntry(id: number): Promise<void> {
-    this.journalEntries.delete(id);
+  async upsertJournalEntryForToday(entry: InsertJournalEntry): Promise<JournalEntry> {
+    // Check if entry exists for today
+    const today = new Date(entry.createdAt).toISOString().split('T')[0];
+    const existing = Array.from(this.journalEntries.values()).find((e: any) => {
+      const entryDate = new Date(e.createdAt).toISOString().split('T')[0];
+      return e.userId === entry.userId && entryDate === today;
+    });
+    
+    if (existing) {
+      // Update existing entry
+      const updated: JournalEntry = {
+        ...existing,
+        title: entry.title ?? existing.title,
+        content: entry.content,
+        mood: entry.mood ?? existing.mood,
+        prompt: entry.prompt ?? existing.prompt,
+      };
+      this.journalEntries.set(existing.id, updated);
+      return updated;
+    } else {
+      // Create new entry
+      return await this.createJournalEntry(entry);
+    }
+  }
+
+  async deleteJournalEntry(id: number, userId: number): Promise<void> {
+    // In-memory storage: verify ownership before deleting
+    const entry = this.journalEntries.get(id);
+    if (entry && entry.userId === userId) {
+      this.journalEntries.delete(id);
+    }
   }
 
   // Coaching Progress methods

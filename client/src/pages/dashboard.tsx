@@ -28,11 +28,18 @@ export default function Dashboard() {
   
   const { data, updateHealthScores } = useWellnessData();
 
+  // Provide default values to prevent undefined errors
+  const userProfile = data?.userProfile || { currentWeek: 1 };
+  const healthScores = data?.healthScores || { mental: 0, physical: 0, cognitive: 0, overall: 0 };
+  const journalEntries = data?.journalEntries || [];
+  const moodTracking = data?.moodTracking || [];
+  const coachingProgress = data?.coachingProgress || { completedComponents: [], currentWeek: 1, responseData: {} };
+
   const handleScoreUpdate = (type: 'mental' | 'physical' | 'cognitive', score: number) => {
     const newScores = { [type]: score };
     
     // Calculate overall score
-    const scores = { ...data.healthScores, ...newScores };
+    const scores = { ...healthScores, ...newScores };
     const overall = Math.round((scores.mental + scores.physical + scores.cognitive) / 3);
     
     updateHealthScores({ ...newScores, overall });
@@ -41,7 +48,7 @@ export default function Dashboard() {
   const quickActions = [
     {
       label: 'Continue Coaching',
-      description: `Week ${data.userProfile.currentWeek}`,
+      description: `Week ${userProfile.currentWeek}`,
       href: '/coaching',
       icon: 'fas fa-play-circle',
       color: 'bg-primary text-white'
@@ -89,41 +96,41 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  data.healthScores.overall >= 80 ? 'bg-emerald-100' :
-                  data.healthScores.overall >= 70 ? 'bg-blue-100' :
-                  data.healthScores.overall >= 60 ? 'bg-amber-100' :
-                  data.healthScores.overall >= 40 ? 'bg-orange-100' : 'bg-rose-100'
+                  healthScores.overall >= 80 ? 'bg-emerald-100' :
+                  healthScores.overall >= 70 ? 'bg-blue-100' :
+                  healthScores.overall >= 60 ? 'bg-amber-100' :
+                  healthScores.overall >= 40 ? 'bg-orange-100' : 'bg-rose-100'
                 }`}>
                   <TrendingUp className={`w-6 h-6 ${
-                    data.healthScores.overall >= 80 ? 'text-emerald-600' :
-                    data.healthScores.overall >= 70 ? 'text-blue-600' :
-                    data.healthScores.overall >= 60 ? 'text-amber-600' :
-                    data.healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
+                    healthScores.overall >= 80 ? 'text-emerald-600' :
+                    healthScores.overall >= 70 ? 'text-blue-600' :
+                    healthScores.overall >= 60 ? 'text-amber-600' :
+                    healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
                   }`} />
                 </div>
                 <div className="text-right">
                   <span className={`text-2xl font-bold ${
-                    data.healthScores.overall >= 80 ? 'text-emerald-600' :
-                    data.healthScores.overall >= 70 ? 'text-blue-600' :
-                    data.healthScores.overall >= 60 ? 'text-amber-600' :
-                    data.healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
-                  }`}>{data.healthScores.overall}</span>
+                    healthScores.overall >= 80 ? 'text-emerald-600' :
+                    healthScores.overall >= 70 ? 'text-blue-600' :
+                    healthScores.overall >= 60 ? 'text-amber-600' :
+                    healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
+                  }`}>{healthScores.overall}</span>
                   <div className={`text-xs font-medium px-2 py-1 rounded-full inline-block ml-2 ${
-                    data.healthScores.overall >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                    data.healthScores.overall >= 70 ? 'bg-blue-100 text-blue-800' :
-                    data.healthScores.overall >= 60 ? 'bg-amber-100 text-amber-800' :
-                    data.healthScores.overall >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    healthScores.overall >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                    healthScores.overall >= 70 ? 'bg-blue-100 text-blue-800' :
+                    healthScores.overall >= 60 ? 'bg-amber-100 text-amber-800' :
+                    healthScores.overall >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
                   }`}>
-                    {data.healthScores.overall >= 80 ? 'Excellent' :
-                     data.healthScores.overall >= 70 ? 'Very Good' :
-                     data.healthScores.overall >= 60 ? 'Good' :
-                     data.healthScores.overall >= 40 ? 'Fair' : 'Needs Focus'}
+                    {healthScores.overall >= 80 ? 'Excellent' :
+                     healthScores.overall >= 70 ? 'Very Good' :
+                     healthScores.overall >= 60 ? 'Good' :
+                     healthScores.overall >= 40 ? 'Fair' : 'Needs Focus'}
                   </div>
                 </div>
               </div>
               <h3 className="font-semibold text-gray-800 mb-1">Overall Wellness</h3>
               <p className="text-sm text-gray-500">
-                {data.healthScores.overall > 0 ? '+12 points this month' : 'Take assessments to get started'}
+                {healthScores.overall > 0 ? '+12 points this month' : 'Take assessments to get started'}
               </p>
             </CardContent>
           </Card>
@@ -134,10 +141,10 @@ export default function Dashboard() {
                 <div className="w-12 h-12 bg-sage/10 rounded-xl flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-sage-600" />
                 </div>
-                <span className="text-2xl font-bold text-sage-600">{data.userProfile.currentWeek}/6</span>
+                <span className="text-2xl font-bold text-sage-600">{userProfile.currentWeek}/6</span>
               </div>
               <h3 className="font-semibold text-gray-800 mb-1">Coaching Progress</h3>
-              <p className="text-sm text-gray-500">Week {data.userProfile.currentWeek}: Active</p>
+              <p className="text-sm text-gray-500">Week {userProfile.currentWeek}: Active</p>
             </CardContent>
           </Card>
 
@@ -148,7 +155,7 @@ export default function Dashboard() {
                   <Target className="w-6 h-6 text-coral-500" />
                 </div>
                 <span className="text-2xl font-bold text-coral-500">
-                  {data.journalEntries.length + data.moodTracking.length}
+                  {journalEntries.length + moodTracking.length}
                 </span>
               </div>
               <h3 className="font-semibold text-gray-800 mb-1">Active Days</h3>
@@ -192,17 +199,17 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <HealthCalculator 
             type="mental" 
-            score={data.healthScores.mental}
+            score={healthScores.mental}
             onScoreUpdate={(score) => handleScoreUpdate('mental', score)}
           />
           <HealthCalculator 
             type="physical" 
-            score={data.healthScores.physical}
+            score={healthScores.physical}
             onScoreUpdate={(score) => handleScoreUpdate('physical', score)}
           />
           <HealthCalculator 
             type="cognitive" 
-            score={data.healthScores.cognitive}
+            score={healthScores.cognitive}
             onScoreUpdate={(score) => handleScoreUpdate('cognitive', score)}
           />
         </div>
@@ -221,7 +228,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {(data.coachingProgress.completedComponents.length === 0) ? (
+              {(coachingProgress.completedComponents.length === 0) ? (
                 <div className="text-center py-8 space-y-4">
                   <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <div>
@@ -261,7 +268,7 @@ export default function Dashboard() {
                         <i className="fas fa-clock text-white"></i>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">Week {data.userProfile.currentWeek}: In Progress</p>
+                        <p className="font-medium text-gray-900">Week {userProfile.currentWeek}: In Progress</p>
                         <p className="text-sm text-gray-600">Continue your journey</p>
                       </div>
                     </div>

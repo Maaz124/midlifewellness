@@ -19,7 +19,49 @@ export default function JournalNew() {
   const { data, upsertTodayJournalEntry, addMoodEntry } = useWellnessData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+
+  // Provide default values to prevent undefined errors
+  const userProfile = data?.userProfile || { currentWeek: 1 };
+
+  // Fetch journal entries from API when authenticated
+  const { data: apiJournalEntries = [], isLoading: isLoadingEntries } = useQuery({
+    queryKey: ['/api/journal-entries'],
+    queryFn: async () => {
+      const res = await fetch('/api/journal-entries', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch journal entries');
+      return res.json();
+    },
+    enabled: isAuthenticated,
+    staleTime: 30000, // 30 seconds
+  });
+
+  // Mutation to save journal entry to API
+  const saveJournalEntryMutation = useMutation({
+    mutationFn: async (entry: any) => {
+      const response = await apiRequest('POST', '/api/journal-entries', entry);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/journal-entries'] });
+      toast({
+        title: "Entry saved!",
+        description: "Your journal entry has been saved successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Save failed",
+        description: error.message || "Failed to save entry. It's saved locally.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Merge API entries with localStorage entries, prioritizing API data
+  const allJournalEntries = isAuthenticated && apiJournalEntries.length > 0
+    ? apiJournalEntries
+    : (data?.journalEntries || []);
   const [journalContent, setJournalContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [wordCount, setWordCount] = useState(0);
@@ -115,9 +157,9 @@ export default function JournalNew() {
   });
 
   // Get unique categories
-  const categories = ['all', ...Array.from(new Set((allResources as any[]).map(r => r.category).filter(Boolean)))];
+    const categories = ['all', ...Array.from(new Set((allResources as any[]).map(r => r.category).filter(Boolean)))];
 
-  const todaysPrompt = getTodaysPrompt(data.userProfile.currentWeek);
+    const todaysPrompt = getTodaysPrompt(userProfile.currentWeek);
   const currentDate = new Date().toLocaleDateString('en-US', { 
     weekday: 'long', 
     year: 'numeric', 
@@ -126,7 +168,10 @@ export default function JournalNew() {
   });
 
   const todayIso = new Date().toISOString().split('T')[0];
-  const todaysEntry = data.journalEntries.find((e: any) => new Date(e.createdAt).toISOString().split('T')[0] === todayIso);
+  const todaysEntry = allJournalEntries.find((e: any) => {
+    const entryDate = new Date(e.createdAt).toISOString().split('T')[0];
+    return entryDate === todayIso;
+  });
   const hasTodaysEntry = Boolean(todaysEntry);
 
   const moodOptions = [
@@ -160,7 +205,10 @@ export default function JournalNew() {
     if (hasInitialized) return;
     
     const today = new Date().toISOString().split('T')[0];
-    const todaysEntry = data.journalEntries.find((e: any) => new Date(e.createdAt).toISOString().split('T')[0] === today);
+    const todaysEntry = allJournalEntries.find((e: any) => {
+      const entryDate = new Date(e.createdAt).toISOString().split('T')[0];
+      return entryDate === today;
+    });
     if (todaysEntry) {
       setJournalContent(todaysEntry.content || '');
       if (todaysEntry.mood) setSelectedMood(todaysEntry.mood);
@@ -172,7 +220,8 @@ export default function JournalNew() {
     }
     
     setHasInitialized(true);
-  }, [data.journalEntries, data.moodTracking, hasInitialized]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   // Breathing timer and phase control
   useEffect(() => {
@@ -245,6 +294,12 @@ export default function JournalNew() {
 
   const handleCompleteEntry = () => {
     if (!journalContent.trim()) return;
+    
+    // Prevent multiple saves
+    if (saveJournalEntryMutation.isPending) {
+      return;
+    }
+    
     const entry: Omit<JournalEntry, 'id'> = {
       title: `${currentDate} Reflection`,
       content: journalContent,
@@ -252,7 +307,15 @@ export default function JournalNew() {
       prompt: todaysPrompt,
       createdAt: new Date().toISOString(),
     };
+    
+    // Save to localStorage (for offline support)
     upsertTodayJournalEntry(entry);
+    
+    // Save to API if authenticated (upsert will update if entry exists for today)
+    if (isAuthenticated) {
+      saveJournalEntryMutation.mutate(entry);
+    }
+    
     const today = new Date().toISOString().split('T')[0];
     localStorage.removeItem(`journal_draft_${today}`);
   };
@@ -357,9 +420,13 @@ export default function JournalNew() {
                       <Button 
                         onClick={handleCompleteEntry}
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        disabled={!journalContent.trim()}
+                        disabled={!journalContent.trim() || saveJournalEntryMutation.isPending}
                       >
-                        {hasTodaysEntry ? 'Save Changes' : 'Complete Entry'}
+                        {saveJournalEntryMutation.isPending 
+                          ? 'Saving...' 
+                          : hasTodaysEntry 
+                            ? 'Save Changes' 
+                            : 'Complete Entry'}
                       </Button>
                       <Button 
                         variant="outline" 
@@ -565,11 +632,15 @@ export default function JournalNew() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {data.journalEntries.length === 0 ? (
+                    {isLoadingEntries ? (
+                      <p className="text-gray-500 text-sm">Loading entries...</p>
+                    ) : allJournalEntries.length === 0 ? (
                       <p className="text-gray-500 text-sm">No entries yet. Start writing your first reflection!</p>
                     ) : (
                       <div className="space-y-3">
-                        {data.journalEntries.slice(0, 5).map((entry) => (
+                        {allJournalEntries.slice().sort((a: any, b: any) => 
+                          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                        ).slice(0, 5).map((entry: any) => (
                           <Dialog key={entry.id}>
                             <DialogTrigger asChild>
                               <div className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">

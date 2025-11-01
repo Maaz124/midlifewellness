@@ -21,12 +21,14 @@ export function UserMenu() {
   const handleLogout = async () => {
     try {
       await apiRequest("POST", "/api/auth/logout");
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Clear all queries to ensure fresh state after logout
+      queryClient.clear();
       toast({
         title: "Logged out successfully",
         description: "Come back soon!",
       });
-      setLocation("/");
+      // Redirect to login page instead of dashboard
+      setLocation("/login");
     } catch (error: any) {
       toast({
         title: "Logout failed",
