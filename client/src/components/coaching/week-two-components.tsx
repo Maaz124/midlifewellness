@@ -39,7 +39,8 @@ export default function WeekTwoComponents({ component, onComplete, onClose }: We
     }
     
     setHasInitialized(true);
-  }, [component, hasInitialized]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const formatTime = (totalSeconds: number) => {
     const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');

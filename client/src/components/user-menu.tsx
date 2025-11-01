@@ -1,4 +1,4 @@
-import { User, LogOut, Settings, CreditCard } from "lucide-react";
+import { User, LogOut, Settings, CreditCard, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -76,6 +76,14 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {user?.isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin/dashboard" className="flex items-center cursor-pointer" data-testid="link-admin-dashboard">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              <span>Admin Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link href="/profile" className="flex items-center cursor-pointer" data-testid="link-profile">
             <Settings className="mr-2 h-4 w-4" />
