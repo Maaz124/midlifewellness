@@ -71,3 +71,19 @@ Start with **Week 1** extraction as a proof of concept. If it works well, contin
 - C) Just organize the existing file better
 - D) Something else?
 
+## 📧 Gmail App Password Setup (Email Sending)
+
+To enable the site to send emails via Gmail (Nodemailer):
+
+```
+GMAIL_USER=your_gmail_address@gmail.com
+GMAIL_APP_PASSWORD=your_16_char_app_password
+# Optional fallback name if needed
+GMAIL_PASS=
+```
+
+Notes:
+- Create an App Password under Google Account → Security → 2‑Step Verification → App Passwords.
+- Use the 16‑character app password for `GMAIL_APP_PASSWORD`.
+- The server will use Gmail SMTP only when both `GMAIL_USER` and `GMAIL_APP_PASSWORD` (or `GMAIL_PASS`) are present.
+

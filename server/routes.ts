@@ -26,8 +26,19 @@ import {
 } from "@shared/schema";
 import * as schema from "@shared/schema";
 import { sendEmail, emailTemplates } from "./email";
+import { sendGmailEmail } from "./email-nodemailer";
 import { marketingFunnel } from "./marketing-funnel";
 import { normalizeTimestamp } from "./timestamp-utils";
+
+function escapeHtml(input?: string): string {
+  if (!input) return '';
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database storage and sessions
@@ -463,7 +474,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         await sendEmail({
           to: user.email,
-          from: 'coaching@bloomafter40.com',
+          from: 'maazahmad1243@gmail.com',
           subject: confirmationTemplate.subject,
           html: confirmationTemplate.html,
           text: confirmationTemplate.text
@@ -1006,55 +1017,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: 'new'
       });
 
-      // Send notification email to Dr. Sidra
-      const { sendEmail } = require('./email');
-      const { addSignatureToEmail } = require('./email-signatures');
+      // Send notification email using ES module import
+      const { addSignatureToEmail } = await import('./email-signatures');
       
-      const notificationEmailSent = await sendEmail({
-        to: 'coaching@bloomafter40.com', // Dr. Sidra's coaching email
-        from: 'coaching@bloomafter40.com',
+      const notificationEmailSent = await sendGmailEmail({
+        to: process.env.COACHING_INBOX || 'coaching@bloomafter40.com',
+        from: process.env.GMAIL_USER || 'coaching@bloomafter40.com',
         subject: `New Coaching Inquiry from ${name}`,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #8B5CF6;">New Coaching Inquiry Received</h2>
-            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #1e293b;">Contact Information</h3>
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-              <p><strong>Coaching Interest:</strong> ${coachingType}</p>
-              <p><strong>Preferred Schedule:</strong> ${preferredSchedule || 'Not specified'}</p>
+          <div style="font-family: Inter, Arial, sans-serif; max-width: 720px; margin: 0 auto; background: #ffffff;">
+            <div style="padding: 24px 24px 0 24px;">
+              <h1 style="margin: 0 0 8px 0; color: #111827; font-size: 22px;">New Coaching Inquiry</h1>
+              <p style="margin: 0; color: #6b7280; font-size: 14px;">A new submission was received from the Personal Coaching form.</p>
             </div>
-            
-            <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #15803d;">Goals & Aspirations</h3>
-              <p>${goals}</p>
+
+            <div style="margin: 16px 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+              <h2 style="margin: 0 0 12px 0; color: #111827; font-size: 16px;">Contact Information</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tbody>
+                  <tr>
+                    <td style="padding: 8px; color: #6b7280; width: 32%; font-size: 14px;">Full Name</td>
+                    <td style="padding: 8px; color: #111827; font-size: 14px;"><strong>${name}</strong></td>
+                  </tr>
+                  <tr style="background: #ffffff;">
+                    <td style="padding: 8px; color: #6b7280; font-size: 14px;">Email</td>
+                    <td style="padding: 8px; font-size: 14px;"><a href="mailto:${email}" style="color: #4f46e5; text-decoration: none;">${email}</a></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; color: #6b7280; font-size: 14px;">Phone</td>
+                    <td style="padding: 8px; color: #111827; font-size: 14px;">${phone || 'Not provided'}</td>
+                  </tr>
+                  <tr style="background: #ffffff;">
+                    <td style="padding: 8px; color: #6b7280; font-size: 14px;">Coaching Interest</td>
+                    <td style="padding: 8px; color: #111827; font-size: 14px;">${coachingType}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; color: #6b7280; font-size: 14px;">Preferred Schedule</td>
+                    <td style="padding: 8px; color: #111827; font-size: 14px;">${preferredSchedule || 'Not specified'}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            
+
+            <div style="margin: 16px 24px; padding: 16px; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 8px;">
+              <h2 style="margin: 0 0 8px 0; color: #065f46; font-size: 16px;">Goals & Aspirations</h2>
+              <div style="white-space: pre-wrap; color: #065f46; font-size: 14px; line-height: 1.6;">${escapeHtml(goals)}</div>
+            </div>
+
             ${challenges ? `
-              <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #92400e;">Current Challenges</h3>
-                <p>${challenges}</p>
+              <div style="margin: 16px 24px; padding: 16px; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 8px;">
+                <h2 style="margin: 0 0 8px 0; color: #92400e; font-size: 16px;">Current Challenges</h2>
+                <div style="white-space: pre-wrap; color: #92400e; font-size: 14px; line-height: 1.6;">${escapeHtml(challenges)}</div>
               </div>
             ` : ''}
-            
+
             ${experience ? `
-              <div style="background: #e0e7ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #3730a3;">Previous Experience</h3>
-                <p>${experience}</p>
+              <div style="margin: 16px 24px; padding: 16px; background: #eef2ff; border: 1px solid #e0e7ff; border-radius: 8px;">
+                <h2 style="margin: 0 0 8px 0; color: #3730a3; font-size: 16px;">Previous Experience</h2>
+                <div style="white-space: pre-wrap; color: #3730a3; font-size: 14px; line-height: 1.6;">${escapeHtml(experience)}</div>
               </div>
             ` : ''}
-            
+
             ${additionalInfo ? `
-              <div style="background: #fce7f3; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #be185d;">Additional Information</h3>
-                <p>${additionalInfo}</p>
+              <div style="margin: 16px 24px; padding: 16px; background: #fdf2f8; border: 1px solid #fce7f3; border-radius: 8px;">
+                <h2 style="margin: 0 0 8px 0; color: #9d174d; font-size: 16px;">Additional Information</h2>
+                <div style="white-space: pre-wrap; color: #9d174d; font-size: 14px; line-height: 1.6;">${escapeHtml(additionalInfo)}</div>
               </div>
             ` : ''}
-            
-            <div style="margin-top: 30px; padding: 20px; background: #8B5CF6; color: white; border-radius: 8px; text-align: center;">
-              <p style="margin: 0;"><strong>Inquiry ID:</strong> #${inquiry.id}</p>
-              <p style="margin: 5px 0 0 0; font-size: 14px;">Please respond within 24 hours as promised</p>
+
+            <div style="margin: 24px 24px 32px 24px; padding: 16px; background: #4f46e5; color: white; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 14px; opacity: 0.9;">Inquiry ID</div>
+                  <div style="font-size: 16px; font-weight: 600;">#${inquiry.id}</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 14px; opacity: 0.9;">Submitted</div>
+                  <div style="font-size: 16px; font-weight: 600;">${new Date().toLocaleString()}</div>
+                </div>
+              </div>
             </div>
           </div>
         `
@@ -1094,9 +1135,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         </div>
       `;
 
-      const confirmationEmailSent = await sendEmail({
+      const confirmationEmailSent = await sendGmailEmail({
         to: email,
-        from: 'coaching@bloomafter40.com',
+        from: process.env.GMAIL_USER || 'coaching@bloomafter40.com',
         subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
         html: addSignatureToEmail(confirmationEmailContent, 'personal')
       });
