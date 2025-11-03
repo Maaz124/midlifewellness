@@ -1493,6 +1493,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch Stripe keys" });
     }
   });
+
+  // Get email configuration (admin only)
+  app.get("/api/admin/email-config", isAdmin, async (_req: any, res) => {
+    try {
+      const fs = await import('fs');
+      const fsp = await import('fs/promises');
+      const possiblePaths = [path.join(process.cwd(), '.env'), path.join(process.cwd(), '.env.local')];
+      const envPath = possiblePaths.find(p => fs.existsSync(p));
+      let fileContent = '';
+      if (envPath) {
+        fileContent = await fsp.readFile(envPath, 'utf8');
+      }
+      const getVar = (name: string) => {
+        const regex = new RegExp(`^${name}=(.*)$`, 'm');
+        const match = fileContent.match(regex);
+        if (match) return match[1].trim();
+        return process.env[name] || '';
+      };
+      res.json({
+        gmailUser: getVar('GMAIL_USER'),
+        gmailAppPassword: getVar('GMAIL_APP_PASSWORD') ? '***hidden***' : '',
+        coachingInbox: getVar('COACHING_INBOX') || 'coaching@bloomafter40.com',
+        source: envPath ? 'env_file' : 'environment'
+      });
+    } catch (error: any) {
+      console.error('Error fetching email config:', error);
+      res.status(500).json({ message: 'Failed to fetch email configuration' });
+    }
+  });
+
+  // Update email configuration (admin only)
+  app.put("/api/admin/email-config", isAdmin, async (req: any, res) => {
+    try {
+      const { gmailUser, gmailAppPassword, coachingInbox } = req.body;
+      const fs = await import('fs');
+      const fsp = await import('fs/promises');
+      const envPath = fs.existsSync(path.join(process.cwd(), '.env'))
+        ? path.join(process.cwd(), '.env')
+        : path.join(process.cwd(), '.env.local');
+
+      let content = '';
+      if (fs.existsSync(envPath)) {
+        content = await fsp.readFile(envPath, 'utf8');
+      }
+
+      const upsert = (src: string, key: string, value: string | undefined) => {
+        if (typeof value !== 'string') return src;
+        const line = `${key}=${value}`;
+        const regex = new RegExp(`^${key}=.*$`, 'm');
+        if (regex.test(src)) {
+          return src.replace(regex, line);
+        }
+        return src.trim().length ? src + `\n` + line + `\n` : line + `\n`;
+      };
+
+      content = upsert(content, 'GMAIL_USER', gmailUser);
+      if (gmailAppPassword && gmailAppPassword.trim()) {
+        content = upsert(content, 'GMAIL_APP_PASSWORD', gmailAppPassword);
+      }
+      content = upsert(content, 'COACHING_INBOX', coachingInbox);
+
+      await fsp.writeFile(envPath, content, 'utf8');
+
+      res.json({ message: 'Email configuration updated in env file. Restart server to apply.' });
+    } catch (error: any) {
+      console.error('Error updating email config:', error);
+      res.status(500).json({ message: 'Failed to update email configuration' });
+    }
+  });
   
   // Update Stripe keys in admin config (and optionally sync to .env)
   app.put("/api/admin/stripe-keys", isAdmin, async (req: any, res) => {

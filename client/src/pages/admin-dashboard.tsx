@@ -62,6 +62,12 @@ function AdminDashboard() {
   const [isSaving, setIsSaving] = useState(false);
   const [coachingPrice, setCoachingPrice] = useState<string>("");
   const [isSavingPrice, setIsSavingPrice] = useState(false);
+  const [emailConfig, setEmailConfig] = useState({
+    gmailUser: "",
+    gmailAppPassword: "",
+    coachingInbox: "",
+  });
+  const [showGmailPassword, setShowGmailPassword] = useState(false);
 
   // Check if we're in development mode (for bypassing auth)
   const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
@@ -275,6 +281,39 @@ function AdminDashboard() {
       setCoachingPrice(priceData.price.toString());
     }
   }, [priceData]);
+
+  // Fetch email configuration
+  const { data: emailConfigData, isLoading: isLoadingEmailConfig, refetch: refetchEmailConfig } = useQuery({
+    queryKey: ["/api/admin/email-config"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/email-config");
+      return res.json();
+    },
+  });
+
+  useEffect(() => {
+    if (emailConfigData) {
+      setEmailConfig({
+        gmailUser: emailConfigData.gmailUser || "",
+        gmailAppPassword: "",
+        coachingInbox: emailConfigData.coachingInbox || "",
+      });
+    }
+  }, [emailConfigData]);
+
+  const handleSaveEmailConfig = async () => {
+    try {
+      setIsSaving(true);
+      await apiRequest("PUT", "/api/admin/email-config", emailConfig);
+      toast({ title: "Email settings updated" });
+      setEmailConfig((prev) => ({ ...prev, gmailAppPassword: "" }));
+      await refetchEmailConfig();
+    } catch (e: any) {
+      toast({ title: "Failed to update email settings", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Redirect if not authenticated (only in production) - must be before any conditional returns
   useEffect(() => {
@@ -818,6 +857,93 @@ function AdminDashboard() {
                 <strong>Note:</strong> After updating keys, you may need to restart the server for
                 changes to take full effect. The secret key will be masked in the database for
                 security.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Email Settings */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mail className="h-5 w-5 text-purple-600" />
+                <div>
+                  <CardTitle>Email Settings (Gmail)</CardTitle>
+                  <CardDescription>Configure Gmail sender and coaching inbox</CardDescription>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="gmail-user">Gmail User</Label>
+              <Input
+                id="gmail-user"
+                type="email"
+                placeholder="youraccount@gmail.com"
+                value={emailConfig.gmailUser}
+                onChange={(e) => setEmailConfig((p) => ({ ...p, gmailUser: e.target.value }))}
+                disabled={isLoadingEmailConfig || isSaving}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="gmail-app-password">Gmail App Password</Label>
+              <div className="relative">
+                <Input
+                  id="gmail-app-password"
+                  type={showGmailPassword ? "text" : "password"}
+                  placeholder="16-character app password"
+                  value={emailConfig.gmailAppPassword}
+                  onChange={(e) => setEmailConfig((p) => ({ ...p, gmailAppPassword: e.target.value }))}
+                  disabled={isLoadingEmailConfig || isSaving}
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowGmailPassword(!showGmailPassword)}
+                >
+                  {showGmailPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">Use a Gmail App Password (Google Account → Security → App Passwords)</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="coaching-inbox">Coaching Inbox (Recipient)</Label>
+              <Input
+                id="coaching-inbox"
+                type="email"
+                placeholder="coaching@domain.com"
+                value={emailConfig.coachingInbox}
+                onChange={(e) => setEmailConfig((p) => ({ ...p, coachingInbox: e.target.value }))}
+                disabled={isLoadingEmailConfig || isSaving}
+              />
+              <p className="text-xs text-muted-foreground">Where admin notifications are sent</p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={handleSaveEmailConfig} disabled={isLoadingEmailConfig || isSaving} className="bg-purple-600 hover:bg-purple-700">
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? "Saving..." : "Save Email Settings"}
+              </Button>
+              <Button variant="outline" onClick={() => refetchEmailConfig()} disabled={isLoadingEmailConfig || isSaving}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingEmailConfig ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+              <p className="text-sm text-blue-800">
+                Changes are stored in the database. The sender uses these values for new emails.
               </p>
             </div>
           </CardContent>
