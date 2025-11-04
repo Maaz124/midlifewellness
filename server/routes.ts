@@ -1106,10 +1106,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send notification email using ES module import
       const { addSignatureToEmail } = await import('./email-signatures');
+      const { getEmailConfig } = await import('./get-email-config');
+      const emailConfig = await getEmailConfig();
       
       const notificationEmailSent = await sendGmailEmail({
-        to: process.env.COACHING_INBOX || 'coaching@bloomafter40.com',
-        from: process.env.GMAIL_USER || 'coaching@bloomafter40.com',
+        to: emailConfig.coachingInbox,
+        from: emailConfig.gmailUser || emailConfig.coachingInbox,
         subject: `New Coaching Inquiry from ${name}`,
         html: `
           <div style="font-family: Inter, Arial, sans-serif; max-width: 720px; margin: 0 auto; background: #ffffff;">
@@ -1224,7 +1226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const confirmationEmailSent = await sendGmailEmail({
         to: email,
-        from: process.env.GMAIL_USER || 'coaching@bloomafter40.com',
+        from: emailConfig.gmailUser || emailConfig.coachingInbox,
         subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
         html: addSignatureToEmail(confirmationEmailContent, 'personal')
       });
@@ -1611,28 +1613,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get email configuration (admin only)
+  // Get email configuration (admin only) - from database
   app.get("/api/admin/email-config", isAdmin, async (_req: any, res) => {
     try {
-      const fs = await import('fs');
-      const fsp = await import('fs/promises');
-      const possiblePaths = [path.join(process.cwd(), '.env'), path.join(process.cwd(), '.env.local')];
-      const envPath = possiblePaths.find(p => fs.existsSync(p));
-      let fileContent = '';
-      if (envPath) {
-        fileContent = await fsp.readFile(envPath, 'utf8');
-      }
-      const getVar = (name: string) => {
-        const regex = new RegExp(`^${name}=(.*)$`, 'm');
-        const match = fileContent.match(regex);
-        if (match) return match[1].trim();
-        return process.env[name] || '';
-      };
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
+      const { eq } = await import("drizzle-orm");
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
+      
+      const gmailUserRow = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'gmail_user'))
+        .limit(1);
+      
+      const gmailAppPasswordRow = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'gmail_app_password'))
+        .limit(1);
+      
+      const coachingInboxRow = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_inbox'))
+        .limit(1);
+      
+      // Fallback to environment variables if not in database
+      const envGmailUser = process.env.GMAIL_USER || '';
+      const envGmailAppPassword = process.env.GMAIL_APP_PASSWORD ? '***hidden***' : '';
+      const envCoachingInbox = process.env.COACHING_INBOX || 'coaching@bloomafter40.com';
+      
       res.json({
-        gmailUser: getVar('GMAIL_USER'),
-        gmailAppPassword: getVar('GMAIL_APP_PASSWORD') ? '***hidden***' : '',
-        coachingInbox: getVar('COACHING_INBOX') || 'coaching@bloomafter40.com',
-        source: envPath ? 'env_file' : 'environment'
+        gmailUser: gmailUserRow[0]?.value || envGmailUser,
+        gmailAppPassword: gmailAppPasswordRow[0]?.value ? '***hidden***' : envGmailAppPassword,
+        coachingInbox: coachingInboxRow[0]?.value || envCoachingInbox,
+        source: (gmailUserRow[0] || gmailAppPasswordRow[0] || coachingInboxRow[0]) ? 'database' : 'environment'
       });
     } catch (error: any) {
       console.error('Error fetching email config:', error);
@@ -1640,43 +1657,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update email configuration (admin only)
+  // Update email configuration (admin only) - store in database
   app.put("/api/admin/email-config", isAdmin, async (req: any, res) => {
     try {
       const { gmailUser, gmailAppPassword, coachingInbox } = req.body;
-      const fs = await import('fs');
-      const fsp = await import('fs/promises');
-      const envPath = fs.existsSync(path.join(process.cwd(), '.env'))
-        ? path.join(process.cwd(), '.env')
-        : path.join(process.cwd(), '.env.local');
-
-      let content = '';
-      if (fs.existsSync(envPath)) {
-        content = await fsp.readFile(envPath, 'utf8');
-      }
-
-      const upsert = (src: string, key: string, value: string | undefined) => {
-        if (typeof value !== 'string') return src;
-        const line = `${key}=${value}`;
-        const regex = new RegExp(`^${key}=.*$`, 'm');
-        if (regex.test(src)) {
-          return src.replace(regex, line);
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
+      const { eq } = await import("drizzle-orm");
+      const userId = req.session.userId;
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
+      
+      // Update or insert gmail_user
+      if (typeof gmailUser === 'string') {
+        const existingGmailUser = await db
+          .select()
+          .from(adminConfig)
+          .where(eq(adminConfig.key, 'gmail_user'))
+          .limit(1);
+        
+        if (existingGmailUser.length > 0) {
+          await db
+            .update(adminConfig)
+            .set({
+              value: gmailUser,
+              updatedBy: userId,
+              updatedAt: new Date()
+            })
+            .where(eq(adminConfig.key, 'gmail_user'));
+        } else {
+          await db.insert(adminConfig).values({
+            key: 'gmail_user',
+            value: gmailUser,
+            description: 'Gmail User Email Address',
+            updatedBy: userId
+          });
         }
-        return src.trim().length ? src + `\n` + line + `\n` : line + `\n`;
-      };
-
-      content = upsert(content, 'GMAIL_USER', gmailUser);
-      if (gmailAppPassword && gmailAppPassword.trim()) {
-        content = upsert(content, 'GMAIL_APP_PASSWORD', gmailAppPassword);
       }
-      content = upsert(content, 'COACHING_INBOX', coachingInbox);
-
-      await fsp.writeFile(envPath, content, 'utf8');
-
-      res.json({ message: 'Email configuration updated in env file. Restart server to apply.' });
+      
+      // Update or insert gmail_app_password (only if provided)
+      if (gmailAppPassword && typeof gmailAppPassword === 'string' && gmailAppPassword.trim()) {
+        const existingGmailPassword = await db
+          .select()
+          .from(adminConfig)
+          .where(eq(adminConfig.key, 'gmail_app_password'))
+          .limit(1);
+        
+        if (existingGmailPassword.length > 0) {
+          await db
+            .update(adminConfig)
+            .set({
+              value: gmailAppPassword,
+              updatedBy: userId,
+              updatedAt: new Date()
+            })
+            .where(eq(adminConfig.key, 'gmail_app_password'));
+        } else {
+          await db.insert(adminConfig).values({
+            key: 'gmail_app_password',
+            value: gmailAppPassword,
+            description: 'Gmail App Password (sensitive)',
+            updatedBy: userId
+          });
+        }
+      }
+      
+      // Update or insert coaching_inbox
+      if (typeof coachingInbox === 'string') {
+        const existingCoachingInbox = await db
+          .select()
+          .from(adminConfig)
+          .where(eq(adminConfig.key, 'coaching_inbox'))
+          .limit(1);
+        
+        if (existingCoachingInbox.length > 0) {
+          await db
+            .update(adminConfig)
+            .set({
+              value: coachingInbox,
+              updatedBy: userId,
+              updatedAt: new Date()
+            })
+            .where(eq(adminConfig.key, 'coaching_inbox'));
+        } else {
+          await db.insert(adminConfig).values({
+            key: 'coaching_inbox',
+            value: coachingInbox,
+            description: 'Coaching Inbox Email Address',
+            updatedBy: userId
+          });
+        }
+      }
+      
+      // Clear email config cache to force refresh
+      const { clearEmailConfigCache } = await import('./get-email-config');
+      clearEmailConfigCache();
+      
+      res.json({ 
+        message: 'Email configuration updated successfully',
+        note: 'Settings are stored in database. Server restart may be required for full effect.'
+      });
     } catch (error: any) {
       console.error('Error updating email config:', error);
-      res.status(500).json({ message: 'Failed to update email configuration' });
+      res.status(500).json({ message: 'Failed to update email configuration', error: error.message });
     }
   });
   
@@ -1752,6 +1835,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           apiVersion: "2025-06-30.basil",
         });
       }
+      
+      // Clear Stripe config cache to force refresh
+      const { clearStripeConfigCache } = await import('./get-stripe-config');
+      clearStripeConfigCache();
       
       res.json({ 
         message: "Stripe keys updated successfully",

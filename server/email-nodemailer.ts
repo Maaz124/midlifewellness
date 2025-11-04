@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { getEmailConfig } from "./get-email-config";
 
 type GmailSendParams = {
   to: string;
@@ -9,20 +10,29 @@ type GmailSendParams = {
   authOverride?: { user: string; pass: string };
 };
 
-const gmailUser = process.env.GMAIL_USER;
-const gmailPass = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS;
-
 let transporter: nodemailer.Transporter | null = null;
+let transporterConfig: { user: string; pass: string } | null = null;
 
-function getTransporter(): nodemailer.Transporter | null {
-  if (!gmailUser || !gmailPass) {
+async function getTransporter(): Promise<nodemailer.Transporter | null> {
+  const emailConfig = await getEmailConfig();
+  
+  if (!emailConfig.gmailUser || !emailConfig.gmailAppPassword) {
     return null;
   }
-  if (transporter) return transporter;
+  
+  // Recreate transporter if config changed
+  const currentConfig = { user: emailConfig.gmailUser, pass: emailConfig.gmailAppPassword };
+  if (transporter && transporterConfig && 
+      transporterConfig.user === currentConfig.user && 
+      transporterConfig.pass === currentConfig.pass) {
+    return transporter;
+  }
+  
   transporter = nodemailer.createTransport({
     service: "gmail",
-    auth: { user: gmailUser, pass: gmailPass },
+    auth: currentConfig,
   });
+  transporterConfig = currentConfig;
   return transporter;
 }
 
@@ -35,16 +45,17 @@ export async function sendGmailEmail(params: GmailSendParams): Promise<boolean> 
         auth: { user: params.authOverride.user, pass: params.authOverride.pass },
       });
     } else {
-      tx = getTransporter();
+      tx = await getTransporter();
     }
     if (!tx) {
       console.warn("Gmail credentials not configured; skipping email send.");
       return false;
     }
 
+    const emailConfig = await getEmailConfig();
     await tx.sendMail({
       to: params.to,
-      from: params.from || params.authOverride?.user || gmailUser!,
+      from: params.from || params.authOverride?.user || emailConfig.gmailUser,
       subject: params.subject,
       text: params.text,
       html: params.html,
