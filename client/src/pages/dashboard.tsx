@@ -1,5 +1,4 @@
 import { HealthCalculator } from '@/components/health-calculator';
-import { MeditationTimer } from '@/components/meditation-timer';
 import { AboutDoctor } from '@/components/about-doctor';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,12 +27,25 @@ export default function Dashboard() {
   const price = priceData?.price || 150; // Default to 150 if not loaded
   
   const { data, updateHealthScores } = useWellnessData();
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
   const healthScores = data?.healthScores || { mental: 0, physical: 0, cognitive: 0, overall: 0 };
   const journalEntries = data?.journalEntries || [];
+  // Fetch journal entries from API (one per day) when authenticated
+  const { data: apiJournalEntries = [], isLoading: isLoadingApiEntries } = useQuery({
+    queryKey: ['/api/journal-entries'],
+    queryFn: async () => {
+      const res = await fetch('/api/journal-entries', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch journal entries');
+      return res.json();
+    },
+    enabled: !!isAuthenticated,
+    staleTime: 30000,
+  });
+
+  const activeDaysCount = isAuthenticated ? (Array.isArray(apiJournalEntries) ? apiJournalEntries.length : 0) : journalEntries.length;
   const moodTracking = data?.moodTracking || [];
   const coachingProgress = data?.coachingProgress || { completedComponents: [], currentWeek: 1, responseData: {} };
 
@@ -157,7 +169,7 @@ export default function Dashboard() {
                   <Target className="w-6 h-6 text-coral-500" />
                 </div>
                 <span className="text-2xl font-bold text-coral-500">
-                  {journalEntries.length + moodTracking.length}
+                  {activeDaysCount}
                 </span>
               </div>
               <h3 className="font-semibold text-gray-800 mb-1">Active Days</h3>
@@ -392,8 +404,7 @@ export default function Dashboard() {
         <AboutDoctor />
       </section>
 
-      {/* Meditation Timer */}
-      <MeditationTimer />
+      
     </div>
   );
 }
