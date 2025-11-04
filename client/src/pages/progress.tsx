@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -34,18 +35,26 @@ ChartJS.register(
 
 export default function ProgressPage() {
   const { data } = useWellnessData();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [timeRange, setTimeRange] = useState('30');
   const [chartType, setChartType] = useState<'line' | 'bar'>('bar');
-  const [chartData, setChartData] = useState<any>(null);
+  // Chart data generated via memo to avoid relying on async effects
+  // and to render immediately on navigation without reloads
+
+  // Safe fallbacks to avoid undefined during initial render
+  const safeScores = data?.healthScores || { mental: 0, physical: 0, cognitive: 0, overall: 0 };
+  const safeJournal = Array.isArray(data?.journalEntries) ? data!.journalEntries : [];
+  const safeMood = Array.isArray(data?.moodTracking) ? data!.moodTracking : [];
+  const safeGoals = Array.isArray(data?.goals) ? data!.goals : [];
 
   // Enhanced chart data with dynamic color coding
   const generateChartData = () => {
     const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
     
     // Simulate weekly progress data leading to current scores
-    const mentalData = [45, 55, 62, 68, data.healthScores.mental || 0];
-    const physicalData = [40, 50, 58, 65, data.healthScores.physical || 0];
-    const cognitiveData = [50, 60, 68, 75, data.healthScores.cognitive || 0];
+    const mentalData = [45, 55, 62, 68, safeScores.mental || 0];
+    const physicalData = [40, 50, 58, 65, safeScores.physical || 0];
+    const cognitiveData = [50, 60, 68, 75, safeScores.cognitive || 0];
     
     const getScoreColor = (score: number) => {
       if (score >= 80) return 'hsl(142, 76%, 36%)'; // Excellent - Green
@@ -61,12 +70,12 @@ export default function ProgressPage() {
         {
           label: 'Mental Health',
           data: mentalData,
-          borderColor: getScoreColor(data.healthScores.mental || 0),
+          borderColor: getScoreColor(safeScores.mental || 0),
           backgroundColor: chartType === 'bar' 
-            ? getScoreColor(data.healthScores.mental || 0) + '80'
-            : getScoreColor(data.healthScores.mental || 0) + '20',
+            ? getScoreColor(safeScores.mental || 0) + '80'
+            : getScoreColor(safeScores.mental || 0) + '20',
           borderWidth: chartType === 'line' ? 3 : 2,
-          pointBackgroundColor: getScoreColor(data.healthScores.mental || 0),
+          pointBackgroundColor: getScoreColor(safeScores.mental || 0),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: chartType === 'line' ? 6 : 0,
@@ -78,12 +87,12 @@ export default function ProgressPage() {
         {
           label: 'Physical Health', 
           data: physicalData,
-          borderColor: getScoreColor(data.healthScores.physical || 0),
+          borderColor: getScoreColor(safeScores.physical || 0),
           backgroundColor: chartType === 'bar'
-            ? getScoreColor(data.healthScores.physical || 0) + '80'
-            : getScoreColor(data.healthScores.physical || 0) + '20',
+            ? getScoreColor(safeScores.physical || 0) + '80'
+            : getScoreColor(safeScores.physical || 0) + '20',
           borderWidth: chartType === 'line' ? 3 : 2,
-          pointBackgroundColor: getScoreColor(data.healthScores.physical || 0),
+          pointBackgroundColor: getScoreColor(safeScores.physical || 0),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: chartType === 'line' ? 6 : 0,
@@ -95,12 +104,12 @@ export default function ProgressPage() {
         {
           label: 'Cognitive Health',
           data: cognitiveData,
-          borderColor: getScoreColor(data.healthScores.cognitive || 0),
+          borderColor: getScoreColor(safeScores.cognitive || 0),
           backgroundColor: chartType === 'bar'
-            ? getScoreColor(data.healthScores.cognitive || 0) + '80'
-            : getScoreColor(data.healthScores.cognitive || 0) + '20',
+            ? getScoreColor(safeScores.cognitive || 0) + '80'
+            : getScoreColor(safeScores.cognitive || 0) + '20',
           borderWidth: chartType === 'line' ? 3 : 2,
-          pointBackgroundColor: getScoreColor(data.healthScores.cognitive || 0),
+          pointBackgroundColor: getScoreColor(safeScores.cognitive || 0),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: chartType === 'line' ? 6 : 0,
@@ -184,10 +193,7 @@ export default function ProgressPage() {
     }
   };
 
-  useEffect(() => {
-    // Generate chart data when component mounts or chart type changes
-    setChartData(generateChartData());
-  }, [chartType, data.healthScores.mental, data.healthScores.physical, data.healthScores.cognitive]);
+  const chartData = useMemo(() => generateChartData(), [chartType, safeScores.mental, safeScores.physical, safeScores.cognitive]);
 
   const moodDistribution = {
     'very-happy': { value: 32, color: 'hsl(142, 76%, 36%)', label: 'Very Happy' },
@@ -244,11 +250,24 @@ export default function ProgressPage() {
   ];
 
   const monthlyStats = {
-    avgWellness: Math.round((data.healthScores.mental + data.healthScores.physical + data.healthScores.cognitive) / 3) || 0,
-    journalEntries: data.journalEntries.length,
-    moodCheckins: data.moodTracking.length,
-    goalsAchieved: `${data.goals.filter(g => g.completed).length}/${data.goals.length}`
+    avgWellness: Math.round((safeScores.mental + safeScores.physical + safeScores.cognitive) / 3) || 0,
+    journalEntries: safeJournal.length,
+    moodCheckins: safeMood.length,
+    goalsAchieved: `${safeGoals.filter((g: any) => g.completed).length}/${safeGoals.length}`
   };
+
+  // Reload once per visit to this page (when navigated to), using a short timestamp guard
+  useEffect(() => {
+    const key = 'progress_last_reload';
+    const last = parseInt(sessionStorage.getItem(key) || '0', 10);
+    const now = Date.now();
+    if (now - last > 2000) {
+      sessionStorage.setItem(key, String(now));
+      window.location.reload();
+    }
+  }, []);
+
+  // No explicit loading gate needed now; chartData is derived synchronously
 
   return (
     <div className="space-y-8">
@@ -308,55 +327,55 @@ export default function ProgressPage() {
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
                     <div className={`w-4 h-4 rounded-full ${
-                      data.healthScores.mental >= 80 ? 'bg-emerald-500' :
-                      data.healthScores.mental >= 70 ? 'bg-blue-500' :
-                      data.healthScores.mental >= 60 ? 'bg-amber-500' :
-                      data.healthScores.mental >= 40 ? 'bg-orange-500' : 'bg-rose-500'
+                      safeScores.mental >= 80 ? 'bg-emerald-500' :
+                      safeScores.mental >= 70 ? 'bg-blue-500' :
+                      safeScores.mental >= 60 ? 'bg-amber-500' :
+                      safeScores.mental >= 40 ? 'bg-orange-500' : 'bg-rose-500'
                     }`}></div>
                     <span className="text-gray-700 font-medium">Mental Health</span>
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      data.healthScores.mental >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                      data.healthScores.mental >= 70 ? 'bg-blue-100 text-blue-800' :
-                      data.healthScores.mental >= 60 ? 'bg-amber-100 text-amber-800' :
-                      data.healthScores.mental >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>{data.healthScores.mental}</span>
+                      safeScores.mental >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      safeScores.mental >= 70 ? 'bg-blue-100 text-blue-800' :
+                      safeScores.mental >= 60 ? 'bg-amber-100 text-amber-800' :
+                      safeScores.mental >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>{safeScores.mental}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className={`w-4 h-4 rounded-full ${
-                      data.healthScores.physical >= 80 ? 'bg-emerald-500' :
-                      data.healthScores.physical >= 70 ? 'bg-blue-500' :
-                      data.healthScores.physical >= 60 ? 'bg-amber-500' :
-                      data.healthScores.physical >= 40 ? 'bg-orange-500' : 'bg-rose-500'
+                      safeScores.physical >= 80 ? 'bg-emerald-500' :
+                      safeScores.physical >= 70 ? 'bg-blue-500' :
+                      safeScores.physical >= 60 ? 'bg-amber-500' :
+                      safeScores.physical >= 40 ? 'bg-orange-500' : 'bg-rose-500'
                     }`}></div>
                     <span className="text-gray-700 font-medium">Physical Health</span>
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      data.healthScores.physical >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                      data.healthScores.physical >= 70 ? 'bg-blue-100 text-blue-800' :
-                      data.healthScores.physical >= 60 ? 'bg-amber-100 text-amber-800' :
-                      data.healthScores.physical >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>{data.healthScores.physical}</span>
+                      safeScores.physical >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      safeScores.physical >= 70 ? 'bg-blue-100 text-blue-800' :
+                      safeScores.physical >= 60 ? 'bg-amber-100 text-amber-800' :
+                      safeScores.physical >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>{safeScores.physical}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className={`w-4 h-4 rounded-full ${
-                      data.healthScores.cognitive >= 80 ? 'bg-emerald-500' :
-                      data.healthScores.cognitive >= 70 ? 'bg-blue-500' :
-                      data.healthScores.cognitive >= 60 ? 'bg-amber-500' :
-                      data.healthScores.cognitive >= 40 ? 'bg-orange-500' : 'bg-rose-500'
+                      safeScores.cognitive >= 80 ? 'bg-emerald-500' :
+                      safeScores.cognitive >= 70 ? 'bg-blue-500' :
+                      safeScores.cognitive >= 60 ? 'bg-amber-500' :
+                      safeScores.cognitive >= 40 ? 'bg-orange-500' : 'bg-rose-500'
                     }`}></div>
                     <span className="text-gray-700 font-medium">Cognitive Health</span>
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      data.healthScores.cognitive >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                      data.healthScores.cognitive >= 70 ? 'bg-blue-100 text-blue-800' :
-                      data.healthScores.cognitive >= 60 ? 'bg-amber-100 text-amber-800' :
-                      data.healthScores.cognitive >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>{data.healthScores.cognitive}</span>
+                      safeScores.cognitive >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      safeScores.cognitive >= 70 ? 'bg-blue-100 text-blue-800' :
+                      safeScores.cognitive >= 60 ? 'bg-amber-100 text-amber-800' :
+                      safeScores.cognitive >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>{safeScores.cognitive}</span>
                   </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="h-80 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-4">
-                {chartData && data.healthScores.overall > 0 ? (
+                {chartData && safeScores.overall > 0 ? (
                   <div className="h-full">
                     {chartType === 'line' ? (
                       <Line data={chartData} options={chartOptions} />
@@ -480,7 +499,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="h-48 flex items-center justify-center bg-gray-50 rounded-lg mb-6">
-              {data.moodTracking.length > 0 ? (
+              {safeMood.length > 0 ? (
                 <div className="text-center">
                   <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500">Mood distribution chart would appear here</p>
@@ -555,22 +574,22 @@ export default function ProgressPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {data.journalEntries.length > 0 ? (
+          {safeJournal.length > 0 ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-primary/5 rounded-lg">
-                  <div className="text-2xl font-bold text-primary">{data.journalEntries.length}</div>
+                  <div className="text-2xl font-bold text-primary">{safeJournal.length}</div>
                   <div className="text-sm text-gray-600">Total Entries</div>
                 </div>
                 <div className="text-center p-4 bg-sage/5 rounded-lg">
                   <div className="text-2xl font-bold text-sage-600">
-                    {Math.round(data.journalEntries.reduce((acc, entry) => acc + entry.content.split(' ').length, 0) / data.journalEntries.length)}
+                    {Math.round(safeJournal.reduce((acc: number, entry: any) => acc + (entry.content?.split(' ').length || 0), 0) / Math.max(1, safeJournal.length))}
                   </div>
                   <div className="text-sm text-gray-600">Avg Words/Entry</div>
                 </div>
                 <div className="text-center p-4 bg-coral/5 rounded-lg">
                   <div className="text-2xl font-bold text-coral-500">
-                    {Math.round(data.journalEntries.length / Math.max(1, Math.ceil((Date.now() - new Date(data.userProfile.startDate).getTime()) / (1000 * 60 * 60 * 24))) * 7)}
+                    {Math.round(safeJournal.length / Math.max(1, Math.ceil((Date.now() - new Date((data?.userProfile?.startDate || new Date()).toString()).getTime()) / (1000 * 60 * 60 * 24))) * 7)}
                   </div>
                   <div className="text-sm text-gray-600">Entries/Week</div>
                 </div>
@@ -579,7 +598,7 @@ export default function ProgressPage() {
               <div className="border-t border-gray-200 pt-4">
                 <h4 className="font-semibold text-gray-800 mb-3">Recent Reflections</h4>
                 <div className="space-y-3">
-                  {data.journalEntries.slice(-3).map((entry, index) => (
+                  {safeJournal.slice(-3).map((entry: any, index: number) => (
                     <div key={entry.id || index} className="border-l-4 border-primary pl-4 py-2">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="font-medium text-gray-900">{entry.title || 'Daily Reflection'}</h5>
@@ -588,7 +607,7 @@ export default function ProgressPage() {
                         </span>
                       </div>
                       <p className="text-gray-600 text-sm line-clamp-2">
-                        {entry.content.substring(0, 150)}...
+                        {String(entry.content || '').substring(0, 150)}...
                       </p>
                     </div>
                   ))}

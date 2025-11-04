@@ -455,7 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get coaching program price (public endpoint)
+  // Get coaching program prices (public endpoint)
   app.get("/api/coaching-price", async (req, res) => {
     try {
       const dbModule = await import("./db");
@@ -464,20 +464,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const schemaModule: any = await import("@shared/schema");
       const adminConfig = schemaModule.adminConfig;
       
-      const priceConfig = await db
+      const currentPriceRow = await db
         .select()
         .from(adminConfig)
         .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
+
+      const regularPriceRow = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_regular_price'))
+        .limit(1);
       
-      // Default to 150 if not found in database
-      const price = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
+      // Defaults
+      const currentPrice = currentPriceRow[0]?.value ? parseFloat(currentPriceRow[0].value) : 150;
+      const regularPrice = regularPriceRow[0]?.value ? parseFloat(regularPriceRow[0].value) : 297;
       
-      res.json({ price });
+      res.json({ currentPrice, regularPrice });
     } catch (error) {
       console.error('Error fetching coaching price:', error);
-      // Return default price on error
-      res.json({ price: 150 });
+      // Return defaults on error
+      res.json({ currentPrice: 150, regularPrice: 297 });
     }
   });
 
@@ -1726,7 +1733,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get coaching program price (admin only)
+  // Get coaching program prices (admin only)
   app.get("/api/admin/coaching-price", isAdmin, async (req: any, res) => {
     try {
       const dbModule = await import("./db");
@@ -1735,30 +1742,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const schemaModule: any = await import("@shared/schema");
       const adminConfig = schemaModule.adminConfig;
       
-      const priceConfig = await db
+      const currentPriceRow = await db
         .select()
         .from(adminConfig)
         .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
-      
-      const price = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
-      
-      res.json({ price });
+
+      const regularPriceRow = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_regular_price'))
+        .limit(1);
+
+      const currentPrice = currentPriceRow[0]?.value ? parseFloat(currentPriceRow[0].value) : 150;
+      const regularPrice = regularPriceRow[0]?.value ? parseFloat(regularPriceRow[0].value) : 297;
+
+      res.json({ currentPrice, regularPrice });
     } catch (error) {
       console.error('Error fetching coaching price:', error);
       res.status(500).json({ message: "Failed to fetch coaching price" });
     }
   });
 
-  // Update coaching program price (admin only)
+  // Update coaching program prices (admin only)
   app.put("/api/admin/coaching-price", isAdmin, async (req: any, res) => {
     try {
-      const { price } = req.body;
+      const { currentPrice, regularPrice } = req.body;
       
-      console.log('[Price Update] Received request:', { price, type: typeof price });
+      console.log('[Price Update] Received request:', { currentPrice, regularPrice });
       
-      if (!price || typeof price !== 'number' || price <= 0) {
-        return res.status(400).json({ message: "Valid price is required (must be a positive number)" });
+      if (!currentPrice || typeof currentPrice !== 'number' || currentPrice <= 0) {
+        return res.status(400).json({ message: "Valid current price is required (must be a positive number)" });
       }
       
       const dbModule = await import("./db");
@@ -1771,51 +1785,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const schemaModule: any = await import("@shared/schema");
       const adminConfig = schemaModule.adminConfig;
       
-      // Update or insert coaching price
-      const existingPrice = await db
+      // Update or insert current price
+      const existingCurrent = await db
         .select()
         .from(adminConfig)
         .where(eq(adminConfig.key, 'coaching_program_price'))
         .limit(1);
       
-      console.log('[Price Update] Existing price:', existingPrice);
-      
-      if (existingPrice.length > 0) {
-        const updateResult = await db
+      if (existingCurrent.length > 0) {
+        await db
           .update(adminConfig)
           .set({
-            value: price.toString(),
+            value: currentPrice.toString(),
             updatedBy: userId,
             updatedAt: new Date()
           })
-          .where(eq(adminConfig.key, 'coaching_program_price'))
-          .returning();
-        
-        console.log('[Price Update] Update result:', updateResult);
+          .where(eq(adminConfig.key, 'coaching_program_price'));
       } else {
-        const insertResult = await db.insert(adminConfig).values({
+        await db.insert(adminConfig).values({
           key: 'coaching_program_price',
-          value: price.toString(),
-          description: 'Coaching Program Price in USD',
+          value: currentPrice.toString(),
+          description: 'Coaching Program Current Price in USD',
           updatedBy: userId
-        }).returning();
-        
-        console.log('[Price Update] Insert result:', insertResult);
+        });
       }
       
-      // Verify the update
-      const verifyPrice = await db
-        .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'coaching_program_price'))
-        .limit(1);
+      // Update or insert regular price (optional)
+      if (regularPrice && typeof regularPrice === 'number' && regularPrice > 0) {
+        const existingRegular = await db
+          .select()
+          .from(adminConfig)
+          .where(eq(adminConfig.key, 'coaching_program_regular_price'))
+          .limit(1);
+        if (existingRegular.length > 0) {
+          await db
+            .update(adminConfig)
+            .set({
+              value: regularPrice.toString(),
+              updatedBy: userId,
+              updatedAt: new Date()
+            })
+            .where(eq(adminConfig.key, 'coaching_program_regular_price'));
+        } else {
+          await db.insert(adminConfig).values({
+            key: 'coaching_program_regular_price',
+            value: regularPrice.toString(),
+            description: 'Coaching Program Regular/List Price in USD',
+            updatedBy: userId
+          });
+        }
+      }
       
-      console.log('[Price Update] Verified price:', verifyPrice);
-      
-      res.json({ 
-        message: "Coaching price updated successfully",
-        price: price
-      });
+      res.json({ message: "Coaching prices updated successfully" });
     } catch (error: any) {
       console.error('[Price Update] Error updating coaching price:', error);
       console.error('[Price Update] Error stack:', error.stack);

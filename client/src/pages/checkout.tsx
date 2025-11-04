@@ -96,7 +96,7 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
   const [, setLocation] = useLocation();
 
-  // Fetch coaching price from database
+  // Fetch coaching prices from database
   const { data: priceData, isLoading: priceLoading } = useQuery({
     queryKey: ['/api/coaching-price'],
     queryFn: async () => {
@@ -104,8 +104,7 @@ export default function Checkout() {
       return res.json();
     },
   });
-
-  const price = priceData?.price || 150; // Default to 150 if not loaded
+  const price = priceData?.currentPrice ?? 150; // Default if not loaded
 
   useEffect(() => {
     // Skip creating PaymentIntent if Stripe is not configured in dev
@@ -212,7 +211,7 @@ export default function Checkout() {
                 One-Time Payment: ${price.toFixed(2)}
               </p>
               <p className="text-center text-sm text-gray-600 mt-1">
-                (Regular value: $297)
+                (Regular value: ${ (priceData?.regularPrice ?? 297).toFixed(2) })
               </p>
             </div>
           </CardContent>

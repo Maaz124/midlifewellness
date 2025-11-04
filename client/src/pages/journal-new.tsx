@@ -21,6 +21,17 @@ export default function JournalNew() {
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
 
+  // Optional: Hard reload once on first open to ensure fresh data after navigation
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      const key = 'journal_reloaded_once';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, 'true');
+        window.location.reload();
+      }
+    }
+  }, [authLoading, isAuthenticated]);
+
   // Block access for unauthenticated users
   if (!authLoading && !isAuthenticated) {
     return (

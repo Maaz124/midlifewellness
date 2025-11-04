@@ -61,7 +61,8 @@ function AdminDashboard() {
     secretKey: "",
   });
   const [isSaving, setIsSaving] = useState(false);
-  const [coachingPrice, setCoachingPrice] = useState<string>("");
+  const [coachingCurrentPrice, setCoachingCurrentPrice] = useState<string>("");
+  const [coachingRegularPrice, setCoachingRegularPrice] = useState<string>("");
   const [isSavingPrice, setIsSavingPrice] = useState(false);
   const [emailConfig, setEmailConfig] = useState({
     gmailUser: "",
@@ -189,7 +190,7 @@ function AdminDashboard() {
     isLoading: isLoadingPrice, 
     error: priceError,
     refetch: refetchPrice 
-  } = useQuery<{ price: number }>({
+  } = useQuery<{ currentPrice: number; regularPrice: number }>({
     queryKey: ["/api/admin/coaching-price"],
     queryFn: async () => {
       const res = await fetch("/api/admin/coaching-price", { credentials: "include" });
@@ -280,7 +281,8 @@ function AdminDashboard() {
 
   useEffect(() => {
     if (priceData) {
-      setCoachingPrice(priceData.price.toString());
+      setCoachingCurrentPrice(String(priceData.currentPrice ?? ""));
+      setCoachingRegularPrice(String(priceData.regularPrice ?? ""));
     }
   }, [priceData]);
 
@@ -368,8 +370,8 @@ function AdminDashboard() {
 
   // Update coaching price mutation
   const updatePriceMutation = useMutation({
-    mutationFn: async (price: number) => {
-      return apiRequest("PUT", "/api/admin/coaching-price", { price });
+    mutationFn: async (payload: { currentPrice: number; regularPrice?: number }) => {
+      return apiRequest("PUT", "/api/admin/coaching-price", payload);
     },
     onSuccess: () => {
       toast({
@@ -390,11 +392,12 @@ function AdminDashboard() {
   });
 
   const handleSavePrice = async () => {
-    const priceValue = parseFloat(coachingPrice);
-    if (!coachingPrice || isNaN(priceValue) || priceValue <= 0) {
+    const current = parseFloat(coachingCurrentPrice);
+    const regular = coachingRegularPrice ? parseFloat(coachingRegularPrice) : undefined;
+    if (!coachingCurrentPrice || isNaN(current) || current <= 0) {
       toast({
         title: "Validation Error",
-        description: "Please enter a valid positive number for the price",
+        description: "Please enter a valid positive number for the current price",
         variant: "destructive",
       });
       return;
@@ -402,7 +405,7 @@ function AdminDashboard() {
 
     setIsSavingPrice(true);
     try {
-      await updatePriceMutation.mutateAsync(priceValue);
+      await updatePriceMutation.mutateAsync({ currentPrice: current, regularPrice: regular });
     } finally {
       setIsSavingPrice(false);
     }
@@ -634,7 +637,7 @@ function AdminDashboard() {
                   Coaching Program Price Management
                 </CardTitle>
                 <CardDescription className="mt-2">
-                  Set the price for the coaching program. This price will be used across all checkout pages and payment processing.
+                  Set both Regular/List price and Current price. The discount is automatically calculated.
                 </CardDescription>
               </div>
             </div>
@@ -648,27 +651,48 @@ function AdminDashboard() {
             ) : (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="coaching-price">Current Coaching Program Price (USD)</Label>
+                  <Label htmlFor="regular-price">Regular/List Price (USD)</Label>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold text-gray-700">$</span>
                     <Input
-                      id="coaching-price"
+                      id="regular-price"
                       type="number"
                       min="0"
                       step="0.01"
-                      placeholder="150.00"
-                      value={coachingPrice}
-                      onChange={(e) => setCoachingPrice(e.target.value)}
+                      placeholder="297.00"
+                      value={coachingRegularPrice}
+                      onChange={(e) => setCoachingRegularPrice(e.target.value)}
                       disabled={isLoadingPrice || isSavingPrice}
                       className="text-lg font-semibold"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Enter the price in USD (e.g., 150.00 for $150.00)
-                  </p>
+                  <p className="text-xs text-muted-foreground">Displayed as the crossed-out price</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="current-price">Current Price (USD)</Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-gray-700">$</span>
+                    <Input
+                      id="current-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="150.00"
+                      value={coachingCurrentPrice}
+                      onChange={(e) => setCoachingCurrentPrice(e.target.value)}
+                      disabled={isLoadingPrice || isSavingPrice}
+                      className="text-lg font-semibold"
+                    />
+                  </div>
                   {priceData && (
                     <p className="text-sm text-gray-600">
-                      Current price: <span className="font-semibold">${priceData.price.toFixed(2)}</span>
+                      Current: <span className="font-semibold">${priceData.currentPrice.toFixed(2)}</span>{' '}
+                      {priceData.regularPrice ? (
+                        <>
+                          | Regular: <span className="font-semibold">${priceData.regularPrice.toFixed(2)}</span>
+                        </>
+                      ) : null}
                     </p>
                   )}
                 </div>
@@ -680,7 +704,7 @@ function AdminDashboard() {
                     className="bg-purple-600 hover:bg-purple-700"
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {isSavingPrice ? "Saving..." : "Save Price"}
+                    {isSavingPrice ? "Saving..." : "Save Prices"}
                   </Button>
                   <Button
                     variant="outline"
@@ -767,10 +791,10 @@ function AdminDashboard() {
                                 </span>
                               )}
                               {user.hasCoachingAccess && (
-                                <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                                  Premium
-                                </span>
-                              )}
+                              <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                Full Access
+                              </span>
+                            )}
                             </div>
                             <div className="flex items-center mt-1 text-sm text-gray-600">
                               <Mail className="w-4 h-4 mr-1" />

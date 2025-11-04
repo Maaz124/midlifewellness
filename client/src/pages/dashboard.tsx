@@ -16,7 +16,7 @@ export default function Dashboard() {
   // SEO optimization for dashboard page
   useSEO('dashboard');
   
-  // Fetch coaching price from database
+  // Fetch coaching prices from database
   const { data: priceData } = useQuery({
     queryKey: ['/api/coaching-price'],
     queryFn: async () => {
@@ -24,7 +24,8 @@ export default function Dashboard() {
       return res.json();
     },
   });
-  const price = priceData?.price || 150; // Default to 150 if not loaded
+  const currentPrice = priceData?.currentPrice ?? 150;
+  const regularPrice = priceData?.regularPrice ?? 297;
   
   const { data, updateHealthScores } = useWellnessData();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -253,7 +254,7 @@ export default function Dashboard() {
                     <Link href="/coaching">
                       <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold">
                         <Sparkles className="w-4 h-4 mr-2" />
-                        Explore Full Program - ${price.toFixed(2)}
+                        Explore Full Program - ${currentPrice.toFixed(2)}
                       </Button>
                     </Link>
                     <p className="text-xs text-gray-500">
@@ -314,7 +315,7 @@ export default function Dashboard() {
                   </h3>
                   <div className="space-y-2 text-gray-700">
                     <p className="font-semibold text-lg">
-                      Payment Amount: ${price.toFixed(2)}
+                      Payment Amount: ${currentPrice.toFixed(2)}
                     </p>
                     {user?.coachingAccessGrantedAt && (
                       <>
@@ -356,10 +357,12 @@ export default function Dashboard() {
                   </p>
                   <div className="flex items-center gap-4">
                     <div className="text-sm text-gray-600">
-                      <span className="line-through">$297</span>
-                      <span className="text-2xl font-bold text-purple-700 ml-2">${price.toFixed(2)}</span>
+                      <span className="line-through">${regularPrice.toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-purple-700 ml-2">${currentPrice.toFixed(2)}</span>
                     </div>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">67% OFF</Badge>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      {regularPrice > 0 ? `${Math.round((1 - currentPrice / regularPrice) * 100)}% OFF` : ''}
+                    </Badge>
                   </div>
                   <div className="flex gap-3">
                     <Link href="/coaching">

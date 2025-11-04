@@ -218,7 +218,7 @@ export default function ProfileSettings() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  Premium Member
+                  Full Access
                   <Badge variant="default" className="bg-primary">Active</Badge>
                 </h3>
                 <p className="text-sm text-gray-600">
@@ -374,7 +374,7 @@ export default function ProfileSettings() {
                 </div>
               </div>
               <Badge variant={profile?.hasCoachingAccess ? "default" : "secondary"}>
-                {profile?.hasCoachingAccess ? 'Premium' : 'Free'}
+                {profile?.hasCoachingAccess ? 'Full Access' : 'Free'}
               </Badge>
             </div>
           </div>

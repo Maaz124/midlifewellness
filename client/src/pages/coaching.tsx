@@ -44,7 +44,7 @@ export default function Coaching() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Fetch coaching price from database
+  // Fetch coaching prices from database
   const { data: priceData } = useQuery({
     queryKey: ['/api/coaching-price'],
     queryFn: async () => {
@@ -52,7 +52,8 @@ export default function Coaching() {
       return res.json();
     },
   });
-  const price = priceData?.price || 150; // Default to 150 if not loaded
+  const price = priceData?.currentPrice ?? 150; // Default if not loaded
+  const regularPrice = priceData?.regularPrice ?? 297;
 
   // Check login status first, then payment status
   const needsLogin = !isAuthenticated;
@@ -230,8 +231,8 @@ export default function Coaching() {
                 ) : needsPayment ? (
                   <>
                     <div className="text-3xl font-bold">${price.toFixed(2)}</div>
-                    <div className="text-sm text-purple-200 line-through">Regular: $297</div>
-                    <div className="text-green-200 font-semibold mb-2">Save {Math.round((1 - price / 297) * 100)}% Today</div>
+                    <div className="text-sm text-purple-200 line-through">Regular: ${regularPrice.toFixed(2)}</div>
+                    <div className="text-green-200 font-semibold mb-2">Save {Math.round((1 - price / regularPrice) * 100)}% Today</div>
                     <Button 
                       onClick={() => setLocation('/checkout')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
@@ -587,8 +588,8 @@ export default function Coaching() {
                 <div className="flex items-center justify-center gap-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold">${price.toFixed(2)}</div>
-                    <div className="text-sm text-purple-200 line-through">Regular: $297</div>
-                    <div className="text-lg font-semibold">Save ${(297 - price).toFixed(2)} Today</div>
+                    <div className="text-sm text-purple-200 line-through">Regular: ${regularPrice.toFixed(2)}</div>
+                    <div className="text-lg font-semibold">Save ${(regularPrice - price).toFixed(2)} Today</div>
                   </div>
                   <div className="text-center">
                     <div className="space-y-3">
