@@ -11,7 +11,7 @@ import { useWellnessData } from '@/hooks/use-local-storage';
 import { getTodaysPrompt } from '@/lib/coaching-data';
 import { JournalEntry, MoodEntry } from '@/types/wellness';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, getQueryFn } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -150,7 +150,9 @@ export default function JournalNew() {
   // Fetch gratitude entries (DB) when authenticated
   const { data: apiGratitudeEntries = [], isLoading: isLoadingGratitude } = useQuery({
     queryKey: ['/api/gratitude-entries'],
+    queryFn: getQueryFn<any[]>({ on401: 'returnNull' }),
     enabled: isAuthenticated,
+    staleTime: 30000, // 30 seconds
   });
 
   // Purchase mutation
@@ -297,18 +299,26 @@ export default function JournalNew() {
       if (todaysMood) setSelectedMood(todaysMood.mood);
     }
     
-    // Load saved gratitude entries from localStorage
-    if (isAuthenticated) {
-      // Use API-provided gratitude entries
-      const mapped = (apiGratitudeEntries as any[]).map(e => ({
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized, user?.id]);
+
+  // Sync gratitude entries from API when authenticated
+  useEffect(() => {
+    if (isAuthenticated && apiGratitudeEntries && Array.isArray(apiGratitudeEntries)) {
+      // Filter to ensure only current user's entries (extra safety)
+      const userEntries = apiGratitudeEntries.filter((e: any) => 
+        e && e.userId === user?.id
+      );
+      const mapped = userEntries.map((e: any) => ({
         id: String(e.id),
-        items: e.items || [],
-        savedAt: e.savedAt || e.createdAt || new Date().toISOString(),
+        items: Array.isArray(e.items) ? e.items : [],
+        savedAt: e.savedAt || e.saved_at || new Date().toISOString(),
         ownerId: user?.id,
       }));
       setSavedGratitudeEntries(mapped);
-    } else {
-      // Fallback to localStorage for guests
+    } else if (!isAuthenticated) {
+      // Fallback to localStorage only for guests
       const userId = user?.id || 'guest';
       const savedEntries = localStorage.getItem(`gratitude-entries-${userId}`);
       if (savedEntries) {
@@ -321,12 +331,11 @@ export default function JournalNew() {
         } catch (error) {
           console.error('Error loading gratitude entries:', error);
         }
+      } else {
+        setSavedGratitudeEntries([]);
       }
     }
-    
-    setHasInitialized(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasInitialized, user?.id]);
+  }, [apiGratitudeEntries, isAuthenticated, user?.id]);
 
   // Breathing timer and phase control
   useEffect(() => {
@@ -371,6 +380,31 @@ export default function JournalNew() {
     setBreathingTimer(300);
   };
 
+  // Mutation to save gratitude entry
+  const saveGratitudeMutation = useMutation({
+    mutationFn: async (items: string[]) => {
+      const response = await apiRequest('POST', '/api/gratitude-entries', { items });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gratitude-entries'] });
+      const filledItems = gratitudeItems.filter(item => item.trim());
+      toast({
+        title: "Gratitude Saved!",
+        description: `You recorded ${filledItems.length} thing${filledItems.length > 1 ? 's' : ''} to be grateful for today.`,
+      });
+      setGratitudeItems(['', '', '']);
+      setShowGratitudeDialog(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Save Failed",
+        description: error.message || "Failed to save gratitude entry. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const saveGratitude = () => {
     const filledItems = gratitudeItems.filter(item => item.trim());
     if (filledItems.length === 0) {
@@ -382,38 +416,30 @@ export default function JournalNew() {
       return;
     }
 
-    // Create new gratitude entry with timestamp
-    const newEntry = {
-      id: Date.now().toString(),
-      items: gratitudeItems, // Save all three items (including empty ones)
-      savedAt: new Date().toISOString(),
-      ownerId: user?.id || 'guest',
-    };
-
     // Save to DB if authenticated; else localStorage
     if (isAuthenticated) {
-      apiRequest('POST', '/api/gratitude-entries', { items: newEntry.items })
-        .then(res => res.json())
-        .then((created) => {
-          setSavedGratitudeEntries(prev => ([{ id: String(created.id), items: created.items, savedAt: created.savedAt || new Date().toISOString(), ownerId: user?.id }, ...prev]));
-        })
-        .catch(() => {
-          toast({ title: 'Failed to save to server', variant: 'destructive' });
-        });
+      saveGratitudeMutation.mutate(gratitudeItems);
     } else {
+      // Fallback to localStorage for guests
+      const newEntry = {
+        id: Date.now().toString(),
+        items: gratitudeItems, // Save all three items (including empty ones)
+        savedAt: new Date().toISOString(),
+        ownerId: user?.id || 'guest',
+      };
       const updatedEntries = [newEntry, ...savedGratitudeEntries];
       setSavedGratitudeEntries(updatedEntries);
       const userId = user?.id || 'guest';
       localStorage.setItem(`gratitude-entries-${userId}`, JSON.stringify(updatedEntries));
+      
+      toast({
+        title: "Gratitude Saved!",
+        description: `You recorded ${filledItems.length} thing${filledItems.length > 1 ? 's' : ''} to be grateful for today.`,
+      });
+      
+      setGratitudeItems(['', '', '']);
+      setShowGratitudeDialog(false);
     }
-
-    toast({
-      title: "Gratitude Saved!",
-      description: `You recorded ${filledItems.length} thing${filledItems.length > 1 ? 's' : ''} to be grateful for today.`,
-    });
-    
-    setGratitudeItems(['', '', '']);
-    setShowGratitudeDialog(false);
   };
 
   const handleMoodSelect = (mood: string) => {
@@ -747,8 +773,9 @@ export default function JournalNew() {
                                 onClick={saveGratitude}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700"
                                 data-testid="button-save-gratitude"
+                                disabled={saveGratitudeMutation.isPending}
                               >
-                                Save Gratitude
+                                {saveGratitudeMutation.isPending ? 'Saving...' : 'Save Gratitude'}
                               </Button>
                               <Button 
                                 variant="outline" 
@@ -757,6 +784,7 @@ export default function JournalNew() {
                                   setGratitudeItems(['', '', '']);
                                 }}
                                 data-testid="button-cancel-gratitude"
+                                disabled={saveGratitudeMutation.isPending}
                               >
                                 Cancel
                               </Button>
