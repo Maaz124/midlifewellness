@@ -11,6 +11,7 @@ import { Link } from 'wouter';
 import { Logo } from '@/components/logo';
 import { useSEO } from '@/hooks/use-seo';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Dashboard() {
   // SEO optimization for dashboard page
@@ -27,6 +28,7 @@ export default function Dashboard() {
   const price = priceData?.price || 150; // Default to 150 if not loaded
   
   const { data, updateHealthScores } = useWellnessData();
+  const { user } = useAuth();
 
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
@@ -286,74 +288,103 @@ export default function Dashboard() {
 
       {/* Coaching Program Promotion */}
       <section>
-        <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 overflow-hidden">
-          <CardContent className="p-0">
-            <div className="grid md:grid-cols-2 items-center">
-              <div className="p-6 space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  <Badge className="bg-purple-600 text-white">Premium Program</Badge>
+        {/* Only show success message if payment is completed (hasCoachingAccess is true and coachingAccessGrantedAt exists) */}
+        {user?.hasCoachingAccess && user?.coachingAccessGrantedAt ? (
+          <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">
-                  Ready for Deep Transformation?
-                </h3>
-                <p className="text-gray-700">
-                  Unlock Dr. Sidra Bukhari's complete 6-week Mind-Body Reset program with 24 interactive components designed specifically for midlife women.
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="text-sm text-gray-600">
-                    <span className="line-through">$297</span>
-                    <span className="text-2xl font-bold text-purple-700 ml-2">${price.toFixed(2)}</span>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">67% OFF</Badge>
-                </div>
-                <div className="flex gap-3">
-                  <Link href="/coaching">
-                    <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Unlock Full Program
-                    </Button>
-                  </Link>
-                  <div className="flex gap-2">
-                    <Link href="/coaching?admin=true">
-                      <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50 text-xs px-3">
-                        Admin Access
-                      </Button>
-                    </Link>
-                    <Link href="/email-signatures">
-                      <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 text-xs px-3">
-                        Email Sigs
-                      </Button>
-                    </Link>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Successfully Done
+                  </h3>
+                  <div className="space-y-2 text-gray-700">
+                    <p className="font-semibold text-lg">
+                      Payment Amount: ${price.toFixed(2)}
+                    </p>
+                    {user?.coachingAccessGrantedAt && (
+                      <>
+                        <p className="text-base">
+                          Date: {new Date(user.coachingAccessGrantedAt).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </p>
+                        <p className="text-base">
+                          Time: {new Date(user.coachingAccessGrantedAt).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true,
+                          })}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-              <div className="p-6 bg-white/50">
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>24 Interactive Coaching Components</span>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="grid md:grid-cols-2 items-center">
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <Badge className="bg-purple-600 text-white">Premium Program</Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>CBT & NLP Therapeutic Techniques</span>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    Ready for Deep Transformation?
+                  </h3>
+                  <p className="text-gray-700">
+                    Unlock Dr. Sidra Bukhari's complete 6-week Mind-Body Reset program with 24 interactive components designed specifically for midlife women.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-600">
+                      <span className="line-through">$297</span>
+                      <span className="text-2xl font-bold text-purple-700 ml-2">${price.toFixed(2)}</span>
+                    </div>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">67% OFF</Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Hormone & Nervous System Focus</span>
+                  <div className="flex gap-3">
+                    <Link href="/coaching">
+                      <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Unlock Your Program
+                      </Button>
+                    </Link>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Lifetime Access to All Content</span>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-4 italic">
-                    *Health Assessment dashboard always stays FREE
+                </div>
+                <div className="p-6 bg-white/50">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span>24 Interactive Coaching Components</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span>CBT & NLP Therapeutic Techniques</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span>Hormone & Nervous System Focus</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span>Lifetime Access to All Content</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-4 italic">
+                      *Health Assessment dashboard always stays FREE
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </section>
 
       {/* About Dr. Sidra Bukhari */}

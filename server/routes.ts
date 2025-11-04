@@ -126,8 +126,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: req.body.createdAt ? normalizeTimestamp(req.body.createdAt) : new Date(),
       };
       
-      // Use upsert to update today's entry if it exists, or create new one
-      const entry = await storage.upsertJournalEntryForToday(entryData);
+      // Always create a new entry (allow multiple entries per day)
+      const entry = await storage.createJournalEntry(entryData);
       res.json(entry);
     } catch (error: any) {
       console.error('Error saving journal entry:', error);
@@ -375,6 +375,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating user profile:", error);
       res.status(500).json({ message: "Failed to update user profile" });
+    }
+  });
+
+  // Change password endpoint
+  app.put("/api/users/me/password", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters long" });
+      }
+
+      // Verify current password
+      const bcrypt = await import("bcrypt");
+      if (!user.passwordHash) {
+        return res.status(400).json({ message: "Password cannot be changed for this account" });
+      }
+
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const SALT_ROUNDS = 12;
+      const newPasswordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+      // Update user password
+      const updatedUser = await storage.upsertUser({
+        ...user,
+        passwordHash: newPasswordHash,
+        updatedAt: new Date()
+      });
+
+      res.json({ message: "Password successfully changed" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
     }
   });
 

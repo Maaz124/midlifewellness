@@ -3,26 +3,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { 
   User, 
   Mail, 
   Phone, 
-  MapPin, 
   Calendar, 
   Shield, 
-  Bell, 
   Lock,
   Save,
   Loader2,
   CheckCircle,
   CreditCard,
-  Crown
+  Crown,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -54,9 +53,18 @@ export default function ProfileSettings() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [communityVisible, setCommunityVisible] = useState(true);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  
+  // Password change dialog states
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
 
   // Update form when profile loads
   useEffect(() => {
@@ -99,6 +107,77 @@ export default function ProfileSettings() {
       lastName: lastName.trim() || null,
       phone: phone.trim() || null,
     });
+  };
+
+  // Password change mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+      return await apiRequest('PUT', '/api/users/me/password', data);
+    },
+    onSuccess: () => {
+      setPasswordChangeSuccess(true);
+      setIsChangingPassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      // Close dialog after 2 seconds
+      setTimeout(() => {
+        setIsPasswordDialogOpen(false);
+        setPasswordChangeSuccess(false);
+      }, 2000);
+    },
+    onError: (error: any) => {
+      setIsChangingPassword(false);
+      toast({
+        title: "Password change failed",
+        description: error.message || "Failed to change password. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleChangePassword = () => {
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({
+        title: "Validation Error",
+        description: "All password fields are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast({
+        title: "Validation Error",
+        description: "New password must be at least 8 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Validation Error",
+        description: "New password and confirm password do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
+    changePasswordMutation.mutate({
+      currentPassword,
+      newPassword,
+    });
+  };
+
+  const handleOpenPasswordDialog = () => {
+    setIsPasswordDialogOpen(true);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordChangeSuccess(false);
   };
 
   if (!isAuthenticated) {
@@ -302,48 +381,6 @@ export default function ProfileSettings() {
         </CardContent>
       </Card>
 
-      {/* Preferences */}
-      <Card className="mb-6">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Bell className="h-5 w-5 text-purple-600" />
-            </div>
-            <div>
-              <CardTitle>Preferences</CardTitle>
-              <CardDescription>Manage your notification and privacy settings</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="email-notifications" className="text-base">Email Notifications</Label>
-              <p className="text-sm text-gray-500">Receive updates and reminders via email</p>
-            </div>
-            <Switch
-              id="email-notifications"
-              checked={emailNotifications}
-              onCheckedChange={setEmailNotifications}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="community-visible" className="text-base">Community Profile</Label>
-              <p className="text-sm text-gray-500">Make your profile visible in the community</p>
-            </div>
-            <Switch
-              id="community-visible"
-              checked={communityVisible}
-              onCheckedChange={setCommunityVisible}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Security */}
       <Card>
         <CardHeader>
@@ -364,18 +401,8 @@ export default function ProfileSettings() {
                 <p className="font-medium">Password</p>
                 <p className="text-sm text-gray-500">Last changed recently</p>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleOpenPasswordDialog}>
                 Change Password
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-              <div>
-                <p className="font-medium">Two-Factor Authentication</p>
-                <p className="text-sm text-gray-500">Add an extra layer of security</p>
-              </div>
-              <Button variant="outline" size="sm" disabled>
-                Coming Soon
               </Button>
             </div>
           </div>
@@ -404,6 +431,152 @@ export default function ProfileSettings() {
           </CardContent>
         </Card>
       )}
+
+      {/* Change Password Dialog */}
+      <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              Enter your current password and choose a new password
+            </DialogDescription>
+          </DialogHeader>
+          
+          {passwordChangeSuccess ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <p className="text-lg font-semibold text-gray-900">Password successfully changed and saved</p>
+            </div>
+          ) : (
+            <div className="space-y-4 py-4">
+              {/* Current Password */}
+              <div className="space-y-2">
+                <Label htmlFor="current-password">Current Password</Label>
+                <div className="relative">
+                  <Input
+                    id="current-password"
+                    type={showCurrentPassword ? "text" : "password"}
+                    placeholder="Enter your current password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    disabled={isChangingPassword}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* New Password */}
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="new-password"
+                    type={showNewPassword ? "text" : "password"}
+                    placeholder="Enter your new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    disabled={isChangingPassword}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500">Must be at least 8 characters long</p>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirm-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isChangingPassword}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            {passwordChangeSuccess ? (
+              <Button onClick={() => setIsPasswordDialogOpen(false)}>
+                Close
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsPasswordDialogOpen(false)}
+                  disabled={isChangingPassword}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleChangePassword}
+                  disabled={isChangingPassword}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {isChangingPassword ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Changing...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Change Password
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
   Mail,
   User as UserIcon,
   Tag,
+  Search,
 } from "lucide-react";
 
 interface AdminStats {
@@ -68,6 +69,7 @@ function AdminDashboard() {
     coachingInbox: "",
   });
   const [showGmailPassword, setShowGmailPassword] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
 
   // Check if we're in development mode (for bypassing auth)
   const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
@@ -469,6 +471,24 @@ function AdminDashboard() {
     isAdmin: true
   } : null);
 
+  // Filter users based on search term (searches both name and email)
+  const filteredUsers = allUsers && allUsers.length > 0 ? allUsers.filter((user) => {
+    if (!userSearch) return true;
+    const searchTerm = userSearch.toLowerCase();
+    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim().toLowerCase();
+    const email = user.email?.toLowerCase() || "";
+    return fullName.includes(searchTerm) || email.includes(searchTerm);
+  }) : [];
+
+  // Check if a user matches the search criteria (for highlighting)
+  const isMatchingUser = (user: User) => {
+    if (!userSearch) return false;
+    const searchTerm = userSearch.toLowerCase();
+    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim().toLowerCase();
+    const email = user.email?.toLowerCase() || "";
+    return fullName.includes(searchTerm) || email.includes(searchTerm);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
@@ -686,12 +706,24 @@ function AdminDashboard() {
         {/* Users List */}
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <UsersIcon className="w-5 h-5 text-purple-600" />
-                  All Users
-                </CardTitle>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <CardTitle className="flex items-center gap-2">
+                    <UsersIcon className="w-5 h-5 text-purple-600" />
+                    All Users
+                  </CardTitle>
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search by name or email..."
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
                 <CardDescription className="mt-2">
                   View all registered users with their contact information
                 </CardDescription>
@@ -704,53 +736,60 @@ function AdminDashboard() {
                 <RefreshCw className="w-6 h-6 animate-spin text-purple-600" />
                 <p className="ml-2 text-gray-600">Loading users...</p>
               </div>
-            ) : allUsers && allUsers.length > 0 ? (
+            ) : filteredUsers.length > 0 ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4">
-                  {allUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center space-x-4 flex-1">
-                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                          <UserIcon className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-900">
-                              {user.firstName || user.lastName
-                                ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
-                                : "No name"}
+                  {filteredUsers.map((user) => {
+                    const isHighlighted = isMatchingUser(user);
+                    return (
+                      <div
+                        key={user.id}
+                        className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
+                          isHighlighted
+                            ? "border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200"
+                            : "border-gray-200 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-4 flex-1">
+                          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                            <UserIcon className="w-5 h-5 text-purple-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="font-semibold text-gray-900">
+                                {user.firstName || user.lastName
+                                  ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                                  : "No name"}
+                              </p>
+                              {user.isAdmin && (
+                                <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                                  Admin
+                                </span>
+                              )}
+                              {user.hasCoachingAccess && (
+                                <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                  Premium
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center mt-1 text-sm text-gray-600">
+                              <Mail className="w-4 h-4 mr-1" />
+                              <span className="truncate">{user.email}</span>
+                              {user.emailVerified && (
+                                <span className="ml-2 text-green-600 text-xs">✓ Verified</span>
+                              )}
+                            </div>
+                            {user.phone && (
+                              <p className="text-xs text-gray-500 mt-1">{user.phone}</p>
+                            )}
+                            <p className="text-xs text-gray-400 mt-1">
+                              Joined: {new Date(user.createdAt).toLocaleDateString()}
                             </p>
-                            {user.isAdmin && (
-                              <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
-                                Admin
-                              </span>
-                            )}
-                            {user.hasCoachingAccess && (
-                              <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                                Premium
-                              </span>
-                            )}
                           </div>
-                          <div className="flex items-center mt-1 text-sm text-gray-600">
-                            <Mail className="w-4 h-4 mr-1" />
-                            <span className="truncate">{user.email}</span>
-                            {user.emailVerified && (
-                              <span className="ml-2 text-green-600 text-xs">✓ Verified</span>
-                            )}
-                          </div>
-                          {user.phone && (
-                            <p className="text-xs text-gray-500 mt-1">{user.phone}</p>
-                          )}
-                          <p className="text-xs text-gray-400 mt-1">
-                            Joined: {new Date(user.createdAt).toLocaleDateString()}
-                          </p>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (

@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function JournalNew() {
-  const { data, upsertTodayJournalEntry, addMoodEntry } = useWellnessData();
+  const { data, upsertTodayJournalEntry, addJournalEntry, addMoodEntry } = useWellnessData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
@@ -75,6 +75,16 @@ export default function JournalNew() {
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
   const [gratitudeItems, setGratitudeItems] = useState(['', '', '']);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [savedGratitudeEntries, setSavedGratitudeEntries] = useState<Array<{
+    id: string;
+    items: string[];
+    savedAt: string;
+  }>>([]);
+  const [viewGratitudeEntry, setViewGratitudeEntry] = useState<{
+    id: string;
+    items: string[];
+    savedAt: string;
+  } | null>(null);
 
   // Fetch digital resources
   const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
@@ -194,9 +204,12 @@ export default function JournalNew() {
     return () => clearTimeout(saveTimeout);
   }, [journalContent]);
 
+  // Minimum word count required for completing entry
+  const MIN_WORD_COUNT = 20;
+
   // Update word count
   useEffect(() => {
-    const words = journalContent.trim() ? journalContent.trim().split(/\s+/).length : 0;
+    const words = journalContent.trim() ? journalContent.trim().split(/\s+/).filter(word => word.length > 0).length : 0;
     setWordCount(words);
   }, [journalContent]);
 
@@ -219,9 +232,21 @@ export default function JournalNew() {
       if (todaysMood) setSelectedMood(todaysMood.mood);
     }
     
+    // Load saved gratitude entries from localStorage
+    const userId = user?.id || 'guest';
+    const savedEntries = localStorage.getItem(`gratitude-entries-${userId}`);
+    if (savedEntries) {
+      try {
+        const parsed = JSON.parse(savedEntries);
+        setSavedGratitudeEntries(parsed);
+      } catch (error) {
+        console.error('Error loading gratitude entries:', error);
+      }
+    }
+    
     setHasInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasInitialized]);
+  }, [hasInitialized, user?.id]);
 
   // Breathing timer and phase control
   useEffect(() => {
@@ -277,12 +302,26 @@ export default function JournalNew() {
       return;
     }
 
+    // Create new gratitude entry with timestamp
+    const newEntry = {
+      id: Date.now().toString(),
+      items: gratitudeItems, // Save all three items (including empty ones)
+      savedAt: new Date().toISOString(),
+    };
+
+    // Save to state and localStorage
+    const updatedEntries = [newEntry, ...savedGratitudeEntries];
+    setSavedGratitudeEntries(updatedEntries);
+    
+    // Save to localStorage
+    const userId = user?.id || 'guest';
+    localStorage.setItem(`gratitude-entries-${userId}`, JSON.stringify(updatedEntries));
+
     toast({
       title: "Gratitude Saved!",
       description: `You recorded ${filledItems.length} thing${filledItems.length > 1 ? 's' : ''} to be grateful for today.`,
     });
     
-    // Could save to journal or separate gratitude log
     setGratitudeItems(['', '', '']);
     setShowGratitudeDialog(false);
   };
@@ -293,6 +332,16 @@ export default function JournalNew() {
   };
 
   const handleCompleteEntry = () => {
+    // Ensure minimum word count requirement
+    if (wordCount < MIN_WORD_COUNT) {
+      toast({
+        title: "Reflection too short",
+        description: `Please write at least ${MIN_WORD_COUNT} words to complete your entry. You currently have ${wordCount} words.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!journalContent.trim()) return;
     
     // Prevent multiple saves
@@ -308,16 +357,20 @@ export default function JournalNew() {
       createdAt: new Date().toISOString(),
     };
     
-    // Save to localStorage (for offline support)
-    upsertTodayJournalEntry(entry);
+    // Save to localStorage (for offline support) - always create a new entry
+    addJournalEntry(entry);
     
-    // Save to API if authenticated (upsert will update if entry exists for today)
+    // Save to API if authenticated - always create a new entry
     if (isAuthenticated) {
       saveJournalEntryMutation.mutate(entry);
     }
     
     const today = new Date().toISOString().split('T')[0];
     localStorage.removeItem(`journal_draft_${today}`);
+    
+    // Clear the journal content after saving so user can write a new entry
+    setJournalContent('');
+    setWordCount(0);
   };
 
   return (
@@ -359,8 +412,11 @@ export default function JournalNew() {
                       <p className="text-sm text-gray-600 mt-1">{currentDate}</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-gray-500">
-                        {wordCount} words
+                      <div className={`text-sm ${wordCount < MIN_WORD_COUNT ? 'text-orange-600' : 'text-gray-500'}`}>
+                        {wordCount} / {MIN_WORD_COUNT} words
+                        {wordCount < MIN_WORD_COUNT && (
+                          <span className="ml-1 text-xs">({MIN_WORD_COUNT - wordCount} more needed)</span>
+                        )}
                       </div>
                       {lastSaved && (
                         <div className="text-xs text-green-600">
@@ -420,13 +476,11 @@ export default function JournalNew() {
                       <Button 
                         onClick={handleCompleteEntry}
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        disabled={!journalContent.trim() || saveJournalEntryMutation.isPending}
+                        disabled={wordCount < MIN_WORD_COUNT || saveJournalEntryMutation.isPending}
                       >
                         {saveJournalEntryMutation.isPending 
                           ? 'Saving...' 
-                          : hasTodaysEntry 
-                            ? 'Save Changes' 
-                            : 'Complete Entry'}
+                          : 'Complete Entry'}
                       </Button>
                       <Button 
                         variant="outline" 
@@ -620,6 +674,110 @@ export default function JournalNew() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Saved Gratitude Entries */}
+                {savedGratitudeEntries.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-blue-600" />
+                        Saved Gratitude Entries
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {savedGratitudeEntries.map((entry) => {
+                          const savedDate = new Date(entry.savedAt);
+                          const dateStr = savedDate.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          });
+                          const timeStr = savedDate.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          });
+                          
+                          return (
+                            <div
+                              key={entry.id}
+                              className="flex items-center justify-between p-3 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+                            >
+                              <div className="flex-1">
+                                <div className="font-medium text-sm text-gray-900">
+                                  Gratitude Entry
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {dateStr} at {timeStr}
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewGratitudeEntry(entry)}
+                                className="border-blue-300 text-blue-700 hover:bg-[#E9560C] hover:text-white hover:border-[#E9560C]"
+                              >
+                                View
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* View Gratitude Entry Modal */}
+                <Dialog open={!!viewGratitudeEntry} onOpenChange={(open) => !open && setViewGratitudeEntry(null)}>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Gratitude Entry</DialogTitle>
+                    </DialogHeader>
+                    {viewGratitudeEntry && (
+                      <div className="space-y-4 py-4">
+                        <div className="text-sm text-gray-600">
+                          <p className="font-semibold mb-1">
+                            Saved on:{' '}
+                            {new Date(viewGratitudeEntry.savedAt).toLocaleDateString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}{' '}
+                            at{' '}
+                            {new Date(viewGratitudeEntry.savedAt).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {viewGratitudeEntry.items.map((item, index) => (
+                            <div key={index}>
+                              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                                {index + 1}. I'm grateful for...
+                              </label>
+                              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 min-h-[60px]">
+                                <p className="text-sm text-gray-800 whitespace-pre-wrap">
+                                  {item.trim() || <span className="text-gray-400 italic">Not filled</span>}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="flex justify-end">
+                          <Button
+                            variant="outline"
+                            onClick={() => setViewGratitudeEntry(null)}
+                          >
+                            Close
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
               </div>
 
               {/* Sidebar - Recent Entries */}
@@ -637,10 +795,10 @@ export default function JournalNew() {
                     ) : allJournalEntries.length === 0 ? (
                       <p className="text-gray-500 text-sm">No entries yet. Start writing your first reflection!</p>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-3 max-h-[600px] overflow-y-auto">
                         {allJournalEntries.slice().sort((a: any, b: any) => 
                           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                        ).slice(0, 5).map((entry: any) => (
+                        ).map((entry: any) => (
                           <Dialog key={entry.id}>
                             <DialogTrigger asChild>
                               <div className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
