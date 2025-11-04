@@ -124,17 +124,18 @@ export function useCoachingProgress() {
           p => p.moduleId === updates.moduleId && p.weekNumber === updates.weekNumber
         );
 
-        // Merge component response data (keyed by componentId)
+        // Merge component response data (keyed by componentId) - new data overwrites old
         const componentResponseData = {
           [updates.componentId]: updates.responseData || {}
         };
         
+        // When saving, overwrite existing component data with new data (not merge)
         const mergedResponseData = existingProgress?.responseData 
           ? { ...existingProgress.responseData, ...componentResponseData }
           : componentResponseData;
 
         if (existingProgress) {
-          // Update existing record with merged response data
+          // Update existing record - overwrite component data
           await apiRequest('PUT', `/api/coaching-progress/${existingProgress.id}`, {
             completed: true,
             completedAt: new Date().toISOString(),
@@ -154,15 +155,73 @@ export function useCoachingProgress() {
         }
       }
 
-      // Invalidate query to refetch
-      await queryClient.invalidateQueries({ queryKey: ['/api/coaching-progress'] });
+      // Update cache optimistically without invalidating to prevent reload
+      queryClient.setQueryData<CoachingProgressFromDB[]>(['/api/coaching-progress'], (old) => {
+        if (!old) return old;
+        
+        if (updates.componentId && updates.moduleId && updates.weekNumber) {
+          const existingIndex = old.findIndex(
+            p => p.moduleId === updates.moduleId && p.weekNumber === updates.weekNumber
+          );
+          
+          const componentResponseData = {
+            [updates.componentId]: updates.responseData || {}
+          };
+          
+          if (existingIndex >= 0) {
+            // Update existing record
+            const updated = [...old];
+            updated[existingIndex] = {
+              ...updated[existingIndex],
+              completed: true,
+              completedAt: new Date().toISOString(),
+              progress: 100,
+              responseData: {
+                ...updated[existingIndex].responseData,
+                ...componentResponseData
+              }
+            };
+            return updated;
+          } else {
+            // Add new record (optimistic)
+            return [...old, {
+              id: Date.now(), // Temporary ID
+              userId: user?.id || '',
+              weekNumber: updates.weekNumber,
+              moduleId: updates.moduleId,
+              completed: true,
+              completedAt: new Date().toISOString(),
+              progress: 100,
+              responseData: componentResponseData
+            }];
+          }
+        }
+        return old;
+      });
       
-      // Also update localStorage as cache
+      // Only invalidate in background to sync, but don't wait for it
+      queryClient.invalidateQueries({ queryKey: ['/api/coaching-progress'] });
+      
+      // Also update localStorage as cache - overwrite existing component data
       const current = loadFromLocalStorage();
-      const updated = { ...current, ...updates };
+      const updated = { ...current };
+      
+      // Update responseData - overwrite existing component data with new data
+      if (updates.componentId && updates.responseData) {
+        updated.responseData = {
+          ...updated.responseData,
+          [updates.componentId]: updates.responseData // Overwrite, don't merge
+        };
+      }
+      
       if (updates.componentId && !updated.completedComponents.includes(updates.componentId)) {
         updated.completedComponents = [...updated.completedComponents, updates.componentId];
       }
+      
+      if (updates.currentWeek) {
+        updated.currentWeek = updates.currentWeek;
+      }
+      
       localStorage.setItem(localStorageKey, JSON.stringify({ coachingProgress: updated }));
 
       return updated;

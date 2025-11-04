@@ -10946,8 +10946,11 @@ function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, da
       boundaryMaintenance: ''
     }
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['w4-calm-corner'];
     if (saved && typeof saved === 'object') {
       setCalmCornerData(prev => ({
@@ -10959,7 +10962,10 @@ function CreateCalmCorner({ onComplete, onClose }: { onComplete: (id: string, da
         maintenancePlan: saved.maintenancePlan || prev.maintenancePlan
       }));
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Space Assessment & Planning',
@@ -11805,7 +11811,11 @@ function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: s
     }
   });
 
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   useEffect(() => {
+    if (hasInitialized) return;
+    
     const saved = progressData?.coachingProgress?.responseData?.['w4-meditation'];
     if (saved && typeof saved === 'object') {
       setMeditationData(prev => ({
@@ -11816,7 +11826,10 @@ function GuidedGroundingMeditation({ onComplete, onClose }: { onComplete: (id: s
         practiceIntegration: saved.practiceIntegration || prev.practiceIntegration
       }));
     }
-  }, [progressData]);
+    
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasInitialized]);
 
   const steps = [
     'Personal Meditation Assessment',

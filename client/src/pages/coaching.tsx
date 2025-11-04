@@ -77,28 +77,43 @@ export default function Coaching() {
 
   const handleComponentComplete = (componentId: string, responseData?: any) => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
-    if (!completedComponents.includes(componentId)) {
-      // Find the module for this component to get weekNumber
-      const module = coachingModules.find(m => 
-        m.components.some(c => c.id === componentId)
-      );
+    
+    // Find the module for this component to get weekNumber
+    const module = coachingModules.find(m => 
+      m.components.some(c => c.id === componentId)
+    );
+    
+    if (module) {
+      // Always save/update - overwrite existing data if component was already completed
+      updateCoachingProgress({
+        componentId,
+        moduleId: module.id,
+        weekNumber: module.weekNumber,
+        responseData: responseData || {}
+      });
       
-      if (module) {
+      // Add to completed components if not already there
+      if (!completedComponents.includes(componentId)) {
         updateCoachingProgress({
-          componentId,
-          moduleId: module.id,
-          weekNumber: module.weekNumber,
-          responseData: responseData || {}
-        });
-      } else {
-        // Fallback if module not found
-        updateCoachingProgress({
-          completedComponents: [...completedComponents, componentId],
-          currentWeek: data.userProfile?.currentWeek || 1,
-          responseData: responseData || {}
+          completedComponents: [...completedComponents, componentId]
         });
       }
+    } else {
+      // Fallback if module not found - always update responseData
+      const updatedCompleted = completedComponents.includes(componentId) 
+        ? completedComponents 
+        : [...completedComponents, componentId];
+      
+      updateCoachingProgress({
+        completedComponents: updatedCompleted,
+        currentWeek: data.userProfile?.currentWeek || 1,
+        responseData: {
+          ...(data.coachingProgress?.responseData || {}),
+          [componentId]: responseData || {}
+        }
+      });
     }
+    
     setActiveComponent(null);
     setActiveModuleId(null);
     // Scroll to top when closing component to return to module list
