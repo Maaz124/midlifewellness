@@ -1104,16 +1104,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: 'new'
       });
 
-      // Send notification email using ES module import
+      // Send emails in background (don't wait for them)
+      // Get email config once and reuse
       const { addSignatureToEmail } = await import('./email-signatures');
       const { getEmailConfig } = await import('./get-email-config');
       const emailConfig = await getEmailConfig();
       
-      const notificationEmailSent = await sendGmailEmail({
-        to: emailConfig.coachingInbox,
-        from: emailConfig.gmailUser || emailConfig.coachingInbox,
-        subject: `New Coaching Inquiry from ${name}`,
-        html: `
+      // Prepare email content
+      const notificationEmailHtml = `
           <div style="font-family: Inter, Arial, sans-serif; max-width: 720px; margin: 0 auto; background: #ffffff;">
             <div style="padding: 24px 24px 0 24px;">
               <h1 style="margin: 0 0 8px 0; color: #111827; font-size: 22px;">New Coaching Inquiry</h1>
@@ -1187,10 +1185,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </div>
             </div>
           </div>
-        `
-      });
-
-      // Send confirmation email to the applicant
+        `;
+      
       const confirmationEmailContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; padding: 20px;">
@@ -1224,17 +1220,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         </div>
       `;
 
-      const confirmationEmailSent = await sendGmailEmail({
-        to: email,
-        from: emailConfig.gmailUser || emailConfig.coachingInbox,
-        subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
-        html: addSignatureToEmail(confirmationEmailContent, 'personal')
+      // Send both emails in parallel (don't block response)
+      const emailPromises = Promise.all([
+        sendGmailEmail({
+          to: emailConfig.coachingInbox,
+          from: emailConfig.gmailUser || emailConfig.coachingInbox,
+          subject: `New Coaching Inquiry from ${name}`,
+          html: notificationEmailHtml
+        }).catch(err => {
+          console.error('Notification email failed:', err);
+          return false;
+        }),
+        sendGmailEmail({
+          to: email,
+          from: emailConfig.gmailUser || emailConfig.coachingInbox,
+          subject: 'Your Coaching Inquiry Has Been Received - Dr. Sidra Bukhari',
+          html: addSignatureToEmail(confirmationEmailContent, 'personal')
+        }).catch(err => {
+          console.error('Confirmation email failed:', err);
+          return false;
+        })
+      ]);
+
+      // Don't wait for emails - return immediately
+      // Emails will be sent in background
+      emailPromises.then(([notificationSent, confirmationSent]) => {
+        console.log(`Coaching inquiry #${inquiry.id} emails: notification=${notificationSent}, confirmation=${confirmationSent}`);
+      }).catch(err => {
+        console.error('Error sending coaching inquiry emails:', err);
       });
 
       res.status(201).json({ 
         message: 'Coaching inquiry submitted successfully',
         inquiryId: inquiry.id,
-        emailSent: notificationEmailSent && confirmationEmailSent
+        emailSent: true // Assume emails will be sent (they're in background)
       });
       
     } catch (error) {

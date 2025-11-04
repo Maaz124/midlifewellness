@@ -31,40 +31,62 @@ async function getTransporter(): Promise<nodemailer.Transporter | null> {
   transporter = nodemailer.createTransport({
     service: "gmail",
     auth: currentConfig,
+    connectionTimeout: 10000, // 10 second connection timeout
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+    pool: true, // Enable connection pooling
+    maxConnections: 1,
+    maxMessages: 3,
   });
   transporterConfig = currentConfig;
   return transporter;
 }
 
 export async function sendGmailEmail(params: GmailSendParams): Promise<boolean> {
-  try {
-    let tx: nodemailer.Transporter | null = null;
-    if (params.authOverride?.user && params.authOverride?.pass) {
-      tx = nodemailer.createTransport({
-        service: "gmail",
-        auth: { user: params.authOverride.user, pass: params.authOverride.pass },
+  const timeout = 15000; // 15 second timeout
+  const sendPromise = (async () => {
+    try {
+      let tx: nodemailer.Transporter | null = null;
+      if (params.authOverride?.user && params.authOverride?.pass) {
+        tx = nodemailer.createTransport({
+          service: "gmail",
+          auth: { user: params.authOverride.user, pass: params.authOverride.pass },
+          connectionTimeout: 10000, // 10 second connection timeout
+          greetingTimeout: 10000,
+          socketTimeout: 10000,
+        });
+      } else {
+        tx = await getTransporter();
+      }
+      if (!tx) {
+        console.warn("Gmail credentials not configured; skipping email send.");
+        return false;
+      }
+
+      const emailConfig = await getEmailConfig();
+      await tx.sendMail({
+        to: params.to,
+        from: params.from || params.authOverride?.user || emailConfig.gmailUser,
+        subject: params.subject,
+        text: params.text,
+        html: params.html,
       });
-    } else {
-      tx = await getTransporter();
-    }
-    if (!tx) {
-      console.warn("Gmail credentials not configured; skipping email send.");
+      return true;
+    } catch (err) {
+      console.error("Nodemailer Gmail send error:", err);
       return false;
     }
+  })();
 
-    const emailConfig = await getEmailConfig();
-    await tx.sendMail({
-      to: params.to,
-      from: params.from || params.authOverride?.user || emailConfig.gmailUser,
-      subject: params.subject,
-      text: params.text,
-      html: params.html,
-    });
-    return true;
-  } catch (err) {
-    console.error("Nodemailer Gmail send error:", err);
-    return false;
-  }
+  // Add timeout
+  const timeoutPromise = new Promise<boolean>((resolve) => {
+    setTimeout(() => {
+      console.warn("Email send timeout after", timeout, "ms");
+      resolve(false);
+    }, timeout);
+  });
+
+  return Promise.race([sendPromise, timeoutPromise]);
 }
 
 
