@@ -21,6 +21,46 @@ export default function JournalNew() {
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
 
+  // Block access for unauthenticated users
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Login Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">Please log in to write and view your gratitude and journal entries.</p>
+            <a href="/login">
+              <Button className="bg-purple-600 hover:bg-purple-700">Go to Login</Button>
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Block access for users without payment
+  if (!authLoading && isAuthenticated && !user?.hasCoachingAccess) {
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Coaching Access Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              Journal features are part of the coaching program. Please complete your purchase to continue.
+            </p>
+            <a href="/checkout">
+              <Button className="bg-purple-600 hover:bg-purple-700">Go to Checkout</Button>
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
 
