@@ -544,10 +544,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (paymentIntent.status === 'succeeded' && user && user.email) {
         // Grant coaching access to the user
+        const prevCents = (user as any).amountPaidUsdCents || 0;
+        const addCents = Math.round((amount || 0) * 100);
         await storage.upsertUser({
           ...user,
           hasCoachingAccess: true,
           coachingAccessGrantedAt: new Date(),
+          amountPaidUsdCents: prevCents + addCents,
         });
         
         // Send payment confirmation email
@@ -1466,6 +1469,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const db: any = dbModule.db;
       const schemaModule: any = await import("@shared/schema");
       const users = schemaModule.users;
+      const resourcePurchases = schemaModule.resourcePurchases;
+      const adminConfig = schemaModule.adminConfig;
       const { desc } = await import("drizzle-orm");
       
       const allUsers = await db
@@ -1477,15 +1482,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
           phone: users.phone,
           emailVerified: users.emailVerified,
           hasCoachingAccess: users.hasCoachingAccess,
+          amountPaidUsdCents: users.amountPaidUsdCents,
           isAdmin: users.isAdmin,
           createdAt: users.createdAt,
         })
         .from(users)
         .orderBy(desc(users.createdAt));
       
+      // Fetch current coaching price for approximation
+      const { eq } = await import("drizzle-orm");
+      const priceRow = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+      const currentCoachingPrice = priceRow[0]?.value ? parseFloat(priceRow[0].value) : 150;
+
+      // Fetch resource purchase sums grouped by user for completed payments
+      const rpRows = await db
+        .select({ userId: resourcePurchases.userId, amount: resourcePurchases.amount })
+        .from(resourcePurchases)
+        .where(eq(resourcePurchases.status, 'completed'));
+      const resourceSumByUser: Record<string, number> = {};
+      for (const r of rpRows) {
+        const uid = String(r.userId);
+        resourceSumByUser[uid] = (resourceSumByUser[uid] || 0) + (r.amount || 0);
+      }
+
+      const withAmounts = allUsers.map((u: any) => {
+        const resourceSum = resourceSumByUser[String(u.id)] || 0; // USD
+        const coachingUsd = (u.amountPaidUsdCents || 0) / 100;
+        const amountPaid = coachingUsd + resourceSum;
+        return { ...u, amountPaid };
+      });
+
       // Ensure JSON content type is set explicitly
       res.setHeader('Content-Type', 'application/json');
-      res.json(allUsers);
+      res.json(withAmounts);
     } catch (error) {
       console.error('Error fetching users:', error);
       res.setHeader('Content-Type', 'application/json');

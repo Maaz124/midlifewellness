@@ -415,7 +415,7 @@ export default function ProfileSettings() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-lg mb-1">Unlock Premium Features</h3>
+                <h3 className="font-semibold text-lg mb-1">Unlock Full Access</h3>
                 <p className="text-sm text-gray-600">
                   Get full access to coaching programs, journal features, and exclusive content
                 </p>

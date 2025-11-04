@@ -71,6 +71,8 @@ function AdminDashboard() {
   });
   const [showGmailPassword, setShowGmailPassword] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+  const [inquiriesSearch, setInquiriesSearch] = useState("");
+  const [activeSection, setActiveSection] = useState<'overview' | 'users' | 'prices' | 'email' | 'inquiries' | 'stripe'>("overview");
 
   // Check if we're in development mode (for bypassing auth)
   const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
@@ -133,6 +135,15 @@ function AdminDashboard() {
     },
     retry: false,
     enabled: true,
+  });
+
+  // Fetch coaching inquiries for admin
+  const { data: inquiries = [], isLoading: isLoadingInquiries, refetch: refetchInquiries } = useQuery({
+    queryKey: ["/api/admin/coaching-inquiries"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/coaching-inquiries");
+      return res.json();
+    },
   });
 
   // Debug logging for admin user state
@@ -518,8 +529,30 @@ function AdminDashboard() {
           </div>
         </div>
 
+        {/* Layout with left sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+          {/* Sidebar */}
+          <aside className="lg:col-span-3">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Admin Navigation</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button variant={activeSection==='overview' ? 'default' : 'outline'} className="w-full justify-start" onClick={() => setActiveSection('overview')}>Dashboard Overview</Button>
+                <Button variant={activeSection==='users' ? 'default' : 'outline'} className="w-full justify-start" onClick={() => setActiveSection('users')}>Users</Button>
+                <Button variant={activeSection==='prices' ? 'default' : 'outline'} className="w-full justify-start" onClick={() => setActiveSection('prices')}>Pricing</Button>
+                <Button variant={activeSection==='stripe' ? 'default' : 'outline'} className="w-full justify-start" onClick={() => setActiveSection('stripe')}>Stripe Settings</Button>
+                <Button variant={activeSection==='email' ? 'default' : 'outline'} className="w-full justify-start" onClick={() => setActiveSection('email')}>Email Settings</Button>
+                <Button variant={activeSection==='inquiries' ? 'default' : 'outline'} className="w-full justify-start" onClick={() => setActiveSection('inquiries')}>Coaching Inquiries</Button>
+              </CardContent>
+            </Card>
+          </aside>
+
+          {/* Main content */}
+          <div className="lg:col-span-9">
+
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className={`${activeSection==='overview' ? '' : 'hidden'} grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8`}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -578,7 +611,7 @@ function AdminDashboard() {
         </div>
 
         {/* Error Messages */}
-        {statsError && (
+        {activeSection==='overview' && statsError && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">
               <strong>Error loading statistics:</strong> {statsError instanceof Error ? statsError.message : "Unknown error"}
@@ -586,7 +619,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {keysError && (
+        {activeSection==='overview' && keysError && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">
               <strong>Error loading Stripe keys:</strong> {keysError instanceof Error ? keysError.message : "Unknown error"}
@@ -594,7 +627,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {priceError && (
+        {activeSection==='overview' && priceError && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">
               <strong>Error loading coaching price:</strong> {priceError instanceof Error ? priceError.message : "Unknown error"}
@@ -602,7 +635,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {usersError && (
+        {activeSection==='overview' && usersError && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">
               <strong>Error loading users:</strong> {usersError instanceof Error ? usersError.message : "Unknown error"}
@@ -611,7 +644,7 @@ function AdminDashboard() {
         )}
 
         {/* Refresh Stats Button */}
-        <div className="mb-6">
+        <div className={`${activeSection==='overview' ? '' : 'hidden'} mb-6`}>
           <Button
             variant="outline"
             onClick={() => {
@@ -628,7 +661,7 @@ function AdminDashboard() {
         </div>
 
         {/* Coaching Price Management */}
-        <Card className="mb-6">
+        <Card className={`${activeSection==='prices' ? '' : 'hidden'} mb-6`}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -728,7 +761,7 @@ function AdminDashboard() {
         </Card>
 
         {/* Users List */}
-        <Card className="mb-6">
+        <Card className={`${activeSection==='users' ? '' : 'hidden'} mb-6`}>
           <CardHeader>
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex-1">
@@ -795,6 +828,11 @@ function AdminDashboard() {
                                 Full Access
                               </span>
                             )}
+                              {typeof (user as any).amountPaid === 'number' && (
+                                <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                  ${((user as any).amountPaid).toFixed(2)} paid
+                                </span>
+                              )}
                             </div>
                             <div className="flex items-center mt-1 text-sm text-gray-600">
                               <Mail className="w-4 h-4 mr-1" />
@@ -825,8 +863,84 @@ function AdminDashboard() {
           </CardContent>
         </Card>
 
+        {/* Coaching Inquiries */}
+        <Card className={`${activeSection==='inquiries' ? '' : 'hidden'} mb-6`}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-purple-600" />
+                <div>
+                  <CardTitle>Personal Coaching Inquiries</CardTitle>
+                  <CardDescription>Submissions from the public form (email also sent)</CardDescription>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search by name or email"
+                  value={inquiriesSearch}
+                  onChange={(e) => setInquiriesSearch(e.target.value)}
+                />
+                <Button variant="outline" onClick={() => refetchInquiries()}>
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingInquiries ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoadingInquiries ? (
+              <div className="flex items-center justify-center py-8 text-gray-600">Loading inquiries…</div>
+            ) : inquiries.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">No inquiries yet.</div>
+            ) : (
+              <div className="space-y-3">
+                {inquiries
+                  .filter((inq: any) => {
+                    const q = inquiriesSearch.trim().toLowerCase();
+                    if (!q) return true;
+                    return (
+                      (inq.name || '').toLowerCase().includes(q) ||
+                      (inq.email || '').toLowerCase().includes(q)
+                    );
+                  })
+                  .map((inq: any) => (
+                    <div key={inq.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-gray-900">{inq.name}</div>
+                          <div className="text-sm text-gray-600">{inq.email}{inq.phone ? ` • ${inq.phone}` : ''}</div>
+                        </div>
+                        <div className="text-right text-xs text-gray-500">
+                          {inq.createdAt ? new Date(inq.createdAt).toLocaleString() : ''}
+                        </div>
+                      </div>
+                      <div className="mt-2 grid md:grid-cols-2 gap-3 text-sm text-gray-700">
+                        <div><span className="font-medium">Coaching Interest:</span> {inq.coachingType}</div>
+                        {inq.preferredSchedule && (
+                          <div><span className="font-medium">Preferred Schedule:</span> {inq.preferredSchedule}</div>
+                        )}
+                        {inq.goals && (
+                          <div className="md:col-span-2"><span className="font-medium">Goals:</span> {inq.goals}</div>
+                        )}
+                        {inq.challenges && (
+                          <div className="md:col-span-2"><span className="font-medium">Challenges:</span> {inq.challenges}</div>
+                        )}
+                        {inq.experience && (
+                          <div className="md:col-span-2"><span className="font-medium">Previous Experience:</span> {inq.experience}</div>
+                        )}
+                        {inq.additionalInfo && (
+                          <div className="md:col-span-2"><span className="font-medium">Additional Info:</span> {inq.additionalInfo}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Stripe Keys Configuration */}
-        <Card className="mb-6">
+        <Card className={`${activeSection==='stripe' ? '' : 'hidden'} mb-6`}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -926,7 +1040,7 @@ function AdminDashboard() {
         </Card>
 
         {/* Email Settings */}
-        <Card className="mb-6">
+        <Card className={`${activeSection==='email' ? '' : 'hidden'} mb-6`}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1011,6 +1125,8 @@ function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+          </div>{/* end main */}
+        </div>{/* end grid */}
       </div>
     </div>
   );
