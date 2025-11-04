@@ -650,13 +650,13 @@ export default function JournalNew() {
 
                             {/* Breathing Animation Circle */}
                             <div className="flex justify-center">
-                              <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-[4000ms] ${
+                              <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${
                                 breathingActive 
                                   ? breathingPhase === 'inhale' 
-                                    ? 'bg-green-200 scale-125' 
+                                    ? 'bg-green-200 scale-125 duration-[4000ms]' 
                                     : breathingPhase === 'hold'
-                                    ? 'bg-blue-200 scale-125'
-                                    : 'bg-purple-200 scale-75'
+                                    ? 'bg-blue-200 scale-125 duration-[4000ms]'
+                                    : 'bg-purple-200 scale-75 duration-[4000ms]'
                                   : 'bg-gray-200'
                               }`}>
                                 <div className="text-center">
