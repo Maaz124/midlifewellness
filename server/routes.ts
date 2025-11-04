@@ -22,7 +22,8 @@ import {
   insertCoachingProgressSchema,
   insertGoalSchema,
   insertHabitSchema,
-  insertMoodEntrySchema
+  insertMoodEntrySchema,
+  insertGratitudeEntrySchema
 } from "@shared/schema";
 import * as schema from "@shared/schema";
 import { sendEmail, emailTemplates } from "./email";
@@ -126,8 +127,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: req.body.createdAt ? normalizeTimestamp(req.body.createdAt) : new Date(),
       };
       
-      // Always create a new entry (allow multiple entries per day)
-      const entry = await storage.createJournalEntry(entryData);
+      // Use upsert to update today's entry if it exists, or create new one
+      const entry = await storage.upsertJournalEntryForToday(entryData);
       res.json(entry);
     } catch (error: any) {
       console.error('Error saving journal entry:', error);
@@ -328,6 +329,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(entry);
     } catch (error) {
       res.status(400).json({ message: "Invalid mood entry data" });
+    }
+  });
+
+  // Gratitude Entries
+  app.get("/api/gratitude-entries", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const entries = await storage.getGratitudeEntriesByUser(userId);
+      // Extra safety: ensure only this user's entries are returned
+      const filtered = Array.isArray(entries) ? entries.filter((e: any) => e?.userId === userId) : [];
+      res.json(filtered);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch gratitude entries" });
+    }
+  });
+
+  app.post("/api/gratitude-entries", isAuthenticated, hasPayment, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const validated = insertGratitudeEntrySchema.parse({
+        ...req.body,
+        userId,
+      });
+      const entry = await storage.createGratitudeEntry(validated);
+      res.json(entry);
+    } catch (error: any) {
+      res.status(400).json({ message: "Invalid gratitude entry data" });
     }
   });
 

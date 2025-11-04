@@ -92,6 +92,13 @@ export const moodEntries = pgTable("mood_entries", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const gratitudeEntries = pgTable("gratitude_entries", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  items: jsonb("items").notNull(),
+  savedAt: timestamp("saved_at").defaultNow().notNull(),
+});
+
 // Community Features Tables
 export const forumCategories = pgTable("forum_categories", {
   id: serial("id").primaryKey(),
@@ -312,6 +319,11 @@ export const insertJournalEntrySchema = createInsertSchema(journalEntries).omit(
   createdAt: true,
 });
 
+export const insertGratitudeEntrySchema = createInsertSchema(gratitudeEntries).omit({
+  id: true,
+  savedAt: true,
+});
+
 export const insertCoachingProgressSchema = createInsertSchema(coachingProgress).omit({
   id: true,
   completedAt: true,
@@ -417,6 +429,8 @@ export type HealthAssessment = typeof healthAssessments.$inferSelect;
 
 export type InsertJournalEntry = z.infer<typeof insertJournalEntrySchema>;
 export type JournalEntry = typeof journalEntries.$inferSelect;
+export type InsertGratitudeEntry = z.infer<typeof insertGratitudeEntrySchema>;
+export type GratitudeEntry = typeof gratitudeEntries.$inferSelect;
 
 export type InsertCoachingProgress = z.infer<typeof insertCoachingProgressSchema>;
 export type CoachingProgress = typeof coachingProgress.$inferSelect;

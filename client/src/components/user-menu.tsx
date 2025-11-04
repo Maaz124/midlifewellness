@@ -90,12 +90,14 @@ export function UserMenu() {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/checkout" className="flex items-center cursor-pointer" data-testid="link-upgrade">
-            <CreditCard className="mr-2 h-4 w-4" />
-            <span>Upgrade Account</span>
-          </Link>
-        </DropdownMenuItem>
+        {!user?.hasCoachingAccess && (
+          <DropdownMenuItem asChild>
+            <Link href="/checkout" className="flex items-center cursor-pointer" data-testid="link-upgrade">
+              <CreditCard className="mr-2 h-4 w-4" />
+              <span>Upgrade Account</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} data-testid="button-logout">
           <LogOut className="mr-2 h-4 w-4" />

@@ -95,6 +95,10 @@ export interface IStorage {
   getMoodEntriesByUser(userId: string): Promise<MoodEntry[]>;
   createMoodEntry(entry: InsertMoodEntry): Promise<MoodEntry>;
 
+  // Gratitude Entries
+  getGratitudeEntriesByUser(userId: string): Promise<any[]>;
+  createGratitudeEntry(entry: any): Promise<any>;
+
   // Videos (for future use)
   getVideos(): Promise<Video[]>;
   getVideoById(id: number): Promise<Video | undefined>;
@@ -131,6 +135,7 @@ export class MemStorage implements IStorage {
   private habits: Map<number, Habit>;
   private moodEntries: Map<number, MoodEntry>;
   private currentId: number;
+  private gratitudeEntriesMem: Map<number, any>;
 
   constructor() {
     this.users = new Map();
@@ -141,6 +146,7 @@ export class MemStorage implements IStorage {
     this.habits = new Map();
     this.moodEntries = new Map();
     this.currentId = 1;
+    this.gratitudeEntriesMem = new Map();
   }
 
   // User methods
@@ -369,6 +375,17 @@ export class MemStorage implements IStorage {
     };
     this.moodEntries.set(id, entry);
     return entry;
+  }
+
+  async getGratitudeEntriesByUser(userId: string): Promise<any[]> {
+    return Array.from(this.gratitudeEntriesMem.values()).filter((e: any) => String(e.userId) === String(userId));
+  }
+
+  async createGratitudeEntry(entry: any): Promise<any> {
+    const id = this.currentId++;
+    const row = { id, ...entry, savedAt: entry.savedAt || new Date() };
+    this.gratitudeEntriesMem.set(id, row);
+    return row;
   }
 }
 

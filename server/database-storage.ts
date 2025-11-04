@@ -6,6 +6,7 @@ import {
   goals,
   habits,
   moodEntries,
+  gratitudeEntries,
   videos,
   forumCategories,
   forumPosts,
@@ -32,6 +33,8 @@ import {
   type InsertHabit,
   type MoodEntry,
   type InsertMoodEntry,
+  type GratitudeEntry,
+  type InsertGratitudeEntry,
   type Video,
   type InsertVideo,
   type DigitalResource,
@@ -184,6 +187,24 @@ export class DatabaseStorage implements IStorage {
         eq(journalEntries.id, id),
         eq(journalEntries.userId, userId)
       ));
+  }
+
+  // Gratitude Entries
+  async getGratitudeEntriesByUser(userId: string): Promise<GratitudeEntry[]> {
+    const rows = await db
+      .select()
+      .from(gratitudeEntries)
+      .where(eq(gratitudeEntries.userId, userId))
+      .orderBy(desc(gratitudeEntries.savedAt));
+    return rows as any;
+  }
+
+  async createGratitudeEntry(entry: InsertGratitudeEntry): Promise<GratitudeEntry> {
+    const [row] = await db
+      .insert(gratitudeEntries)
+      .values(entry as any)
+      .returning();
+    return row as any;
   }
 
   // Coaching Progress

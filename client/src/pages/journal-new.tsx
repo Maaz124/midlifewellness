@@ -98,10 +98,14 @@ export default function JournalNew() {
     },
   });
 
-  // Merge API entries with localStorage entries, prioritizing API data
-  const allJournalEntries = isAuthenticated && apiJournalEntries.length > 0
-    ? apiJournalEntries
-    : (data?.journalEntries || []);
+  // Merge API entries with strict user scoping; when authenticated, never fall back to local entries
+  const safeApiEntries = (Array.isArray(apiJournalEntries) ? apiJournalEntries : []).filter((e: any) => {
+    if (!user?.id) return false;
+    return e && e.userId === user.id;
+  });
+  const allJournalEntries = isAuthenticated
+    ? safeApiEntries // show only server entries for the logged-in user
+    : (data?.journalEntries || []); // guests use local-only entries
   const [journalContent, setJournalContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [wordCount, setWordCount] = useState(0);
@@ -119,6 +123,7 @@ export default function JournalNew() {
     id: string;
     items: string[];
     savedAt: string;
+    ownerId?: string;
   }>>([]);
   const [viewGratitudeEntry, setViewGratitudeEntry] = useState<{
     id: string;
@@ -129,6 +134,12 @@ export default function JournalNew() {
   // Fetch digital resources
   const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
     queryKey: ['/api/resources']
+  });
+
+  // Fetch gratitude entries (DB) when authenticated
+  const { data: apiGratitudeEntries = [], isLoading: isLoadingGratitude } = useQuery({
+    queryKey: ['/api/gratitude-entries'],
+    enabled: isAuthenticated,
   });
 
   // Purchase mutation
@@ -224,6 +235,8 @@ export default function JournalNew() {
   });
   const hasTodaysEntry = Boolean(todaysEntry);
 
+  const isEditingToday = hasTodaysEntry;
+
   const moodOptions = [
     { value: 'very-happy', emoji: '😊', label: 'Great', color: 'bg-green-100 border-green-200' },
     { value: 'happy', emoji: '🙂', label: 'Good', color: 'bg-green-50 border-green-100' },
@@ -268,19 +281,35 @@ export default function JournalNew() {
     } else {
       const draft = localStorage.getItem(`journal_draft_${today}`);
       if (draft) setJournalContent(draft);
-      const todaysMood = data.moodTracking.find((entry: any) => entry.date === today || entry.createdAt?.startsWith(today));
+      const moodList = Array.isArray(data?.moodTracking) ? data!.moodTracking : [];
+      const todaysMood = moodList.find((entry: any) => entry.date === today || entry.createdAt?.startsWith(today));
       if (todaysMood) setSelectedMood(todaysMood.mood);
     }
     
     // Load saved gratitude entries from localStorage
-    const userId = user?.id || 'guest';
-    const savedEntries = localStorage.getItem(`gratitude-entries-${userId}`);
-    if (savedEntries) {
-      try {
-        const parsed = JSON.parse(savedEntries);
-        setSavedGratitudeEntries(parsed);
-      } catch (error) {
-        console.error('Error loading gratitude entries:', error);
+    if (isAuthenticated) {
+      // Use API-provided gratitude entries
+      const mapped = (apiGratitudeEntries as any[]).map(e => ({
+        id: String(e.id),
+        items: e.items || [],
+        savedAt: e.savedAt || e.createdAt || new Date().toISOString(),
+        ownerId: user?.id,
+      }));
+      setSavedGratitudeEntries(mapped);
+    } else {
+      // Fallback to localStorage for guests
+      const userId = user?.id || 'guest';
+      const savedEntries = localStorage.getItem(`gratitude-entries-${userId}`);
+      if (savedEntries) {
+        try {
+          const parsed = JSON.parse(savedEntries);
+          const filtered = Array.isArray(parsed)
+            ? parsed.filter((e: any) => !e?.ownerId || e.ownerId === userId)
+            : [];
+          setSavedGratitudeEntries(filtered);
+        } catch (error) {
+          console.error('Error loading gratitude entries:', error);
+        }
       }
     }
     
@@ -347,15 +376,25 @@ export default function JournalNew() {
       id: Date.now().toString(),
       items: gratitudeItems, // Save all three items (including empty ones)
       savedAt: new Date().toISOString(),
+      ownerId: user?.id || 'guest',
     };
 
-    // Save to state and localStorage
-    const updatedEntries = [newEntry, ...savedGratitudeEntries];
-    setSavedGratitudeEntries(updatedEntries);
-    
-    // Save to localStorage
-    const userId = user?.id || 'guest';
-    localStorage.setItem(`gratitude-entries-${userId}`, JSON.stringify(updatedEntries));
+    // Save to DB if authenticated; else localStorage
+    if (isAuthenticated) {
+      apiRequest('POST', '/api/gratitude-entries', { items: newEntry.items })
+        .then(res => res.json())
+        .then((created) => {
+          setSavedGratitudeEntries(prev => ([{ id: String(created.id), items: created.items, savedAt: created.savedAt || new Date().toISOString(), ownerId: user?.id }, ...prev]));
+        })
+        .catch(() => {
+          toast({ title: 'Failed to save to server', variant: 'destructive' });
+        });
+    } else {
+      const updatedEntries = [newEntry, ...savedGratitudeEntries];
+      setSavedGratitudeEntries(updatedEntries);
+      const userId = user?.id || 'guest';
+      localStorage.setItem(`gratitude-entries-${userId}`, JSON.stringify(updatedEntries));
+    }
 
     toast({
       title: "Gratitude Saved!",
@@ -397,10 +436,13 @@ export default function JournalNew() {
       createdAt: new Date().toISOString(),
     };
     
-    // Save to localStorage (for offline support) - always create a new entry
-    addJournalEntry(entry);
+    // If editing today's entry, do not create a duplicate local entry
+    if (!isEditingToday) {
+      // Save to localStorage (for offline support) - create if none today
+      addJournalEntry(entry);
+    }
     
-    // Save to API if authenticated - always create a new entry
+    // Save to API if authenticated - backend will upsert today's entry
     if (isAuthenticated) {
       saveJournalEntryMutation.mutate(entry);
     }
@@ -520,7 +562,7 @@ export default function JournalNew() {
                       >
                         {saveJournalEntryMutation.isPending 
                           ? 'Saving...' 
-                          : 'Complete Entry'}
+                          : (isEditingToday ? 'Save Changes' : 'Complete Entry')}
                       </Button>
                       <Button 
                         variant="outline" 
