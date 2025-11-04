@@ -20,6 +20,8 @@ import {
   Filler
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
+import { coachingModules } from '@/lib/coaching-data';
+import { useCoachingProgress } from '@/hooks/use-coaching-progress';
 
 ChartJS.register(
   CategoryScale,
@@ -36,6 +38,7 @@ ChartJS.register(
 export default function ProgressPage() {
   const { data } = useWellnessData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { data: coachingData } = useCoachingProgress();
   const [timeRange, setTimeRange] = useState('30');
   const [chartType, setChartType] = useState<'line' | 'bar'>('bar');
   // Chart data generated via memo to avoid relying on async effects
@@ -230,6 +233,13 @@ export default function ProgressPage() {
     return { label: 'Needs Focus', color: 'text-rose-600', bg: 'bg-rose-50' };
   };
 
+  const completedComponentsList = (coachingData?.coachingProgress?.completedComponents
+    || (data as any)?.coachingProgress?.completedComponents
+    || []) as string[];
+  const totalCompletedComponents = Array.isArray(completedComponentsList)
+    ? completedComponentsList.length
+    : 0;
+
   const achievements = [
     {
       id: 'week2-complete',
@@ -240,20 +250,37 @@ export default function ProgressPage() {
       earnedAt: '2 days ago'
     },
     {
-      id: '14-day-streak',
-      title: '14-Day Streak',
-      description: 'Daily mood tracking',
+      id: 'components-completed',
+      title: `${totalCompletedComponents} Components Completed`,
+      description: 'Coaching components finished',
       icon: TrendingUp,
       color: 'bg-primary',
-      earnedAt: '1 day ago'
+      earnedAt: totalCompletedComponents > 0 ? 'Recently' : ''
     }
   ];
 
+  const totalComponents = (coachingModules || []).reduce((acc: number, m: any) => acc + (m.components?.length || 0), 0);
+
+  // Compute monthly aggregates
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-11
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const entriesThisMonth = safeJournal.filter((e: any) => {
+    const d = new Date(e.createdAt || e.date || now);
+    return d.getFullYear() === year && d.getMonth() === month;
+  }).length;
+
+  const goalsRatio = totalComponents > 0 ? totalCompletedComponents / totalComponents : 0;
+  const moodRatio = daysInMonth > 0 ? Math.min(1, entriesThisMonth / daysInMonth) : 0;
+  const avgWellnessPercent = Math.round(((goalsRatio + moodRatio) / 2) * 100);
+
   const monthlyStats = {
-    avgWellness: Math.round((safeScores.mental + safeScores.physical + safeScores.cognitive) / 3) || 0,
+    avgWellness: avgWellnessPercent,
     journalEntries: safeJournal.length,
-    moodCheckins: safeMood.length,
-    goalsAchieved: `${safeGoals.filter((g: any) => g.completed).length}/${safeGoals.length}`
+    moodCheckins: safeJournal.length,
+    goalsAchieved: `${totalCompletedComponents}/${totalComponents}`
   };
 
   // Reload once per visit to this page (when navigated to), using a short timestamp guard
@@ -307,10 +334,7 @@ export default function ProgressPage() {
               <SelectItem value="90">Last 3 months</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
+          
         </div>
       </div>
 
@@ -487,83 +511,7 @@ export default function ProgressPage() {
         </div>
       </div>
 
-      {/* Detailed Analytics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Mood Patterns */}
-        <Card className="wellness-card">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Heart className="w-5 h-5 text-coral-500" />
-              <span>Mood Patterns</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-48 flex items-center justify-center bg-gray-50 rounded-lg mb-6">
-              {safeMood.length > 0 ? (
-                <div className="text-center">
-                  <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">Mood distribution chart would appear here</p>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">Start tracking your mood to see patterns</p>
-                </div>
-              )}
-            </div>
-            <div className="grid grid-cols-5 gap-2 text-center">
-              <div>
-                <div className="text-2xl mb-1">😊</div>
-                <div className="text-xs text-gray-500">32%</div>
-              </div>
-              <div>
-                <div className="text-2xl mb-1">🙂</div>
-                <div className="text-xs text-gray-500">28%</div>
-              </div>
-              <div>
-                <div className="text-2xl mb-1">😐</div>
-                <div className="text-xs text-gray-500">25%</div>
-              </div>
-              <div>
-                <div className="text-2xl mb-1">😔</div>
-                <div className="text-xs text-gray-500">12%</div>
-              </div>
-              <div>
-                <div className="text-2xl mb-1">😢</div>
-                <div className="text-xs text-gray-500">3%</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Weekly Activity */}
-        <Card className="wellness-card">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <span>Weekly Activity</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {weeklyActivity.map((day) => (
-                <div key={day.day} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 w-20">{day.day}</span>
-                  <div className="flex items-center space-x-2 flex-1">
-                    <div className="w-20 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-300" 
-                        style={{ width: `${day.percentage}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs text-gray-500 w-8">{day.percentage}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      
 
       {/* Journal Insights */}
       <Card className="wellness-card">

@@ -2,12 +2,28 @@ import { Link, useLocation } from "wouter";
 import { Bell, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useCoachingProgress } from '@/hooks/use-coaching-progress';
+import { coachingModules } from '@/lib/coaching-data';
 import { Logo } from '@/components/logo';
+import { useAuth } from '@/hooks/useAuth';
 import { UserMenu } from '@/components/user-menu';
 
 export function NavHeader() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: coachingData } = useCoachingProgress();
+  const { isAuthenticated } = useAuth();
+  const completedComponentsList = (coachingData?.coachingProgress?.completedComponents || []) as string[];
+  const totalCompleted = Array.isArray(completedComponentsList) ? completedComponentsList.length : 0;
+  const totalComponents = (coachingModules || []).reduce((acc: number, m: any) => acc + (m.components?.length || 0), 0);
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: 'fas fa-chart-line' },
@@ -62,9 +78,23 @@ export function NavHeader() {
                 Personal Coaching
               </Button>
             </Link>
-            <Button variant="ghost" size="sm" className="p-2" data-testid="button-notifications">
-              <Bell className="h-5 w-5 text-gray-400" />
-            </Button>
+            {isAuthenticated && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2" data-testid="button-notifications">
+                  <Bell className="h-5 w-5 text-gray-400" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Progress Summary</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="flex justify-between">
+                  <span>Total Components Completed</span>
+                  <span className="font-medium">{totalCompleted}/{totalComponents}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            )}
             <UserMenu />
           </div>
 
