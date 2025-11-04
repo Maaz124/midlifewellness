@@ -33,5 +33,9 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    hmr: process.env.VITE_HMR_HOST ? {
+      host: process.env.VITE_HMR_HOST,
+      port: process.env.VITE_HMR_PORT ? parseInt(process.env.VITE_HMR_PORT) : undefined,
+    } : undefined,
   },
 });

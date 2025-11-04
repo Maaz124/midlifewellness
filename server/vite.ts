@@ -20,9 +20,21 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
-  const serverOptions = {
+  // Get port - default to 5000
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
+  
+  // For HMR, use the public host if set, otherwise let Vite auto-detect
+  // VITE_HMR_HOST should be set to your VPS IP or domain (e.g., 178.128.119.158)
+  const hmrHost = process.env.VITE_HMR_HOST;
+  const hmrPort = process.env.VITE_HMR_PORT ? parseInt(process.env.VITE_HMR_PORT) : port;
+  
+  const serverOptions: any = {
     middlewareMode: true,
-    hmr: { server },
+    hmr: { 
+      server,
+      ...(hmrHost && { host: hmrHost }),
+      ...(hmrPort && hmrPort !== port && { port: hmrPort, clientPort: hmrPort }),
+    },
     allowedHosts: true,
   };
 
