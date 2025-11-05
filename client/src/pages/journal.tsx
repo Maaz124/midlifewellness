@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,14 +6,17 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Feather, Calendar, BookOpen, Search, Map, FileText, Download, ShoppingCart, Filter, DollarSign, Star, Lock, CheckCircle, Heart } from 'lucide-react';
+import { Feather, Calendar, BookOpen, Search, Map, FileText, Download, ShoppingCart, Filter, DollarSign, Star, Lock, CheckCircle, Heart, Award } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
-import { getTodaysPrompt } from '@/lib/coaching-data';
+import { getTodaysPrompt, coachingModules } from '@/lib/coaching-data';
 import { JournalEntry, MoodEntry } from '@/types/wellness';
 import { useQuery } from '@tanstack/react-query';
+import { Progress } from '@/components/ui/progress';
+import { useCoachingProgress } from '@/hooks/use-coaching-progress';
 
 export default function Journal() {
   const { data, addJournalEntry, addMoodEntry } = useWellnessData();
+  const { data: coachingData } = useCoachingProgress();
   const [journalContent, setJournalContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [wordCount, setWordCount] = useState(0);
@@ -126,6 +129,21 @@ export default function Journal() {
   const recentEntries = data.journalEntries
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
+
+  // Calculate progress for each week (1-6)
+  const weekProgress = useMemo(() => {
+    const completedComponents = (coachingData?.coachingProgress?.completedComponents as string[]) || [];
+    const progressMap: Record<number, number> = {};
+    
+    coachingModules.forEach(module => {
+      const completedCount = module.components.filter(c => 
+        completedComponents.includes(c.id)
+      ).length;
+      progressMap[module.weekNumber] = Math.round((completedCount / module.components.length) * 100);
+    });
+    
+    return progressMap;
+  }, [coachingData?.coachingProgress?.completedComponents]);
 
   return (
     <div className="space-y-8">
@@ -287,6 +305,42 @@ export default function Journal() {
                   View All Entries
                 </Button>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Achievements - Week Progress */}
+          <Card className="wellness-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-coral-500" />
+                <span>Achievements</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {coachingModules.map((module) => {
+                  const progress = weekProgress[module.weekNumber] || 0;
+                  return (
+                    <div key={module.id} className="space-y-2 pb-3 border-b border-gray-100 last:border-0">
+                      <div className="text-sm font-semibold text-gray-900 mb-2">
+                        {module.title}
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <Badge variant="outline" className="text-xs">
+                            Week {module.weekNumber} • {module.components.length} components
+                          </Badge>
+                          <span className="text-sm font-medium text-green-600">
+                            {progress}%
+                          </span>
+                        </div>
+                        <Progress value={progress} className="flex-1 max-w-[100px]" />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{module.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
 

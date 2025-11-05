@@ -242,24 +242,21 @@ export default function ProgressPage() {
     ? completedComponentsList.length
     : 0;
 
-  const achievements = [
-    {
-      id: 'week2-complete',
-      title: 'Week 2 Complete',
-      description: 'Rewiring Thoughts mastery',
-      icon: Award,
-      color: 'bg-green-500',
-      earnedAt: '2 days ago'
-    },
-    {
-      id: 'components-completed',
-      title: `${totalCompletedComponents} Components Completed`,
-      description: 'Coaching components finished',
-      icon: TrendingUp,
-      color: 'bg-primary',
-      earnedAt: totalCompletedComponents > 0 ? 'Recently' : ''
-    }
-  ];
+  // Calculate progress for each week (1-6)
+  const weekProgress = useMemo(() => {
+    const completedComponents = completedComponentsList;
+    const progressMap: Record<number, number> = {};
+    
+    coachingModules.forEach(module => {
+      const completedCount = module.components.filter(c => 
+        completedComponents.includes(c.id)
+      ).length;
+      progressMap[module.weekNumber] = Math.round((completedCount / module.components.length) * 100);
+    });
+    
+    return progressMap;
+  }, [completedComponentsList]);
+
 
   const totalComponents = (coachingModules || []).reduce((acc: number, m: any) => acc + (m.components?.length || 0), 0);
 
@@ -484,27 +481,32 @@ export default function ProgressPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {achievements.map((achievement) => {
-                  const Icon = achievement.icon;
-                  return (
-                    <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                      <div className={`w-8 h-8 ${achievement.color} rounded-full flex items-center justify-center`}>
-                        <Icon className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-800">{achievement.title}</div>
-                        <div className="text-xs text-gray-500">{achievement.description}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {achievements.length === 0 && (
-                  <div className="text-center py-4">
-                    <Award className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">Complete activities to earn achievements</p>
+              <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                {/* Week Progress Bars */}
+                <div>
+                  <div className="text-sm font-semibold text-gray-700 mb-3">Module Progress</div>
+                  <div className="space-y-4">
+                    {coachingModules.map((module) => {
+                      const progress = weekProgress[module.weekNumber] || 0;
+                      return (
+                        <div key={module.id} className="space-y-2">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 flex-1">
+                              <Badge variant="outline" className="text-xs">
+                                Week {module.weekNumber} • {module.components.length} components
+                              </Badge>
+                              <span className="text-sm font-medium text-green-600">
+                                {progress}%
+                              </span>
+                            </div>
+                            <Progress value={progress} className="w-20 h-2" />
+                          </div>
+                          <p className="text-xs text-gray-500 ml-0">{module.description}</p>
+                        </div>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
               </div>
             </CardContent>
           </Card>
