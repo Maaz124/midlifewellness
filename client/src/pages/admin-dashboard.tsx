@@ -74,8 +74,8 @@ function AdminDashboard() {
   const [inquiriesSearch, setInquiriesSearch] = useState("");
   const [activeSection, setActiveSection] = useState<'overview' | 'users' | 'prices' | 'email' | 'inquiries' | 'stripe'>("overview");
 
-  // Check if we're in development mode (for bypassing auth)
-  const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
+  // Enforce admin-only access regardless of environment
+  const isDev = false;
 
   // Debug logging (remove in production)
   useEffect(() => {
@@ -261,7 +261,7 @@ function AdminDashboard() {
 
   // Update Stripe keys mutation
   const updateKeysMutation = useMutation({
-    mutationFn: async (keys: { publishableKey: string; secretKey: string }) => {
+    mutationFn: async (keys: { publishableKey: string; secretKey?: string }) => {
       return apiRequest("PUT", "/api/admin/stripe-keys", keys);
     },
     onSuccess: () => {
@@ -285,7 +285,8 @@ function AdminDashboard() {
     if (currentKeys) {
       setStripeKeys({
         publishableKey: currentKeys.publishableKey || "",
-        secretKey: currentKeys.secretKey === "***hidden***" ? "" : (currentKeys.secretKey || ""),
+        // Keep masked value so field appears populated; we'll ignore it on save
+        secretKey: currentKeys.secretKey ? currentKeys.secretKey : "",
       });
     }
   }, [currentKeys]);
@@ -310,7 +311,8 @@ function AdminDashboard() {
     if (emailConfigData) {
       setEmailConfig({
         gmailUser: emailConfigData.gmailUser || "",
-        gmailAppPassword: "",
+        // Preserve masked value so the field shows as populated without exposing secret
+        gmailAppPassword: emailConfigData.gmailAppPassword || "",
         coachingInbox: emailConfigData.coachingInbox || "",
       });
     }
@@ -319,9 +321,16 @@ function AdminDashboard() {
   const handleSaveEmailConfig = async () => {
     try {
       setIsSaving(true);
-      await apiRequest("PUT", "/api/admin/email-config", emailConfig);
+      // Build payload; if password is masked, omit to keep existing
+      const payload: any = {
+        gmailUser: emailConfig.gmailUser,
+        coachingInbox: emailConfig.coachingInbox,
+      };
+      if (emailConfig.gmailAppPassword && emailConfig.gmailAppPassword !== "***hidden***") {
+        payload.gmailAppPassword = emailConfig.gmailAppPassword;
+      }
+      await apiRequest("PUT", "/api/admin/email-config", payload);
       toast({ title: "Email settings updated" });
-      setEmailConfig((prev) => ({ ...prev, gmailAppPassword: "" }));
       await refetchEmailConfig();
     } catch (e: any) {
       toast({ title: "Failed to update email settings", variant: "destructive" });
@@ -332,16 +341,16 @@ function AdminDashboard() {
 
   // Redirect if not authenticated (only in production) - must be before any conditional returns
   useEffect(() => {
-    if (!isDev && !isLoadingUser && !adminUser && !adminUserError) {
+    if (!isLoadingUser && (!adminUser || !adminUser.isAdmin)) {
       // Wait a moment to see if user data loads
       const timer = setTimeout(() => {
-        if (!adminUser) {
+        if (!adminUser || !adminUser.isAdmin) {
           setLocation("/admin/login");
         }
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [adminUser, isLoadingUser, adminUserError, setLocation, isDev]);
+  }, [adminUser, isLoadingUser, adminUserError, setLocation]);
 
   const handleLogout = async () => {
     try {
@@ -362,10 +371,10 @@ function AdminDashboard() {
   };
 
   const handleSaveKeys = async () => {
-    if (!stripeKeys.publishableKey || !stripeKeys.secretKey) {
+    if (!stripeKeys.publishableKey) {
       toast({
         title: "Validation Error",
-        description: "Both publishable and secret keys are required",
+        description: "Publishable key is required",
         variant: "destructive",
       });
       return;
@@ -373,7 +382,12 @@ function AdminDashboard() {
 
     setIsSaving(true);
     try {
-      await updateKeysMutation.mutateAsync(stripeKeys);
+      const payload: any = { publishableKey: stripeKeys.publishableKey };
+      // Only send secret if user provided a new one (not masked placeholder)
+      if (stripeKeys.secretKey && stripeKeys.secretKey !== "***hidden***") {
+        payload.secretKey = stripeKeys.secretKey;
+      }
+      await updateKeysMutation.mutateAsync(payload);
     } finally {
       setIsSaving(false);
     }
@@ -434,8 +448,8 @@ function AdminDashboard() {
     );
   }
 
-  // Show error state (only in production)
-  if (adminUserError && !isDev) {
+  // Show error state
+  if (adminUserError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-white p-4">
         <Card className="max-w-md w-full">
@@ -455,8 +469,8 @@ function AdminDashboard() {
     );
   }
 
-  // If no admin user but not loading, show error (only in production)
-  if (!isDev && !adminUser && !isLoadingUser && !adminUserError) {
+  // If no admin user or not an admin and not loading, show access denied
+  if ((!adminUser || !adminUser.isAdmin) && !isLoadingUser && !adminUserError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-white p-4">
         <Card className="max-w-md w-full">
@@ -476,14 +490,8 @@ function AdminDashboard() {
     );
   }
 
-  // Use mock admin user in development if needed
-  const displayUser = adminUser || (isDev ? {
-    id: "dev-admin",
-    email: "admin@dev.local",
-    firstName: "Admin",
-    lastName: "User",
-    isAdmin: true
-  } : null);
+  // Only show the real authenticated admin user
+  const displayUser = adminUser;
 
   // Filter users based on search term (searches both name and email)
   const filteredUsers = allUsers && allUsers.length > 0 ? allUsers.filter((user) => {
@@ -828,10 +836,17 @@ function AdminDashboard() {
                                 Full Access
                               </span>
                             )}
-                              {typeof (user as any).amountPaid === 'number' && (
-                                <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                                  ${((user as any).amountPaid).toFixed(2)} paid
-                                </span>
+                              {typeof (user as any).amountPaidUsdCents === 'number' && (user as any).amountPaidUsdCents > 0 && (
+                                <>
+                                  <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                    ${(((user as any).amountPaidUsdCents || 0) / 100).toFixed(2)} paid
+                                  </span>
+                                  {user.hasCoachingAccess && user.coachingAccessGrantedAt && (
+                                    <span className="ml-2 text-xs text-gray-500">
+                                      Paid on {new Date(user.coachingAccessGrantedAt).toLocaleDateString()} at {new Date(user.coachingAccessGrantedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                  )}
+                                </>
                               )}
                             </div>
                             <div className="flex items-center mt-1 text-sm text-gray-600">
@@ -847,6 +862,10 @@ function AdminDashboard() {
                             <p className="text-xs text-gray-400 mt-1">
                               Joined: {new Date(user.createdAt).toLocaleDateString()}
                             </p>
+                            <p className="text-xs text-gray-400 mt-1 break-all">
+                              ID: {user.id}
+                            </p>
+                            {/* Payment time shown inline with the paid badge above */}
                           </div>
                         </div>
                       </div>

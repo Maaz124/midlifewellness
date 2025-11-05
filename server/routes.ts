@@ -1504,6 +1504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           emailVerified: users.emailVerified,
           hasCoachingAccess: users.hasCoachingAccess,
           amountPaidUsdCents: users.amountPaidUsdCents,
+          coachingAccessGrantedAt: users.coachingAccessGrantedAt,
           isAdmin: users.isAdmin,
           createdAt: users.createdAt,
         })
@@ -1617,13 +1618,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .where(eq(adminConfig.key, 'stripe_secret_key'))
         .limit(1);
       
-      // Also check environment variables as fallback
+      // Also check environment variables as fallback (return actual values for admin)
       const envPublishableKey = process.env.STRIPE_PUBLISHABLE_KEY || '';
-      const envSecretKey = process.env.STRIPE_SECRET_KEY ? '***hidden***' : '';
+      const envSecretKey = process.env.STRIPE_SECRET_KEY || '';
       
       res.json({
         publishableKey: publishableKey[0]?.value || envPublishableKey,
-        secretKey: secretKey[0]?.value ? '***hidden***' : envSecretKey,
+        secretKey: secretKey[0]?.value || envSecretKey,
         source: publishableKey[0] || secretKey[0] ? 'database' : 'environment'
       });
     } catch (error) {
@@ -1659,14 +1660,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .where(eq(adminConfig.key, 'coaching_inbox'))
         .limit(1);
       
-      // Fallback to environment variables if not in database
+      // Fallback to environment variables if not in database (return actual values for admin)
       const envGmailUser = process.env.GMAIL_USER || '';
-      const envGmailAppPassword = process.env.GMAIL_APP_PASSWORD ? '***hidden***' : '';
+      const envGmailAppPassword = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || '';
       const envCoachingInbox = process.env.COACHING_INBOX || 'coaching@bloomafter40.com';
       
       res.json({
         gmailUser: gmailUserRow[0]?.value || envGmailUser,
-        gmailAppPassword: gmailAppPasswordRow[0]?.value ? '***hidden***' : envGmailAppPassword,
+        gmailAppPassword: gmailAppPasswordRow[0]?.value || envGmailAppPassword,
         coachingInbox: coachingInboxRow[0]?.value || envCoachingInbox,
         source: (gmailUserRow[0] || gmailAppPasswordRow[0] || coachingInboxRow[0]) ? 'database' : 'environment'
       });
@@ -1787,8 +1788,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { publishableKey, secretKey } = req.body;
       
-      if (!publishableKey || !secretKey) {
-        return res.status(400).json({ message: "Both publishable and secret keys are required" });
+      if (!publishableKey && !secretKey) {
+        return res.status(400).json({ message: "Provide at least one key to update" });
       }
       
       const dbModule = await import("./db");
@@ -1798,61 +1799,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const schemaModule: any = await import("@shared/schema");
       const adminConfig = schemaModule.adminConfig;
       
-      // Update or insert publishable key
-      const existingPubKey = await db
-        .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'stripe_publishable_key'))
-        .limit(1);
-      
-      if (existingPubKey.length > 0) {
-        await db
-          .update(adminConfig)
-          .set({
+      // Update or insert publishable key (if provided)
+      if (typeof publishableKey === 'string') {
+        const existingPubKey = await db
+          .select()
+          .from(adminConfig)
+          .where(eq(adminConfig.key, 'stripe_publishable_key'))
+          .limit(1);
+        if (existingPubKey.length > 0) {
+          await db
+            .update(adminConfig)
+            .set({ value: publishableKey, updatedBy: userId, updatedAt: new Date() })
+            .where(eq(adminConfig.key, 'stripe_publishable_key'));
+        } else {
+          await db.insert(adminConfig).values({
+            key: 'stripe_publishable_key',
             value: publishableKey,
-            updatedBy: userId,
-            updatedAt: new Date()
-          })
-          .where(eq(adminConfig.key, 'stripe_publishable_key'));
-      } else {
-        await db.insert(adminConfig).values({
-          key: 'stripe_publishable_key',
-          value: publishableKey,
-          description: 'Stripe Publishable Key',
-          updatedBy: userId
-        });
+            description: 'Stripe Publishable Key',
+            updatedBy: userId
+          });
+        }
       }
       
-      // Update or insert secret key
-      const existingSecretKey = await db
-        .select()
-        .from(adminConfig)
-        .where(eq(adminConfig.key, 'stripe_secret_key'))
-        .limit(1);
-      
-      if (existingSecretKey.length > 0) {
-        await db
-          .update(adminConfig)
-          .set({
+      // Update or insert secret key (if provided)
+      if (typeof secretKey === 'string' && secretKey.trim()) {
+        const existingSecretKey = await db
+          .select()
+          .from(adminConfig)
+          .where(eq(adminConfig.key, 'stripe_secret_key'))
+          .limit(1);
+        if (existingSecretKey.length > 0) {
+          await db
+            .update(adminConfig)
+            .set({ value: secretKey, updatedBy: userId, updatedAt: new Date() })
+            .where(eq(adminConfig.key, 'stripe_secret_key'));
+        } else {
+          await db.insert(adminConfig).values({
+            key: 'stripe_secret_key',
             value: secretKey,
-            updatedBy: userId,
-            updatedAt: new Date()
-          })
-          .where(eq(adminConfig.key, 'stripe_secret_key'));
-      } else {
-        await db.insert(adminConfig).values({
-          key: 'stripe_secret_key',
-          value: secretKey,
-          description: 'Stripe Secret Key (sensitive)',
-          updatedBy: userId
-        });
-      }
-      
-      // Update Stripe instance with new secret key
-      if (secretKey) {
-        stripe = new Stripe(secretKey, {
-          apiVersion: "2025-06-30.basil",
-        });
+            description: 'Stripe Secret Key (sensitive)',
+            updatedBy: userId
+          });
+        }
+        // Update Stripe instance with new secret key
+        stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
       }
       
       // Clear Stripe config cache to force refresh
