@@ -21,7 +21,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Introduction</h2>
               <p className="text-gray-700 dark:text-gray-300">
-                BloomAfter40 ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains 
+                MidlifeRebalance ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains 
                 how we collect, use, disclose, and safeguard your information when you use our wellness platform.
               </p>
             </section>
@@ -106,7 +106,7 @@ export default function PrivacyPolicy() {
                 <li><strong>Object:</strong> Object to processing of your data for certain purposes</li>
               </ul>
               <p className="text-gray-700 dark:text-gray-300 mt-4">
-                To exercise these rights, contact us at <a href="mailto:privacy@bloomafter40.com" className="text-purple-600 hover:text-purple-700">privacy@bloomafter40.com</a>
+                To exercise these rights, contact us at <a href="mailto:privacy@midliferebalance.com" className="text-purple-600 hover:text-purple-700">privacy@midliferebalance.com</a>
               </p>
             </section>
 
@@ -167,8 +167,8 @@ export default function PrivacyPolicy() {
               </p>
               <div className="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Email:</strong> <a href="mailto:privacy@bloomafter40.com" className="text-purple-600 hover:text-purple-700">privacy@bloomafter40.com</a><br />
-                  <strong>Mail:</strong> BloomAfter40 Privacy Team<br />
+                  <strong>Email:</strong> <a href="mailto:privacy@midliferebalance.com" className="text-purple-600 hover:text-purple-700">privacy@midliferebalance.com</a><br />
+                  <strong>Mail:</strong> MidlifeRebalance Privacy Team<br />
                   <strong>Response Time:</strong> We aim to respond within 48 hours
                 </p>
               </div>

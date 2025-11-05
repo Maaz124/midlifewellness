@@ -22,7 +22,7 @@ import { useEffect } from 'react';
 export default function PerimenopauseEducation() {
   useEffect(() => {
     updatePageSEO({
-      title: "Understanding Perimenopause - Complete Guide | BloomAfter40",
+      title: "Understanding Perimenopause - Complete Guide | MidlifeRebalance",
       description: "Comprehensive guide to perimenopause: learn about physiological, psychological, and cognitive changes, common symptoms, and evidence-based coping strategies for midlife women.",
       keywords: "perimenopause guide, perimenopause symptoms, hormonal changes, midlife women, menopause transition, perimenopause coping strategies"
     });
@@ -832,7 +832,7 @@ export default function PerimenopauseEducation() {
             Perimenopause is a significant life transition, but it doesn't have to be overwhelming. With the right knowledge, support, and strategies, you can navigate this phase with confidence and emerge stronger. Remember: these changes are temporary, manageable, and a natural part of life's evolution.
           </p>
           <p className="mt-4 text-purple-700 dark:text-purple-300 font-medium">
-            The BloomAfter40 program is designed to support you every step of the way.
+            The MidlifeRebalance program is designed to support you every step of the way.
           </p>
         </div>
 

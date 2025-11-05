@@ -40,7 +40,7 @@ export default function MedicalDisclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Nature of Services</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                BloomAfter40 is a wellness and educational platform designed to support women through midlife transitions. 
+                MidlifeRebalance is a wellness and educational platform designed to support women through midlife transitions. 
                 Our services include:
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
@@ -182,7 +182,7 @@ export default function MedicalDisclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Limitation of Liability</h2>
               <p className="text-gray-700 dark:text-gray-300">
-                To the fullest extent permitted by law, BloomAfter40 and Dr. Sidra Bukhari assume no liability for:
+                To the fullest extent permitted by law, MidlifeRebalance and Dr. Sidra Bukhari assume no liability for:
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2 mt-4">
                 <li>Health outcomes, injuries, or complications resulting from use of this platform</li>
@@ -230,7 +230,7 @@ export default function MedicalDisclaimer() {
               </p>
               <div className="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Email:</strong> <a href="mailto:support@bloomafter40.com" className="text-purple-600 hover:text-purple-700">support@bloomafter40.com</a><br />
+                  <strong>Email:</strong> <a href="mailto:support@midliferebalance.com" className="text-purple-600 hover:text-purple-700">support@midliferebalance.com</a><br />
                   <strong>Note:</strong> We cannot provide medical advice via email. Contact your healthcare provider for medical questions.
                 </p>
               </div>

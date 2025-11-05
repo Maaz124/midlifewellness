@@ -21,7 +21,7 @@ export default function Accessibility() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Our Commitment</h2>
               <p className="text-gray-700 dark:text-gray-300">
-                BloomAfter40 is committed to ensuring digital accessibility for all users, including those with disabilities. 
+                MidlifeRebalance is committed to ensuring digital accessibility for all users, including those with disabilities. 
                 We strive to provide an inclusive experience that empowers every woman to access our wellness resources, 
                 regardless of their abilities or the technologies they use.
               </p>
@@ -109,7 +109,7 @@ export default function Accessibility() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Browser and Device Support</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                BloomAfter40 is compatible with:
+                MidlifeRebalance is compatible with:
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
                 <li>Modern web browsers (Chrome, Firefox, Safari, Edge) - latest two versions</li>
@@ -170,12 +170,12 @@ export default function Accessibility() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Feedback and Support</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                We welcome your feedback on the accessibility of BloomAfter40. If you encounter accessibility barriers 
+                We welcome your feedback on the accessibility of MidlifeRebalance. If you encounter accessibility barriers 
                 or have suggestions for improvement, please let us know:
               </p>
               <div className="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Email:</strong> <a href="mailto:accessibility@bloomafter40.com" className="text-purple-600 hover:text-purple-700">accessibility@bloomafter40.com</a><br />
+                  <strong>Email:</strong> <a href="mailto:accessibility@midliferebalance.com" className="text-purple-600 hover:text-purple-700">accessibility@midliferebalance.com</a><br />
                   <strong>Subject Line:</strong> Accessibility Issue or Suggestion<br />
                   <strong>Response Time:</strong> We aim to respond within 2 business days
                 </p>
@@ -215,7 +215,7 @@ export default function Accessibility() {
               <p className="text-gray-700 dark:text-gray-300">
                 If you are not satisfied with our response to your accessibility concern, you may file a formal complaint. 
                 We take all complaints seriously and will investigate and respond appropriately. Please send formal complaints 
-                to <a href="mailto:accessibility@bloomafter40.com" className="text-purple-600 hover:text-purple-700">accessibility@bloomafter40.com</a> with 
+                to <a href="mailto:accessibility@midliferebalance.com" className="text-purple-600 hover:text-purple-700">accessibility@midliferebalance.com</a> with 
                 "Formal Accessibility Complaint" in the subject line.
               </p>
             </section>

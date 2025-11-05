@@ -21,7 +21,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Agreement to Terms</h2>
               <p className="text-gray-700 dark:text-gray-300">
-                By accessing or using BloomAfter40 ("Platform," "Service," "we," "us," or "our"), you agree to be bound by 
+                By accessing or using MidlifeRebalance ("Platform," "Service," "we," "us," or "our"), you agree to be bound by 
                 these Terms of Service and our Privacy Policy. If you do not agree to these terms, please do not use our platform.
               </p>
             </section>
@@ -29,7 +29,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Description of Service</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                BloomAfter40 provides a comprehensive wellness platform for women navigating perimenopause and midlife transitions, including:
+                MidlifeRebalance provides a comprehensive wellness platform for women navigating perimenopause and midlife transitions, including:
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
                 <li>Health assessment tools (mental, physical, and cognitive)</li>
@@ -102,7 +102,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Intellectual Property</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                All content, materials, features, and functionality on BloomAfter40 are owned by us and protected by 
+                All content, materials, features, and functionality on MidlifeRebalance are owned by us and protected by 
                 copyright, trademark, and other intellectual property laws.
               </p>
               <p className="text-gray-700 dark:text-gray-300">
@@ -155,7 +155,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Indemnification</h2>
               <p className="text-gray-700 dark:text-gray-300">
-                You agree to indemnify and hold harmless BloomAfter40, Dr. Sidra Bukhari, and our affiliates from any 
+                You agree to indemnify and hold harmless MidlifeRebalance, Dr. Sidra Bukhari, and our affiliates from any 
                 claims, damages, or expenses arising from your use of the platform, violation of these terms, or infringement 
                 of any third-party rights.
               </p>
@@ -190,7 +190,7 @@ export default function TermsOfService() {
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Governing Law</h2>
               <p className="text-gray-700 dark:text-gray-300">
                 These Terms of Service are governed by and construed in accordance with the laws of the jurisdiction in which 
-                BloomAfter40 operates, without regard to conflict of law provisions.
+                MidlifeRebalance operates, without regard to conflict of law provisions.
               </p>
             </section>
 
@@ -218,8 +218,8 @@ export default function TermsOfService() {
               </p>
               <div className="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Email:</strong> <a href="mailto:legal@bloomafter40.com" className="text-purple-600 hover:text-purple-700">legal@bloomafter40.com</a><br />
-                  <strong>Mail:</strong> BloomAfter40 Legal Department<br />
+                  <strong>Email:</strong> <a href="mailto:legal@midliferebalance.com" className="text-purple-600 hover:text-purple-700">legal@midliferebalance.com</a><br />
+                  <strong>Mail:</strong> MidlifeRebalance Legal Department<br />
                   <strong>Response Time:</strong> We aim to respond within 48 hours
                 </p>
               </div>

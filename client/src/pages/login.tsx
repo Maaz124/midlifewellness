@@ -43,7 +43,7 @@ export default function Login() {
 
       toast({
         title: "Login successful!",
-        description: "Welcome back to BloomAfter40",
+        description: "Welcome back to MidlifeRebalance",
       });
 
       // Redirect to home page
@@ -70,7 +70,7 @@ export default function Login() {
           </div>
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>
-            Sign in to your BloomAfter40 account
+            Sign in to your MidlifeRebalance account
           </CardDescription>
         </CardHeader>
         <CardContent>

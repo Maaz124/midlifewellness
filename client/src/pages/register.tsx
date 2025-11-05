@@ -46,7 +46,7 @@ export default function Register() {
 
       toast({
         title: "Registration successful!",
-        description: "Welcome to BloomAfter40",
+        description: "Welcome to MidlifeRebalance",
       });
 
       // Redirect to home page
@@ -73,7 +73,7 @@ export default function Register() {
           </div>
           <CardTitle className="text-2xl">Create your account</CardTitle>
           <CardDescription>
-            Join BloomAfter40 for your wellness journey
+            Join MidlifeRebalance for your wellness journey
           </CardDescription>
         </CardHeader>
         <CardContent>

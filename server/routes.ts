@@ -533,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currency: "usd",
         metadata: {
           service: "coaching_plan",
-          description: "BloomAfter40 6-Week Mind-Body Reset Coaching Program",
+          description: "MidlifeRebalance 6-Week Mind-Body Reset Coaching Program",
           userId: userId
         }
       });
@@ -636,7 +636,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const success = await sendEmail({
         to: email,
-        from: 'coaching@bloomafter40.com',
+        from: 'coaching@midliferebalance.com',
         subject: template.subject,
         html: template.html,
         text: template.text
@@ -1230,7 +1230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <div style="text-align: center; margin: 30px 0;">
             <p style="color: #6b7280;">
               If you have any urgent questions, please email us at 
-              <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6;">coaching@bloomafter40.com</a>
+              <a href="mailto:coaching@midliferebalance.com" style="color: #8B5CF6;">coaching@midliferebalance.com</a>
             </p>
           </div>
         </div>
@@ -1679,7 +1679,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Fallback to environment variables if not in database (return actual values for admin)
       const envGmailUser = process.env.GMAIL_USER || '';
       const envGmailAppPassword = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || '';
-      const envCoachingInbox = process.env.COACHING_INBOX || 'coaching@bloomafter40.com';
+      const envCoachingInbox = process.env.COACHING_INBOX || 'coaching@midliferebalance.com';
       
       res.json({
         gmailUser: gmailUserRow[0]?.value || envGmailUser,

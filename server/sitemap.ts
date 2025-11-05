@@ -1,5 +1,5 @@
-// SEO Sitemap Generation for BloomAfter40
-export function generateSitemap(baseUrl: string = 'https://bloomafter40.com'): string {
+// SEO Sitemap Generation for MidlifeRebalance
+export function generateSitemap(baseUrl: string = 'https://midliferebalance.com'): string {
   const currentDate = new Date().toISOString().split('T')[0];
   
   const pages = [
@@ -66,7 +66,7 @@ ${pages.map(page => `  <url>
   return sitemap;
 }
 
-export function generateRobotsTxt(baseUrl: string = 'https://bloomafter40.com'): string {
+export function generateRobotsTxt(baseUrl: string = 'https://midliferebalance.com'): string {
   return `User-agent: *
 Allow: /
 

@@ -44,17 +44,17 @@ export default function EmailSignatures() {
                 </p>
                 
                 <div style="margin-bottom: 15px;">
-                  <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-                    📧 coaching@bloomafter40.com
+                  <a href="mailto:coaching@midliferebalance.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+                    📧 coaching@midliferebalance.com
                   </a><br>
-                  <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-                    🌐 www.bloomafter40.com
+                  <a href="https://midliferebalance.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+                    🌐 www.midliferebalance.com
                   </a>
                 </div>
                 
                 <div style="margin-bottom: 10px;">
                   <span style="background: linear-gradient(135deg, #8B5CF6, #EC4899); color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold;">
-                    BloomAfter40: Mind-Body Reset for Women
+                    MidlifeRebalance: Mind-Body Reset for Women
                   </span>
                 </div>
                 
@@ -76,7 +76,7 @@ export default function EmailSignatures() {
       html: `
         <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #E5E7EB; font-family: Arial, sans-serif; text-align: center;">
           <div style="margin-bottom: 15px;">
-            <h4 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 16px;">BloomAfter40</h4>
+            <h4 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 16px;">MidlifeRebalance</h4>
             <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic;">Mind-Body Reset for Women</p>
           </div>
           
@@ -90,18 +90,18 @@ export default function EmailSignatures() {
           </div>
           
           <div style="margin-bottom: 15px;">
-            <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-              www.bloomafter40.com
+            <a href="https://midliferebalance.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+              www.midliferebalance.com
             </a>
             <span style="color: #D1D5DB; margin: 0 8px;">|</span>
-            <a href="mailto:hello@bloomafter40.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
-              hello@bloomafter40.com
+            <a href="mailto:hello@midliferebalance.com" style="color: #8B5CF6; text-decoration: none; font-size: 14px;">
+              hello@midliferebalance.com
             </a>
           </div>
           
           <p style="margin: 15px 0 0 0; font-size: 10px; color: #9CA3AF; line-height: 1.3;">
-            This email was sent from BloomAfter40 platform. If you no longer wish to receive these communications, 
-            please contact us at <a href="mailto:hello@bloomafter40.com" style="color: #8B5CF6;">hello@bloomafter40.com</a>
+            This email was sent from MidlifeRebalance platform. If you no longer wish to receive these communications, 
+            please contact us at <a href="mailto:hello@midliferebalance.com" style="color: #8B5CF6;">hello@midliferebalance.com</a>
           </p>
         </div>
       `
@@ -120,17 +120,17 @@ export default function EmailSignatures() {
               </div>
             </div>
             <div>
-              <h4 style="margin: 0 0 3px 0; color: #374151; font-size: 16px;">BloomAfter40 Support Team</h4>
+              <h4 style="margin: 0 0 3px 0; color: #374151; font-size: 16px;">MidlifeRebalance Support Team</h4>
               <p style="margin: 0; color: #6B7280; font-size: 14px;">Technical Support & Customer Care</p>
             </div>
           </div>
           
           <div style="margin-bottom: 15px;">
             <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
-              📧 <a href="mailto:support@bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">support@bloomafter40.com</a>
+              📧 <a href="mailto:support@midliferebalance.com" style="color: #8B5CF6; text-decoration: none;">support@midliferebalance.com</a>
             </p>
             <p style="margin: 0 0 5px 0; color: #374151; font-size: 14px;">
-              🌐 <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">www.bloomafter40.com</a>
+              🌐 <a href="https://midliferebalance.com" style="color: #8B5CF6; text-decoration: none;">www.midliferebalance.com</a>
             </p>
             <p style="margin: 0; color: #374151; font-size: 14px;">
               ⏰ Response Time: Within 24 hours
@@ -140,7 +140,7 @@ export default function EmailSignatures() {
           <div style="background: #F3F4F6; padding: 12px; border-radius: 8px; border-left: 4px solid #8B5CF6;">
             <p style="margin: 0; font-size: 12px; color: #6B7280; line-height: 1.4;">
               <strong>Need Personal Coaching?</strong> For coaching inquiries, please contact 
-              <a href="mailto:coaching@bloomafter40.com" style="color: #8B5CF6;">coaching@bloomafter40.com</a> 
+              <a href="mailto:coaching@midliferebalance.com" style="color: #8B5CF6;">coaching@midliferebalance.com</a> 
               or visit our <a href="/contact-coaching" style="color: #8B5CF6;">Personal Coaching page</a>.
             </p>
           </div>
@@ -159,7 +159,7 @@ export default function EmailSignatures() {
       html: `
         <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #F8FAFC, #F1F5F9); border-radius: 12px; font-family: Arial, sans-serif; text-align: center;">
           <div style="margin-bottom: 20px;">
-            <h3 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 20px; font-weight: bold;">BloomAfter40</h3>
+            <h3 style="margin: 0 0 5px 0; color: #8B5CF6; font-size: 20px; font-weight: bold;">MidlifeRebalance</h3>
             <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic;">Mind-Body Reset for Women</p>
           </div>
           
@@ -180,12 +180,12 @@ export default function EmailSignatures() {
           
           <div style="border-top: 1px solid #E5E7EB; padding-top: 15px;">
             <p style="margin: 0 0 5px 0; font-size: 12px; color: #6B7280;">
-              <a href="https://bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">www.bloomafter40.com</a>
+              <a href="https://midliferebalance.com" style="color: #8B5CF6; text-decoration: none;">www.midliferebalance.com</a>
               <span style="margin: 0 8px; color: #D1D5DB;">|</span>
-              <a href="mailto:hello@bloomafter40.com" style="color: #8B5CF6; text-decoration: none;">hello@bloomafter40.com</a>
+              <a href="mailto:hello@midliferebalance.com" style="color: #8B5CF6; text-decoration: none;">hello@midliferebalance.com</a>
             </p>
             <p style="margin: 0; font-size: 10px; color: #9CA3AF;">
-              You're receiving this because you signed up for BloomAfter40 updates. 
+              You're receiving this because you signed up for MidlifeRebalance updates. 
               <a href="#" style="color: #8B5CF6;">Unsubscribe</a> | <a href="#" style="color: #8B5CF6;">Update Preferences</a>
             </p>
           </div>
@@ -243,7 +243,7 @@ export default function EmailSignatures() {
             Professional Email Signatures
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Professional email signatures for BloomAfter40 communications. 
+            Professional email signatures for MidlifeRebalance communications. 
             Copy and paste these into your email client for consistent branding.
           </p>
         </div>

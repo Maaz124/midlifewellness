@@ -47,7 +47,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
     const config: EmailConfig = {
       gmailUser: gmailUserRow[0]?.value || process.env.GMAIL_USER || '',
       gmailAppPassword: gmailAppPasswordRow[0]?.value || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || '',
-      coachingInbox: coachingInboxRow[0]?.value || process.env.COACHING_INBOX || 'coaching@bloomafter40.com',
+      coachingInbox: coachingInboxRow[0]?.value || process.env.COACHING_INBOX || 'coaching@midliferebalance.com',
     };
     
     // Cache the result
@@ -61,7 +61,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
     return {
       gmailUser: process.env.GMAIL_USER || '',
       gmailAppPassword: process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || '',
-      coachingInbox: process.env.COACHING_INBOX || 'coaching@bloomafter40.com',
+      coachingInbox: process.env.COACHING_INBOX || 'coaching@midliferebalance.com',
     };
   }
 }

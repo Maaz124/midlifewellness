@@ -25,12 +25,12 @@ import { Link } from 'wouter';
 import { useSEO } from '@/hooks/use-seo';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { BloomAfter40Logo } from '@/components/ui/logo';
+import { MidlifeRebalanceLogo } from '@/components/ui/logo';
 
 export default function Landing() {
   // SEO optimization for landing page
   useSEO({
-    title: "Free Midlife Wellness Assessment - BloomAfter40",
+    title: "Free Midlife Wellness Assessment - MidlifeRebalance",
     description: "Transform your midlife journey with our free wellness assessment. Get personalized insights for hormone balance, mental clarity, and stress management. Start your transformation today.",
     keywords: "free midlife assessment, perimenopause test, hormone balance quiz, women's health evaluation, midlife wellness, stress management assessment"
   });
@@ -54,7 +54,7 @@ export default function Landing() {
 
       setLeadMagnetClaimed(true);
       toast({
-        title: "Welcome to BloomAfter40!",
+        title: "Welcome to MidlifeRebalance!",
         description: "Check your email for your free wellness guide and assessment access.",
       });
     } catch (error) {
@@ -123,7 +123,7 @@ export default function Landing() {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
-          <BloomAfter40Logo size="lg" className="mx-auto mb-8" />
+          <MidlifeRebalanceLogo size="lg" className="mx-auto mb-8" />
           <Badge className="bg-purple-100 text-purple-800 mb-4">
             FREE WELLNESS ASSESSMENT
           </Badge>

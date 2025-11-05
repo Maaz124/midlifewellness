@@ -129,8 +129,8 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center space-x-3 text-gray-300">
                 <Mail className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                <a href="mailto:coaching@bloomafter40.com" className="hover:text-purple-400 transition-colors">
-                  coaching@bloomafter40.com
+                <a href="mailto:coaching@midliferebalance.com" className="hover:text-purple-400 transition-colors">
+                  coaching@midliferebalance.com
                 </a>
               </li>
               <li className="flex items-center space-x-3 text-gray-300">
@@ -161,7 +161,7 @@ export function Footer() {
             
             {/* Copyright */}
             <div className="text-gray-400 text-sm">
-              <p>&copy; {currentYear} BloomAfter40. All rights reserved.</p>
+              <p>&copy; {currentYear} MidlifeRebalance. All rights reserved.</p>
               <p className="mt-1">
                 Created with <Heart className="inline w-4 h-4 text-red-500 mx-1" /> for women's wellness
               </p>

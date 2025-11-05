@@ -60,10 +60,10 @@ export function NavHeader() {
 
   return (
     <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto pl-2 pr-4 sm:pl-4 sm:pr-6 lg:pl-6 lg:pr-8">
         <div className="flex items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0 mr-12">
+          <Link href="/" className="flex items-center flex-shrink-0 mr-16 sm:mr-20 lg:mr-24">
             <Logo size="md" className="hover:opacity-80 transition-opacity" />
           </Link>
 
