@@ -29,6 +29,8 @@ export default function Dashboard() {
   
   const { data, updateHealthScores } = useWellnessData();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const hasAccess = !!(user as any)?.hasCoachingAccess;
+  const accessGrantedAt = (user as any)?.coachingAccessGrantedAt as string | undefined;
 
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
@@ -243,7 +245,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {(coachingProgress.completedComponents.length === 0) ? (
+              {(!hasAccess && coachingProgress.completedComponents.length === 0) ? (
                 <div className="text-center py-8 space-y-4">
                   <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <div>
@@ -302,7 +304,7 @@ export default function Dashboard() {
       {/* Coaching Program Promotion */}
       <section>
         {/* Only show success message if payment is completed (hasCoachingAccess is true and coachingAccessGrantedAt exists) */}
-        {user?.hasCoachingAccess && user?.coachingAccessGrantedAt ? (
+        {hasAccess && accessGrantedAt ? (
           <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 overflow-hidden">
             <CardContent className="p-6">
               <div className="flex flex-col items-center text-center space-y-4">
@@ -317,17 +319,17 @@ export default function Dashboard() {
                     <p className="font-semibold text-lg">
                       Payment Amount: ${currentPrice.toFixed(2)}
                     </p>
-                    {user?.coachingAccessGrantedAt && (
+                    {accessGrantedAt && (
                       <>
                         <p className="text-base">
-                          Date: {new Date(user.coachingAccessGrantedAt).toLocaleDateString('en-US', {
+                          Date: {new Date(accessGrantedAt).toLocaleDateString('en-US', {
                             month: 'long',
                             day: 'numeric',
                             year: 'numeric',
                           })}
                         </p>
                         <p className="text-base">
-                          Time: {new Date(user.coachingAccessGrantedAt).toLocaleTimeString('en-US', {
+                          Time: {new Date(accessGrantedAt).toLocaleTimeString('en-US', {
                             hour: '2-digit',
                             minute: '2-digit',
                             hour12: true,

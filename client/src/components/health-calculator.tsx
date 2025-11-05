@@ -15,6 +15,9 @@ import {
 } from '@/lib/health-calculators';
 import { AssessmentQuestion } from '@/types/wellness';
 import { Brain, Heart, Lightbulb, CheckCircle, Edit } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from 'wouter';
+import { useToast } from '@/hooks/use-toast';
 
 interface HealthCalculatorProps {
   type: 'mental' | 'physical' | 'cognitive';
@@ -27,6 +30,9 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<any[]>([]);
   const [isComplete, setIsComplete] = useState(false);
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   const questions = type === 'mental' ? mentalHealthQuestions :
                    type === 'physical' ? physicalHealthQuestions :
@@ -69,6 +75,16 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
   const Icon = currentConfig.icon;
 
   const handleStartAssessment = () => {
+    // Enforce login
+    if (!authLoading && !isAuthenticated) {
+      setLocation('/login');
+      return;
+    }
+    // Enforce payment/coaching access
+    if (!authLoading && isAuthenticated && !user?.hasCoachingAccess) {
+      setLocation('/checkout');
+      return;
+    }
     setIsOpen(true);
     setCurrentQuestion(0);
     setResponses([]);
@@ -171,7 +187,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
             variant="outline"
           >
             <Edit className="w-4 h-4 mr-2" />
-            {score > 0 ? 'Retake Assessment' : 'Take Assessment'}
+            {authLoading ? 'Loading...' : (!isAuthenticated ? 'Login to Unlock' : (!user?.hasCoachingAccess ? 'Unlock Program' : (score > 0 ? 'Retake Assessment' : 'Take Assessment')))}
           </Button>
         </CardContent>
       </Card>
