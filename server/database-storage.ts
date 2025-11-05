@@ -105,9 +105,41 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(healthAssessments)
       .where(and(eq(healthAssessments.userId, userId), eq(healthAssessments.assessmentType, type)))
-      .orderBy(healthAssessments.completedAt)
+      .orderBy(desc(healthAssessments.completedAt))
       .limit(1);
     return assessment;
+  }
+
+  async upsertHealthAssessment(assessment: InsertHealthAssessment): Promise<HealthAssessment> {
+    // Find existing assessment for this user and type
+    const existing = await db
+      .select()
+      .from(healthAssessments)
+      .where(
+        and(
+          eq(healthAssessments.userId, assessment.userId),
+          eq(healthAssessments.assessmentType, assessment.assessmentType)
+        )
+      )
+      .orderBy(desc(healthAssessments.completedAt))
+      .limit(1);
+
+    if (existing.length > 0) {
+      // Update existing assessment
+      const [updated] = await db
+        .update(healthAssessments)
+        .set({
+          score: assessment.score,
+          responses: assessment.responses,
+          completedAt: new Date(),
+        })
+        .where(eq(healthAssessments.id, existing[0].id))
+        .returning();
+      return updated;
+    } else {
+      // Create new assessment
+      return await this.createHealthAssessment(assessment);
+    }
   }
 
   // Journal Entries

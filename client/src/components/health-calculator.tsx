@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -18,6 +18,7 @@ import { Brain, Heart, Lightbulb, CheckCircle, Edit } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface HealthCalculatorProps {
   type: 'mental' | 'physical' | 'cognitive';
@@ -30,9 +31,23 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<any[]>([]);
   const [isComplete, setIsComplete] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch existing assessment data
+  const { data: existingAssessment, refetch: refetchAssessment } = useQuery({
+    queryKey: ['/api/health-assessments', type],
+    queryFn: async () => {
+      const res = await fetch(`/api/health-assessments/${type}`, { credentials: 'include' });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    enabled: isAuthenticated,
+    staleTime: 30000,
+  });
 
   const questions = type === 'mental' ? mentalHealthQuestions :
                    type === 'physical' ? physicalHealthQuestions :
@@ -74,20 +89,31 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
   const currentConfig = config[type];
   const Icon = currentConfig.icon;
 
-  const handleStartAssessment = () => {
-    // Enforce login
+  // Load existing responses when opening assessment
+  useEffect(() => {
+    if (isOpen && existingAssessment?.responses) {
+      // Restore existing responses if available
+      const savedResponses = Array.isArray(existingAssessment.responses) 
+        ? existingAssessment.responses 
+        : [];
+      setResponses(savedResponses);
+    }
+  }, [isOpen, existingAssessment]);
+
+  const handleStartAssessment = async () => {
+    // Enforce login (health assessments are free for logged-in users)
     if (!authLoading && !isAuthenticated) {
       setLocation('/login');
       return;
     }
-    // Enforce payment/coaching access
-    if (!authLoading && isAuthenticated && !user?.hasCoachingAccess) {
-      setLocation('/checkout');
-      return;
-    }
     setIsOpen(true);
     setCurrentQuestion(0);
-    setResponses([]);
+    // Load existing responses if available
+    if (existingAssessment?.responses && Array.isArray(existingAssessment.responses)) {
+      setResponses(existingAssessment.responses);
+    } else {
+      setResponses([]);
+    }
     setIsComplete(false);
   };
 
@@ -100,7 +126,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
     setResponses(newResponses);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -108,6 +134,58 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
       const finalScore = calculateScore(responses, questions);
       onScoreUpdate(finalScore);
       setIsComplete(true);
+      
+      // Save to backend
+      if (isAuthenticated) {
+        await saveAssessment(finalScore, responses);
+      }
+    }
+  };
+
+  const saveAssessment = async (finalScore: number, assessmentResponses: any[]) => {
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/health-assessments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          assessmentType: type,
+          score: finalScore,
+          responses: assessmentResponses,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save assessment');
+      }
+
+      const savedAssessment = await response.json();
+      
+      // Show success toast
+      const isUpdate = existingAssessment && existingAssessment.id;
+      toast({
+        title: isUpdate ? 'Assessment Updated!' : 'Assessment Saved!',
+        description: `Your ${currentConfig.title} score (${finalScore}/100) has been ${isUpdate ? 'updated' : 'saved'} successfully.`,
+        variant: 'default',
+      });
+
+      // Refetch to get updated data
+      await refetchAssessment();
+      
+      // Invalidate the main assessments query so dashboard updates
+      await queryClient.invalidateQueries({ queryKey: ['/api/health-assessments'] });
+    } catch (error: any) {
+      console.error('Error saving assessment:', error);
+      toast({
+        title: 'Save Failed',
+        description: error.message || 'Failed to save assessment. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -174,9 +252,9 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
             <p className="text-sm text-gray-600 mb-2">
               {getScoreInterpretation(score, type)}
             </p>
-            {score > 0 && (
+            {score > 0 && existingAssessment?.completedAt && (
               <div className="text-xs text-gray-500">
-                Last updated: {new Date().toLocaleDateString()}
+                Last updated: {new Date(existingAssessment.completedAt).toLocaleDateString()}
               </div>
             )}
           </div>
@@ -187,7 +265,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
             variant="outline"
           >
             <Edit className="w-4 h-4 mr-2" />
-            {authLoading ? 'Loading...' : (!isAuthenticated ? 'Login to Unlock' : (!user?.hasCoachingAccess ? 'Unlock Program' : (score > 0 ? 'Retake Assessment' : 'Take Assessment')))}
+            {authLoading ? 'Loading...' : (!isAuthenticated ? 'Login to Unlock' : (score > 0 ? 'Retake Assessment' : 'Take Assessment'))}
           </Button>
         </CardContent>
       </Card>
@@ -248,30 +326,39 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
             </div>
           ) : (
             <div className="py-6 text-center">
-              <CheckCircle className={`w-16 h-16 text-${currentConfig.color} mx-auto mb-4`} />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Assessment Complete!</h3>
-              <p className="text-lg text-gray-600 mb-4">
-                Your {currentConfig.subtitle}: <span className={`font-bold text-${currentConfig.color}`}>{calculateScore(responses, questions)}/100</span>
-              </p>
-              <p className="text-sm text-gray-600 mb-6">
-                {getScoreInterpretation(calculateScore(responses, questions), type)}
-              </p>
-              
-              <div className="text-left mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3">Personalized Recommendations:</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  {getPersonalizedRecommendations(calculateScore(responses, questions), type).map((rec, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>{rec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Saving your assessment...</h3>
+                </>
+              ) : (
+                <>
+                  <CheckCircle className={`w-16 h-16 text-${currentConfig.color} mx-auto mb-4`} />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Assessment Complete!</h3>
+                  <p className="text-lg text-gray-600 mb-4">
+                    Your {currentConfig.subtitle}: <span className={`font-bold text-${currentConfig.color}`}>{calculateScore(responses, questions)}/100</span>
+                  </p>
+                  <p className="text-sm text-gray-600 mb-6">
+                    {getScoreInterpretation(calculateScore(responses, questions), type)}
+                  </p>
+                  
+                  <div className="text-left mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-3">Personalized Recommendations:</h4>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      {getPersonalizedRecommendations(calculateScore(responses, questions), type).map((rec, index) => (
+                        <li key={index} className="flex items-start space-x-2">
+                          <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-              <Button onClick={handleClose} className={currentConfig.gradient}>
-                Close
-              </Button>
+                  <Button onClick={handleClose} className={currentConfig.gradient}>
+                    Close
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </DialogContent>

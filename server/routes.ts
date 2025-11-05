@@ -69,10 +69,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Health Assessments (keeping free access)
-  app.get("/api/health-assessments/:userId", async (req, res) => {
+  // Health Assessments (keeping free access for logged-in users)
+  app.get("/api/health-assessments", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.params.userId;
+      const userId = req.session.userId;
       const assessments = await storage.getHealthAssessmentsByUser(userId);
       res.json(assessments);
     } catch (error) {
@@ -80,13 +80,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/health-assessments", async (req, res) => {
+  app.get("/api/health-assessments/:type", isAuthenticated, async (req: any, res) => {
     try {
-      const validatedData = insertHealthAssessmentSchema.parse(req.body);
-      const assessment = await storage.createHealthAssessment(validatedData);
-      res.json(assessment);
+      const userId = req.session.userId;
+      const type = req.params.type; // 'mental', 'physical', 'cognitive'
+      const assessment = await storage.getLatestHealthAssessment(userId, type);
+      res.json(assessment || null);
     } catch (error) {
-      res.status(400).json({ message: "Invalid health assessment data" });
+      res.status(500).json({ message: "Failed to fetch health assessment" });
+    }
+  });
+
+  app.post("/api/health-assessments", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const validatedData = insertHealthAssessmentSchema.parse({
+        ...req.body,
+        userId, // Ensure userId comes from session, not request body
+      });
+      const assessment = await storage.upsertHealthAssessment(validatedData);
+      res.json(assessment);
+    } catch (error: any) {
+      console.error("Health assessment save error:", error);
+      res.status(400).json({ message: error.message || "Invalid health assessment data" });
     }
   });
 

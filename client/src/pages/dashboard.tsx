@@ -34,8 +34,8 @@ export default function Dashboard() {
 
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
-  const healthScores = data?.healthScores || { mental: 0, physical: 0, cognitive: 0, overall: 0 };
   const journalEntries = data?.journalEntries || [];
+  
   // Fetch journal entries from API (one per day) when authenticated
   const { data: apiJournalEntries = [], isLoading: isLoadingApiEntries } = useQuery({
     queryKey: ['/api/journal-entries'],
@@ -48,18 +48,56 @@ export default function Dashboard() {
     staleTime: 30000,
   });
 
+  // Fetch health assessments from backend when authenticated
+  const { data: apiHealthAssessments = [] } = useQuery({
+    queryKey: ['/api/health-assessments'],
+    queryFn: async () => {
+      const res = await fetch('/api/health-assessments', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch health assessments');
+      return res.json();
+    },
+    enabled: !!isAuthenticated,
+    staleTime: 30000,
+  });
+
+  // Calculate health scores from backend data or fallback to local storage
+  const getHealthScores = () => {
+    if (isAuthenticated && Array.isArray(apiHealthAssessments) && apiHealthAssessments.length > 0) {
+      // Get latest assessment for each type
+      const mental = apiHealthAssessments
+        .filter((a: any) => a.assessmentType === 'mental')
+        .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+      const physical = apiHealthAssessments
+        .filter((a: any) => a.assessmentType === 'physical')
+        .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+      const cognitive = apiHealthAssessments
+        .filter((a: any) => a.assessmentType === 'cognitive')
+        .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+
+      const mentalScore = mental?.score || 0;
+      const physicalScore = physical?.score || 0;
+      const cognitiveScore = cognitive?.score || 0;
+      const overall = Math.round((mentalScore + physicalScore + cognitiveScore) / 3);
+
+      return { mental: mentalScore, physical: physicalScore, cognitive: cognitiveScore, overall };
+    }
+    // Fallback to local storage
+    return data?.healthScores || { mental: 0, physical: 0, cognitive: 0, overall: 0 };
+  };
+
+  const healthScores = getHealthScores();
   const activeDaysCount = isAuthenticated ? (Array.isArray(apiJournalEntries) ? apiJournalEntries.length : 0) : journalEntries.length;
   const moodTracking = data?.moodTracking || [];
   const coachingProgress = data?.coachingProgress || { completedComponents: [], currentWeek: 1, responseData: {} };
 
   const handleScoreUpdate = (type: 'mental' | 'physical' | 'cognitive', score: number) => {
+    // Update local storage for fallback (non-authenticated users)
     const newScores = { [type]: score };
-    
-    // Calculate overall score
     const scores = { ...healthScores, ...newScores };
     const overall = Math.round((scores.mental + scores.physical + scores.cognitive) / 3);
-    
     updateHealthScores({ ...newScores, overall });
+    
+    // Note: Backend save is handled in HealthCalculator component
   };
 
   const quickActions = [
