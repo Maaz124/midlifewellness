@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingUp, Calendar, Award, Download, BarChart3, Target, BookOpen, Heart, LineChart } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
+import { useLocation } from 'wouter';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,6 +39,7 @@ ChartJS.register(
 export default function ProgressPage() {
   const { data } = useWellnessData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const { data: coachingData } = useCoachingProgress();
   const [timeRange, setTimeRange] = useState('30');
   const [chartType, setChartType] = useState<'line' | 'bar'>('bar');
@@ -283,16 +285,14 @@ export default function ProgressPage() {
     goalsAchieved: `${totalCompletedComponents}/${totalComponents}`
   };
 
-  // Reload once per visit to this page (when navigated to), using a short timestamp guard
+  // Removed forced reload that caused loops on some environments
+
+  // Enforce login requirement for progress page
   useEffect(() => {
-    const key = 'progress_last_reload';
-    const last = parseInt(sessionStorage.getItem(key) || '0', 10);
-    const now = Date.now();
-    if (now - last > 2000) {
-      sessionStorage.setItem(key, String(now));
-      window.location.reload();
+    if (!authLoading && !isAuthenticated) {
+      setLocation('/login');
     }
-  }, []);
+  }, [authLoading, isAuthenticated, setLocation]);
 
   // No explicit loading gate needed now; chartData is derived synchronously
 
