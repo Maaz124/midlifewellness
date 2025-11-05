@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useSEO } from '@/hooks/use-seo';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -43,6 +44,9 @@ interface SupportOrganization {
 }
 
 export default function Community() {
+  // SEO optimization
+  useSEO('community');
+  
   const [activeTab, setActiveTab] = useState('forums');
 
   // Real external communities from research
@@ -212,7 +216,7 @@ export default function Community() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white" data-testid="heading-community">
           Community Support Resources
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mt-4">
           Connect with thousands of women navigating perimenopause and midlife transitions through these trusted online communities and support organizations. All resources listed below are external platforms where you can find peer support, expert guidance, and shared experiences.
         </p>
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 max-w-2xl mx-auto">

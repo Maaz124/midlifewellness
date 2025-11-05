@@ -19,13 +19,13 @@ export const defaultSEO: SEOProps = {
 
 export const pageSEO = {
   dashboard: {
-    title: "Dashboard - MidlifeRebalance Wellness Journey",
-    description: "Track your wellness progress with comprehensive health assessments, mood tracking, and personalized insights for your midlife transformation journey.",
+    title: "Welcome to Your Wellness Journey - MidlifeRebalance",
+    description: "Navigate midlife with confidence through personalized health insights, evidence-based coaching, and supportive tools designed specifically for women. Please note: This is a self-help coaching program, not medical advice. Consult your healthcare provider for serious mental health concerns.",
     keywords: "wellness dashboard, health tracking, midlife progress, women's health assessment"
   },
   coaching: {
-    title: "6-Week Mind-Body Reset Program - MidlifeRebalance",
-    description: "Access Dr. Sidra Bukhari's complete 6-week coaching program featuring CBT techniques, nervous system regulation, and evidence-based wellness strategies.",
+    title: "The Mind Reset Method - 6-Week Program | MidlifeRebalance",
+    description: "A 6-week transformational journey designed specifically for women navigating midlife transitions. Evidence-based coaching with CBT techniques, nervous system regulation, and wellness strategies.",
     keywords: "mind-body reset, 6-week program, CBT coaching, nervous system regulation, midlife wellness"
   },
   checkout: {
@@ -34,19 +34,29 @@ export const pageSEO = {
     keywords: "coaching program purchase, wellness investment, secure checkout, mind-body reset"
   },
   about: {
-    title: "About Dr. Sidra Bukhari - Psychiatrist & Women's Wellness Expert",
-    description: "Meet Dr. Sidra Bukhari, dual-certified Psychiatrist and Gynecologist specializing in midlife women's wellness, CBT therapy, and hormone health.",
+    title: "Meet Your Wellness Expert - Dr. Sidra Bukhari | MidlifeRebalance",
+    description: "Discover the comprehensive medical expertise and transformational approach behind MidlifeRebalance's evidence-based wellness methodology.",
     keywords: "Dr. Sidra Bukhari, psychiatrist, gynecologist, women's wellness expert, CBT therapist"
   },
   journal: {
-    title: "Wellness Journal - MidlifeRebalance Daily Reflections",
-    description: "Document your midlife wellness journey with guided journaling prompts, mood tracking, and reflective exercises designed for personal growth.",
+    title: "Daily Journal & Wellness Library - MidlifeRebalance",
+    description: "Your personal space for reflection, growth, and accessing curated wellness resources. Track your thoughts, emotions, and insights throughout your journey.",
     keywords: "wellness journal, daily reflections, mood tracking, personal growth, midlife journaling"
   },
   progress: {
-    title: "Progress Tracking - MidlifeRebalance Wellness Analytics",
-    description: "Visualize your wellness transformation with comprehensive progress charts, goal tracking, and health assessment analytics.",
+    title: "Progress & Insights - MidlifeRebalance",
+    description: "Track your wellness transformation with detailed analytics and personalized insights. Visualize your progress with comprehensive charts and health assessment data.",
     keywords: "progress tracking, wellness analytics, health charts, goal achievement, transformation metrics"
+  },
+  guide: {
+    title: "Understanding Perimenopause - Complete Guide | MidlifeRebalance",
+    description: "A comprehensive guide to navigating the physiological, psychological, and cognitive changes during midlife. Learn about perimenopause symptoms, hormonal changes, and evidence-based coping strategies.",
+    keywords: "perimenopause guide, perimenopause symptoms, hormonal changes, midlife women, menopause transition"
+  },
+  community: {
+    title: "Community Support Resources - MidlifeRebalance",
+    description: "Connect with thousands of women navigating perimenopause and midlife transitions through these trusted online communities and support organizations. All resources listed below are external platforms where you can find peer support, expert guidance, and shared experiences.",
+    keywords: "perimenopause community, midlife support groups, women's health forums, menopause support, online communities"
   }
 };
 

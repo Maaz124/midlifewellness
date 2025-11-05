@@ -150,8 +150,8 @@ export default function Journal() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Daily Reflections & Journal</h1>
-          <p className="text-gray-600">Track your thoughts, emotions, and insights throughout your journey.</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Daily Journal & Wellness Library</h1>
+          <p className="text-gray-600">Your personal space for reflection, growth, and accessing curated wellness resources.</p>
         </div>
         <Button 
           onClick={handleCompleteEntry}

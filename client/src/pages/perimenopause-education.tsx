@@ -16,17 +16,11 @@ import {
   BookOpen,
   Stethoscope
 } from 'lucide-react';
-import { updatePageSEO } from '@/lib/seo';
-import { useEffect } from 'react';
+import { useSEO } from '@/hooks/use-seo';
 
 export default function PerimenopauseEducation() {
-  useEffect(() => {
-    updatePageSEO({
-      title: "Understanding Perimenopause - Complete Guide | MidlifeRebalance",
-      description: "Comprehensive guide to perimenopause: learn about physiological, psychological, and cognitive changes, common symptoms, and evidence-based coping strategies for midlife women.",
-      keywords: "perimenopause guide, perimenopause symptoms, hormonal changes, midlife women, menopause transition, perimenopause coping strategies"
-    });
-  }, []);
+  // SEO optimization
+  useSEO('guide');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
