@@ -1,0 +1,60 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+# Keep package-lock.json for reproducible builds
+# package-lock.json
+
+# Build outputs
+dist
+build
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Logs
+logs
+*.log
+
+# Docker (keep entrypoint and build scripts)
+Dockerfile*
+!Dockerfile.webapp
+!Dockerfile.db
+docker-compose*.yml
+.dockerignore
+docker-init-db.sh
+docker-build.sh
+docker-build.ps1
+
+# Misc
+coverage
+.nyc_output
+
