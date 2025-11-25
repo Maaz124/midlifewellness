@@ -1,5 +1,5 @@
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -8,11 +8,6 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Sparkles, Brain, Heart, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-
-// Make sure to call `loadStripe` outside of a component's render to avoid
-// recreating the `Stripe` object on every render.
-const publicKey = (import.meta.env.VITE_STRIPE_PUBLIC_KEY as string | undefined) || undefined;
-const stripePromise = publicKey ? loadStripe(publicKey) : null;
 
 const CheckoutForm = ({ price }: { price: number }) => {
   const stripe = useStripe();
@@ -94,7 +89,24 @@ const CheckoutForm = ({ price }: { price: number }) => {
 
 export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
   const [, setLocation] = useLocation();
+
+  // Fetch Stripe publishable key from API
+  const { data: stripeKeyData, isLoading: isLoadingStripeKey } = useQuery({
+    queryKey: ['/api/stripe-public-key'],
+    queryFn: async () => {
+      const res = await fetch('/api/stripe-public-key');
+      return res.json();
+    },
+  });
+
+  // Load Stripe when key is available
+  useEffect(() => {
+    if (stripeKeyData?.publishableKey) {
+      setStripePromise(loadStripe(stripeKeyData.publishableKey));
+    }
+  }, [stripeKeyData?.publishableKey]);
 
   // Fetch coaching prices from database
   const { data: priceData, isLoading: priceLoading } = useQuery({
@@ -107,8 +119,8 @@ export default function Checkout() {
   const price = priceData?.currentPrice ?? 150; // Default if not loaded
 
   useEffect(() => {
-    // Skip creating PaymentIntent if Stripe is not configured in dev
-    if (!publicKey || priceLoading) {
+    // Skip creating PaymentIntent if Stripe is not configured or still loading
+    if (!stripeKeyData?.publishableKey || priceLoading || isLoadingStripeKey) {
       return;
     }
     // Price is now read from database in the backend, so no need to pass it
@@ -121,14 +133,25 @@ export default function Checkout() {
         console.error('Payment Intent Error:', error);
         setLocation('/coaching?error=payment_setup');
       });
-  }, [priceLoading, setLocation]);
+  }, [priceLoading, isLoadingStripeKey, stripeKeyData?.publishableKey, setLocation]);
 
-  if (!publicKey) {
+  if (isLoadingStripeKey) {
+    return (
+      <div className="max-w-3xl mx-auto p-8">
+        <div className="space-y-4 text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto" />
+          <p className="text-gray-600">Loading payment configuration...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stripeKeyData?.publishableKey || !stripeKeyData?.configured) {
     return (
       <div className="max-w-3xl mx-auto p-8">
         <div className="space-y-4 text-center">
           <h1 className="text-2xl font-semibold">Payments Not Configured</h1>
-          <p className="text-gray-600">Add <code>VITE_STRIPE_PUBLIC_KEY</code> to your .env to enable checkout.</p>
+          <p className="text-gray-600">Stripe payment keys need to be configured in the admin panel.</p>
         </div>
       </div>
     );
@@ -226,9 +249,11 @@ export default function Checkout() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm price={price} />
-            </Elements>
+            {stripePromise && clientSecret && (
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm price={price} />
+              </Elements>
+            )}
           </CardContent>
         </Card>
       </div>

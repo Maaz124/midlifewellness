@@ -507,7 +507,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment endpoint for coaching access
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
-      if (!stripe) {
+      // Get Stripe instance from database or env (prefers database)
+      const { getStripeInstance } = await import("./get-stripe-config");
+      const stripeInstance = await getStripeInstance();
+      
+      // Fallback to env-based stripe instance if database doesn't have keys
+      const activeStripe = stripeInstance || stripe;
+      
+      if (!activeStripe) {
         return res.status(503).json({ message: "Payments are not configured" });
       }
       const userId = req.session.userId;
@@ -528,7 +535,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Default to 150 if not found in database
       const amount = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
       
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntent = await activeStripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "usd",
         metadata: {
@@ -553,10 +560,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       
       // Verify payment intent with Stripe
-      if (!stripe) {
+      const { getStripeInstance } = await import("./get-stripe-config");
+      const stripeInstance = await getStripeInstance();
+      const activeStripe = stripeInstance || stripe;
+      
+      if (!activeStripe) {
         return res.status(503).json({ success: false, message: "Payments are not configured" });
       }
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent = await activeStripe.paymentIntents.retrieve(paymentIntentId);
       
       if (paymentIntent.status === 'succeeded' && user && user.email) {
         // Grant coaching access to the user
@@ -1325,10 +1336,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Create Stripe payment intent for the resource
-      if (!stripe) {
+      const { getStripeInstance } = await import("./get-stripe-config");
+      const stripeInstance = await getStripeInstance();
+      const activeStripe = stripeInstance || stripe;
+      
+      if (!activeStripe) {
         return res.status(503).json({ message: 'Payments are not configured' });
       }
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntent = await activeStripe.paymentIntents.create({
         amount: Math.round(resource.price * 100), // Convert to cents
         currency: 'usd',
         metadata: {
@@ -1460,10 +1475,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentIntentId = req.params.id;
       
       // Retrieve payment intent from Stripe
-      if (!stripe) {
+      const { getStripeInstance } = await import("./get-stripe-config");
+      const stripeInstance = await getStripeInstance();
+      const activeStripe = stripeInstance || stripe;
+      
+      if (!activeStripe) {
         return res.status(503).json({ message: 'Payments are not configured' });
       }
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent = await activeStripe.paymentIntents.retrieve(paymentIntentId);
       
       res.json({
         clientSecret: paymentIntent.client_secret,
@@ -1613,6 +1632,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get Stripe publishable key (public endpoint - safe to expose)
+  app.get("/api/stripe-public-key", async (req: any, res) => {
+    try {
+      const { getStripeConfig } = await import("./get-stripe-config");
+      const config = await getStripeConfig();
+      res.json({ 
+        publishableKey: config.publishableKey || '',
+        configured: !!config.publishableKey
+      });
+    } catch (error) {
+      console.error('Error fetching Stripe public key:', error);
+      res.status(500).json({ 
+        publishableKey: '',
+        configured: false,
+        message: "Failed to fetch Stripe public key" 
+      });
+    }
+  });
+
   // Get Stripe keys from admin config
   app.get("/api/admin/stripe-keys", isAdmin, async (req: any, res) => {
     try {

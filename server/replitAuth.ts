@@ -33,15 +33,22 @@ export function getSession() {
     ttl: sessionTtl,
     tableName: "sessions",
   });
+  
+  // Allow overriding secure cookie setting via environment variable
+  // Set SESSION_SECURE=false for HTTP or when behind a proxy that handles HTTPS
+  const isSecure = process.env.SESSION_SECURE !== "false" && !isDev;
+  
   return session({
     secret: process.env.SESSION_SECRET ?? "dev-session-secret",
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    name: "connect.sid",
     cookie: {
       httpOnly: true,
-      secure: !isDev,
+      secure: isSecure,
       maxAge: sessionTtl,
+      sameSite: isSecure ? "none" : "lax", // 'none' requires secure, 'lax' works with HTTP
     },
   });
 }

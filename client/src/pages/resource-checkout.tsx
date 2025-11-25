@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { useQuery } from '@tanstack/react-query';
 import { Loader2, ArrowLeft, CreditCard } from 'lucide-react';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
 
 interface CheckoutFormProps {
   clientSecret: string;
@@ -113,6 +112,23 @@ export default function ResourceCheckout() {
   const [clientSecret, setClientSecret] = useState<string>('');
   const [resource, setResource] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+
+  // Fetch Stripe publishable key from API
+  const { data: stripeKeyData, isLoading: isLoadingStripeKey } = useQuery({
+    queryKey: ['/api/stripe-public-key'],
+    queryFn: async () => {
+      const res = await fetch('/api/stripe-public-key');
+      return res.json();
+    },
+  });
+
+  // Load Stripe when key is available
+  useEffect(() => {
+    if (stripeKeyData?.publishableKey) {
+      setStripePromise(loadStripe(stripeKeyData.publishableKey));
+    }
+  }, [stripeKeyData?.publishableKey]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -146,9 +162,9 @@ export default function ResourceCheckout() {
       });
       setLocation('/journal');
     });
-  }, []);
+  }, [toast, setLocation]);
 
-  if (loading) {
+  if (loading || isLoadingStripeKey) {
     return (
       <div className="max-w-4xl mx-auto py-8">
         <div className="flex items-center justify-center h-64">
@@ -158,7 +174,26 @@ export default function ResourceCheckout() {
     );
   }
 
-  if (!clientSecret || !resource) {
+  if (!stripeKeyData?.publishableKey || !stripeKeyData?.configured) {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <Card>
+          <CardContent className="text-center py-8">
+            <h2 className="text-xl font-semibold mb-2">Payments Not Configured</h2>
+            <p className="text-gray-600 mb-4">Stripe payment keys need to be configured in the admin panel.</p>
+            <Button 
+              onClick={() => setLocation('/journal')}
+              className="mt-4"
+            >
+              Return to Journal
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!clientSecret || !resource || !stripePromise) {
     return (
       <div className="max-w-4xl mx-auto py-8">
         <Card>

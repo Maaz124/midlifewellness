@@ -14,12 +14,24 @@ if (!databaseUrl) {
   );
 }
 
-// Use pg for localhost/127.0.0.1, neon serverless otherwise
+// Use pg for local PostgreSQL instances (localhost, 127.0.0.1, or Docker service names like 'db')
+// Use Neon serverless only for actual Neon database URLs (contains 'neon.tech' or 'neon.tech')
+const dbUrl = new URL(databaseUrl);
+const hostname = dbUrl.hostname;
+const isNeonDatabase = hostname.includes('neon.tech') || hostname.includes('neon') || databaseUrl.includes('@ep-');
+const isLocalPostgres = hostname === 'localhost' || 
+                        hostname === '127.0.0.1' || 
+                        hostname === 'db' || // Docker service name
+                        hostname.includes('.local') || // Docker internal domains
+                        !isNeonDatabase; // Default to pg if not clearly a Neon URL
+
 let db;
-if (new URL(databaseUrl).hostname === 'localhost' || new URL(databaseUrl).hostname === '127.0.0.1') {
+if (isLocalPostgres) {
+  // Use standard PostgreSQL driver for local/Docker databases
   const pool = new PgPool({ connectionString: databaseUrl });
   db = drizzlePg(pool, { schema });
 } else {
+  // Use Neon serverless for Neon cloud databases
   const pool = new NeonPool({ connectionString: databaseUrl });
   db = drizzleNeon({ client: pool, schema });
 }
