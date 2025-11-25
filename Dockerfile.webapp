@@ -7,9 +7,9 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies (including devDependencies for build tools)
-# Unset NODE_ENV to ensure devDependencies are installed
-RUN unset NODE_ENV && npm ci --include=dev
+# Install dependencies (including devDependencies for build tools like vite)
+# Ensure NODE_ENV is not set to production so devDependencies are installed
+RUN NODE_ENV= npm ci
 
 # Copy source code
 COPY . .
