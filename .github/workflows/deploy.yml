@@ -3,7 +3,7 @@ name: Build & Deploy Midlife App
 on:
   push:
     branches:
-      - main
+      - Arabic-Language
 
 jobs:
   build-and-deploy:
