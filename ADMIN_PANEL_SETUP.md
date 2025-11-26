@@ -13,7 +13,7 @@ The Admin Panel has been fully implemented with the following features:
 ### 1. Run Database Migration
 First, you need to push the schema changes to your database:
 
-```bash
+```bash 
 npm run db:push
 ```
 
