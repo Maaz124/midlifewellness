@@ -49,11 +49,8 @@ jobs:
           script: |
             cd /root/midlifewellness
 
-            echo "Pulling latest Docker images..."
-            docker compose pull
-
-            echo "Starting updated containers..."
-            docker compose up -d
+            echo "Pulling latest Docker images and recreating containers..."
+            docker compose up -d --pull always --force-recreate
 
             echo "Cleaning old images..."
             docker image prune -f
