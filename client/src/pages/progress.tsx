@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, Calendar, Award, Download, BarChart3, Target, BookOpen, Heart, LineChart } from 'lucide-react';
+import { TrendingUp, Calendar, Award, Download, BarChart3, Target, BookOpen, Heart, LineChart, FileDown, History } from 'lucide-react';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { useLocation } from 'wouter';
 import {
@@ -23,6 +23,23 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 import { coachingModules } from '@/lib/coaching-data';
 import { useCoachingProgress } from '@/hooks/use-coaching-progress';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 ChartJS.register(
   CategoryScale,
@@ -38,29 +55,114 @@ ChartJS.register(
 
 export default function ProgressPage() {
   const { data } = useWellnessData();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { data: coachingData } = useCoachingProgress();
   const [timeRange, setTimeRange] = useState('30');
   const [chartType, setChartType] = useState<'line' | 'bar'>('bar');
-  // Chart data generated via memo to avoid relying on async effects
-  // and to render immediately on navigation without reloads
+
+  // Fetch all health assessments from API
+  const { data: apiHealthAssessments } = useQuery({
+    queryKey: ['/api/health-assessments'],
+    queryFn: async () => {
+      const res = await fetch('/api/health-assessments', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch health assessments');
+      const data = await res.json();
+
+      return data;
+    },
+    enabled: isAuthenticated,
+  });
+
+  // Fetch journal entries from API
+  const { data: apiJournalEntries = [] } = useQuery({
+    queryKey: ['/api/journal-entries'],
+    queryFn: async () => {
+      const res = await fetch('/api/journal-entries', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch journal entries');
+      return res.json();
+    },
+    enabled: isAuthenticated,
+  });
 
   // Safe fallbacks to avoid undefined during initial render
   const safeScores = data?.healthScores || { mental: 0, physical: 0, cognitive: 0, overall: 0 };
-  const safeJournal = Array.isArray(data?.journalEntries) ? data!.journalEntries : [];
+  const safeJournal = isAuthenticated && apiJournalEntries.length > 0
+    ? apiJournalEntries
+    : (Array.isArray(data?.journalEntries) ? data!.journalEntries : []);
   const safeMood = Array.isArray(data?.moodTracking) ? data!.moodTracking : [];
   const safeGoals = Array.isArray(data?.goals) ? data!.goals : [];
 
-  // Enhanced chart data with dynamic color coding
+  // Enhanced chart data with dynamic color coding - NOW USING REAL DATA
   const generateChartData = () => {
-    const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
-    
-    // Simulate weekly progress data leading to current scores
-    const mentalData = [45, 55, 62, 68, safeScores.mental || 0];
-    const physicalData = [40, 50, 58, 65, safeScores.physical || 0];
-    const cognitiveData = [50, 60, 68, 75, safeScores.cognitive || 0];
-    
+    // Get real historical data from API, sorted by date
+    const mentalAssessments = (apiHealthAssessments || [])
+      .filter((a: any) => a.assessmentType === 'mental')
+      .sort((a: any, b: any) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime());
+
+    const physicalAssessments = (apiHealthAssessments || [])
+      .filter((a: any) => a.assessmentType === 'physical')
+      .sort((a: any, b: any) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime());
+
+    const cognitiveAssessments = (apiHealthAssessments || [])
+      .filter((a: any) => a.assessmentType === 'cognitive')
+      .sort((a: any, b: any) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime());
+
+    // Determine the maximum number of assessments to show
+    const maxAssessments = Math.max(
+      mentalAssessments.length,
+      physicalAssessments.length,
+      cognitiveAssessments.length
+    );
+
+    // If no assessments, return empty data
+    if (maxAssessments === 0) {
+      return {
+        labels: [],
+        datasets: []
+      };
+    }
+
+    // Limit to last 5 assessments for optimal chart visualization
+    const limit = Math.min(maxAssessments, 5);
+    const mentalLimited = mentalAssessments.slice(-limit);
+    const physicalLimited = physicalAssessments.slice(-limit);
+    const cognitiveLimited = cognitiveAssessments.slice(-limit);
+
+    // Create labels from dates - use the assessment with most records
+    const primaryAssessments = mentalLimited.length >= physicalLimited.length && mentalLimited.length >= cognitiveLimited.length
+      ? mentalLimited
+      : physicalLimited.length >= cognitiveLimited.length
+        ? physicalLimited
+        : cognitiveLimited;
+
+    const labels = primaryAssessments.map((a: any, index: number) => {
+      const date = new Date(a.completedAt);
+      // Show "Assessment 1", "Assessment 2", etc. or use date
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+
+    // If we don't have enough labels, pad with generic labels
+    while (labels.length < limit) {
+      labels.push(`Assessment ${labels.length + 1}`);
+    }
+
+    // Extract scores - pad with null if assessment doesn't exist for that time period
+    const mentalData = labels.map((_: string, index: number) =>
+      mentalLimited[index]?.score ?? null
+    );
+    const physicalData = labels.map((_: string, index: number) =>
+      physicalLimited[index]?.score ?? null
+    );
+    const cognitiveData = labels.map((_: string, index: number) =>
+      cognitiveLimited[index]?.score ?? null
+    );
+
+    // Get latest scores for color coding
+    const latestMental = mentalLimited[mentalLimited.length - 1]?.score || 0;
+    const latestPhysical = physicalLimited[physicalLimited.length - 1]?.score || 0;
+    const latestCognitive = cognitiveLimited[cognitiveLimited.length - 1]?.score || 0;
+
     const getScoreColor = (score: number) => {
       if (score >= 80) return 'hsl(142, 76%, 36%)'; // Excellent - Green
       if (score >= 70) return 'hsl(217, 91%, 60%)'; // Very Good - Blue
@@ -75,12 +177,12 @@ export default function ProgressPage() {
         {
           label: 'Mental Health',
           data: mentalData,
-          borderColor: getScoreColor(safeScores.mental || 0),
-          backgroundColor: chartType === 'bar' 
-            ? getScoreColor(safeScores.mental || 0) + '80'
-            : getScoreColor(safeScores.mental || 0) + '20',
+          borderColor: getScoreColor(latestMental),
+          backgroundColor: chartType === 'bar'
+            ? getScoreColor(latestMental) + '80'
+            : getScoreColor(latestMental) + '20',
           borderWidth: chartType === 'line' ? 3 : 2,
-          pointBackgroundColor: getScoreColor(safeScores.mental || 0),
+          pointBackgroundColor: getScoreColor(latestMental),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: chartType === 'line' ? 6 : 0,
@@ -88,16 +190,17 @@ export default function ProgressPage() {
           fill: chartType === 'line' ? true : false,
           borderRadius: chartType === 'bar' ? 6 : 0,
           borderSkipped: false,
+          spanGaps: true, // Connect points even if there are null values
         },
         {
-          label: 'Physical Health', 
+          label: 'Physical Health',
           data: physicalData,
-          borderColor: getScoreColor(safeScores.physical || 0),
+          borderColor: getScoreColor(latestPhysical),
           backgroundColor: chartType === 'bar'
-            ? getScoreColor(safeScores.physical || 0) + '80'
-            : getScoreColor(safeScores.physical || 0) + '20',
+            ? getScoreColor(latestPhysical) + '80'
+            : getScoreColor(latestPhysical) + '20',
           borderWidth: chartType === 'line' ? 3 : 2,
-          pointBackgroundColor: getScoreColor(safeScores.physical || 0),
+          pointBackgroundColor: getScoreColor(latestPhysical),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: chartType === 'line' ? 6 : 0,
@@ -105,16 +208,17 @@ export default function ProgressPage() {
           fill: chartType === 'line' ? true : false,
           borderRadius: chartType === 'bar' ? 6 : 0,
           borderSkipped: false,
+          spanGaps: true,
         },
         {
           label: 'Cognitive Health',
           data: cognitiveData,
-          borderColor: getScoreColor(safeScores.cognitive || 0),
+          borderColor: getScoreColor(latestCognitive),
           backgroundColor: chartType === 'bar'
-            ? getScoreColor(safeScores.cognitive || 0) + '80'
-            : getScoreColor(safeScores.cognitive || 0) + '20',
+            ? getScoreColor(latestCognitive) + '80'
+            : getScoreColor(latestCognitive) + '20',
           borderWidth: chartType === 'line' ? 3 : 2,
-          pointBackgroundColor: getScoreColor(safeScores.cognitive || 0),
+          pointBackgroundColor: getScoreColor(latestCognitive),
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: chartType === 'line' ? 6 : 0,
@@ -122,6 +226,7 @@ export default function ProgressPage() {
           fill: chartType === 'line' ? true : false,
           borderRadius: chartType === 'bar' ? 6 : 0,
           borderSkipped: false,
+          spanGaps: true,
         }
       ]
     };
@@ -135,28 +240,29 @@ export default function ProgressPage() {
         position: 'top' as const,
         labels: {
           usePointStyle: true,
-          padding: 20,
+          boxWidth: 8,
           font: {
-            size: 12,
-            weight: 500,
+            family: "'Inter', sans-serif",
+            size: 12
           }
         }
       },
       tooltip: {
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        titleColor: '#374151',
-        bodyColor: '#374151',
+        titleColor: '#1f2937',
+        bodyColor: '#4b5563',
         borderColor: '#e5e7eb',
         borderWidth: 1,
-        cornerRadius: 8,
-        displayColors: true,
+        padding: 12,
+        boxPadding: 4,
+        usePointStyle: true,
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             const score = context.parsed.y;
             const category = score >= 80 ? 'Excellent' :
-                           score >= 70 ? 'Very Good' :
-                           score >= 60 ? 'Good' :
-                           score >= 40 ? 'Fair' : 'Needs Focus';
+              score >= 70 ? 'Very Good' :
+                score >= 60 ? 'Good' :
+                  score >= 40 ? 'Fair' : 'Needs Focus';
             return `${context.dataset.label}: ${score} (${category})`;
           }
         }
@@ -167,10 +273,10 @@ export default function ProgressPage() {
         beginAtZero: true,
         max: 100,
         grid: {
-          color: 'rgba(156, 163, 175, 0.3)',
+          color: '#f3f4f6',
         },
         ticks: {
-          callback: function(value: any) {
+          callback: function (value: any) {
             return value + '%';
           },
           color: '#6b7280',
@@ -198,35 +304,66 @@ export default function ProgressPage() {
     }
   };
 
-  const chartData = useMemo(() => generateChartData(), [chartType, safeScores.mental, safeScores.physical, safeScores.cognitive]);
+  const chartData = useMemo(() => generateChartData(), [chartType, apiHealthAssessments]);
 
   const moodDistribution = {
     'very-happy': { value: 32, color: 'hsl(142, 76%, 36%)', label: 'Very Happy' },
-    'happy': { value: 28, color: 'hsl(217, 91%, 60%)', label: 'Happy' },
-    'neutral': { value: 25, color: 'hsl(45, 93%, 47%)', label: 'Neutral' },
-    'sad': { value: 12, color: 'hsl(25, 95%, 53%)', label: 'Sad' },
-    'very-sad': { value: 3, color: 'hsl(0, 84%, 60%)', label: 'Very Sad' }
+    'happy': { value: 45, color: 'hsl(217, 91%, 60%)', label: 'Happy' },
+    'neutral': { value: 15, color: 'hsl(45, 93%, 47%)', label: 'Neutral' },
+    'sad': { value: 8, color: 'hsl(25, 95%, 53%)', label: 'Sad' }
   };
 
-  const weeklyActivity = [
-    { day: 'Monday', percentage: 85, color: 'hsl(142, 76%, 36%)' },
-    { day: 'Tuesday', percentage: 92, color: 'hsl(142, 76%, 36%)' },
-    { day: 'Wednesday', percentage: 78, color: 'hsl(217, 91%, 60%)' },
-    { day: 'Thursday', percentage: 88, color: 'hsl(142, 76%, 36%)' },
-    { day: 'Friday', percentage: 95, color: 'hsl(142, 76%, 36%)' },
-    { day: 'Saturday', percentage: 72, color: 'hsl(45, 93%, 47%)' },
-    { day: 'Sunday', percentage: 81, color: 'hsl(217, 91%, 60%)' }
-  ];
-  
+  const downloadCSV = () => {
+    if (!apiHealthAssessments || apiHealthAssessments.length === 0) return;
+
+    // Define CSV headers
+    const headers = ['Date', 'Time', 'Assessment Type', 'Score', 'Category'];
+
+    // Format data rows
+    const rows = apiHealthAssessments.map((a: any) => {
+      const date = new Date(a.completedAt);
+      const score = a.score;
+      const category = score >= 80 ? 'Excellent' :
+        score >= 70 ? 'Very Good' :
+          score >= 60 ? 'Good' :
+            score >= 40 ? 'Fair' : 'Needs Focus';
+
+      return [
+        date.toLocaleDateString(),
+        date.toLocaleTimeString(),
+        a.assessmentType.charAt(0).toUpperCase() + a.assessmentType.slice(1) + ' Health',
+        score,
+        category
+      ];
+    });
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row: any[]) => row.join(','))
+    ].join('\n');
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `wellness_history_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Helper function to get color based on percentage
   const getProgressColor = (percentage: number) => {
     if (percentage >= 90) return 'hsl(142, 76%, 36%)'; // Excellent - Green
-    if (percentage >= 80) return 'hsl(217, 91%, 60%)'; // Very Good - Blue  
+    if (percentage >= 80) return 'hsl(217, 91%, 60%)'; // Very Good - Blue
     if (percentage >= 70) return 'hsl(45, 93%, 47%)'; // Good - Yellow
     if (percentage >= 50) return 'hsl(25, 95%, 53%)'; // Fair - Orange
     return 'hsl(0, 84%, 60%)'; // Poor - Red
   };
-  
+
   const getScoreCategory = (score: number) => {
     if (score >= 90) return { label: 'Excellent', color: 'text-emerald-600', bg: 'bg-emerald-50' };
     if (score >= 80) return { label: 'Very Good', color: 'text-blue-600', bg: 'bg-blue-50' };
@@ -246,14 +383,14 @@ export default function ProgressPage() {
   const weekProgress = useMemo(() => {
     const completedComponents = completedComponentsList;
     const progressMap: Record<number, number> = {};
-    
+
     coachingModules.forEach(module => {
-      const completedCount = module.components.filter(c => 
+      const completedCount = module.components.filter(c =>
         completedComponents.includes(c.id)
       ).length;
       progressMap[module.weekNumber] = Math.round((completedCount / module.components.length) * 100);
     });
-    
+
     return progressMap;
   }, [completedComponentsList]);
 
@@ -282,6 +419,522 @@ export default function ProgressPage() {
     goalsAchieved: `${totalCompletedComponents}/${totalComponents}`
   };
 
+  // Download week report function
+  const downloadWeekReport = (module: any) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const completedComponents = (coachingData?.coachingProgress?.completedComponents as string[]) || [];
+    const responseData = coachingData?.coachingProgress?.responseData || {};
+
+    // Filter components for this week that have been completed
+    const weekComponents = module.components.filter((c: any) =>
+      completedComponents.includes(c.id)
+    );
+
+    if (weekComponents.length === 0) {
+      alert('No completed components in this week yet.');
+      printWindow.close();
+      return;
+    }
+
+    // Helper function to format response values
+    const formatValue = (value: any, key: string): string => {
+      if (value === null || value === undefined) return 'Not answered';
+      if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+      if (Array.isArray(value)) {
+        return value.length > 0 ? value.join(', ') : 'None selected';
+      }
+      if (typeof value === 'object') {
+        // Handle nested objects (like slider values, etc.)
+        return Object.entries(value)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', ');
+      }
+      return String(value);
+    };
+
+    // Generate HTML content
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Week ${module.weekNumber} Report - ${module.title}</title>
+          <style>
+            body { 
+              font-family: system-ui, -apple-system, sans-serif; 
+              padding: 40px; 
+              max-width: 900px; 
+              margin: 0 auto;
+              color: #333;
+            }
+            h1 { 
+              text-align: center; 
+              color: #2d3748; 
+              margin-bottom: 10px;
+              font-size: 28px;
+            }
+            .subtitle {
+              text-align: center;
+              color: #718096;
+              margin-bottom: 40px;
+              font-size: 16px;
+            }
+            .component {
+              margin-bottom: 40px;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 20px;
+              background: #f7fafc;
+            }
+            .component-header {
+              background: #4a5568;
+              color: white;
+              padding: 12px 16px;
+              border-radius: 6px;
+              margin: -20px -20px 20px -20px;
+            }
+            .component-title {
+              font-size: 18px;
+              font-weight: bold;
+              margin: 0;
+            }
+            .component-description {
+              font-size: 14px;
+              color: #e2e8f0;
+              margin: 5px 0 0 0;
+            }
+            .response-section {
+              margin-top: 15px;
+            }
+            .question {
+              font-weight: 600;
+              color: #2d3748;
+              margin-bottom: 8px;
+              font-size: 15px;
+            }
+            .answer {
+              background: white;
+              padding: 12px;
+              border-radius: 4px;
+              margin-bottom: 15px;
+              border-left: 3px solid #4299e1;
+              color: #4a5568;
+              line-height: 1.6;
+            }
+            .no-data {
+              color: #a0aec0;
+              font-style: italic;
+              padding: 20px;
+              text-align: center;
+            }
+            @media print {
+              body { padding: 20px; }
+              .component { page-break-inside: avoid; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Week ${module.weekNumber}: ${module.title}</h1>
+          <div class="subtitle">${module.description}</div>
+          
+          ${weekComponents.map((component: any) => {
+      const componentData = responseData[component.id] || {};
+      const hasData = Object.keys(componentData).length > 0;
+
+      return `
+              <div class="component">
+                <div class="component-header">
+                  <div class="component-title">${component.title}</div>
+                  <div class="component-description">${component.description}</div>
+                </div>
+                
+                ${hasData ? `
+                  <div class="response-section">
+                    ${Object.entries(componentData)
+            .filter(([key]) => !['completedAt', 'progress', 'moduleId', 'weekNumber'].includes(key))
+            .map(([key, value]) => `
+                        <div class="question">${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
+                        <div class="answer">${formatValue(value, key)}</div>
+                      `).join('')}
+                  </div>
+                ` : `
+                  <div class="no-data">No detailed responses recorded for this component</div>
+                `}
+              </div>
+            `;
+    }).join('')}
+          
+          <script>
+            window.onload = () => { window.print(); }
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+  // Comprehensive export report function
+  const exportComprehensiveReport = async () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    // Fetch gratitude entries
+    let gratitudeEntries: any[] = [];
+    try {
+      const res = await fetch('/api/gratitude-entries', { credentials: 'include' });
+      if (res.ok) {
+        gratitudeEntries = await res.json();
+      }
+    } catch (error) {
+      console.error('Failed to fetch gratitude entries:', error);
+    }
+
+    const completedComponents = (coachingData?.coachingProgress?.completedComponents as string[]) || [];
+    const responseData = coachingData?.coachingProgress?.responseData || {};
+
+    // Helper function to format values
+    const formatValue = (value: any): string => {
+      if (value === null || value === undefined) return 'Not answered';
+      if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+      if (Array.isArray(value)) {
+        return value.length > 0 ? value.join(', ') : 'None selected';
+      }
+      if (typeof value === 'object') {
+        return Object.entries(value)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', ');
+      }
+      return String(value);
+    };
+
+    // Get assessment category
+    const getAssessmentCategory = (score: number) => {
+      if (score >= 80) return 'Excellent';
+      if (score >= 70) return 'Very Good';
+      if (score >= 60) return 'Good';
+      if (score >= 40) return 'Fair';
+      return 'Needs Focus';
+    };
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Comprehensive Wellness Report - ${user?.firstName || 'User'}</title>
+          <style>
+            body { 
+              font-family: system-ui, -apple-system, sans-serif; 
+              padding: 40px; 
+              max-width: 1000px; 
+              margin: 0 auto;
+              color: #333;
+              line-height: 1.6;
+            }
+            h1 { 
+              text-align: center; 
+              color: #2d3748; 
+              margin-bottom: 10px;
+              font-size: 32px;
+              border-bottom: 3px solid #4299e1;
+              padding-bottom: 15px;
+            }
+            h2 {
+              color: #2d3748;
+              margin-top: 40px;
+              margin-bottom: 20px;
+              font-size: 24px;
+              border-left: 4px solid #4299e1;
+              padding-left: 15px;
+            }
+            h3 {
+              color: #4a5568;
+              margin-top: 25px;
+              margin-bottom: 15px;
+              font-size: 18px;
+            }
+            .subtitle {
+              text-align: center;
+              color: #718096;
+              margin-bottom: 40px;
+              font-size: 16px;
+            }
+            .info-grid {
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 15px;
+              margin-bottom: 30px;
+            }
+            .info-item {
+              background: #f7fafc;
+              padding: 12px;
+              border-radius: 6px;
+              border-left: 3px solid #4299e1;
+            }
+            .info-label {
+              font-weight: 600;
+              color: #4a5568;
+              font-size: 14px;
+            }
+            .info-value {
+              color: #2d3748;
+              font-size: 16px;
+              margin-top: 4px;
+            }
+            .section {
+              margin-bottom: 40px;
+              page-break-inside: avoid;
+            }
+            .week-section {
+              background: #f7fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 20px;
+              margin-bottom: 25px;
+            }
+            .week-header {
+              background: #4a5568;
+              color: white;
+              padding: 12px 16px;
+              border-radius: 6px;
+              margin: -20px -20px 20px -20px;
+              font-size: 18px;
+              font-weight: bold;
+            }
+            .component {
+              background: white;
+              border: 1px solid #e2e8f0;
+              border-radius: 6px;
+              padding: 15px;
+              margin-bottom: 15px;
+            }
+            .component-title {
+              font-weight: 600;
+              color: #2d3748;
+              margin-bottom: 10px;
+            }
+            .response-item {
+              margin-bottom: 10px;
+            }
+            .question {
+              font-weight: 600;
+              color: #4a5568;
+              font-size: 14px;
+            }
+            .answer {
+              color: #2d3748;
+              margin-left: 10px;
+            }
+            .entry {
+              background: #f7fafc;
+              border-left: 3px solid #4299e1;
+              padding: 15px;
+              margin-bottom: 15px;
+              border-radius: 4px;
+            }
+            .entry-date {
+              font-weight: 600;
+              color: #4a5568;
+              font-size: 14px;
+            }
+            .entry-content {
+              color: #2d3748;
+              margin-top: 8px;
+            }
+            .assessment-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 15px;
+            }
+            .assessment-table th {
+              background: #4a5568;
+              color: white;
+              padding: 10px;
+              text-align: left;
+              font-weight: 600;
+            }
+            .assessment-table td {
+              padding: 10px;
+              border-bottom: 1px solid #e2e8f0;
+            }
+            .assessment-table tr:hover {
+              background: #f7fafc;
+            }
+            .score-excellent { color: #10b981; font-weight: bold; }
+            .score-very-good { color: #3b82f6; font-weight: bold; }
+            .score-good { color: #f59e0b; font-weight: bold; }
+            .score-fair { color: #f97316; font-weight: bold; }
+            .score-needs-focus { color: #ef4444; font-weight: bold; }
+            .no-data {
+              color: #a0aec0;
+              font-style: italic;
+              text-align: center;
+              padding: 20px;
+            }
+            @media print {
+              body { padding: 20px; }
+              .section { page-break-inside: avoid; }
+              h2 { page-break-after: avoid; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Comprehensive Wellness Report</h1>
+          <div class="subtitle">Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</div>
+          
+          <!-- User Information -->
+          <div class="section">
+            <h2>User Information</h2>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Name</div>
+                <div class="info-value">${user?.firstName || 'N/A'} ${user?.lastName || ''}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value">${user?.email || 'N/A'}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Total Components Completed</div>
+                <div class="info-value">${totalCompletedComponents} / ${totalComponents}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Current Week</div>
+                <div class="info-value">Week ${(() => {
+        for (let i = 0; i < coachingModules.length; i++) {
+          const module = coachingModules[i];
+          const moduleCompleted = module.components.every(c => completedComponents.includes(c.id));
+          if (!moduleCompleted) return i + 1;
+        }
+        return 6;
+      })()} of 6</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health Assessments -->
+          <div class="section">
+            <h2>Health Assessments</h2>
+            ${apiHealthAssessments && apiHealthAssessments.length > 0 ? `
+              <table class="assessment-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Score</th>
+                    <th>Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${[...apiHealthAssessments]
+          .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+          .map((assessment: any) => {
+            const score = assessment.score;
+            const category = getAssessmentCategory(score);
+            const scoreClass = score >= 80 ? 'score-excellent' :
+              score >= 70 ? 'score-very-good' :
+                score >= 60 ? 'score-good' :
+                  score >= 40 ? 'score-fair' : 'score-needs-focus';
+
+            return `
+                        <tr>
+                          <td>${new Date(assessment.completedAt).toLocaleDateString()} ${new Date(assessment.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                          <td style="text-transform: capitalize;">${assessment.assessmentType} Health</td>
+                          <td class="${scoreClass}">${score}</td>
+                          <td>${category}</td>
+                        </tr>
+                      `;
+          }).join('')}
+                </tbody>
+              </table>
+            ` : '<div class="no-data">No health assessments completed yet</div>'}
+          </div>
+
+          <!-- Coaching Progress by Week -->
+          <div class="section">
+            <h2>6-Week Coaching Program Progress</h2>
+            ${coachingModules.map((module: any) => {
+            const weekComponents = module.components.filter((c: any) => completedComponents.includes(c.id));
+            const progressPercent = Math.round((weekComponents.length / module.components.length) * 100);
+
+            return `
+                <div class="week-section">
+                  <div class="week-header">
+                    Week ${module.weekNumber}: ${module.title} (${progressPercent}% Complete)
+                  </div>
+                  <p style="color: #4a5568; margin-bottom: 15px;">${module.description}</p>
+                  
+                  ${weekComponents.length > 0 ? weekComponents.map((component: any) => {
+              const componentData = responseData[component.id] || {};
+              const hasData = Object.keys(componentData).length > 0;
+
+              return `
+                      <div class="component">
+                        <div class="component-title">${component.title}</div>
+                        ${hasData ? `
+                          ${Object.entries(componentData)
+                    .filter(([key]) => !['completedAt', 'progress', 'moduleId', 'weekNumber'].includes(key))
+                    .map(([key, value]) => `
+                              <div class="response-item">
+                                <span class="question">${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</span>
+                                <span class="answer">${formatValue(value)}</span>
+                              </div>
+                            `).join('')}
+                        ` : '<div style="color: #a0aec0; font-style: italic;">Completed (no detailed responses recorded)</div>'}
+                      </div>
+                    `;
+            }).join('') : '<div class="no-data">No components completed in this week yet</div>'}
+                </div>
+              `;
+          }).join('')}
+          </div>
+
+          <!-- Journal Entries -->
+          <div class="section">
+            <h2>Journal Entries</h2>
+            ${safeJournal.length > 0 ? `
+              ${[...safeJournal]
+          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map((entry: any) => `
+                  <div class="entry">
+                    <div class="entry-date">
+                      ${new Date(entry.createdAt).toLocaleDateString()} - ${entry.title || 'Daily Reflection'}
+                      ${entry.mood ? ` | Mood: ${entry.mood.replace('-', ' ')}` : ''}
+                    </div>
+                    <div class="entry-content">${entry.content}</div>
+                  </div>
+                `).join('')}
+            ` : '<div class="no-data">No journal entries yet</div>'}
+          </div>
+
+          <!-- Gratitude Entries -->
+          <div class="section">
+            <h2>Gratitude Entries</h2>
+            ${gratitudeEntries.length > 0 ? `
+              ${gratitudeEntries
+          .sort((a: any, b: any) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())
+          .map((entry: any) => `
+                  <div class="entry">
+                    <div class="entry-date">${new Date(entry.savedAt).toLocaleDateString()}</div>
+                    <div class="entry-content">
+                      ${entry.items ? entry.items.map((item: string, idx: number) => `${idx + 1}. ${item}`).join('<br>') : entry.gratitude || 'N/A'}
+                    </div>
+                  </div>
+                `).join('')}
+            ` : '<div class="no-data">No gratitude entries yet</div>'}
+          </div>
+
+          <script>
+            window.onload = () => { window.print(); }
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   // Removed forced reload that caused loops on some environments
 
   // Enforce login requirement for progress page
@@ -291,112 +944,147 @@ export default function ProgressPage() {
     }
   }, [authLoading, isAuthenticated, setLocation]);
 
-  // No explicit loading gate needed now; chartData is derived synchronously
+  if (authLoading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    setLocation('/');
+    return null;
+  }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Progress & Insights</h1>
-          <p className="text-gray-600">Track your wellness transformation with detailed analytics and personalized insights.</p>
-        </div>
-        <div className="flex space-x-3">
-          <Select value={chartType} onValueChange={(value: 'line' | 'bar') => setChartType(value)}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="line">
-                <div className="flex items-center gap-2">
-                  <LineChart className="w-4 h-4" />
-                  Line Chart
-                </div>
-              </SelectItem>
-              <SelectItem value="bar">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Bar Chart
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="90">Last 3 months</SelectItem>
-            </SelectContent>
-          </Select>
-          
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Your Progress</h1>
+            <p className="text-gray-600 mt-2">Track your wellness journey and achievements</p>
+          </div>
+          <div className="flex gap-2">
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Progress Chart */}
-        <div className="lg:col-span-2">
-          <Card className="wellness-card">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5 text-primary" />
-                  <span>Wellness Trends</span>
-                </CardTitle>
-                <div className="flex items-center space-x-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-4 h-4 rounded-full ${
-                      safeScores.mental >= 80 ? 'bg-emerald-500' :
-                      safeScores.mental >= 70 ? 'bg-blue-500' :
-                      safeScores.mental >= 60 ? 'bg-amber-500' :
-                      safeScores.mental >= 40 ? 'bg-orange-500' : 'bg-rose-500'
-                    }`}></div>
-                    <span className="text-gray-700 font-medium">Mental Health</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      safeScores.mental >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                      safeScores.mental >= 70 ? 'bg-blue-100 text-blue-800' :
-                      safeScores.mental >= 60 ? 'bg-amber-100 text-amber-800' :
-                      safeScores.mental >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>{safeScores.mental}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-4 h-4 rounded-full ${
-                      safeScores.physical >= 80 ? 'bg-emerald-500' :
-                      safeScores.physical >= 70 ? 'bg-blue-500' :
-                      safeScores.physical >= 60 ? 'bg-amber-500' :
-                      safeScores.physical >= 40 ? 'bg-orange-500' : 'bg-rose-500'
-                    }`}></div>
-                    <span className="text-gray-700 font-medium">Physical Health</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      safeScores.physical >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                      safeScores.physical >= 70 ? 'bg-blue-100 text-blue-800' :
-                      safeScores.physical >= 60 ? 'bg-amber-100 text-amber-800' :
-                      safeScores.physical >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>{safeScores.physical}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-4 h-4 rounded-full ${
-                      safeScores.cognitive >= 80 ? 'bg-emerald-500' :
-                      safeScores.cognitive >= 70 ? 'bg-blue-500' :
-                      safeScores.cognitive >= 60 ? 'bg-amber-500' :
-                      safeScores.cognitive >= 40 ? 'bg-orange-500' : 'bg-rose-500'
-                    }`}></div>
-                    <span className="text-gray-700 font-medium">Cognitive Health</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      safeScores.cognitive >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                      safeScores.cognitive >= 70 ? 'bg-blue-100 text-blue-800' :
-                      safeScores.cognitive >= 60 ? 'bg-amber-100 text-amber-800' :
-                      safeScores.cognitive >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>{safeScores.cognitive}</span>
-                  </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <History className="w-4 h-4" />
+                  View Full History
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex justify-between items-center">
+                    <span>Assessment History</span>
+                    <Button onClick={downloadCSV} className="flex items-center gap-2">
+                      <FileDown className="w-4 h-4" />
+                      Download CSV
+                    </Button>
+                  </DialogTitle>
+                  <DialogDescription>
+                    A complete record of all your health assessments.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="mt-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Score</TableHead>
+                        <TableHead>Category</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {apiHealthAssessments && apiHealthAssessments.length > 0 ? (
+                        [...apiHealthAssessments]
+                          .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+                          .map((assessment: any) => {
+                            const score = assessment.score;
+                            const category = score >= 80 ? 'Excellent' :
+                              score >= 70 ? 'Very Good' :
+                                score >= 60 ? 'Good' :
+                                  score >= 40 ? 'Fair' : 'Needs Focus';
+                            const colorClass = score >= 80 ? 'text-emerald-600' :
+                              score >= 70 ? 'text-blue-600' :
+                                score >= 60 ? 'text-amber-600' :
+                                  score >= 40 ? 'text-orange-600' : 'text-red-600';
+
+                            return (
+                              <TableRow key={assessment.id}>
+                                <TableCell>{new Date(assessment.completedAt).toLocaleDateString()} {new Date(assessment.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell className="capitalize font-medium">{assessment.assessmentType} Health</TableCell>
+                                <TableCell>
+                                  <span className={`font-bold ${colorClass}`}>{score}</span>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className={`${score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                    score >= 70 ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                      score >= 60 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                        score >= 40 ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                          'bg-red-50 text-red-700 border-red-200'
+                                    }`}>
+                                    {category}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                            No assessments found. Take your first assessment to see history!
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
+              </DialogContent>
+            </Dialog>
+
+            <Button variant="outline" className="flex items-center gap-2" onClick={exportComprehensiveReport}>
+              <Download className="w-4 h-4" />
+              Export Report
+            </Button>
+          </div>
+        </div>
+
+        {/* Wellness Trends Chart */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <Card className="lg:col-span-2 border-none shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div>
+                <CardTitle className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                  Wellness Trends
+                </CardTitle>
+                <p className="text-sm text-gray-500 mt-1">Your health scores over time</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select value={chartType} onValueChange={(v: any) => setChartType(v)}>
+                  <SelectTrigger className="w-[100px] h-8 text-xs">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="line">Line Chart</SelectItem>
+                    <SelectItem value="bar">Bar Chart</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs">
+                    <SelectValue placeholder="Time Range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7">Last 7 days</SelectItem>
+                    <SelectItem value="30">Last 30 days</SelectItem>
+                    <SelectItem value="90">Last 3 months</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardHeader>
             <CardContent>
               <div className="h-80 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-4">
-                {chartData && safeScores.overall > 0 ? (
+                {chartData && chartData.labels && chartData.labels.length > 0 ? (
                   <div className="h-full">
                     {chartType === 'line' ? (
                       <Line data={chartData} options={chartOptions} />
@@ -422,9 +1110,9 @@ export default function ProgressPage() {
                       <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="mt-4"
                       onClick={() => setChartType(chartType === 'line' ? 'bar' : 'line')}
                     >
@@ -435,93 +1123,268 @@ export default function ProgressPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* This Month Stats */}
+          <Card className="border-none shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-purple-600" />
+                This Month
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-blue-900">Latest Wellness Score</p>
+                    <p className="text-2xl font-bold text-blue-700">
+                      {(() => {
+                        // Calculate overall wellness score from latest assessments (same as dashboard)
+                        if (!apiHealthAssessments || apiHealthAssessments.length === 0) return 0;
+
+                        // Get latest assessment for each type
+                        const mental = apiHealthAssessments
+                          .filter((a: any) => a.assessmentType === 'mental')
+                          .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+                        const physical = apiHealthAssessments
+                          .filter((a: any) => a.assessmentType === 'physical')
+                          .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+                        const cognitive = apiHealthAssessments
+                          .filter((a: any) => a.assessmentType === 'cognitive')
+                          .sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+
+                        const mentalScore = mental?.score || 0;
+                        const physicalScore = physical?.score || 0;
+                        const cognitiveScore = cognitive?.score || 0;
+
+                        // Only calculate average from assessments that have been taken
+                        const scores = [mentalScore, physicalScore, cognitiveScore].filter(s => s > 0);
+                        return scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+                      })()}
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-blue-600" />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-purple-900">Journal Entries This Month</p>
+                    <p className="text-2xl font-bold text-purple-700">{entriesThisMonth}</p>
+                  </div>
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-purple-600" />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-pink-50 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-pink-900">Components Completed</p>
+                    <p className="text-2xl font-bold text-pink-700">
+                      {totalCompletedComponents} / {totalComponents}
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                    <Heart className="w-5 h-5 text-pink-600" />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-emerald-900">Current Week</p>
+                    <p className="text-2xl font-bold text-emerald-700">
+                      Week {(() => {
+                        const completedComponents = (coachingData?.coachingProgress?.completedComponents as string[]) || [];
+                        for (let i = 0; i < coachingModules.length; i++) {
+                          const module = coachingModules[i];
+                          const moduleCompleted = module.components.every(c =>
+                            completedComponents.includes(c.id)
+                          );
+                          if (!moduleCompleted) {
+                            return i + 1;
+                          }
+                        }
+                        return 6; // All weeks completed
+                      })()} of 6
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-emerald-600" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Key Metrics */}
-        <div className="space-y-6">
-          <Card className="wellness-card">
+        {/* Achievements & Milestones */}
+        <div className="grid">
+          <Card className="lg:col-span-2 border-none shadow-md">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="w-5 h-5 text-sage-600" />
-                <span>This Month</span>
+              <CardTitle className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Award className="w-5 h-5 text-amber-500" />
+                Achievements
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Avg. Wellness Score</span>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-gray-800">{monthlyStats.avgWellness}</span>
-                    {monthlyStats.avgWellness > 0 && (
-                      <Badge variant="secondary" className="bg-green-100 text-green-700">+8</Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Journal Entries</span>
-                  <span className="text-lg font-bold text-gray-800">{monthlyStats.journalEntries}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Mood Check-ins</span>
-                  <span className="text-lg font-bold text-gray-800">{monthlyStats.moodCheckins}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Goals Progress</span>
-                  <span className="text-lg font-bold text-gray-800">{monthlyStats.goalsAchieved}</span>
-                </div>
+              <div className="space-y-6">
+                {coachingModules.map((module, index) => {
+                  // Calculate progress for this module
+                  const completedComponents = coachingData?.coachingProgress?.completedComponents || [];
+                  const moduleProgress = module.components.filter(c => completedComponents.includes(c.id)).length;
+                  const totalComponents = module.components.length;
+                  const progressPercent = Math.round((moduleProgress / totalComponents) * 100);
+
+                  return (
+                    <div key={module.id} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${progressPercent === 100 ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                            {progressPercent === 100 ? <Award className="w-4 h-4" /> : <span className="text-xs font-bold">{index + 1}</span>}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{module.title}</p>
+                            <p className="text-xs text-gray-500">Week {index + 1}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {progressPercent > 0 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => downloadWeekReport(module)}
+                              className="flex items-center gap-1"
+                            >
+                              <Download className="w-3 h-3" />
+                              <span className="hidden sm:inline">Report</span>
+                            </Button>
+                          )}
+                          <span className="text-sm font-medium text-gray-600">{progressPercent}%</span>
+                        </div>
+                      </div>
+                      <Progress value={progressPercent} className="h-2" />
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="wellness-card">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Award className="w-5 h-5 text-coral-500" />
-                <span>Achievements</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                {/* Week Progress Bars */}
-                <div>
-                  <div className="text-sm font-semibold text-gray-700 mb-3">Module Progress</div>
-                  <div className="space-y-4">
-                    {coachingModules.map((module) => {
-                      const progress = weekProgress[module.weekNumber] || 0;
-                      return (
-                        <div key={module.id} className="space-y-2">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 flex-1">
-                              <Badge variant="outline" className="text-xs">
-                                Week {module.weekNumber} • {module.components.length} components
-                              </Badge>
-                              <span className="text-sm font-medium text-green-600">
-                                {progress}%
-                              </span>
-                            </div>
-                            <Progress value={progress} className="w-20 h-2" />
-                          </div>
-                          <p className="text-xs text-gray-500 ml-0">{module.description}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
-      
+
 
       {/* Journal Insights */}
-      <Card className="wellness-card">
-        <CardHeader>
+      <Card className="wellness-card mt-8">
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
             <BookOpen className="w-5 h-5 text-sage-600" />
             <span>Journal Insights</span>
           </CardTitle>
+          {safeJournal.length > 0 && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <History className="w-4 h-4" />
+                  View Full History
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex justify-between items-center">
+                    <span>Journal History</span>
+                    <Button
+                      onClick={() => {
+                        const printWindow = window.open('', '_blank');
+                        if (!printWindow) return;
+
+                        const htmlContent = `
+                          <html>
+                            <head>
+                              <title>Journal History</title>
+                              <style>
+                                body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                                h1 { text-align: center; color: #333; margin-bottom: 40px; }
+                                .entry { margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
+                                .header { display: flex; justify-content: space-between; margin-bottom: 10px; color: #666; font-size: 0.9em; }
+                                .title { font-size: 1.2em; font-weight: bold; color: #2d3748; margin-bottom: 10px; }
+                                .mood { display: inline-block; background: #f7fafc; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-bottom: 10px; }
+                                .content { white-space: pre-wrap; line-height: 1.6; color: #4a5568; }
+                              </style>
+                            </head>
+                            <body>
+                              <h1>My Journal History</h1>
+                              ${[...safeJournal]
+                            .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .map((entry: any) => `
+                                  <div class="entry">
+                                    <div class="header">
+                                      <span>${new Date(entry.createdAt).toLocaleDateString()}</span>
+                                      <span>${new Date(entry.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </div>
+                                    <div class="title">${entry.title || 'Daily Reflection'}</div>
+                                    ${entry.mood ? `<div class="mood">Mood: ${entry.mood}</div>` : ''}
+                                    <div class="content">${entry.content}</div>
+                                  </div>
+                                `).join('')}
+                              <script>
+                                window.onload = () => { window.print(); }
+                              </script>
+                            </body>
+                          </html>
+                        `;
+
+                        printWindow.document.write(htmlContent);
+                        printWindow.document.close();
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download PDF
+                    </Button>
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="mt-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Mood</TableHead>
+                        <TableHead>Preview</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[...safeJournal]
+                        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                        .map((entry: any) => (
+                          <TableRow key={entry.id}>
+                            <TableCell className="whitespace-nowrap">
+                              {new Date(entry.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className="font-medium">{entry.title || 'Daily Reflection'}</TableCell>
+                            <TableCell>
+                              {entry.mood && (
+                                <Badge variant="outline" className="capitalize">
+                                  {entry.mood.replace('-', ' ')}
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="max-w-md truncate text-gray-500">
+                              {entry.content}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </CardHeader>
         <CardContent>
           {safeJournal.length > 0 ? (
@@ -544,23 +1407,33 @@ export default function ProgressPage() {
                   <div className="text-sm text-gray-600">Entries/Week</div>
                 </div>
               </div>
-              
+
               <div className="border-t border-gray-200 pt-4">
                 <h4 className="font-semibold text-gray-800 mb-3">Recent Reflections</h4>
                 <div className="space-y-3">
-                  {safeJournal.slice(-3).map((entry: any, index: number) => (
-                    <div key={entry.id || index} className="border-l-4 border-primary pl-4 py-2">
-                      <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-medium text-gray-900">{entry.title || 'Daily Reflection'}</h5>
-                        <span className="text-sm text-gray-500">
-                          {new Date(entry.createdAt).toLocaleDateString()}
-                        </span>
+                  {[...safeJournal]
+                    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                    .slice(0, 5)
+                    .map((entry: any, index: number) => (
+                      <div key={entry.id || index} className="border-l-4 border-primary pl-4 py-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium text-gray-900">{entry.title || 'Daily Reflection'}</h5>
+                          <span className="text-sm text-gray-500">
+                            {new Date(entry.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm line-clamp-2">
+                          {String(entry.content || '').substring(0, 150)}...
+                        </p>
+                        {entry.mood && (
+                          <div className="mt-2">
+                            <Badge variant="secondary" className="text-xs capitalize">
+                              Mood: {entry.mood.replace('-', ' ')}
+                            </Badge>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-gray-600 text-sm line-clamp-2">
-                        {String(entry.content || '').substring(0, 150)}...
-                      </p>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </div>
@@ -568,7 +1441,7 @@ export default function ProgressPage() {
             <div className="text-center py-8">
               <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 mb-4">Start journaling to gain insights into your wellness journey</p>
-              <Button className="btn-primary">
+              <Button className="btn-primary" onClick={() => setLocation('/journal')}>
                 <BookOpen className="w-4 h-4 mr-2" />
                 Write Your First Entry
               </Button>

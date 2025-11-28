@@ -198,7 +198,7 @@ export default function JournalNew() {
       }, 1000);
       return;
     }
-    
+
     if (authLoading) {
       toast({
         title: "Please Wait",
@@ -206,7 +206,7 @@ export default function JournalNew() {
       });
       return;
     }
-    
+
     purchaseResource.mutate(resourceId);
   };
 
@@ -214,7 +214,7 @@ export default function JournalNew() {
     // Create download link
     const downloadUrl = `/api/download-resource/${resource.id}`;
     window.open(downloadUrl, '_blank');
-    
+
     toast({
       title: "Download Started",
       description: `${resource.title} is being downloaded.`,
@@ -224,21 +224,21 @@ export default function JournalNew() {
   // Filter resources based on selected filters
   const filteredResources = (allResources as any[]).filter((resource) => {
     const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
-    const priceMatch = priceFilter === 'all' || 
-                      (priceFilter === 'free' && resource.price === 0) ||
-                      (priceFilter === 'paid' && resource.price > 0);
+    const priceMatch = priceFilter === 'all' ||
+      (priceFilter === 'free' && resource.price === 0) ||
+      (priceFilter === 'paid' && resource.price > 0);
     return categoryMatch && priceMatch;
   });
 
   // Get unique categories
-    const categories = ['all', ...Array.from(new Set((allResources as any[]).map(r => r.category).filter(Boolean)))];
+  const categories = ['all', ...Array.from(new Set((allResources as any[]).map(r => r.category).filter(Boolean)))];
 
-    const todaysPrompt = getTodaysPrompt(userProfile.currentWeek);
-  const currentDate = new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const todaysPrompt = getTodaysPrompt(userProfile.currentWeek);
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 
   const todayIso = new Date().toISOString().split('T')[0];
@@ -282,7 +282,7 @@ export default function JournalNew() {
   // Load today's entry (or draft if none) - only once on initial load
   useEffect(() => {
     if (hasInitialized) return;
-    
+
     const today = new Date().toISOString().split('T')[0];
     const todaysEntry = allJournalEntries.find((e: any) => {
       const entryDate = new Date(e.createdAt).toISOString().split('T')[0];
@@ -298,7 +298,7 @@ export default function JournalNew() {
       const todaysMood = moodList.find((entry: any) => entry.date === today || entry.createdAt?.startsWith(today));
       if (todaysMood) setSelectedMood(todaysMood.mood);
     }
-    
+
     setHasInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasInitialized, user?.id]);
@@ -307,7 +307,7 @@ export default function JournalNew() {
   useEffect(() => {
     if (isAuthenticated && apiGratitudeEntries && Array.isArray(apiGratitudeEntries)) {
       // Filter to ensure only current user's entries (extra safety)
-      const userEntries = apiGratitudeEntries.filter((e: any) => 
+      const userEntries = apiGratitudeEntries.filter((e: any) =>
         e && e.userId === user?.id
       );
       const mapped = userEntries.map((e: any) => ({
@@ -431,12 +431,12 @@ export default function JournalNew() {
       setSavedGratitudeEntries(updatedEntries);
       const userId = user?.id || 'guest';
       localStorage.setItem(`gratitude-entries-${userId}`, JSON.stringify(updatedEntries));
-      
+
       toast({
         title: "Gratitude Saved!",
         description: `You recorded ${filledItems.length} thing${filledItems.length > 1 ? 's' : ''} to be grateful for today.`,
       });
-      
+
       setGratitudeItems(['', '', '']);
       setShowGratitudeDialog(false);
     }
@@ -448,6 +448,7 @@ export default function JournalNew() {
   };
 
   const handleCompleteEntry = () => {
+    if (!selectedMood) return;
     // Ensure minimum word count requirement
     if (wordCount < MIN_WORD_COUNT) {
       toast({
@@ -457,14 +458,14 @@ export default function JournalNew() {
       });
       return;
     }
-    
+
     if (!journalContent.trim()) return;
-    
+
     // Prevent multiple saves
     if (saveJournalEntryMutation.isPending) {
       return;
     }
-    
+
     const entry: Omit<JournalEntry, 'id'> = {
       title: `${currentDate} Reflection`,
       content: journalContent,
@@ -472,21 +473,21 @@ export default function JournalNew() {
       prompt: todaysPrompt,
       createdAt: new Date().toISOString(),
     };
-    
+
     // If editing today's entry, do not create a duplicate local entry
     if (!isEditingToday) {
       // Save to localStorage (for offline support) - create if none today
       addJournalEntry(entry);
     }
-    
+
     // Save to API if authenticated - backend will upsert today's entry
     if (isAuthenticated) {
       saveJournalEntryMutation.mutate(entry);
     }
-    
+
     const today = new Date().toISOString().split('T')[0];
     localStorage.removeItem(`journal_draft_${today}`);
-    
+
     // Clear the journal content after saving so user can write a new entry
     setJournalContent('');
     setWordCount(0);
@@ -577,11 +578,10 @@ export default function JournalNew() {
                           <button
                             key={mood.value}
                             onClick={() => handleMoodSelect(mood.value)}
-                            className={`p-3 rounded-lg border-2 transition-all hover:scale-105 ${
-                              selectedMood === mood.value 
-                                ? 'border-purple-500 bg-purple-50' 
-                                : mood.color
-                            }`}
+                            className={`p-3 rounded-lg border-2 transition-all hover:scale-105 ${selectedMood === mood.value
+                              ? 'border-purple-500 bg-purple-50'
+                              : mood.color
+                              }`}
                           >
                             <div className="text-2xl mb-1">{mood.emoji}</div>
                             <div className="text-xs font-medium">{mood.label}</div>
@@ -592,17 +592,17 @@ export default function JournalNew() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-3 mt-6">
-                      <Button 
+                      <Button
                         onClick={handleCompleteEntry}
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        disabled={wordCount < MIN_WORD_COUNT || saveJournalEntryMutation.isPending}
+                        disabled={wordCount < MIN_WORD_COUNT || saveJournalEntryMutation.isPending || !selectedMood}
                       >
-                        {saveJournalEntryMutation.isPending 
-                          ? 'Saving...' 
+                        {saveJournalEntryMutation.isPending
+                          ? 'Saving...'
                           : (isEditingToday ? 'Save Changes' : 'Complete Entry')}
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => setJournalContent('')}
                         className="border-gray-300"
                       >
@@ -624,8 +624,8 @@ export default function JournalNew() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Dialog open={showBreathingDialog} onOpenChange={setShowBreathingDialog}>
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             className="h-auto p-4 text-left border-green-200 hover:bg-green-50"
                             data-testid="button-breathing-exercise"
                           >
@@ -650,23 +650,22 @@ export default function JournalNew() {
 
                             {/* Breathing Animation Circle */}
                             <div className="flex justify-center">
-                              <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${
-                                breathingActive 
-                                  ? breathingPhase === 'inhale' 
-                                    ? 'bg-green-200 scale-125 duration-[4000ms]' 
-                                    : breathingPhase === 'hold'
+                              <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${breathingActive
+                                ? breathingPhase === 'inhale'
+                                  ? 'bg-green-200 scale-125 duration-[4000ms]'
+                                  : breathingPhase === 'hold'
                                     ? 'bg-blue-200 scale-125 duration-[4000ms]'
                                     : 'bg-purple-200 scale-75 duration-[4000ms]'
-                                  : 'bg-gray-200'
-                              }`}>
+                                : 'bg-gray-200'
+                                }`}>
                                 <div className="text-center">
                                   <div className="text-2xl font-bold">
-                                    {breathingActive 
-                                      ? breathingPhase === 'inhale' 
-                                        ? '🌬️' 
+                                    {breathingActive
+                                      ? breathingPhase === 'inhale'
+                                        ? '🌬️'
                                         : breathingPhase === 'hold'
-                                        ? '⏸️'
-                                        : '😌'
+                                          ? '⏸️'
+                                          : '😌'
                                       : '🧘'
                                     }
                                   </div>
@@ -691,25 +690,25 @@ export default function JournalNew() {
                             {/* Control Buttons */}
                             <div className="flex gap-3">
                               {!breathingActive ? (
-                                <Button 
-                                  onClick={startBreathing} 
+                                <Button
+                                  onClick={startBreathing}
                                   className="flex-1 bg-green-600 hover:bg-green-700"
                                   data-testid="button-start-breathing"
                                 >
                                   Start Breathing
                                 </Button>
                               ) : (
-                                <Button 
-                                  onClick={stopBreathing} 
-                                  variant="outline" 
+                                <Button
+                                  onClick={stopBreathing}
+                                  variant="outline"
                                   className="flex-1"
                                   data-testid="button-stop-breathing"
                                 >
                                   Stop
                                 </Button>
                               )}
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 onClick={() => setShowBreathingDialog(false)}
                                 data-testid="button-close-breathing"
                               >
@@ -722,8 +721,8 @@ export default function JournalNew() {
 
                       <Dialog open={showGratitudeDialog} onOpenChange={setShowGratitudeDialog}>
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             className="h-auto p-4 text-left border-blue-200 hover:bg-blue-50"
                             data-testid="button-gratitude-exercise"
                           >
@@ -769,7 +768,7 @@ export default function JournalNew() {
                             </div>
 
                             <div className="flex gap-3">
-                              <Button 
+                              <Button
                                 onClick={saveGratitude}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700"
                                 data-testid="button-save-gratitude"
@@ -777,8 +776,8 @@ export default function JournalNew() {
                               >
                                 {saveGratitudeMutation.isPending ? 'Saving...' : 'Save Gratitude'}
                               </Button>
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 onClick={() => {
                                   setShowGratitudeDialog(false);
                                   setGratitudeItems(['', '', '']);
@@ -818,7 +817,7 @@ export default function JournalNew() {
                             hour: '2-digit',
                             minute: '2-digit',
                           });
-                          
+
                           return (
                             <div
                               key={entry.id}
@@ -871,7 +870,7 @@ export default function JournalNew() {
                             })}
                           </p>
                         </div>
-                        
+
                         <div className="space-y-3">
                           {viewGratitudeEntry.items.map((item, index) => (
                             <div key={index}>
@@ -917,13 +916,23 @@ export default function JournalNew() {
                       <p className="text-gray-500 text-sm">No entries yet. Start writing your first reflection!</p>
                     ) : (
                       <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                        {allJournalEntries.slice().sort((a: any, b: any) => 
+                        {allJournalEntries.slice().sort((a: any, b: any) =>
                           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
                         ).map((entry: any) => (
                           <Dialog key={entry.id}>
                             <DialogTrigger asChild>
                               <div className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                <div className="font-medium text-sm">{entry.title}</div>
+                                <div className="flex justify-between items-start">
+                                  <div className="font-medium text-sm">{entry.title}</div>
+                                  {entry.mood && (
+                                    <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full text-xs shrink-0 ml-2">
+                                      <span>{moodOptions.find(m => m.value === entry.mood)?.emoji}</span>
+                                      <span className="font-medium text-gray-600">
+                                        {moodOptions.find(m => m.value === entry.mood)?.label}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                                 <div className="text-xs text-gray-500 mt-1">
                                   {new Date(entry.createdAt).toLocaleDateString()}
                                 </div>
@@ -1024,25 +1033,25 @@ export default function JournalNew() {
                             </Badge>
                           )}
                         </div>
-                        
+
                         <h3 className="font-bold text-lg mb-2 text-gray-900 leading-tight">
                           {resource.title}
                         </h3>
-                        
+
                         <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                           {resource.description}
                         </p>
-                        
+
                         <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                           <span>{resource.category}</span>
                           {resource.totalPages && (
                             <span>{resource.totalPages} pages</span>
                           )}
                         </div>
-                        
+
                         <div className="flex gap-2">
                           {resource.price === 0 ? (
-                            <Button 
+                            <Button
                               className="flex-1 bg-green-600 hover:bg-green-700"
                               size="sm"
                               onClick={() => handleFreeDownload(resource)}
@@ -1051,7 +1060,7 @@ export default function JournalNew() {
                               Download Free
                             </Button>
                           ) : (
-                            <Button 
+                            <Button
                               className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                               size="sm"
                               onClick={() => handlePurchase(resource.id)}

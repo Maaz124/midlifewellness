@@ -5,9 +5,9 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { 
-  mentalHealthQuestions, 
-  physicalHealthQuestions, 
+import {
+  mentalHealthQuestions,
+  physicalHealthQuestions,
   cognitiveHealthQuestions,
   calculateScore,
   getScoreInterpretation,
@@ -50,8 +50,8 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
   });
 
   const questions = type === 'mental' ? mentalHealthQuestions :
-                   type === 'physical' ? physicalHealthQuestions :
-                   cognitiveHealthQuestions;
+    type === 'physical' ? physicalHealthQuestions :
+      cognitiveHealthQuestions;
 
   const config = {
     mental: {
@@ -93,8 +93,8 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
   useEffect(() => {
     if (isOpen && existingAssessment?.responses) {
       // Restore existing responses if available
-      const savedResponses = Array.isArray(existingAssessment.responses) 
-        ? existingAssessment.responses 
+      const savedResponses = Array.isArray(existingAssessment.responses)
+        ? existingAssessment.responses
         : [];
       setResponses(savedResponses);
     }
@@ -134,7 +134,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
       const finalScore = calculateScore(responses, questions);
       onScoreUpdate(finalScore);
       setIsComplete(true);
-      
+
       // Save to backend
       if (isAuthenticated) {
         await saveAssessment(finalScore, responses);
@@ -163,19 +163,18 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
       }
 
       const savedAssessment = await response.json();
-      
-      // Show success toast
-      const isUpdate = existingAssessment && existingAssessment.id;
+
+      // Show success toast - always creating new record now
       toast({
-        title: isUpdate ? 'Assessment Updated!' : 'Assessment Saved!',
-        description: `Your ${currentConfig.title} score (${finalScore}/100) has been ${isUpdate ? 'updated' : 'saved'} successfully.`,
+        title: 'Assessment Saved!',
+        description: `Your ${currentConfig.title} score (${finalScore}/100) has been saved successfully. Track your progress over time!`,
         variant: 'default',
       });
 
       // Refetch to get updated data
       await refetchAssessment();
-      
-      // Invalidate the main assessments query so dashboard updates
+
+      // Invalidate the main assessments query so dashboard and progress page update
       await queryClient.invalidateQueries({ queryKey: ['/api/health-assessments'] });
     } catch (error: any) {
       console.error('Error saving assessment:', error);
@@ -221,7 +220,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
           <CardTitle className="text-xl font-semibold mb-2">{currentConfig.title}</CardTitle>
           <p className="text-sm opacity-90">{currentConfig.description}</p>
         </CardHeader>
-        
+
         <CardContent className="p-6">
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
@@ -239,9 +238,8 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i < Math.floor(score / 20) ? `bg-${currentConfig.color}` : 'bg-gray-200'
-                    }`}
+                    className={`w-2 h-2 rounded-full ${i < Math.floor(score / 20) ? `bg-${currentConfig.color}` : 'bg-gray-200'
+                      }`}
                   />
                 ))}
               </div>
@@ -259,7 +257,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
             )}
           </div>
 
-          <Button 
+          <Button
             onClick={handleStartAssessment}
             className={`w-full ${currentConfig.bgColor} text-${currentConfig.color}-700 hover:${currentConfig.bgColor}/80`}
             variant="outline"
@@ -291,8 +289,8 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
                   {questions[currentQuestion]?.question}
                 </h3>
-                
-                <RadioGroup 
+
+                <RadioGroup
                   value={currentResponse?.value?.toString() || ''}
                   onValueChange={handleResponse}
                 >
@@ -341,7 +339,7 @@ export function HealthCalculator({ type, score, onScoreUpdate }: HealthCalculato
                   <p className="text-sm text-gray-600 mb-6">
                     {getScoreInterpretation(calculateScore(responses, questions), type)}
                   </p>
-                  
+
                   <div className="text-left mb-6">
                     <h4 className="font-semibold text-gray-900 mb-3">Personalized Recommendations:</h4>
                     <ul className="space-y-2 text-sm text-gray-600">

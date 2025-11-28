@@ -68,7 +68,7 @@ export function useWellnessData() {
   // Get current user ID for user-specific storage
   const userId = useCurrentUserId();
   const storageKey = userId ? `wellness-data-${userId}` : 'wellness-data-guest';
-  
+
   const [data, setData] = useLocalStorage<WellnessData>(storageKey, {
     userProfile: {
       name: 'Sarah',
@@ -145,7 +145,7 @@ export function useWellnessData() {
     setData(prev => ({
       ...prev,
       moodTracking: [
-        ...prev.moodTracking.filter((entry: any) => entry.date !== today),
+        ...(prev.moodTracking || []).filter((entry: any) => entry.date !== today),
         { date: today, mood, notes, timestamp: new Date().toISOString() }
       ]
     }));
@@ -154,7 +154,7 @@ export function useWellnessData() {
   const updateGoal = (goalId: number, updates: any) => {
     setData(prev => ({
       ...prev,
-      goals: prev.goals.map((goal: any) => 
+      goals: prev.goals.map((goal: any) =>
         goal.id === goalId ? { ...goal, ...updates } : goal
       )
     }));
@@ -170,7 +170,7 @@ export function useWellnessData() {
   const updateHabit = (habitId: number, updates: any) => {
     setData(prev => ({
       ...prev,
-      habits: prev.habits.map((habit: any) => 
+      habits: prev.habits.map((habit: any) =>
         habit.id === habitId ? { ...habit, ...updates } : habit
       )
     }));

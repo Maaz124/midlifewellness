@@ -15,7 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function Dashboard() {
   // SEO optimization for dashboard page
   useSEO('dashboard');
-  
+
   // Fetch coaching prices from database
   const { data: priceData } = useQuery({
     queryKey: ['/api/coaching-price'],
@@ -26,7 +26,7 @@ export default function Dashboard() {
   });
   const currentPrice = priceData?.currentPrice ?? 150;
   const regularPrice = priceData?.regularPrice ?? 297;
-  
+
   const { data, updateHealthScores } = useWellnessData();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const hasAccess = !!(user as any)?.hasCoachingAccess;
@@ -35,7 +35,7 @@ export default function Dashboard() {
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
   const journalEntries = data?.journalEntries || [];
-  
+
   // Fetch journal entries from API (one per day) when authenticated
   const { data: apiJournalEntries = [], isLoading: isLoadingApiEntries } = useQuery({
     queryKey: ['/api/journal-entries'],
@@ -77,7 +77,10 @@ export default function Dashboard() {
       const mentalScore = mental?.score || 0;
       const physicalScore = physical?.score || 0;
       const cognitiveScore = cognitive?.score || 0;
-      const overall = Math.round((mentalScore + physicalScore + cognitiveScore) / 3);
+
+      // Only calculate average from assessments that have been taken
+      const scores = [mentalScore, physicalScore, cognitiveScore].filter(s => s > 0);
+      const overall = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
 
       return { mental: mentalScore, physical: physicalScore, cognitive: cognitiveScore, overall };
     }
@@ -96,7 +99,7 @@ export default function Dashboard() {
     const scores = { ...healthScores, ...newScores };
     const overall = Math.round((scores.mental + scores.physical + scores.cognitive) / 3);
     updateHealthScores({ ...newScores, overall });
-    
+
     // Note: Backend save is handled in HealthCalculator component
   };
 
@@ -136,11 +139,11 @@ export default function Dashboard() {
             Welcome to Your Wellness Journey
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
-            Navigate midlife with confidence through personalized health insights, 
+            Navigate midlife with confidence through personalized health insights,
             evidence-based coaching, and supportive tools designed specifically for women.
           </p>
           <p className="text-sm text-gray-500 max-w-xl mx-auto">
-            <strong>Please note:</strong> This is a self-help coaching program, not medical advice. 
+            <strong>Please note:</strong> This is a self-help coaching program, not medical advice.
             Consult your healthcare provider for serious mental health concerns.
           </p>
         </div>
@@ -150,42 +153,40 @@ export default function Dashboard() {
           <Card className="wellness-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  healthScores.overall >= 80 ? 'bg-emerald-100' :
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${healthScores.overall >= 80 ? 'bg-emerald-100' :
                   healthScores.overall >= 70 ? 'bg-blue-100' :
-                  healthScores.overall >= 60 ? 'bg-amber-100' :
-                  healthScores.overall >= 40 ? 'bg-orange-100' : 'bg-rose-100'
-                }`}>
-                  <TrendingUp className={`w-6 h-6 ${
-                    healthScores.overall >= 80 ? 'text-emerald-600' :
+                    healthScores.overall >= 60 ? 'bg-amber-100' :
+                      healthScores.overall >= 40 ? 'bg-orange-100' : 'bg-rose-100'
+                  }`}>
+                  <TrendingUp className={`w-6 h-6 ${healthScores.overall >= 80 ? 'text-emerald-600' :
                     healthScores.overall >= 70 ? 'text-blue-600' :
-                    healthScores.overall >= 60 ? 'text-amber-600' :
-                    healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
-                  }`} />
+                      healthScores.overall >= 60 ? 'text-amber-600' :
+                        healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
+                    }`} />
                 </div>
                 <div className="text-right">
-                  <span className={`text-2xl font-bold ${
-                    healthScores.overall >= 80 ? 'text-emerald-600' :
+                  <span className={`text-2xl font-bold ${healthScores.overall >= 80 ? 'text-emerald-600' :
                     healthScores.overall >= 70 ? 'text-blue-600' :
-                    healthScores.overall >= 60 ? 'text-amber-600' :
-                    healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
-                  }`}>{healthScores.overall}</span>
-                  <div className={`text-xs font-medium px-2 py-1 rounded-full inline-block ml-2 ${
-                    healthScores.overall >= 80 ? 'bg-emerald-100 text-emerald-800' :
+                      healthScores.overall >= 60 ? 'text-amber-600' :
+                        healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
+                    }`}>{healthScores.overall}</span>
+                  <div className={`text-xs font-medium px-2 py-1 rounded-full inline-block ml-2 ${healthScores.overall >= 80 ? 'bg-emerald-100 text-emerald-800' :
                     healthScores.overall >= 70 ? 'bg-blue-100 text-blue-800' :
-                    healthScores.overall >= 60 ? 'bg-amber-100 text-amber-800' :
-                    healthScores.overall >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                  }`}>
+                      healthScores.overall >= 60 ? 'bg-amber-100 text-amber-800' :
+                        healthScores.overall >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
+                    }`}>
                     {healthScores.overall >= 80 ? 'Excellent' :
-                     healthScores.overall >= 70 ? 'Very Good' :
-                     healthScores.overall >= 60 ? 'Good' :
-                     healthScores.overall >= 40 ? 'Fair' : 'Needs Focus'}
+                      healthScores.overall >= 70 ? 'Very Good' :
+                        healthScores.overall >= 60 ? 'Good' :
+                          healthScores.overall >= 40 ? 'Fair' : 'Needs Focus'}
                   </div>
                 </div>
               </div>
               <h3 className="font-semibold text-gray-800 mb-1">Overall Wellness</h3>
               <p className="text-sm text-gray-500">
-                {healthScores.overall > 0 ? '+12 points this month' : 'Take assessments to get started'}
+                {healthScores.overall > 0
+                  ? `Based on ${[healthScores.mental, healthScores.physical, healthScores.cognitive].filter(s => s > 0).length} assessment${[healthScores.mental, healthScores.physical, healthScores.cognitive].filter(s => s > 0).length !== 1 ? 's' : ''}`
+                  : 'Take assessments to get started'}
               </p>
             </CardContent>
           </Card>
@@ -237,33 +238,19 @@ export default function Dashboard() {
 
       {/* Health Assessment Dashboard */}
       <section>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Health Assessment Dashboard</h2>
-            <p className="text-gray-600">Complete your health calculators to get personalized insights and recommendations.</p>
-            <p className="text-xs text-gray-500 mt-1">
-              <em>Note: These assessments are for wellness coaching purposes and do not replace professional medical evaluation.</em>
-            </p>
-          </div>
-          <Button variant="outline" className="hidden md:flex">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh All
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <HealthCalculator 
-            type="mental" 
+          <HealthCalculator
+            type="mental"
             score={healthScores.mental}
             onScoreUpdate={(score) => handleScoreUpdate('mental', score)}
           />
-          <HealthCalculator 
-            type="physical" 
+          <HealthCalculator
+            type="physical"
             score={healthScores.physical}
             onScoreUpdate={(score) => handleScoreUpdate('physical', score)}
           />
-          <HealthCalculator 
-            type="cognitive" 
+          <HealthCalculator
+            type="cognitive"
             score={healthScores.cognitive}
             onScoreUpdate={(score) => handleScoreUpdate('cognitive', score)}
           />
@@ -316,7 +303,7 @@ export default function Dashboard() {
                     </div>
                     <Badge variant="secondary">Complete</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
@@ -447,7 +434,7 @@ export default function Dashboard() {
         <AboutDoctor />
       </section>
 
-      
+
     </div>
   );
 }

@@ -16,26 +16,27 @@ import { useSEO } from '@/hooks/use-seo';
 import { structuredDataTemplates } from '@/lib/seo';
 import { useAuth } from '@/hooks/use-auth';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Clock, 
-  CheckCircle, 
-  BookOpen, 
-  FileText, 
-  Brain, 
-  ChevronDown, 
-  ChevronUp, 
+import {
+  Clock,
+  CheckCircle,
+  BookOpen,
+  FileText,
+  Brain,
+  ChevronDown,
+  ChevronUp,
   RotateCcw,
   Play,
   Eye,
   Lock,
   CreditCard,
-  Sparkles
+  Sparkles,
+  Download
 } from 'lucide-react';
 
 export default function Coaching() {
   // SEO optimization with structured data for course
   useSEO('coaching');
-  
+
   const { data: wellnessData } = useWellnessData(); // Keep for other wellness data
   const { data: coachingData, updateCoachingProgress: updateCoachingProgressDB, resetCoachingProgress: resetCoachingProgressDB } = useCoachingProgress();
   const [activeComponent, setActiveComponent] = useState<any>(null);
@@ -59,7 +60,7 @@ export default function Coaching() {
   const needsLogin = !isAuthenticated;
   const needsPayment = isAuthenticated && !user?.hasCoachingAccess;
   const hasAccess = isAuthenticated && user?.hasCoachingAccess;
-  
+
   // Use coaching progress from new hook (database-backed) or fallback to wellness data
   const data = {
     ...wellnessData,
@@ -77,12 +78,12 @@ export default function Coaching() {
 
   const handleComponentComplete = (componentId: string, responseData?: any) => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
-    
+
     // Find the module for this component to get weekNumber
-    const module = coachingModules.find(m => 
+    const module = coachingModules.find(m =>
       m.components.some(c => c.id === componentId)
     );
-    
+
     if (module) {
       // Always save/update - overwrite existing data if component was already completed
       updateCoachingProgress({
@@ -91,7 +92,7 @@ export default function Coaching() {
         weekNumber: module.weekNumber,
         responseData: responseData || {}
       });
-      
+
       // Add to completed components if not already there
       if (!completedComponents.includes(componentId)) {
         updateCoachingProgress({
@@ -100,10 +101,10 @@ export default function Coaching() {
       }
     } else {
       // Fallback if module not found - always update responseData
-      const updatedCompleted = completedComponents.includes(componentId) 
-        ? completedComponents 
+      const updatedCompleted = completedComponents.includes(componentId)
+        ? completedComponents
         : [...completedComponents, componentId];
-      
+
       updateCoachingProgress({
         completedComponents: updatedCompleted,
         currentWeek: data.userProfile?.currentWeek || 1,
@@ -113,7 +114,7 @@ export default function Coaching() {
         }
       });
     }
-    
+
     setActiveComponent(null);
     setActiveModuleId(null);
     // Scroll to top when closing component to return to module list
@@ -140,14 +141,14 @@ export default function Coaching() {
   const moduleProgressMap = useMemo(() => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
     const progressMap: Record<string, number> = {};
-    
+
     coachingModules.forEach(module => {
-      const completedCount = module.components.filter(c => 
+      const completedCount = module.components.filter(c =>
         completedComponents.includes(c.id)
       ).length;
       progressMap[module.id] = Math.round((completedCount / module.components.length) * 100);
     });
-    
+
     return progressMap;
   }, [data.coachingProgress?.completedComponents]);
 
@@ -156,11 +157,166 @@ export default function Coaching() {
   };
 
   const toggleWeek = (weekId: string) => {
-    setOpenWeeks(prev => 
-      prev.includes(weekId) 
+    setOpenWeeks(prev =>
+      prev.includes(weekId)
         ? prev.filter(id => id !== weekId)
         : [...prev, weekId]
     );
+  };
+
+  const downloadWeekReport = (module: any) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
+    const responseData = data.coachingProgress?.responseData || {};
+
+    // Filter components for this week that have been completed
+    const weekComponents = module.components.filter((c: any) =>
+      completedComponents.includes(c.id)
+    );
+
+    if (weekComponents.length === 0) {
+      alert('No completed components in this week yet.');
+      printWindow.close();
+      return;
+    }
+
+    // Helper function to format response values
+    const formatValue = (value: any, key: string): string => {
+      if (value === null || value === undefined) return 'Not answered';
+      if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+      if (Array.isArray(value)) {
+        return value.length > 0 ? value.join(', ') : 'None selected';
+      }
+      if (typeof value === 'object') {
+        // Handle nested objects (like slider values, etc.)
+        return Object.entries(value)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', ');
+      }
+      return String(value);
+    };
+
+    // Generate HTML content
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Week ${module.weekNumber} Report - ${module.title}</title>
+          <style>
+            body { 
+              font-family: system-ui, -apple-system, sans-serif; 
+              padding: 40px; 
+              max-width: 900px; 
+              margin: 0 auto;
+              color: #333;
+            }
+            h1 { 
+              text-align: center; 
+              color: #2d3748; 
+              margin-bottom: 10px;
+              font-size: 28px;
+            }
+            .subtitle {
+              text-align: center;
+              color: #718096;
+              margin-bottom: 40px;
+              font-size: 16px;
+            }
+            .component {
+              margin-bottom: 40px;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 20px;
+              background: #f7fafc;
+            }
+            .component-header {
+              background: #4a5568;
+              color: white;
+              padding: 12px 16px;
+              border-radius: 6px;
+              margin: -20px -20px 20px -20px;
+            }
+            .component-title {
+              font-size: 18px;
+              font-weight: bold;
+              margin: 0;
+            }
+            .component-description {
+              font-size: 14px;
+              color: #e2e8f0;
+              margin: 5px 0 0 0;
+            }
+            .response-section {
+              margin-top: 15px;
+            }
+            .question {
+              font-weight: 600;
+              color: #2d3748;
+              margin-bottom: 8px;
+              font-size: 15px;
+            }
+            .answer {
+              background: white;
+              padding: 12px;
+              border-radius: 4px;
+              margin-bottom: 15px;
+              border-left: 3px solid #4299e1;
+              color: #4a5568;
+              line-height: 1.6;
+            }
+            .no-data {
+              color: #a0aec0;
+              font-style: italic;
+              padding: 20px;
+              text-align: center;
+            }
+            @media print {
+              body { padding: 20px; }
+              .component { page-break-inside: avoid; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Week ${module.weekNumber}: ${module.title}</h1>
+          <div class="subtitle">${module.description}</div>
+          
+          ${weekComponents.map((component: any) => {
+      const componentData = responseData[component.id] || {};
+      const hasData = Object.keys(componentData).length > 0;
+
+      return `
+              <div class="component">
+                <div class="component-header">
+                  <div class="component-title">${component.title}</div>
+                  <div class="component-description">${component.description}</div>
+                </div>
+                
+                ${hasData ? `
+                  <div class="response-section">
+                    ${Object.entries(componentData)
+            .filter(([key]) => !['completedAt', 'progress', 'moduleId', 'weekNumber'].includes(key))
+            .map(([key, value]) => `
+                        <div class="question">${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
+                        <div class="answer">${formatValue(value, key)}</div>
+                      `).join('')}
+                  </div>
+                ` : `
+                  <div class="no-data">No detailed responses recorded for this component</div>
+                `}
+              </div>
+            `;
+    }).join('')}
+          
+          <script>
+            window.onload = () => { window.print(); }
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   const getTotalCompletedComponents = () => {
@@ -169,18 +325,18 @@ export default function Coaching() {
 
   const getCurrentWeek = () => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
-    
+
     for (let i = 0; i < coachingModules.length; i++) {
       const module = coachingModules[i];
-      const moduleCompleted = module.components.every(c => 
+      const moduleCompleted = module.components.every(c =>
         completedComponents.includes(c.id)
       );
-      
+
       if (!moduleCompleted) {
         return i + 1;
       }
     }
-    
+
     return 6; // All weeks completed
   };
 
@@ -235,7 +391,7 @@ export default function Coaching() {
                   <>
                     <div className="text-2xl font-bold">Start Your Journey</div>
                     <p className="text-sm text-purple-200">Free to browse • ${price.toFixed(2)} to unlock</p>
-                    <Button 
+                    <Button
                       onClick={() => setLocation('/login')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
                       data-testid="button-login-to-browse"
@@ -248,7 +404,7 @@ export default function Coaching() {
                     <div className="text-3xl font-bold">${price.toFixed(2)}</div>
                     <div className="text-sm text-purple-200 line-through">Regular: ${regularPrice.toFixed(2)}</div>
                     <div className="text-green-200 font-semibold mb-2">Save {Math.round((1 - price / regularPrice) * 100)}% Today</div>
-                    <Button 
+                    <Button
                       onClick={() => setLocation('/checkout')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
                       data-testid="button-checkout"
@@ -274,10 +430,10 @@ export default function Coaching() {
             <div className="space-y-2">
               <h3 className="font-semibold text-amber-800">Important Medical Disclaimer</h3>
               <p className="text-sm text-amber-700 leading-relaxed">
-                This program provides self-help coaching and educational content for personal development. 
-                It is <strong>not intended as medical advice</strong> or as a substitute for professional healthcare. 
-                If you are experiencing severe mental health symptoms, depression, anxiety, or any serious medical condition, 
-                please consult with your doctor or a qualified healthcare professional before participating. 
+                This program provides self-help coaching and educational content for personal development.
+                It is <strong>not intended as medical advice</strong> or as a substitute for professional healthcare.
+                If you are experiencing severe mental health symptoms, depression, anxiety, or any serious medical condition,
+                please consult with your doctor or a qualified healthcare professional before participating.
                 Your health and wellbeing are our priority.
               </p>
             </div>
@@ -299,18 +455,10 @@ export default function Coaching() {
                 Week {getCurrentWeek()} of 6
               </Badge>
               <span>{getTotalCompletedComponents()} components completed</span>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => resetCoachingProgress()}
-                className="flex items-center gap-1"
-              >
-                <RotateCcw className="w-3 h-3" />
-                Reset Progress
-              </Button>
+
             </div>
           )}
-          
+
           {showPreview && (
             <div className="space-y-4">
               <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
@@ -433,6 +581,20 @@ export default function Coaching() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
+                          {!showPreview && moduleProgress > 0 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                downloadWeekReport(module);
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <Download className="w-4 h-4" />
+                              Download Report
+                            </Button>
+                          )}
                           <Progress value={moduleProgress} className="w-20" />
                           {isOpen ? (
                             <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -449,15 +611,14 @@ export default function Coaching() {
                       <div className="space-y-3">
                         {module.components.map((component) => {
                           const isCompleted = completedComponents.includes(component.id);
-                          
+
                           return (
-                            <div 
+                            <div
                               key={component.id}
-                              className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                                showPreview 
-                                  ? 'border-purple-200 bg-gradient-to-r from-purple-50/50 to-pink-50/50 hover:border-purple-300' 
-                                  : 'hover:border-gray-300'
-                              }`}
+                              className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${showPreview
+                                ? 'border-purple-200 bg-gradient-to-r from-purple-50/50 to-pink-50/50 hover:border-purple-300'
+                                : 'hover:border-gray-300'
+                                }`}
                             >
                               <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
@@ -609,7 +770,7 @@ export default function Coaching() {
                   <div className="text-center">
                     <div className="space-y-3">
                       {needsLogin ? (
-                        <Button 
+                        <Button
                           onClick={() => setLocation('/login')}
                           size="lg"
                           className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
@@ -618,7 +779,7 @@ export default function Coaching() {
                           Sign In to Continue
                         </Button>
                       ) : needsPayment ? (
-                        <Button 
+                        <Button
                           onClick={() => setLocation('/checkout')}
                           size="lg"
                           className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"

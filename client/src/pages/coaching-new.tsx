@@ -7,19 +7,19 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-working';
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { coachingModules } from '@/lib/coaching-data';
-import { 
-  Clock, 
-  CheckCircle, 
-  Lock, 
-  BookOpen, 
-  FileText, 
-  Headphones, 
-  Brain, 
-  Video, 
-  Target, 
-  Heart, 
-  ChevronDown, 
-  ChevronUp, 
+import {
+  Clock,
+  CheckCircle,
+  Lock,
+  BookOpen,
+  FileText,
+  Headphones,
+  Brain,
+  Video,
+  Target,
+  Heart,
+  ChevronDown,
+  ChevronUp,
   RotateCcw,
   Play,
   Eye
@@ -64,17 +64,17 @@ export default function Coaching() {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
     const module = coachingModules.find(m => m.id === moduleId);
     if (!module) return 0;
-    
-    const completedCount = module.components.filter(c => 
+
+    const completedCount = module.components.filter(c =>
       completedComponents.includes(c.id)
     ).length;
-    
+
     return Math.round((completedCount / module.components.length) * 100);
   };
 
   const toggleWeek = (weekId: string) => {
-    setOpenWeeks(prev => 
-      prev.includes(weekId) 
+    setOpenWeeks(prev =>
+      prev.includes(weekId)
         ? prev.filter(id => id !== weekId)
         : [...prev, weekId]
     );
@@ -86,18 +86,18 @@ export default function Coaching() {
 
   const getCurrentWeek = () => {
     const completedComponents = (data.coachingProgress?.completedComponents as string[]) || [];
-    
+
     for (let i = 0; i < coachingModules.length; i++) {
       const module = coachingModules[i];
-      const moduleCompleted = module.components.every(c => 
+      const moduleCompleted = module.components.every(c =>
         completedComponents.includes(c.id)
       );
-      
+
       if (!moduleCompleted) {
         return i + 1;
       }
     }
-    
+
     return 6; // All weeks completed
   };
 
@@ -136,8 +136,8 @@ export default function Coaching() {
               Week {getCurrentWeek()} of 6
             </Badge>
             <span>{getTotalCompletedComponents()} components completed</span>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => resetCoachingProgress()}
               className="flex items-center gap-1"
@@ -265,9 +265,9 @@ export default function Coaching() {
                       <div className="space-y-3">
                         {module.components.map((component) => {
                           const isCompleted = completedComponents.includes(component.id);
-                          
+
                           return (
-                            <div 
+                            <div
                               key={component.id}
                               className="flex items-center justify-between p-4 rounded-lg border hover:border-gray-300 transition-colors"
                             >

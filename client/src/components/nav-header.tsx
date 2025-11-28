@@ -17,6 +17,7 @@ import { coachingModules } from '@/lib/coaching-data';
 import { Logo } from '@/components/logo';
 import { useAuth } from '@/hooks/useAuth';
 import { UserMenu } from '@/components/user-menu';
+import { LanguageSelector } from '@/components/language-selector';
 
 export function NavHeader() {
   const [location] = useLocation();
@@ -31,14 +32,14 @@ export function NavHeader() {
   const weekProgress = useMemo(() => {
     const completedComponents = completedComponentsList;
     const progressMap: Record<number, number> = {};
-    
+
     coachingModules.forEach(module => {
-      const completedCount = module.components.filter(c => 
+      const completedCount = module.components.filter(c =>
         completedComponents.includes(c.id)
       ).length;
       progressMap[module.weekNumber] = Math.round((completedCount / module.components.length) * 100);
     });
-    
+
     return progressMap;
   }, [completedComponentsList]);
 
@@ -61,23 +62,22 @@ export function NavHeader() {
   return (
     <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto pl-2 pr-4 sm:pl-4 sm:pr-6 lg:pl-6 lg:pr-8">
-        <div className="flex items-center h-16">
+        <div className="flex items-center h-24">
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0 mr-16 sm:mr-20 lg:mr-24">
+          <Link href="/" className="flex items-center flex-shrink-0 mr-16">
             <Logo size="md" className="hover:opacity-80 transition-opacity" />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-6 flex-1">
+          <nav className="hidden md:flex space-x-4 flex-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 href={item.path}
-                className={`pb-4 transition-colors whitespace-nowrap ${
-                  isActive(item.path)
-                    ? 'text-primary font-medium border-b-2 border-primary'
-                    : 'text-gray-600 hover:text-primary'
-                }`}
+                className={`pb-4 transition-colors whitespace-nowrap ${isActive(item.path)
+                  ? 'text-primary font-medium border-b-2 border-primary'
+                  : 'text-gray-600 hover:text-primary'
+                  }`}
               >
                 {item.label}
               </Link>
@@ -85,10 +85,11 @@ export function NavHeader() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4 flex-shrink-0">
+          <div className="hidden md:flex items-center space-x-2 flex-shrink-0">
+            <LanguageSelector />
             <Link href="/contact-coaching">
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium"
                 data-testid="button-personal-coaching"
               >
@@ -96,50 +97,50 @@ export function NavHeader() {
               </Button>
             </Link>
             {isAuthenticated && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2" data-testid="button-notifications">
-                  <Bell className="h-5 w-5 text-gray-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 p-0">
-                <div className="p-4 border-b">
-                  <div className="flex items-center space-x-2">
-                    <Award className="w-5 h-5 text-coral-500" />
-                    <span className="font-semibold">Achievements</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="p-2" data-testid="button-notifications">
+                    <Bell className="h-5 w-5 text-gray-400" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80 p-0">
+                  <div className="p-4 border-b">
+                    <div className="flex items-center space-x-2">
+                      <Award className="w-5 h-5 text-coral-500" />
+                      <span className="font-semibold">Achievements</span>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 max-h-[500px] overflow-y-auto">
-                  <div className="space-y-4">
-                    {/* Week Progress Bars */}
-                    <div>
-                      <div className="text-sm font-semibold text-gray-700 mb-3">Module Progress</div>
-                      <div className="space-y-4">
-                        {coachingModules.map((module) => {
-                          const progress = weekProgress[module.weekNumber] || 0;
-                          return (
-                            <div key={module.id} className="space-y-2">
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-3 flex-1">
-                                  <Badge variant="outline" className="text-xs">
-                                    Week {module.weekNumber} • {module.components.length} components
-                                  </Badge>
-                                  <span className="text-sm font-medium text-green-600">
-                                    {progress}%
-                                  </span>
+                  <div className="p-4 max-h-[500px] overflow-y-auto">
+                    <div className="space-y-4">
+                      {/* Week Progress Bars */}
+                      <div>
+                        <div className="text-sm font-semibold text-gray-700 mb-3">Module Progress</div>
+                        <div className="space-y-4">
+                          {coachingModules.map((module) => {
+                            const progress = weekProgress[module.weekNumber] || 0;
+                            return (
+                              <div key={module.id} className="space-y-2">
+                                <div className="flex items-center justify-between gap-4">
+                                  <div className="flex items-center gap-3 flex-1">
+                                    <Badge variant="outline" className="text-xs">
+                                      Week {module.weekNumber} • {module.components.length} components
+                                    </Badge>
+                                    <span className="text-sm font-medium text-green-600">
+                                      {progress}%
+                                    </span>
+                                  </div>
+                                  <Progress value={progress} className="w-20 h-2" />
                                 </div>
-                                <Progress value={progress} className="w-20 h-2" />
+                                <p className="text-xs text-gray-500 ml-0">{module.description}</p>
                               </div>
-                              <p className="text-xs text-gray-500 ml-0">{module.description}</p>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
             <UserMenu />
           </div>
@@ -170,11 +171,10 @@ export function NavHeader() {
                   key={item.path}
                   href={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2 rounded-lg transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-2 rounded-lg transition-colors ${isActive(item.path)
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <i className={`${item.icon} mr-2`}></i>
                   {item.label}
@@ -187,6 +187,9 @@ export function NavHeader() {
               >
                 Personal Coaching
               </Link>
+              <div className="px-3">
+                <LanguageSelector />
+              </div>
             </nav>
           </div>
         )}

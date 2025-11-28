@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,7 +15,7 @@ import { Progress } from '@/components/ui/progress';
 import { useCoachingProgress } from '@/hooks/use-coaching-progress';
 
 export default function Journal() {
-  const { data, addJournalEntry, addMoodEntry } = useWellnessData();
+  const { data, addJournalEntry, upsertTodayJournalEntry, addMoodEntry } = useWellnessData();
   const { data: coachingData } = useCoachingProgress();
   const [journalContent, setJournalContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
@@ -32,21 +32,21 @@ export default function Journal() {
   // Filter resources based on selected filters
   const filteredResources = (allResources as any[]).filter((resource) => {
     const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
-    const priceMatch = priceFilter === 'all' || 
-                      (priceFilter === 'free' && resource.price === 0) ||
-                      (priceFilter === 'paid' && resource.price > 0);
+    const priceMatch = priceFilter === 'all' ||
+      (priceFilter === 'free' && resource.price === 0) ||
+      (priceFilter === 'paid' && resource.price > 0);
     return categoryMatch && priceMatch;
   });
 
   // Get unique categories
-  const categories = ['all', ...new Set((allResources as any[]).map(r => r.category).filter(Boolean))];
+  const categories = ['all', ...Array.from(new Set((allResources as any[]).map(r => r.category).filter(Boolean)))];
 
   const todaysPrompt = getTodaysPrompt(data.userProfile.currentWeek);
-  const currentDate = new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 
   const moodOptions = [
@@ -75,22 +75,42 @@ export default function Journal() {
     setWordCount(words);
   }, [journalContent]);
 
-  // Load draft on mount
+  const hasLoaded = useRef(false);
+
+  // Load draft or existing entry on mount
   useEffect(() => {
+    if (hasLoaded.current) return;
+    hasLoaded.current = true;
+
     const today = new Date().toISOString().split('T')[0];
+
+    // Check for existing entry for today first
+    const todaysEntry = data.journalEntries.find((entry: any) => {
+      const entryDate = new Date(entry.createdAt).toISOString().split('T')[0];
+      return entryDate === today;
+    });
+
     const draft = localStorage.getItem(`journal_draft_${today}`);
+
+    // Prioritize draft if it exists (unsaved changes), otherwise load existing entry
     if (draft) {
       setJournalContent(draft);
+    } else if (todaysEntry) {
+      setJournalContent(todaysEntry.content);
     }
 
     // Load today's mood
     const todaysMood = data.moodTracking.find(
       entry => entry.date === today
     );
-    if (todaysMood) {
+
+    // Prioritize mood from the journal entry itself if editing, otherwise from mood tracking
+    if (todaysEntry?.mood) {
+      setSelectedMood(todaysEntry.mood);
+    } else if (todaysMood) {
       setSelectedMood(todaysMood.mood);
     }
-  }, [data.moodTracking]);
+  }, [data.journalEntries, data.moodTracking]);
 
   const handleMoodSelect = (mood: string) => {
     setSelectedMood(mood);
@@ -98,7 +118,8 @@ export default function Journal() {
   };
 
   const handleCompleteEntry = () => {
-    if (journalContent.trim()) {
+    console.log('Saving entry:', { content: journalContent, mood: selectedMood });
+    if (journalContent.trim() && selectedMood) {
       const entry: Omit<JournalEntry, 'id'> = {
         title: `${currentDate} Reflection`,
         content: journalContent,
@@ -106,15 +127,17 @@ export default function Journal() {
         prompt: todaysPrompt,
         createdAt: new Date().toISOString()
       };
-      
-      addJournalEntry(entry);
-      
+
+      upsertTodayJournalEntry(entry);
+
       // Clear draft
       const today = new Date().toISOString().split('T')[0];
       localStorage.removeItem(`journal_draft_${today}`);
-      
-      setJournalContent('');
-      setSelectedMood('');
+
+      // Don't clear content so user sees what they just saved (since it's editable)
+      // setJournalContent(''); 
+      // setSelectedMood('');
+      setLastSaved('Saved');
     }
   };
 
@@ -134,14 +157,14 @@ export default function Journal() {
   const weekProgress = useMemo(() => {
     const completedComponents = (coachingData?.coachingProgress?.completedComponents as string[]) || [];
     const progressMap: Record<number, number> = {};
-    
+
     coachingModules.forEach(module => {
-      const completedCount = module.components.filter(c => 
+      const completedCount = module.components.filter(c =>
         completedComponents.includes(c.id)
       ).length;
       progressMap[module.weekNumber] = Math.round((completedCount / module.components.length) * 100);
     });
-    
+
     return progressMap;
   }, [coachingData?.coachingProgress?.completedComponents]);
 
@@ -153,13 +176,13 @@ export default function Journal() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Daily Journal & Wellness Library</h1>
           <p className="text-gray-600">Your personal space for reflection, growth, and accessing curated wellness resources.</p>
         </div>
-        <Button 
+        <Button
           onClick={handleCompleteEntry}
-          disabled={!journalContent.trim()}
+          disabled={!journalContent.trim() || !selectedMood}
           className="btn-primary"
         >
           <Feather className="w-4 h-4 mr-2" />
-          New Entry
+          Save Entry
         </Button>
       </div>
 
@@ -178,7 +201,7 @@ export default function Journal() {
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent className="p-8">
               <div className="bg-primary/5 rounded-xl p-6 mb-6">
                 <h4 className="font-semibold text-primary-800 mb-3">Guided Prompt:</h4>
@@ -203,16 +226,16 @@ export default function Journal() {
                   <span>Auto-saved {lastSaved || 'never'}</span>
                 </div>
                 <div className="flex space-x-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={handleSaveDraft}
                     disabled={!journalContent.trim()}
                   >
                     Save Draft
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleCompleteEntry}
-                    disabled={!journalContent.trim()}
+                    disabled={!journalContent.trim() || !selectedMood}
                     className="btn-primary"
                   >
                     Complete Entry
@@ -239,11 +262,10 @@ export default function Journal() {
                   <button
                     key={mood.value}
                     onClick={() => handleMoodSelect(mood.value)}
-                    className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${
-                      selectedMood === mood.value
-                        ? `${mood.color} border-opacity-100`
-                        : 'hover:bg-gray-50 border-gray-200'
-                    }`}
+                    className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${selectedMood === mood.value
+                      ? `${mood.color} border-opacity-100`
+                      : 'hover:bg-gray-50 border-gray-200'
+                      }`}
                   >
                     <div className="text-2xl mb-1">{mood.emoji}</div>
                     <span className="text-xs text-gray-600">{mood.label}</span>
@@ -289,9 +311,12 @@ export default function Journal() {
                           {new Date(entry.createdAt).toLocaleDateString()} • {entry.content.split(' ').length} words
                         </div>
                         {entry.mood && (
-                          <div className="mt-1">
+                          <div className="mt-1 flex items-center gap-2">
                             <span className="text-lg">
                               {moodOptions.find(m => m.value === entry.mood)?.emoji}
+                            </span>
+                            <span className="text-xs text-gray-600 font-medium">
+                              {moodOptions.find(m => m.value === entry.mood)?.label}
                             </span>
                           </div>
                         )}
@@ -392,7 +417,7 @@ export default function Journal() {
                     </div>
                   </DialogContent>
                 </Dialog>
-                
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button className="w-full flex items-center space-x-3 p-3 bg-sage/5 rounded-lg hover:bg-sage/10 transition-colors text-left" variant="ghost">
