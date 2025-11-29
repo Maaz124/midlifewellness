@@ -1,19 +1,20 @@
 # Dockerfile for MidlifeWellness PostgreSQL Database
+# Security: No secrets hardcoded - all credentials via environment variables
 FROM postgres:16-alpine
 
-# Set environment variables for database
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=postgres
-ENV POSTGRES_DB=midlife
+# Set only non-sensitive configuration
 ENV PGDATA=/var/lib/postgresql/data/pgdata
 
-# Expose port 5432 (internal container port)
+# Expose port 5432 (internal container port only - no external access)
 EXPOSE 5432
 
-# Health check
-HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
-  CMD pg_isready -U postgres
+# Create a non-root user for PostgreSQL (postgres user already exists in base image)
+# The postgres user runs with minimal privileges
 
-# The postgres image automatically runs initdb and starts postgres
-# No additional commands needed
+# Health check - uses environment variable for user
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
+  CMD pg_isready -U "${POSTGRES_USER:-postgres}" || exit 1
+
+# Note: POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB must be set via
+# environment variables at runtime - never hardcoded here for security
 
