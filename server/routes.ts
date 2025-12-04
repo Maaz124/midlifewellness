@@ -872,13 +872,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SEO Routes - Sitemap and Robots.txt
-  app.get('/sitemap.xml', (req, res) => {
-    res.set('Content-Type', 'text/xml');
-    res.send(generateSitemap());
-  });
-
-  // robots.txt is now served from static files (dist/public/robots.txt)
-  // Removed custom route to allow static file serving
+  // Both sitemap.xml and robots.txt are now served from static files (dist/public/)
+  // Removed custom routes to allow static file serving
 
   // Video Upload Routes (for future use)
 
@@ -2069,5 +2064,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Import sitemap utilities
-import { generateSitemap, generateRobotsTxt } from "./sitemap";
+// Sitemap and robots.txt are now served as static files from dist/public/
+// Removed dynamic generation - using static files from client/public/ instead
