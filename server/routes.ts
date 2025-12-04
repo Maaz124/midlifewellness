@@ -877,10 +877,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.send(generateSitemap());
   });
 
-  app.get('/robots.txt', (req, res) => {
-    res.set('Content-Type', 'text/plain');
-    res.send(generateRobotsTxt());
-  });
+  // robots.txt is now served from static files (dist/public/robots.txt)
+  // Removed custom route to allow static file serving
 
   // Video Upload Routes (for future use)
 
