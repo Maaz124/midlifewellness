@@ -8,8 +8,7 @@ export function AboutDoctor() {
     { icon: Brain, label: "Psychiatrist", color: "bg-purple-100 text-purple-700" },
     { icon: User, label: "NLP Life Coach", color: "bg-blue-100 text-blue-700" },
     { icon: Heart, label: "Mindfulness Trainer", color: "bg-green-100 text-green-700" },
-    { icon: BookOpen, label: "CBT Informed", color: "bg-amber-100 text-amber-700" },
-    { icon: Award, label: "Gynecologist", color: "bg-rose-100 text-rose-700" }
+    { icon: BookOpen, label: "CBT Informed", color: "bg-amber-100 text-amber-700" }
   ];
 
   const expertise = [
@@ -40,14 +39,14 @@ export function AboutDoctor() {
       {/* Header Section */}
       <div className="text-center space-y-4">
         <div className="w-32 h-32 mx-auto mb-6 relative">
-          <img 
-            src={drSidraPhoto} 
+          <img
+            src={drSidraPhoto}
             alt="Dr. Sidra Bukhari - Psychiatrist and Wellness Expert"
             className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
           />
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-600/20 to-rose-600/20"></div>
         </div>
-        
+
         <div>
           <h2 className="text-3xl font-bold text-gray-800 mb-2">Dr. Sidra Bukhari</h2>
           <p className="text-lg text-gray-600 font-medium">Psychiatrist • NLP Life Coach • Mindfulness Trainer</p>
@@ -68,42 +67,42 @@ export function AboutDoctor() {
       <Card className="bg-gradient-to-br from-purple-50 to-rose-50 border-purple-200">
         <CardContent className="p-8">
           <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">A Journey of Healing & Transformation</h3>
-          
+
           <div className="prose prose-lg text-gray-700 max-w-none space-y-4">
             <p className="text-center italic text-purple-700 font-medium">
               "True healing happens when we address the mind, body, and spirit as one interconnected system."
             </p>
-            
+
             <p>
-              My journey in medicine began with a deep calling to understand the complexities of human health from multiple perspectives. 
-              As a <strong>dual-trained physician</strong> in both Psychiatry and Gynecology, I've had the unique privilege of witnessing 
+              My journey in medicine began with a deep calling to understand the complexities of human health from multiple perspectives.
+              As a <strong>dual-trained physician</strong> in both Psychiatry and Gynecology, I've had the unique privilege of witnessing
               how mental and physical health intertwine, particularly in women's lives.
             </p>
 
             <p>
-              Throughout my career, I've worked with <strong>hundreds of clients</strong> navigating the challenging waters of midlife 
-              transitions, hormonal changes, and mental health struggles. What I discovered was profound: traditional medical approaches, 
-              while essential, often missed the deeper emotional and psychological patterns that kept women stuck in cycles of stress, 
+              Throughout my career, I've worked with <strong>hundreds of clients</strong> navigating the challenging waters of midlife
+              transitions, hormonal changes, and mental health struggles. What I discovered was profound: traditional medical approaches,
+              while essential, often missed the deeper emotional and psychological patterns that kept women stuck in cycles of stress,
               anxiety, and burnout.
             </p>
 
             <p>
-              This realization led me to expand beyond conventional medicine into the transformative worlds of 
-              <strong>Neuro-Linguistic Programming (NLP)</strong> and <strong>mindfulness training</strong>. As a certified NLP life coach 
-              and mindfulness trainer, I learned to help clients rewire limiting thought patterns and develop sustainable practices for 
+              This realization led me to expand beyond conventional medicine into the transformative worlds of
+              <strong>Neuro-Linguistic Programming (NLP)</strong> and <strong>mindfulness training</strong>. As a certified NLP life coach
+              and mindfulness trainer, I learned to help clients rewire limiting thought patterns and develop sustainable practices for
               emotional regulation.
             </p>
 
             <p>
-              My training in <strong>Cognitive Behavioral Therapy (CBT)</strong> bridges the gap between clinical psychology and practical 
-              life coaching, allowing me to offer evidence-based techniques that create lasting change. Having worked in gynecology, 
-              I understand the intimate connection between hormonal health and mental wellbeing—knowledge that proves invaluable when 
+              My training in <strong>Cognitive Behavioral Therapy (CBT)</strong> bridges the gap between clinical psychology and practical
+              life coaching, allowing me to offer evidence-based techniques that create lasting change. Having worked in gynecology,
+              I understand the intimate connection between hormonal health and mental wellbeing—knowledge that proves invaluable when
               supporting women through perimenopause and midlife transitions.
             </p>
 
             <p className="font-medium text-purple-800">
-              MidlifeRebalance represents the culmination of everything I've learned: a comprehensive approach that honors both the 
-              science of medicine and the art of transformation. Every technique, every assessment, and every guided practice in 
+              MidlifeRebalance represents the culmination of everything I've learned: a comprehensive approach that honors both the
+              science of medicine and the art of transformation. Every technique, every assessment, and every guided practice in
               this program comes from real clinical experience and genuine understanding of what women need to thrive.
             </p>
           </div>
@@ -138,7 +137,7 @@ export function AboutDoctor() {
       <Card className="bg-gradient-to-r from-purple-600 to-rose-600 text-white">
         <CardContent className="p-8 text-center">
           <blockquote className="text-xl font-medium mb-4">
-            "Every woman deserves to feel empowered, balanced, and vibrant—regardless of age or life stage. 
+            "Every woman deserves to feel empowered, balanced, and vibrant—regardless of age or life stage.
             My mission is to provide the tools, insights, and support that make this transformation not just possible, but inevitable."
           </blockquote>
           <cite className="text-purple-200">— Dr. Sidra Bukhari</cite>

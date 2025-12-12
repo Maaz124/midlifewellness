@@ -14,7 +14,7 @@ export const emailSignatures = {
               Dr. Sidra Bukhari, MRCPsych (UK)
             </h3>
             <p style="margin: 0 0 3px 0; color: #6B7280; font-size: 14px;">
-              Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
+              Psychiatrist • NLP Life Coach • Mindfulness Trainer
             </p>
             <p style="margin: 0 0 15px 0; color: #8B5CF6; font-size: 14px; font-style: italic;">
               Specialized in Women's Mental Health & Midlife Wellness
@@ -58,7 +58,7 @@ export const emailSignatures = {
           <strong>Dr. Sidra Bukhari, MRCPsych (UK)</strong>
         </p>
         <p style="margin: 0; color: #6B7280; font-size: 12px;">
-          Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
+          Psychiatrist • NLP Life Coach • Mindfulness Trainer
         </p>
       </div>
       

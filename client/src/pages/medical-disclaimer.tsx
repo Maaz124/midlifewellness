@@ -5,7 +5,7 @@ export default function MedicalDisclaimer() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -24,7 +24,7 @@ export default function MedicalDisclaimer() {
                 Medical Emergency Warning
               </h3>
               <p className="text-red-800 dark:text-red-300">
-                If you are experiencing a medical emergency, including thoughts of self-harm or suicide, please call 911 
+                If you are experiencing a medical emergency, including thoughts of self-harm or suicide, please call 911
                 immediately or go to your nearest emergency room. Do not rely on this platform for emergency medical care.
               </p>
               <p className="text-red-800 dark:text-red-300 mt-2">
@@ -36,11 +36,11 @@ export default function MedicalDisclaimer() {
 
         <Card>
           <CardContent className="prose prose-purple max-w-none p-8">
-            
+
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Nature of Services</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                MidlifeRebalance is a wellness and educational platform designed to support women through midlife transitions. 
+                MidlifeRebalance is a wellness and educational platform designed to support women through midlife transitions.
                 Our services include:
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
@@ -59,7 +59,7 @@ export default function MedicalDisclaimer() {
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Not a Substitute for Medical Care</h2>
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg mb-4">
                 <p className="text-gray-700 dark:text-gray-300 font-semibold">
-                  The information and tools provided on this platform are for educational and self-help purposes only. 
+                  The information and tools provided on this platform are for educational and self-help purposes only.
                   They are NOT intended to diagnose, treat, cure, or prevent any disease or medical condition.
                 </p>
               </div>
@@ -78,12 +78,12 @@ export default function MedicalDisclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">No Doctor-Patient Relationship</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Although Dr. Sidra Bukhari is a licensed medical professional (MRCPsych UK), your use of this platform 
-                does NOT create a doctor-patient relationship. The coaching services provided are educational and 
+                Although Dr. Sidra Bukhari is a licensed medical professional (MRCPsych UK), your use of this platform
+                does NOT create a doctor-patient relationship. The coaching services provided are educational and
                 self-help in nature, not medical treatment.
               </p>
               <p className="text-gray-700 dark:text-gray-300">
-                Dr. Sidra Bukhari is not acting in her capacity as a physician when providing coaching services through 
+                Dr. Sidra Bukhari is not acting in her capacity as a physician when providing coaching services through
                 this platform. She is serving as a life coach and wellness educator.
               </p>
             </section>
@@ -91,7 +91,7 @@ export default function MedicalDisclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Health Assessment Tools</h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Our mental, physical, and cognitive health assessment tools are designed for personal awareness and 
+                Our mental, physical, and cognitive health assessment tools are designed for personal awareness and
                 educational purposes only. They are NOT clinical diagnostic instruments.
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
@@ -106,7 +106,7 @@ export default function MedicalDisclaimer() {
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Mental Health Considerations</h2>
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-4">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Important:</strong> This platform is not appropriate for individuals experiencing severe mental 
+                  <strong>Important:</strong> This platform is not appropriate for individuals experiencing severe mental
                   health crises, including severe depression, anxiety disorders, psychosis, or suicidal ideation.
                 </p>
               </div>
@@ -148,7 +148,6 @@ export default function MedicalDisclaimer() {
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
                 <li>Every woman's experience is unique and requires personalized medical evaluation</li>
                 <li>Hormone replacement therapy and other treatments require physician oversight</li>
-                <li>Severe or concerning symptoms should be evaluated by a gynecologist or endocrinologist</li>
                 <li>Do not start, stop, or modify hormone treatments without medical supervision</li>
                 <li>Some symptoms may indicate serious health conditions requiring immediate attention</li>
               </ul>
@@ -173,8 +172,8 @@ export default function MedicalDisclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Information Accuracy</h2>
               <p className="text-gray-700 dark:text-gray-300">
-                While we strive to provide accurate and up-to-date information, medical knowledge and best practices evolve 
-                constantly. We make no warranties about the completeness, reliability, or accuracy of the information provided. 
+                While we strive to provide accurate and up-to-date information, medical knowledge and best practices evolve
+                constantly. We make no warranties about the completeness, reliability, or accuracy of the information provided.
                 Always verify health information with qualified healthcare professionals and current medical literature.
               </p>
             </section>

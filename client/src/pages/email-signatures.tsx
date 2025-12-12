@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Copy, 
-  Download, 
-  Mail, 
-  MessageSquare, 
-  UserCheck, 
+import {
+  Copy,
+  Download,
+  Mail,
+  MessageSquare,
+  UserCheck,
   HeadphonesIcon,
   Newspaper,
   CheckCircle
@@ -37,7 +37,7 @@ export default function EmailSignatures() {
                   Dr. Sidra Bukhari, MRCPsych (UK)
                 </h3>
                 <p style="margin: 0 0 3px 0; color: #6B7280; font-size: 14px;">
-                  Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
+                  Psychiatrist • NLP Life Coach • Mindfulness Trainer
                 </p>
                 <p style="margin: 0 0 15px 0; color: #8B5CF6; font-size: 14px; font-style: italic;">
                   Specialized in Women's Mental Health & Midlife Wellness
@@ -85,7 +85,7 @@ export default function EmailSignatures() {
               <strong>Dr. Sidra Bukhari, MRCPsych (UK)</strong>
             </p>
             <p style="margin: 0; color: #6B7280; font-size: 12px;">
-              Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
+              Psychiatrist • NLP Life Coach • Mindfulness Trainer
             </p>
           </div>
           
@@ -202,7 +202,7 @@ export default function EmailSignatures() {
         title: "Signature Copied!",
         description: `${title} has been copied to your clipboard. Paste it into your email client.`,
       });
-      
+
       setTimeout(() => setCopiedSignature(null), 3000);
     } catch (err) {
       toast({
@@ -223,7 +223,7 @@ export default function EmailSignatures() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     toast({
       title: "Signature Downloaded",
       description: `${filename} signature saved as HTML file.`,
@@ -243,7 +243,7 @@ export default function EmailSignatures() {
             Professional Email Signatures
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Professional email signatures for MidlifeRebalance communications. 
+            Professional email signatures for MidlifeRebalance communications.
             Copy and paste these into your email client for consistent branding.
           </p>
         </div>
@@ -285,7 +285,7 @@ export default function EmailSignatures() {
           {Object.entries(signatures).map(([key, signature]) => {
             const Icon = signature.icon;
             const isCopied = copiedSignature === signature.title;
-            
+
             return (
               <Card key={key} className="border-gray-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -304,17 +304,17 @@ export default function EmailSignatures() {
                     </Badge>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent>
                   {/* Preview */}
                   <div className="mb-6">
                     <h4 className="font-medium text-gray-900 mb-3">Preview:</h4>
-                    <div 
+                    <div
                       className="border border-gray-200 rounded-lg p-4 bg-white max-h-60 overflow-y-auto"
                       dangerouslySetInnerHTML={{ __html: signature.html }}
                     />
                   </div>
-                  
+
                   {/* Action Buttons */}
                   <div className="flex gap-3">
                     <Button
@@ -334,7 +334,7 @@ export default function EmailSignatures() {
                         </>
                       )}
                     </Button>
-                    
+
                     <Button
                       onClick={() => downloadSignature(signature.html, signature.title)}
                       variant="outline"
@@ -365,7 +365,7 @@ export default function EmailSignatures() {
                 <TabsTrigger value="apple">Apple Mail</TabsTrigger>
                 <TabsTrigger value="thunderbird">Thunderbird</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="gmail" className="mt-6">
                 <div className="space-y-3 text-sm">
                   <p><strong>1.</strong> Open Gmail and click the gear icon in the top right</p>
@@ -376,7 +376,7 @@ export default function EmailSignatures() {
                   <p><strong>6.</strong> Click "Save Changes" at the bottom</p>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="outlook" className="mt-6">
                 <div className="space-y-3 text-sm">
                   <p><strong>1.</strong> In Outlook, go to File → Options → Mail</p>
@@ -387,7 +387,7 @@ export default function EmailSignatures() {
                   <p><strong>6.</strong> Click "OK" to save</p>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="apple" className="mt-6">
                 <div className="space-y-3 text-sm">
                   <p><strong>1.</strong> Open Apple Mail and go to Mail → Preferences</p>
@@ -398,7 +398,7 @@ export default function EmailSignatures() {
                   <p><strong>6.</strong> Close the preferences window to save</p>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="thunderbird" className="mt-6">
                 <div className="space-y-3 text-sm">
                   <p><strong>1.</strong> In Thunderbird, go to Tools → Account Settings</p>

@@ -163,7 +163,7 @@ it's a mind-body transformation. I recommend..."
 
 [Your expert advice]
 
-Bio: Dr. Sidra Bukhari is a dual-certified psychiatrist and gynecologist 
+Bio: Dr. Sidra Bukhari is a dual-certified psychiatrist 
 specializing in midlife women's wellness. Learn more at midliferebalance.com
 ```
 
@@ -273,8 +273,7 @@ FOR IMMEDIATE RELEASE
 
 Local Psychiatrist Launches Innovative Wellness Program for Midlife Women
 
-[Your City, Date] - Dr. Sidra Bukhari, a dual-certified psychiatrist and 
-gynecologist, has launched MidlifeRebalance.com, a comprehensive 6-week 
+[Your City, Date] - Dr. Sidra Bukhari, a dual-certified psychiatrist, has launched MidlifeRebalance.com, a comprehensive 6-week 
 program designed to help women navigate the challenges of perimenopause...
 
 [More details]
