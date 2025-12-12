@@ -555,6 +555,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payments are not configured" });
       }
       const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.email) {
+        return res.status(400).json({ message: "User not found or email missing" });
+      }
 
       // Get price from database
       const dbModule = await import("./db");
@@ -575,10 +580,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentIntent = await activeStripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "usd",
+        receipt_email: user.email, // Send receipt to customer email
         metadata: {
           service: "coaching_plan",
           description: "MidlifeRebalance 6-Week Mind-Body Reset Coaching Program",
-          userId: userId
+          userId: userId,
+          userEmail: user.email,
+          userName: `${user.firstName || ''} ${user.lastName || ''}`.trim()
         }
       });
       res.json({ clientSecret: paymentIntent.client_secret });
@@ -615,6 +623,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           hasCoachingAccess: true,
           coachingAccessGrantedAt: new Date(),
           amountPaidUsdCents: prevCents + addCents,
+          stripePaymentIntentId: paymentIntentId, // Store payment intent ID for tracking
         });
 
         // Send payment confirmation email
@@ -1570,6 +1579,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           hasCoachingAccess: users.hasCoachingAccess,
           amountPaidUsdCents: users.amountPaidUsdCents,
           coachingAccessGrantedAt: users.coachingAccessGrantedAt,
+          stripePaymentIntentId: users.stripePaymentIntentId,
           isAdmin: users.isAdmin,
           createdAt: users.createdAt,
         })
