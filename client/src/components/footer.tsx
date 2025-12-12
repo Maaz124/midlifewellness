@@ -1,13 +1,13 @@
 import { Link } from "wouter";
 import { Logo } from '@/components/logo';
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Heart, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Heart,
+  Facebook,
+  Twitter,
+  Instagram,
   Linkedin,
   Shield,
   FileText,
@@ -22,21 +22,21 @@ export function Footer() {
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          
+
           {/* Brand & Mission */}
           <div className="lg:col-span-2">
             <div className="mb-6">
               <Logo size="lg" variant="light" className="mb-4" />
               <p className="text-gray-300 text-lg leading-relaxed max-w-md">
-                Empowering women through midlife transitions with evidence-based wellness coaching, 
+                Empowering women through midlife transitions with evidence-based wellness coaching,
                 mindfulness training, and comprehensive health assessments.
               </p>
             </div>
-            
+
             <div className="mb-6">
               <h4 className="text-white font-semibold mb-3">Dr. Sidra Bukhari, MRCPsych (UK)</h4>
               <p className="text-gray-400 text-sm">
-                Psychiatrist • NLP Life Coach • Mindfulness Trainer • Gynecologist
+                Psychiatrist • NLP Life Coach • Mindfulness Trainer
               </p>
               <p className="text-gray-400 text-sm mt-1">
                 Specialized in women's mental health and midlife wellness
@@ -45,29 +45,29 @@ export function Footer() {
 
             {/* Social Links */}
             <div className="flex space-x-4">
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="bg-gray-800 p-2 rounded-lg hover:bg-purple-600 transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="bg-gray-800 p-2 rounded-lg hover:bg-purple-600 transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="bg-gray-800 p-2 rounded-lg hover:bg-purple-600 transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="bg-gray-800 p-2 rounded-lg hover:bg-purple-600 transition-colors"
                 aria-label="Twitter"
               >
@@ -146,7 +146,7 @@ export function Footer() {
             {/* Response Time */}
             <div className="mt-6 p-3 bg-gray-800 rounded-lg">
               <p className="text-sm text-gray-300">
-                <span className="text-purple-400 font-medium">24-Hour Response:</span> 
+                <span className="text-purple-400 font-medium">24-Hour Response:</span>
                 <br />Personal coaching inquiries answered within 24 hours
               </p>
             </div>
@@ -158,7 +158,7 @@ export function Footer() {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="md:flex md:items-center md:justify-between">
-            
+
             {/* Copyright */}
             <div className="text-gray-400 text-sm">
               <p>&copy; {currentYear} MidlifeRebalance. All rights reserved.</p>
@@ -199,11 +199,11 @@ export function Footer() {
           {/* Medical Disclaimer */}
           <div className="mt-6 pt-6 border-t border-gray-800">
             <p className="text-xs text-gray-500 leading-relaxed">
-              <strong>Important Medical Disclaimer:</strong> This program provides self-help coaching and educational content for personal development. 
-              It is not intended as medical advice or as a substitute for professional healthcare. 
-              If you are experiencing severe mental health symptoms, depression, anxiety, or any serious medical condition, 
-              please consult with your doctor or a qualified healthcare professional before participating. 
-              Dr. Sidra Bukhari is a licensed medical professional, but this platform does not establish a doctor-patient relationship. 
+              <strong>Important Medical Disclaimer:</strong> This program provides self-help coaching and educational content for personal development.
+              It is not intended as medical advice or as a substitute for professional healthcare.
+              If you are experiencing severe mental health symptoms, depression, anxiety, or any serious medical condition,
+              please consult with your doctor or a qualified healthcare professional before participating.
+              Dr. Sidra Bukhari is a licensed medical professional, but this platform does not establish a doctor-patient relationship.
               Your health and wellbeing are our priority.
             </p>
           </div>

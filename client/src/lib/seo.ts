@@ -36,7 +36,7 @@ export const pageSEO = {
   about: {
     title: "Meet Your Wellness Expert - Dr. Sidra Bukhari | MidlifeRebalance",
     description: "Discover the comprehensive medical expertise and transformational approach behind MidlifeRebalance's evidence-based wellness methodology.",
-    keywords: "Dr. Sidra Bukhari, psychiatrist, gynecologist, women's wellness expert, CBT therapist"
+    keywords: "Dr. Sidra Bukhari, psychiatrist, women's wellness expert, CBT therapist"
   },
   journal: {
     title: "Daily Journal & Wellness Library - MidlifeRebalance",
@@ -62,29 +62,29 @@ export const pageSEO = {
 
 export function updatePageSEO(pageKey: keyof typeof pageSEO | SEOProps) {
   const seo = typeof pageKey === 'string' ? { ...defaultSEO, ...pageSEO[pageKey] } : { ...defaultSEO, ...pageKey };
-  
+
   // Update document title
   document.title = seo.title || defaultSEO.title!;
-  
+
   // Update meta description
   updateMetaTag('description', seo.description || defaultSEO.description!);
   updateMetaTag('keywords', seo.keywords || defaultSEO.keywords!);
-  
+
   // Update Open Graph tags
   updateMetaProperty('og:title', seo.title || defaultSEO.title!);
   updateMetaProperty('og:description', seo.description || defaultSEO.description!);
   updateMetaProperty('og:image', seo.image || defaultSEO.image!);
   updateMetaProperty('og:url', seo.url || defaultSEO.url!);
   updateMetaProperty('og:type', seo.type || defaultSEO.type!);
-  
+
   // Update Twitter tags
   updateMetaProperty('twitter:title', seo.title || defaultSEO.title!);
   updateMetaProperty('twitter:description', seo.description || defaultSEO.description!);
   updateMetaProperty('twitter:image', seo.image || defaultSEO.image!);
-  
+
   // Update canonical URL
   updateCanonicalURL(seo.url || defaultSEO.url!);
-  
+
   // Add structured data if provided
   if (seo.structuredData) {
     updateStructuredData(seo.structuredData);
@@ -127,7 +127,7 @@ function updateStructuredData(data: any) {
   if (existing) {
     existing.remove();
   }
-  
+
   // Add new structured data
   const script = document.createElement('script');
   script.type = 'application/ld+json';
@@ -158,7 +158,7 @@ export const structuredDataTemplates = {
     "educationalLevel": "beginner",
     "teaches": ["Stress Management", "Hormone Balance", "Mental Clarity", "Nervous System Regulation"]
   }),
-  
+
   healthService: (serviceName: string, description: string) => ({
     "@context": "https://schema.org",
     "@type": "MedicalService",
@@ -167,13 +167,13 @@ export const structuredDataTemplates = {
     "provider": {
       "@type": "Person",
       "name": "Dr. Sidra Bukhari",
-      "jobTitle": "Psychiatrist & Gynecologist"
+      "jobTitle": "Psychiatrist"
     },
     "serviceType": "Wellness Coaching",
     "areaServed": "Worldwide"
   }),
-  
-  faq: (questions: Array<{question: string, answer: string}>) => ({
+
+  faq: (questions: Array<{ question: string, answer: string }>) => ({
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": questions.map(q => ({
