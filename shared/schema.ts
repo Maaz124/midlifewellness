@@ -27,6 +27,8 @@ export const users = pgTable("users", {
   coachingAccessGrantedAt: timestamp("coaching_access_granted_at"),
   // Total coaching amount paid (in cents). Does not include digital resources.
   amountPaidUsdCents: integer("amount_paid_usd_cents").default(0).notNull(),
+  // Stripe payment intent ID for the coaching payment (for tracking and cross-reference)
+  stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }),
   isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
