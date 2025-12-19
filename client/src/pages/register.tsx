@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@shared/schema";
@@ -17,6 +17,7 @@ import { UserPlus, Eye, EyeOff } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { updatePageSEO, structuredDataTemplates } from "@/lib/seo";
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -61,6 +62,19 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    updatePageSEO({
+      ...("register" as any),
+      title: "Create Account - MidlifeRebalance",
+      description: "Join MidlifeRebalance today to start your 6-week transformation journey. Create your account for personalized wellness coaching.",
+      url: "https://midliferebalance.com/register",
+      structuredData: structuredDataTemplates.breadcrumbs([
+        { name: "Home", item: "https://midliferebalance.com" },
+        { name: "Register", item: "https://midliferebalance.com/register" }
+      ])
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4 py-12">
