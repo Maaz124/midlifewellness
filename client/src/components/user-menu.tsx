@@ -92,7 +92,7 @@ export function UserMenu() {
         </DropdownMenuItem>
         {!user?.hasCoachingAccess && (
           <DropdownMenuItem asChild>
-            <Link href="/checkout" className="flex items-center cursor-pointer" data-testid="link-upgrade">
+            <Link href="/payment" className="flex items-center cursor-pointer" data-testid="link-upgrade">
               <CreditCard className="mr-2 h-4 w-4" />
               <span>Upgrade Account</span>
             </Link>

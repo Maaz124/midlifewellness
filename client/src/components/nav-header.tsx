@@ -47,10 +47,12 @@ export function NavHeader() {
     { path: '/', label: 'Dashboard', icon: 'fas fa-chart-line' },
     { path: '/coaching', label: 'Coaching', icon: 'fas fa-graduation-cap' },
     { path: '/perimenopause-guide', label: 'Guide', icon: 'fas fa-book-open' },
+    { path: '/blog', label: 'Blogs', icon: 'fas fa-newspaper' },
     { path: '/journal', label: 'Journal', icon: 'fas fa-book' },
     { path: '/progress', label: 'Progress', icon: 'fas fa-trophy' },
     { path: '/community', label: 'Community', icon: 'fas fa-users' },
     { path: '/about', label: 'About', icon: 'fas fa-user-md' },
+    { path: '/payment', label: 'Payment', icon: 'fas fa-credit-card' },
   ];
 
   const isActive = (path: string) => {

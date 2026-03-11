@@ -129,7 +129,7 @@ export default function CoachingMinimal() {
 
   const handleComponentClick = (component: any, moduleId: string) => {
     if (showPreview && moduleId !== 'week1') {
-      setLocation('/checkout');
+      setLocation('/payment');
       return;
     }
     
@@ -317,7 +317,7 @@ export default function CoachingMinimal() {
                               </p>
                             </div>
                             <Button 
-                              onClick={() => setLocation('/checkout')}
+                              onClick={() => setLocation('/payment')}
                               className="bg-purple-600 hover:bg-purple-700 text-white"
                             >
                               Unlock Now - $97
@@ -375,7 +375,7 @@ export default function CoachingMinimal() {
                   <div className="text-center">
                     <div className="space-y-3">
                       <Button 
-                        onClick={() => setLocation('/checkout')}
+                        onClick={() => setLocation('/payment')}
                         size="lg"
                         className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
                       >

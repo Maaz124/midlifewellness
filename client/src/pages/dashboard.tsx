@@ -11,6 +11,7 @@ import { Logo } from '@/components/logo';
 import { useSEO } from '@/hooks/use-seo';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
+import LeadCapture from '@/components/marketing/LeadCapture';
 
 export default function Dashboard() {
   // SEO optimization for dashboard page
@@ -325,6 +326,16 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </section>
+
+      {/* Lead Capture Section */}
+      {!hasAccess && (
+        <section className="my-16">
+          <LeadCapture 
+            title="Grab Your Free Hormone Reset Checklist" 
+            subtitle="Join 3,000+ women who are reclaiming their energy and balance. Download the guide today."
+          />
+        </section>
+      )}
 
       {/* Coaching Program Promotion */}
       <section>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import LeadCapture from '@/components/marketing/LeadCapture';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -621,7 +622,7 @@ export default function ProgressPage() {
     const htmlContent = `
       <html>
         <head>
-          <title>Comprehensive Wellness Report - ${user?.firstName || 'User'}</title>
+          <title>Comprehensive Wellness Report - ${(user as any)?.firstName || 'User'}</title>
           <style>
             body { 
               font-family: system-ui, -apple-system, sans-serif; 
@@ -788,11 +789,11 @@ export default function ProgressPage() {
             <div class="info-grid">
               <div class="info-item">
                 <div class="info-label">Name</div>
-                <div class="info-value">${user?.firstName || 'N/A'} ${user?.lastName || ''}</div>
+                <div class="info-value">${(user as any)?.firstName || 'N/A'} ${(user as any)?.lastName || ''}</div>
               </div>
               <div class="info-item">
                 <div class="info-label">Email</div>
-                <div class="info-value">${user?.email || 'N/A'}</div>
+                <div class="info-value">${(user as any)?.email || 'N/A'}</div>
               </div>
               <div class="info-item">
                 <div class="info-label">Total Components Completed</div>
@@ -1449,6 +1450,16 @@ export default function ProgressPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Lead Capture CTA */}
+      {(!isAuthenticated || !(user as any)?.hasCoachingAccess) && (
+        <section className="mt-16">
+          <LeadCapture 
+            title="Want Deeper Insights into Your Progress?" 
+            subtitle="Join 3,000+ women tracking their midlife transformation. Get our free expert assessment template today."
+          />
+        </section>
+      )}
     </div>
   );
 }

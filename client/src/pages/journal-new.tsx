@@ -63,7 +63,7 @@ export default function JournalNew() {
             <p className="text-gray-600 mb-4">
               Journal features are part of the coaching program. Please complete your purchase to continue.
             </p>
-            <a href="/checkout">
+            <a href="/payment">
               <Button className="bg-purple-600 hover:bg-purple-700">Go to Checkout</Button>
             </a>
           </CardContent>
@@ -165,7 +165,7 @@ export default function JournalNew() {
       if (data.paymentUrl) {
         window.location.href = data.paymentUrl;
       } else if (data.clientSecret) {
-        // Redirect to checkout page with payment details
+        // Redirect to payment page with payment details
         const resourceId = encodeURIComponent(data.resourceId || '');
         const paymentIntent = encodeURIComponent(data.paymentIntentId || '');
         window.location.href = `/resource-checkout?payment_intent=${paymentIntent}&resource_id=${resourceId}`;

@@ -99,14 +99,14 @@ export const pageSEO = {
       { name: "Coaching Program", item: "https://midliferebalance.com/coaching" }
     ])
   },
-  checkout: {
-    title: "Secure Checkout - MidlifeRebalance Coaching Program",
+  payment: {
+    title: "Secure Payment - MidlifeRebalance Coaching Program",
     description: "Complete your purchase for the transformational 6-week Mind-Body Reset program. Secure payment with immediate access to Dr. Bukhari's wellness coaching.",
-    keywords: "coaching program purchase, wellness investment, secure checkout, mind-body reset",
-    url: "https://midliferebalance.com/checkout",
+    keywords: "coaching program purchase, wellness investment, secure payment, mind-body reset",
+    url: "https://midliferebalance.com/payment",
     structuredData: structuredDataTemplates.breadcrumbs([
       { name: "Home", item: "https://midliferebalance.com" },
-      { name: "Checkout", item: "https://midliferebalance.com/checkout" }
+      { name: "Payment", item: "https://midliferebalance.com/payment" }
     ])
   },
   about: {
