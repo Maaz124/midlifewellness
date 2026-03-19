@@ -95,5 +95,56 @@ export const blogPosts: BlogPost[] = [
     date: "February 28, 2026",
     keywords: ["hormone balance", "natural healing", "wellness tips"],
     image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    slug: "menopausal-insomnia-sleep-tips",
+    title: "How to End Menopausal Insomnia and Night Sweats for Better Sleep",
+    excerpt: "Struggling with '3 AM wakefulness' and temperature spikes? Discover the science of midlife sleep and how to fix it.",
+    content: `
+      <h2>The 3 AM Wake-Up Call</h2>
+      <p>If you're finding yourself staring at the ceiling in the middle of the night, you're not alone. Sleep disturbances are one of the most common complaints during perimenopause and menopause, affecting up to 60% of women.</p>
+
+      <h3>Why Your Sleep Is Changing</h3>
+      <p>The decline in <strong>progesterone</strong> — our natural anti-anxiety and sleep-inducing hormone — is often the culprit. Additionally, low estrogen can trigger the hypothalamus to 'misfire', leading to night sweats that wake you up in a soak.</p>
+
+      <h3>3 Proven Rituals for Midlife Sleep</h3>
+      <ul>
+        <li><strong>Temperature Mapping:</strong> Keep your room between 60-67°F (15-19°C). Use bamboo or linen sheets that wick moisture away during a night sweat.</li>
+        <li><strong>The Magnesium Connection:</strong> Magnesium glycinate is a 'miracle' mineral for many midlife women, helping to calm the nervous system before bed.</li>
+        <li><strong>Digital Sunsets:</strong> Blue light suppresses melatonin. Turn off screens 90 minutes before bed and opt for a physical book or meditation instead.</li>
+      </ul>
+
+      <p>Remember, sleep is the foundation of hormone balance. When you don't sleep, your cortisol stays high, which then makes your menopause symptoms worse the next day.</p>
+    `,
+    author: "Dr. Sidra Bukhari",
+    date: "March 18, 2026",
+    keywords: ["menopausal insomnia", "night sweats relief", "sleep in menopause", "progesterone for sleep"],
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=1200"
+  },
+  {
+    slug: "midlife-brain-fog-remedies",
+    title: "Reclaim Your Focus: 7 Science-Backed Ways to Combat Midlife Brain Fog",
+    excerpt: "Feel like you're losing your edge? Learn why brain fog happens during the transition and how to sharpen your mind again.",
+    content: `
+      <h2>It's Not 'Early Onset'—It's Hormonal</h2>
+      <p>Difficulty finding words, forgetting why you walked into a room, or feeling like your brain is wrapped in cotton wool — these are the hallmarks of midlife brain fog. While it can feel scary, it is almost always a temporary result of hormonal shifts.</p>
+
+      <h3>The Estrogen-Brain Connection</h3>
+      <p>Estrogen is a key fuel for the brain. It helps neurons communicate and encourages blood flow to the areas responsible for memory and executive function. As estrogen levels dip, the brain has to find new ways to process energy, creating that'sticky' feeling in your thoughts.</p>
+
+      <h3>How to Sharpen Your Clarity</h3>
+      <ol>
+        <li><strong>Anti-Inflammatory Nutrition:</strong> Omega-3 fatty acids (found in walnuts, chia, and wild-caught fish) are literal brain food.</li>
+        <li><strong>Cognitive Strength Training:</strong> Use it or lose it! Learning a new skill or language creates new neural pathways that bypass the fog.</li>
+        <li><strong>Stress Buffering:</strong> High cortisol is toxic to the hippocampus (your memory center). Even 5 minutes of deep breathing can protect your recall.</li>
+        <li><strong>Hydration:</strong> Even 1% dehydration can significantly impact focus and memory tasks.</li>
+      </ol>
+
+      <p>Through our Mind Reset Method coaching, we specifically target the neuroplasticity of the midlife brain to help you perform at your peak again.</p>
+    `,
+    author: "Dr. Sidra Bukhari",
+    date: "March 19, 2026",
+    keywords: ["midlife brain fog", "menopause memory loss", "cognitive health women", "focus in perimenopause"],
+    image: "https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&q=80&w=1200"
   }
 ];

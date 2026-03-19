@@ -63,7 +63,7 @@ export function NavHeader() {
 
   return (
     <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto pl-2 pr-4 sm:pl-4 sm:pr-6 lg:pl-6 lg:pr-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0 mr-16">
@@ -71,12 +71,12 @@ export function NavHeader() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-4 flex-1">
+          <nav className="hidden xl:flex space-x-3 lg:space-x-6 flex-1 justify-center">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 href={item.path}
-                className={`pb-4 transition-colors whitespace-nowrap ${isActive(item.path)
+                className={`pb-4 transition-colors whitespace-nowrap text-sm lg:text-base ${isActive(item.path)
                   ? 'text-primary font-medium border-b-2 border-primary'
                   : 'text-gray-600 hover:text-primary'
                   }`}
@@ -87,7 +87,7 @@ export function NavHeader() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-2 flex-shrink-0">
+          <div className="hidden xl:flex items-center space-x-2 flex-shrink-0">
             <LanguageSelector />
             <Link href="/contact-coaching">
               <Button
@@ -148,7 +148,8 @@ export function NavHeader() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="xl:hidden flex items-center space-x-2">
+            <UserMenu />
             <Button
               variant="ghost"
               size="sm"
@@ -166,7 +167,7 @@ export function NavHeader() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden pb-4">
+          <div className="xl:hidden pb-4">
             <nav className="flex flex-col space-y-2">
               {navItems.map((item) => (
                 <Link

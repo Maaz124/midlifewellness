@@ -46,11 +46,6 @@ export function UserMenu() {
             Sign in
           </Button>
         </Link>
-        <Link href="/register">
-          <Button size="sm" data-testid="button-register-nav">
-            Get Started
-          </Button>
-        </Link>
       </div>
     );
   }
