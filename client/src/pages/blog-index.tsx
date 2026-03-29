@@ -2,18 +2,41 @@ import { blogPosts } from "@/lib/blog-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Calendar, User } from "lucide-react";
+import { ArrowRight, Calendar, User, BookOpen } from "lucide-react";
 import LeadCapture from "@/components/marketing/LeadCapture";
 
 export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4 font-serif">Wellness Journal</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Expert insights, science-backed advice, and community stories to support your midlife journey.
-          </p>
+        {/* Hero Section */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="p-8 md:p-12 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-6">
+                <BookOpen className="w-3.5 h-3.5" />
+                Expert Insights & Stories
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+                The Wellness <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
+                  Journal
+                </span>
+              </h1>
+              <p className="text-gray-600 text-lg mb-0 max-w-lg leading-relaxed">
+                Science-backed advice, personal transformation stories, and expert guidance to help you navigate midlife and menopause with confidence.
+              </p>
+            </div>
+            <div className="relative min-h-[300px] lg:min-h-full">
+              <img 
+                src="/images/blog/midlife_weight_gain.png" 
+                alt="Smiling woman in a wellness-focused kitchen" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent lg:block hidden" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent lg:hidden block" />
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">

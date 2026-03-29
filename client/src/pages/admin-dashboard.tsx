@@ -517,10 +517,10 @@ function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Shield className="w-8 h-8 text-purple-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <Shield className="w-8 h-8 text-purple-600 shrink-0" />
               Admin Dashboard
             </h1>
             <p className="text-gray-600 mt-1">
@@ -528,11 +528,11 @@ function AdminDashboard() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setLocation("/")}>
+            <Button variant="outline" size="sm" onClick={() => setLocation("/")} className="flex-1 sm:flex-initial">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Site
+              Back
             </Button>
-            <Button variant="outline" onClick={handleLogout}>
+            <Button variant="outline" size="sm" onClick={handleLogout} className="flex-1 sm:flex-initial">
               <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
@@ -811,12 +811,12 @@ function AdminDashboard() {
                         return (
                           <div
                             key={user.id}
-                            className={`flex items-center justify-between p-4 border rounded-lg transition-all ${isHighlighted
+                            className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg transition-all gap-4 ${isHighlighted
                               ? "border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200"
                               : "border-gray-200 hover:bg-gray-50"
                               }`}
                           >
-                            <div className="flex items-center space-x-4 flex-1">
+                            <div className="flex items-start space-x-4 flex-1 min-w-0">
                               <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                                 <UserIcon className="w-5 h-5 text-purple-600" />
                               </div>
@@ -900,19 +900,20 @@ function AdminDashboard() {
             {/* Coaching Inquiries */}
             <Card className={`${activeSection === 'inquiries' ? '' : 'hidden'} mb-6`}>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5 text-purple-600" />
                     <div>
                       <CardTitle>Personal Coaching Inquiries</CardTitle>
-                      <CardDescription>Submissions from the public form (email also sent)</CardDescription>
+                      <CardDescription>Submissions from the public form</CardDescription>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
-                      placeholder="Search by name or email"
+                      placeholder="Search..."
                       value={inquiriesSearch}
                       onChange={(e) => setInquiriesSearch(e.target.value)}
+                      className="w-full sm:w-64"
                     />
                     <Button variant="outline" onClick={() => refetchInquiries()}>
                       <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingInquiries ? 'animate-spin' : ''}`} />
@@ -939,12 +940,12 @@ function AdminDashboard() {
                       })
                       .map((inq: any) => (
                         <div key={inq.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                          <div className="flex items-center justify-between">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                             <div>
                               <div className="font-semibold text-gray-900">{inq.name}</div>
                               <div className="text-sm text-gray-600">{inq.email}{inq.phone ? ` • ${inq.phone}` : ''}</div>
                             </div>
-                            <div className="text-right text-xs text-gray-500">
+                            <div className="text-left sm:text-right text-xs text-gray-500">
                               {inq.createdAt ? new Date(inq.createdAt).toLocaleString() : ''}
                             </div>
                           </div>

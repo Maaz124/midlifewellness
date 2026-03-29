@@ -359,7 +359,7 @@ export default function EmailSignatures() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="gmail" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
                 <TabsTrigger value="gmail">Gmail</TabsTrigger>
                 <TabsTrigger value="outlook">Outlook</TabsTrigger>
                 <TabsTrigger value="apple">Apple Mail</TabsTrigger>

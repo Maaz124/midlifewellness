@@ -71,7 +71,7 @@ export function NavHeader() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden xl:flex space-x-3 lg:space-x-6 flex-1 justify-center">
+          <nav className="hidden lg:flex space-x-3 lg:space-x-6 flex-1 justify-center">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -87,7 +87,7 @@ export function NavHeader() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden xl:flex items-center space-x-2 flex-shrink-0">
+          <div className="hidden lg:flex items-center space-x-2 flex-shrink-0">
             <LanguageSelector />
             <Link href="/contact-coaching">
               <Button
@@ -148,7 +148,7 @@ export function NavHeader() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="xl:hidden flex items-center space-x-2">
+          <div className="lg:hidden flex items-center space-x-2">
             <UserMenu />
             <Button
               variant="ghost"
@@ -167,7 +167,7 @@ export function NavHeader() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="xl:hidden pb-4">
+          <div className="lg:hidden pb-4">
             <nav className="flex flex-col space-y-2">
               {navItems.map((item) => (
                 <Link

@@ -441,15 +441,35 @@ export default function Coaching() {
           </div>
         </div>
 
-        {/* Header Section */}
-        <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900">The Mind Reset Method</h1>
-            <p className="text-xl text-gray-600">
-              A 6-week transformational journey designed specifically for women navigating midlife transitions
-            </p>
+        {/* Hero Section */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="p-8 md:p-12 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold uppercase tracking-wider mb-6">
+                <Sparkles className="w-3.5 h-3.5" />
+                Evidence-Based Transformation
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+                The <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 font-serif italic">Mind Reset</span> <br />
+                Method
+              </h1>
+              <p className="text-gray-600 text-lg mb-0 max-w-lg leading-relaxed">
+                A structured 6-week transformational journey designed specifically for women navigating midlife transitions. Master your hormones, your energy, and your peace.
+              </p>
+            </div>
+            <div className="relative min-h-[300px] lg:min-h-full">
+              <img 
+                src="/images/progress_hero.png" 
+                alt="Woman looking at a sunset - Coaching Transformation" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent lg:block hidden" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent lg:hidden block" />
+            </div>
           </div>
+        </div>
 
+        <div className="text-center space-y-6">
           {!showPreview && (
             <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
               <Badge variant="outline" className="text-lg py-2 px-4">
@@ -616,13 +636,13 @@ export default function Coaching() {
                           return (
                             <div
                               key={component.id}
-                              className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${showPreview
+                              className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border transition-colors gap-4 ${showPreview
                                 ? 'border-purple-200 bg-gradient-to-r from-purple-50/50 to-pink-50/50 hover:border-purple-300'
                                 : 'hover:border-gray-300'
                                 }`}
                             >
-                              <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-4 flex-1">
+                                <div className="flex items-center gap-2 mt-1 truncate">
                                   {showPreview ? (
                                     <div className="p-1 bg-purple-100 rounded">
                                       {getComponentIcon(component.type)}

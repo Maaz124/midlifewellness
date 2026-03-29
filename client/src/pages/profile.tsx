@@ -202,10 +202,34 @@ export default function ProfileSettings() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-        <p className="text-gray-600">Manage your account settings and preferences</p>
+      {/* Hero Section */}
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="p-8 md:p-12 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold uppercase tracking-wider mb-6">
+              <User className="w-3.5 h-3.5" />
+              Your Personal Wellness Profile
+            </div>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+              Manage Your <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                Member Account
+              </span>
+            </h1>
+            <p className="text-gray-600 text-lg mb-0 max-w-lg leading-relaxed">
+              Update your personal details, secure your account, and view your coaching status. This is your personal wellness center.
+            </p>
+          </div>
+          <div className="relative min-h-[250px] lg:min-h-full">
+            <img 
+              src="/images/profile_hero.png" 
+              alt="Soft abstract shapes representing identity" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent lg:block hidden" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent lg:hidden block" />
+          </div>
+        </div>
       </div>
 
       {/* Account Status Banner */}
@@ -413,15 +437,15 @@ export default function ProfileSettings() {
       {!profile?.hasCoachingAccess && (
         <Card className="mt-6 border-primary/30 bg-gradient-to-r from-purple-50 to-pink-50">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-semibold text-lg mb-1">Unlock Full Access</h3>
+                <h3 className="font-semibold text-lg mb-1 text-gray-900">Unlock Full Access</h3>
                 <p className="text-sm text-gray-600">
                   Get full access to coaching programs, journal features, and exclusive content
                 </p>
               </div>
               <Button 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 w-full sm:w-auto"
                 onClick={() => window.location.href = '/payment'}
               >
                 <Crown className="mr-2 h-4 w-4" />

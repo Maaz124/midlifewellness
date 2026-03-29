@@ -38,7 +38,7 @@ export default function BlogPost() {
 
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-3xl md:text-6xl font-serif font-bold text-gray-900 mb-6 leading-tight">
             {post.title}
           </h1>
           <div className="flex flex-wrap items-center gap-6 text-gray-500 border-b pb-8">
@@ -56,7 +56,7 @@ export default function BlogPost() {
         </div>
 
         {/* Cover Image */}
-        <div className="w-full aspect-[21/9] rounded-[2rem] overflow-hidden mb-12 shadow-2xl">
+        <div className="w-full aspect-video md:aspect-[21/9] rounded-2xl md:rounded-[2rem] overflow-hidden mb-12 shadow-2xl">
           <img src={post.image} className="w-full h-full object-cover" alt={post.title} />
         </div>
 

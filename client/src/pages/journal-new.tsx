@@ -13,13 +13,15 @@ import { JournalEntry, MoodEntry } from '@/types/wellness';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, getQueryFn } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
+import type { User } from "@shared/schema";
 
 export default function JournalNew() {
   const { data, upsertTodayJournalEntry, addJournalEntry, addMoodEntry } = useWellnessData();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user: authUser } = useAuth();
+  const user = authUser as User | null;
 
   // Optional: Hard reload once on first open to ensure fresh data after navigation
   useEffect(() => {
@@ -32,45 +34,6 @@ export default function JournalNew() {
     }
   }, [authLoading, isAuthenticated]);
 
-  // Block access for unauthenticated users
-  if (!authLoading && !isAuthenticated) {
-    return (
-      <div className="max-w-3xl mx-auto p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Login Required</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">Please log in to write and view your gratitude and journal entries.</p>
-            <a href="/login">
-              <Button className="bg-purple-600 hover:bg-purple-700">Go to Login</Button>
-            </a>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Block access for users without payment
-  if (!authLoading && isAuthenticated && !user?.hasCoachingAccess) {
-    return (
-      <div className="max-w-3xl mx-auto p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Coaching Access Required</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Journal features are part of the coaching program. Please complete your purchase to continue.
-            </p>
-            <a href="/payment">
-              <Button className="bg-purple-600 hover:bg-purple-700">Go to Checkout</Button>
-            </a>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Provide default values to prevent undefined errors
   const userProfile = data?.userProfile || { currentWeek: 1 };
@@ -493,17 +456,85 @@ export default function JournalNew() {
     setWordCount(0);
   };
 
+  if (authLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
+
+  // Block access for unauthenticated users - checking after all hooks
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Login Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">Please log in to write and view your gratitude and journal entries.</p>
+            <a href="/login">
+              <Button className="bg-purple-600 hover:bg-purple-700">Go to Login</Button>
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Block access for users without payment
+  if (isAuthenticated && !user?.hasCoachingAccess) {
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Coaching Access Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              Journal features are part of the coaching program. Please complete your purchase to continue.
+            </p>
+            <a href="/payment">
+              <Button className="bg-purple-600 hover:bg-purple-700">Go to Checkout</Button>
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-            Daily Journal & Wellness Library
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Your personal space for reflection, growth, and accessing curated wellness resources
-          </p>
+        {/* Hero Section */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="p-8 md:p-12 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold uppercase tracking-wider mb-6">
+                <Feather className="w-3.5 h-3.5" />
+                Your Safe Space for Growth
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+                Your Personal <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                  Wellness Journal
+                </span>
+              </h1>
+              <p className="text-gray-600 text-lg mb-0 max-w-lg leading-relaxed">
+                Connect with your inner self, track your moods, and explore our library of resources. Your story of transformation begins here.
+              </p>
+            </div>
+            <div className="relative min-h-[250px] lg:min-h-full">
+              <img 
+                src="/images/journal_hero.png" 
+                alt="A beautiful journal and tea - Personal Reflection" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent lg:block hidden" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent lg:hidden block" />
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="journal" className="w-full">
@@ -573,7 +604,7 @@ export default function JournalNew() {
                         <Heart className="h-4 w-4 text-pink-500" />
                         How are you feeling today?
                       </h3>
-                      <div className="grid grid-cols-5 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                         {moodOptions.map((mood) => (
                           <button
                             key={mood.value}

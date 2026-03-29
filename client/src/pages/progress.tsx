@@ -41,6 +41,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { updatePageSEO, structuredDataTemplates } from "@/lib/seo";
 
 ChartJS.register(
   CategoryScale,
@@ -944,6 +945,18 @@ export default function ProgressPage() {
       setLocation('/login');
     }
   }, [authLoading, isAuthenticated, setLocation]);
+  
+  useEffect(() => {
+    updatePageSEO({
+      title: "Your Wellness Progress - MidlifeRebalance",
+      description: "Track your 6-week midlife wellness journey. View health assessment history, journal trends, and achievement badges on your personalized progress dashboard.",
+      url: "https://midliferebalance.com/progress",
+      structuredData: structuredDataTemplates.breadcrumbs([
+        { name: "Home", item: "https://midliferebalance.com" },
+        { name: "Progress", item: "https://midliferebalance.com/progress" }
+      ])
+    });
+  }, []);
 
   if (authLoading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
@@ -985,14 +998,14 @@ export default function ProgressPage() {
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-4">
+                <div className="mt-4 overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead>Category</TableHead>
+                        <TableHead className="whitespace-nowrap">Date</TableHead>
+                        <TableHead className="whitespace-nowrap">Type</TableHead>
+                        <TableHead className="whitespace-nowrap">Score</TableHead>
+                        <TableHead className="whitespace-nowrap">Category</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1012,13 +1025,13 @@ export default function ProgressPage() {
 
                             return (
                               <TableRow key={assessment.id}>
-                                <TableCell>{new Date(assessment.completedAt).toLocaleDateString()} {new Date(assessment.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                                <TableCell className="capitalize font-medium">{assessment.assessmentType} Health</TableCell>
+                                <TableCell className="whitespace-nowrap">{new Date(assessment.completedAt).toLocaleDateString()} {new Date(assessment.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell className="capitalize font-medium whitespace-nowrap">{assessment.assessmentType} Health</TableCell>
                                 <TableCell>
                                   <span className={`font-bold ${colorClass}`}>{score}</span>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge variant="outline" className={`${score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                  <Badge variant="outline" className={`whitespace-nowrap ${score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                                     score >= 70 ? 'bg-blue-50 text-blue-700 border-blue-200' :
                                       score >= 60 ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                         score >= 40 ? 'bg-orange-50 text-orange-700 border-orange-200' :
@@ -1047,6 +1060,23 @@ export default function ProgressPage() {
               <Download className="w-4 h-4" />
               Export Report
             </Button>
+          </div>
+        </div>
+        
+        {/* Progress Page Hero Image for SEO/Marketing */}
+        <div className="mb-8 overflow-hidden rounded-xl shadow-lg border border-gray-200">
+          <div className="relative aspect-[21/9] w-full">
+            <img 
+              src="/images/progress_hero.png" 
+              alt="Woman looking out at a peaceful mountain landscape - Progress Reflection" 
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6 sm:p-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Clarity & The Path Forward</h2>
+              <p className="text-purple-100 max-w-2xl text-sm sm:text-base">
+                Look back at how far you've come, and look forward with clarity. Every milestone tracked here brings you closer to your ultimate vision of wellness.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -1349,40 +1379,40 @@ export default function ProgressPage() {
                   </DialogTitle>
                 </DialogHeader>
 
-                <div className="mt-4">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Mood</TableHead>
-                        <TableHead>Preview</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[...safeJournal]
-                        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                        .map((entry: any) => (
-                          <TableRow key={entry.id}>
-                            <TableCell className="whitespace-nowrap">
-                              {new Date(entry.createdAt).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell className="font-medium">{entry.title || 'Daily Reflection'}</TableCell>
-                            <TableCell>
-                              {entry.mood && (
-                                <Badge variant="outline" className="capitalize">
-                                  {entry.mood.replace('-', ' ')}
-                                </Badge>
-                              )}
-                            </TableCell>
-                            <TableCell className="max-w-md truncate text-gray-500">
-                              {entry.content}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="whitespace-nowrap">Date</TableHead>
+                          <TableHead className="whitespace-nowrap">Title</TableHead>
+                          <TableHead className="whitespace-nowrap">Mood</TableHead>
+                          <TableHead className="whitespace-nowrap">Preview</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {safeJournal
+                          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                          .map((entry: any) => (
+                            <TableRow key={entry.id}>
+                              <TableCell className="whitespace-nowrap text-sm text-gray-500">
+                                {new Date(entry.createdAt).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell className="font-medium whitespace-nowrap">{entry.title || 'Daily Reflection'}</TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {entry.mood && (
+                                  <Badge variant="secondary" className="capitalize text-xs">
+                                    {entry.mood.replace('-', ' ')}
+                                  </Badge>
+                                )}
+                              </TableCell>
+                              <TableCell className="min-w-[200px] max-w-md truncate text-gray-500 text-sm">
+                                {entry.content}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
               </DialogContent>
             </Dialog>
           )}
