@@ -60,6 +60,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Note: /api/admin/login, /api/admin/logout, /api/admin/user
   // are now handled in auth.ts via setupAdminAuth
 
+  // Lead Capture API (Marketing Funnel)
+  app.post("/api/leads", async (req, res) => {
+    try {
+      const leadData = req.body;
+      if (!leadData.email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const lead = await marketingFunnel.captureLead({
+        ...leadData,
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+        source: leadData.source || 'website_direct'
+      });
+
+      res.json({ message: "Lead captured successfully", lead });
+    } catch (error: any) {
+      console.error('Error capturing lead:', error);
+      res.status(500).json({ message: "Failed to capture lead", error: error.message });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", async (req, res) => {
     res.json({
@@ -577,6 +599,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Default to 150 if not found in database
       const amount = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
 
+      if (amount <= 0) {
+        return res.status(400).json({ message: "Price is zero. Please use the free claim flow." });
+      }
+
       const paymentIntent = await activeStripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "usd",
@@ -649,6 +675,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Payment confirmation error:', error);
       res.status(500).json({ message: "Error confirming payment: " + error.message });
+    }
+  });
+
+  // End point to claim free coaching access when price is 0
+  app.post("/api/claim-free-coaching", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+
+      if (!user) {
+        return res.status(401).json({ success: false, message: "Not authenticated" });
+      }
+
+      // Check current price configuration
+      const dbModule = await import("./db");
+      const db: any = dbModule.db;
+      const { eq } = await import("drizzle-orm");
+      const schemaModule: any = await import("@shared/schema");
+      const adminConfig = schemaModule.adminConfig;
+
+      const priceConfig = await db
+        .select()
+        .from(adminConfig)
+        .where(eq(adminConfig.key, 'coaching_program_price'))
+        .limit(1);
+
+      // Default to 150 if not found in database
+      const amount = priceConfig[0]?.value ? parseFloat(priceConfig[0].value) : 150;
+
+      if (amount > 0) {
+        return res.status(400).json({ success: false, message: "Program is not currently free" });
+      }
+
+      // Grant coaching access to the user
+      const prevCents = (user as any).amountPaidUsdCents || 0;
+      await storage.upsertUser({
+        ...user,
+        hasCoachingAccess: true,
+        coachingAccessGrantedAt: new Date(),
+        amountPaidUsdCents: prevCents, // No new charges
+        stripePaymentIntentId: "free_claim_" + Date.now(),
+      });
+
+      // Send payment confirmation email indicating free access
+      const confirmationTemplate = emailTemplates.paymentConfirmation(
+        user.firstName || '',
+        0
+      );
+      
+      try {
+        await sendEmail({
+          to: user.email,
+          from: 'maazahmad1243@gmail.com',
+          subject: "Welcome to Mind-Body Reset (Free Access Granted)",
+          html: confirmationTemplate.html,
+          text: confirmationTemplate.text
+        });
+      } catch (err) {
+        console.error('Failed to send confirmation email for free access:', err);
+      }
+
+      res.json({ success: true, message: "Free access granted successfully" });
+    } catch (error: any) {
+      console.error('Free claim error:', error);
+      res.status(500).json({ message: "Error processing free claim: " + error.message });
     }
   });
 
@@ -1994,8 +2085,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('[Price Update] Received request:', { currentPrice, regularPrice });
 
-      if (!currentPrice || typeof currentPrice !== 'number' || currentPrice <= 0) {
-        return res.status(400).json({ message: "Valid current price is required (must be a positive number)" });
+      if (currentPrice === undefined || typeof currentPrice !== 'number' || currentPrice < 0) {
+        return res.status(400).json({ message: "Valid current price is required (must be a non-negative number)" });
       }
 
       const dbModule = await import("./db");

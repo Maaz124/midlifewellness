@@ -12,7 +12,9 @@ import Progress from "@/pages/progress";
 import Community from "@/pages/community";
 import About from "@/pages/about";
 import ProfileSettings from "@/pages/profile";
-import Checkout from "@/pages/checkout";
+import Payment from "@/pages/payment";
+import BlogIndex from "@/pages/blog-index";
+import BlogPost from "@/pages/blog-post";
 import ResourceCheckout from "@/pages/resource-checkout";
 import ContactCoaching from "@/pages/contact-coaching";
 import EmailSignatures from "@/pages/email-signatures";
@@ -51,8 +53,10 @@ function Router() {
               <Route path="/perimenopause-guide" component={PerimenopauseEducation} />
               <Route path="/community" component={Community} />
               <Route path="/about" component={About} />
+              <Route path="/blog" component={BlogIndex} />
+              <Route path="/blog/:slug" component={BlogPost} />
               <Route path="/profile" component={ProfileSettings} />
-              <Route path="/checkout" component={Checkout} />
+              <Route path="/payment" component={Payment} />
               <Route path="/resource-checkout" component={ResourceCheckout} />
               <Route path="/contact-coaching" component={ContactCoaching} />
               <Route path="/email-signatures" component={EmailSignatures} />

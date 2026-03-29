@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 // Import the original component but use it more efficiently
 import { EnhancedCoachingComponentMinimal } from '@/components/enhanced-coaching-component-fixed';
+import LeadCapture from '@/components/marketing/LeadCapture';
 
 import { useWellnessData } from '@/hooks/use-local-storage';
 import { useCoachingProgress } from '@/hooks/use-coaching-progress';
@@ -405,7 +406,7 @@ export default function Coaching() {
                     <div className="text-sm text-purple-200 line-through">Regular: ${regularPrice.toFixed(2)}</div>
                     <div className="text-green-200 font-semibold mb-2">Save {Math.round((1 - price / regularPrice) * 100)}% Today</div>
                     <Button
-                      onClick={() => setLocation('/checkout')}
+                      onClick={() => setLocation('/payment')}
                       className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold"
                       data-testid="button-checkout"
                     >
@@ -680,7 +681,7 @@ export default function Coaching() {
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => setLocation('/checkout')}
+                                      onClick={() => setLocation('/payment')}
                                       className="flex items-center gap-1 border-purple-300 text-purple-600 hover:bg-purple-50"
                                     >
                                       <Lock className="w-3 h-3" />
@@ -743,6 +744,15 @@ export default function Coaching() {
           </CardContent>
         </Card>
 
+        {showPreview && (
+          <section className="mt-12">
+            <LeadCapture 
+              title="Not Ready to Join the Full Program?" 
+              subtitle="Download our free 'Midlife Reset Checklist' and start your journey with these 5 simple daily habits."
+            />
+          </section>
+        )}
+
         {/* Final Call-to-Action for Preview Users */}
         {showPreview && (
           <Card className="border-2 border-purple-300 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -780,7 +790,7 @@ export default function Coaching() {
                         </Button>
                       ) : needsPayment ? (
                         <Button
-                          onClick={() => setLocation('/checkout')}
+                          onClick={() => setLocation('/payment')}
                           size="lg"
                           className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-semibold"
                           data-testid="button-checkout-bottom"

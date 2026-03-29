@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Calendar, Target, BookOpen, RefreshCw, Sparkles, CreditCard, CheckCircle } from 'lucide-react';
+import { TrendingUp, Calendar, Target, BookOpen, RefreshCw, Sparkles, CreditCard, CheckCircle, ArrowRight, Play } from 'lucide-react';
 import { Link } from 'wouter';
 import { Logo } from '@/components/logo';
 import { useSEO } from '@/hooks/use-seo';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
+import LeadCapture from '@/components/marketing/LeadCapture';
 
 export default function Dashboard() {
   // SEO optimization for dashboard page
@@ -129,110 +130,99 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-12">
-      {/* Welcome Section */}
-      <section className="bg-gradient-to-br from-primary/5 via-white to-sage/5 py-12 rounded-3xl">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <Logo size="xl" className="animate-pulse" />
+      {/* Hero Section */}
+      <section className="relative pt-12 pb-16 md:pt-16 md:pb-24 overflow-hidden rounded-3xl bg-gradient-to-br from-primary/5 via-white to-sage/5">
+        {/* Top Pill */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-white text-sm font-medium shadow-md">
+            <Sparkles className="w-4 h-4" />
+            Empowering Midlife Wellness
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            Welcome to Your Wellness Journey
+        </div>
+
+        {/* Headlines */}
+        <div className="text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
+            Reclaim Your Energy & Focus in <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sage-600">
+              Under 6 Weeks
+            </span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
-            Navigate midlife with confidence through personalized health insights,
-            evidence-based coaching, and supportive tools designed specifically for women.
+        </div>
+
+        <div className="text-center max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+          <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-4">
+            Women use our evidence-based program to go from exhausted and overwhelmed to energized and balanced in weeks instead of years.
           </p>
-          <p className="text-sm text-gray-500 max-w-xl mx-auto">
-            <strong>Please note:</strong> This is a self-help coaching program, not medical advice.
-            Consult your healthcare provider for serious mental health concerns.
+          <p className="text-sm text-gray-500">
+            Everything you need for hormone balance, physical vitality, and cognitive health — all in one powerful platform.
           </p>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="wellness-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${healthScores.overall >= 80 ? 'bg-emerald-100' :
-                  healthScores.overall >= 70 ? 'bg-blue-100' :
-                    healthScores.overall >= 60 ? 'bg-amber-100' :
-                      healthScores.overall >= 40 ? 'bg-orange-100' : 'bg-rose-100'
-                  }`}>
-                  <TrendingUp className={`w-6 h-6 ${healthScores.overall >= 80 ? 'text-emerald-600' :
-                    healthScores.overall >= 70 ? 'text-blue-600' :
-                      healthScores.overall >= 60 ? 'text-amber-600' :
-                        healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
-                    }`} />
-                </div>
-                <div className="text-right">
-                  <span className={`text-2xl font-bold ${healthScores.overall >= 80 ? 'text-emerald-600' :
-                    healthScores.overall >= 70 ? 'text-blue-600' :
-                      healthScores.overall >= 60 ? 'text-amber-600' :
-                        healthScores.overall >= 40 ? 'text-orange-600' : 'text-rose-600'
-                    }`}>{healthScores.overall}</span>
-                  <div className={`text-xs font-medium px-2 py-1 rounded-full inline-block ml-2 ${healthScores.overall >= 80 ? 'bg-emerald-100 text-emerald-800' :
-                    healthScores.overall >= 70 ? 'bg-blue-100 text-blue-800' :
-                      healthScores.overall >= 60 ? 'bg-amber-100 text-amber-800' :
-                        healthScores.overall >= 40 ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800'
-                    }`}>
-                    {healthScores.overall >= 80 ? 'Excellent' :
-                      healthScores.overall >= 70 ? 'Very Good' :
-                        healthScores.overall >= 60 ? 'Good' :
-                          healthScores.overall >= 40 ? 'Fair' : 'Needs Focus'}
-                  </div>
-                </div>
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-1">Overall Wellness</h3>
-              <p className="text-sm text-gray-500">
-                {healthScores.overall > 0
-                  ? `Based on ${[healthScores.mental, healthScores.physical, healthScores.cognitive].filter(s => s > 0).length} assessment${[healthScores.mental, healthScores.physical, healthScores.cognitive].filter(s => s > 0).length !== 1 ? 's' : ''}`
-                  : 'Take assessments to get started'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="wellness-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-sage/10 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-sage-600" />
-                </div>
-                <span className="text-2xl font-bold text-sage-600">{userProfile.currentWeek}/6</span>
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-1">Coaching Progress</h3>
-              <p className="text-sm text-gray-500">Week {userProfile.currentWeek}: Active</p>
-            </CardContent>
-          </Card>
-
-          <Card className="wellness-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center">
-                  <Target className="w-6 h-6 text-coral-500" />
-                </div>
-                <span className="text-2xl font-bold text-coral-500">
-                  {activeDaysCount}
-                </span>
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-1">Active Days</h3>
-              <p className="text-sm text-gray-500">Journal & mood entries</p>
-            </CardContent>
-          </Card>
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 mb-16">
+          <Link href="/coaching">
+            <Button className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl bg-primary hover:bg-primary/90 text-white shadow-[0_4px_14px_0_rgba(var(--primary),0.39)] transition-all flex items-center justify-center group">
+              <Sparkles className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+              Explore Full Program
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+          <Link href="/progress">
+            <Button variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl bg-white hover:bg-gray-50 text-gray-700 shadow-sm border border-gray-200 transition-all flex items-center justify-center group">
+              <Play className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
+              View Your Progress
+            </Button>
+          </Link>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {quickActions.map((action) => (
-            <Link key={action.href} href={action.href}>
-              <Button className={`w-full h-20 ${action.color} flex flex-col items-center justify-center space-y-2`}>
-                <i className={`${action.icon} text-xl`}></i>
-                <div className="text-center">
-                  <div className="font-medium">{action.label}</div>
-                  <div className="text-xs opacity-90">{action.description}</div>
-                </div>
-              </Button>
-            </Link>
-          ))}
+        {/* Key Metrics / Features Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 max-w-5xl mx-auto">
+          {/* Card 1 */}
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform duration-300">
+            <div className="text-3xl font-extrabold text-blue-600 mb-2">
+              {healthScores.overall > 0 ? `${healthScores.overall}` : '100%'}
+            </div>
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">
+              {healthScores.overall > 0 ? 'Your Wellness' : 'Evidence-Based'}
+            </div>
+          </div>
+          
+          {/* Card 2 */}
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform duration-300">
+            <div className="text-3xl font-extrabold text-emerald-600 mb-2">
+              {userProfile.currentWeek}/6
+            </div>
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">
+              Week Progress
+            </div>
+          </div>
+          
+          {/* Card 3 */}
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform duration-300">
+            <div className="text-3xl font-extrabold text-amber-500 mb-2">
+              {activeDaysCount}
+            </div>
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">
+              Active Days
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform duration-300">
+            <div className="text-3xl font-extrabold text-purple-600 mb-2">
+              24+
+            </div>
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">
+              Interactive Tools
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mt-8 px-4">
+          <p className="text-xs text-gray-400 max-w-xl mx-auto">
+            <strong>Please note:</strong> This is a self-help coaching program, not medical advice. Consult your healthcare provider for serious medical concerns.
+          </p>
         </div>
       </section>
 
@@ -325,6 +315,16 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </section>
+
+      {/* Lead Capture Section */}
+      {!hasAccess && (
+        <section className="my-16">
+          <LeadCapture 
+            title="Grab Your Free Hormone Reset Checklist" 
+            subtitle="Join 3,000+ women who are reclaiming their energy and balance. Download the guide today."
+          />
+        </section>
+      )}
 
       {/* Coaching Program Promotion */}
       <section>

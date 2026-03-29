@@ -421,10 +421,10 @@ function AdminDashboard() {
   const handleSavePrice = async () => {
     const current = parseFloat(coachingCurrentPrice);
     const regular = coachingRegularPrice ? parseFloat(coachingRegularPrice) : undefined;
-    if (!coachingCurrentPrice || isNaN(current) || current <= 0) {
+    if (coachingCurrentPrice === "" || isNaN(current) || current < 0) {
       toast({
         title: "Validation Error",
-        description: "Please enter a valid positive number for the current price",
+        description: "Please enter a valid non-negative number for the current price",
         variant: "destructive",
       });
       return;

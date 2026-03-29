@@ -17,6 +17,7 @@ import {
   digitalResources,
   resourcePurchases,
   resourceDownloads,
+  leads,
 
   type User,
   type InsertUser,
@@ -43,6 +44,8 @@ import {
   type InsertResourcePurchase,
   type ResourceDownload,
   type InsertResourceDownload,
+  type Lead,
+  type InsertLead,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, desc, gte, lte } from "drizzle-orm";
@@ -744,5 +747,21 @@ export class DatabaseStorage implements IStorage {
       .from(resourceDownloads)
       .where(eq(resourceDownloads.userId, userId))
       .orderBy(desc(resourceDownloads.downloadedAt));
+  }
+
+  // Lead operations
+  async createLead(leadData: InsertLead): Promise<Lead> {
+    const [newLead] = await db
+      .insert(leads)
+      .values(leadData)
+      .returning();
+    return newLead;
+  }
+
+  async getLeads(): Promise<Lead[]> {
+    return await db
+      .select()
+      .from(leads)
+      .orderBy(desc(leads.createdAt));
   }
 }

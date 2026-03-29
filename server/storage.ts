@@ -53,7 +53,11 @@ import {
   type ResourcePurchase,
   type InsertResourcePurchase,
   type ResourceDownload,
-  type InsertResourceDownload
+  type InsertResourceDownload,
+  type Lead,
+  type InsertLead,
+  type Video,
+  type InsertVideo
 } from "@shared/schema";
 
 export interface IStorage {
@@ -67,6 +71,7 @@ export interface IStorage {
   getHealthAssessmentsByUser(userId: string): Promise<HealthAssessment[]>;
   createHealthAssessment(assessment: InsertHealthAssessment): Promise<HealthAssessment>;
   getLatestHealthAssessment(userId: string, type: string): Promise<HealthAssessment | undefined>;
+  upsertHealthAssessment(assessment: InsertHealthAssessment): Promise<HealthAssessment>;
 
   // Journal Entries
   getJournalEntriesByUser(userId: string): Promise<JournalEntry[]>;
@@ -124,269 +129,131 @@ export interface IStorage {
   // Resource Downloads
   createResourceDownload(download: InsertResourceDownload): Promise<ResourceDownload>;
   getUserResourceDownloads(userId: string): Promise<ResourceDownload[]>;
+
+  // Leads & Marketing
+  createLead(lead: InsertLead): Promise<Lead>;
+  getLeads(): Promise<Lead[]>;
+
+  // Forum & Community (Minimal interfaces for storage class)
+  getForumCategories(): Promise<any[]>;
+  getForumPosts(categoryId?: string, search?: string): Promise<any[]>;
+  getForumPostById(id: number): Promise<any>;
+  createForumPost(postData: any): Promise<any>;
+  incrementPostViews(postId: number): Promise<void>;
+  getForumReplies(postId: number): Promise<any[]>;
+  createForumReply(replyData: any): Promise<any>;
+  getSupportGroups(): Promise<any[]>;
+  createSupportGroup(groupData: any): Promise<any>;
+  joinSupportGroup(groupId: number, userId: string): Promise<any>;
+  getSupportGroupMembers(groupId: number): Promise<any[]>;
+  createCoachingInquiry(inquiryData: any): Promise<any>;
+  getCoachingInquiries(): Promise<any[]>;
+  getCoachingInquiryById(id: number): Promise<any>;
+  updateCoachingInquiryStatus(id: number, status: string): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private healthAssessments: Map<number, HealthAssessment>;
-  private journalEntries: Map<number, JournalEntry>;
-  private coachingProgress: Map<number, CoachingProgress>;
-  private goals: Map<number, Goal>;
-  private habits: Map<number, Habit>;
-  private moodEntries: Map<number, MoodEntry>;
+  private userStore: Map<string, User>;
+  private healthStore: Map<number, HealthAssessment>;
+  private journalStore: Map<number, JournalEntry>;
+  private progressStore: Map<number, CoachingProgress>;
+  private goalStore: Map<number, Goal>;
+  private habitStore: Map<number, Habit>;
+  private moodStore: Map<number, MoodEntry>;
+  private gratitudeStore: Map<number, any>;
+  private leadStore: Map<number, Lead>;
   private currentId: number;
-  private gratitudeEntriesMem: Map<number, any>;
 
   constructor() {
-    this.users = new Map();
-    this.healthAssessments = new Map();
-    this.journalEntries = new Map();
-    this.coachingProgress = new Map();
-    this.goals = new Map();
-    this.habits = new Map();
-    this.moodEntries = new Map();
+    this.userStore = new Map();
+    this.healthStore = new Map();
+    this.journalStore = new Map();
+    this.progressStore = new Map();
+    this.goalStore = new Map();
+    this.habitStore = new Map();
+    this.moodStore = new Map();
+    this.gratitudeStore = new Map();
+    this.leadStore = new Map();
     this.currentId = 1;
-    this.gratitudeEntriesMem = new Map();
   }
 
-  // User methods
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUser(id: string): Promise<User | undefined> { return Array.from(this.userStore.values()).find(u => u.id === id); }
+  async getUserByUsername(username: string): Promise<User | undefined> { return undefined; }
+  async createUser(user: InsertUser): Promise<User> { const id = this.currentId++; const res = { ...user, id: id.toString(), createdAt: new Date() } as User; this.userStore.set(id, res); return res; }
+  async upsertUser(user: UpsertUser): Promise<User> { const res = { ...user, updatedAt: new Date() } as User; this.userStore.set(Number(user.id), res); return res; }
+  
+  async getHealthAssessmentsByUser(userId: string): Promise<HealthAssessment[]> {
+    return Array.from(this.healthStore.values()).filter(a => String(a.userId) === String(userId));
   }
+  async createHealthAssessment(a: InsertHealthAssessment): Promise<HealthAssessment> { const id = this.currentId++; const res = { ...a, id, completedAt: new Date() }; this.healthStore.set(id, res); return res; }
+  async getLatestHealthAssessment(userId: string, type: string): Promise<HealthAssessment | undefined> { return undefined; }
+  async upsertHealthAssessment(a: InsertHealthAssessment): Promise<HealthAssessment> { return this.createHealthAssessment(a); }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
+  async getJournalEntriesByUser(userId: string): Promise<JournalEntry[]> { return Array.from(this.journalStore.values()).filter(e => e.userId === userId); }
+  async createJournalEntry(e: InsertJournalEntry): Promise<JournalEntry> { const id = this.currentId++; const res = { ...e, id, createdAt: new Date(), title: e.title || null, mood: e.mood || null, prompt: e.prompt || null }; this.journalStore.set(id, res); return res; }
+  async upsertJournalEntryForToday(e: InsertJournalEntry): Promise<JournalEntry> { return this.createJournalEntry(e); }
+  async deleteJournalEntry(id: number, userId: string): Promise<void> { this.journalStore.delete(id); }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { 
-      ...insertUser, 
-      id,
-      createdAt: new Date()
-    };
-    this.users.set(id, user);
-    return user;
-  }
+  async getCoachingProgressByUser(userId: string): Promise<CoachingProgress[]> { return []; }
+  async createCoachingProgress(p: InsertCoachingProgress): Promise<CoachingProgress> { const id = this.currentId++; const res = { ...p, id, progress: p.progress || 0, completed: p.completed || false, completedAt: null, responseData: null }; this.progressStore.set(id, res); return res; }
+  async updateCoachingProgress(id: number, u: Partial<CoachingProgress>): Promise<CoachingProgress> { throw new Error("Method not implemented."); }
 
-  // Health Assessment methods
-  async getHealthAssessmentsByUser(userId: number): Promise<HealthAssessment[]> {
-    return Array.from(this.healthAssessments.values())
-      .filter(assessment => assessment.userId === userId)
-      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
-  }
+  async getGoalsByUser(userId: string): Promise<Goal[]> { return []; }
+  async createGoal(g: InsertGoal): Promise<Goal> { const id = this.currentId++; const res = { ...g, id, createdAt: new Date(), description: g.description || null, targetValue: g.targetValue || null, currentValue: g.currentValue || 0, targetDate: g.targetDate || null, completed: g.completed || false }; this.goalStore.set(id, res); return res; }
+  async updateGoal(id: number, u: Partial<Goal>): Promise<Goal> { throw new Error("Method not implemented."); }
+  async deleteGoal(id: number): Promise<void> { this.goalStore.delete(id); }
 
-  async createHealthAssessment(insertAssessment: InsertHealthAssessment): Promise<HealthAssessment> {
-    const id = this.currentId++;
-    const assessment: HealthAssessment = {
-      ...insertAssessment,
-      id,
-      completedAt: new Date()
-    };
-    this.healthAssessments.set(id, assessment);
-    return assessment;
-  }
+  async getHabitsByUser(userId: string): Promise<Habit[]> { return []; }
+  async createHabit(h: InsertHabit): Promise<Habit> { const id = this.currentId++; const res = { ...h, id, createdAt: new Date(), description: h.description || null, streak: 0, lastCompleted: null }; this.habitStore.set(id, res); return res; }
+  async updateHabit(id: number, u: Partial<Habit>): Promise<Habit> { throw new Error("Method not implemented."); }
+  async deleteHabit(id: number): Promise<void> { this.habitStore.delete(id); }
 
-  async getLatestHealthAssessment(userId: number, type: string): Promise<HealthAssessment | undefined> {
-    const assessments = await this.getHealthAssessmentsByUser(userId);
-    return assessments.find(a => a.assessmentType === type);
-  }
+  async getMoodEntriesByUser(userId: string): Promise<MoodEntry[]> { return []; }
+  async createMoodEntry(e: InsertMoodEntry): Promise<MoodEntry> { const id = this.currentId++; const res = { ...e, id, createdAt: new Date(), notes: e.notes || null }; this.moodStore.set(id, res); return res; }
 
-  // Journal Entry methods
-  async getJournalEntriesByUser(userId: number): Promise<JournalEntry[]> {
-    return Array.from(this.journalEntries.values())
-      .filter(entry => entry.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
+  async getGratitudeEntriesByUser(userId: string): Promise<any[]> { return []; }
+  async createGratitudeEntry(e: any): Promise<any> { const id = this.currentId++; const res = { ...e, id, savedAt: new Date() }; this.gratitudeStore.set(id, res); return res; }
 
-  async createJournalEntry(insertEntry: InsertJournalEntry): Promise<JournalEntry> {
-    const id = this.currentId++;
-    const entry: JournalEntry = {
-      ...insertEntry,
-      id,
-      title: insertEntry.title ?? null,
-      mood: insertEntry.mood ?? null,
-      prompt: insertEntry.prompt ?? null,
-      createdAt: new Date()
-    };
-    this.journalEntries.set(id, entry);
-    return entry;
-  }
+  async getVideos(): Promise<Video[]> { return []; }
+  async getVideoById(id: number): Promise<Video | undefined> { return undefined; }
+  async getVideosByModule(m: string): Promise<Video[]> { return []; }
+  async getVideosByWeek(w: number): Promise<Video[]> { return []; }
+  async createVideo(v: InsertVideo): Promise<Video> { throw new Error("Method not implemented."); }
+  async updateVideo(id: number, u: Partial<Video>): Promise<Video> { throw new Error("Method not implemented."); }
+  async deleteVideo(id: number): Promise<void> {}
 
-  async upsertJournalEntryForToday(entry: InsertJournalEntry): Promise<JournalEntry> {
-    // Check if entry exists for today
-    const today = new Date(entry.createdAt).toISOString().split('T')[0];
-    const existing = Array.from(this.journalEntries.values()).find((e: any) => {
-      const entryDate = new Date(e.createdAt).toISOString().split('T')[0];
-      return e.userId === entry.userId && entryDate === today;
-    });
-    
-    if (existing) {
-      // Update existing entry
-      const updated: JournalEntry = {
-        ...existing,
-        title: entry.title ?? existing.title,
-        content: entry.content,
-        mood: entry.mood ?? existing.mood,
-        prompt: entry.prompt ?? existing.prompt,
-      };
-      this.journalEntries.set(existing.id, updated);
-      return updated;
-    } else {
-      // Create new entry
-      return await this.createJournalEntry(entry);
-    }
-  }
+  async getDigitalResources(): Promise<DigitalResource[]> { return []; }
+  async getDigitalResourceById(id: number): Promise<DigitalResource | undefined> { return undefined; }
+  async createDigitalResource(r: InsertDigitalResource): Promise<DigitalResource> { throw new Error("Method not implemented."); }
+  async updateDigitalResource(id: number, u: Partial<DigitalResource>): Promise<DigitalResource> { throw new Error("Method not implemented."); }
+  async deleteDigitalResource(id: number): Promise<void> {}
 
-  async deleteJournalEntry(id: number, userId: number): Promise<void> {
-    // In-memory storage: verify ownership before deleting
-    const entry = this.journalEntries.get(id);
-    if (entry && entry.userId === userId) {
-      this.journalEntries.delete(id);
-    }
-  }
+  async createResourcePurchase(p: InsertResourcePurchase): Promise<ResourcePurchase> { throw new Error("Method not implemented."); }
+  async getUserResourcePurchases(u: string): Promise<ResourcePurchase[]> { return []; }
+  async hasUserPurchasedResource(u: string, r: number): Promise<boolean> { return false; }
+  async updateResourcePurchaseStatus(pi: string, s: string): Promise<void> {}
 
-  // Coaching Progress methods
-  async getCoachingProgressByUser(userId: number): Promise<CoachingProgress[]> {
-    return Array.from(this.coachingProgress.values())
-      .filter(progress => progress.userId === userId)
-      .sort((a, b) => a.weekNumber - b.weekNumber);
-  }
+  async createResourceDownload(d: InsertResourceDownload): Promise<ResourceDownload> { throw new Error("Method not implemented."); }
+  async getUserResourceDownloads(u: string): Promise<ResourceDownload[]> { return []; }
 
-  async createCoachingProgress(insertProgress: InsertCoachingProgress): Promise<CoachingProgress> {
-    const id = this.currentId++;
-    const progress: CoachingProgress = {
-      ...insertProgress,
-      id,
-      progress: insertProgress.progress ?? null,
-      completed: insertProgress.completed ?? null,
-      completedAt: insertProgress.completed ? new Date() : null
-    };
-    this.coachingProgress.set(id, progress);
-    return progress;
-  }
+  async createLead(lead: InsertLead): Promise<Lead> { const id = this.currentId++; const res = { ...lead, id, createdAt: new Date(), convertedAt: null, lastEngaged: new Date(), status: 'active', leadScore: 0, tags: [] } as Lead; this.leadStore.set(id, res); return res; }
+  async getLeads(): Promise<Lead[]> { return Array.from(this.leadStore.values()); }
 
-  async updateCoachingProgress(id: number, updates: Partial<CoachingProgress>): Promise<CoachingProgress> {
-    const existing = this.coachingProgress.get(id);
-    if (!existing) {
-      throw new Error('Coaching progress not found');
-    }
-    
-    const updated = {
-      ...existing,
-      ...updates,
-      completedAt: updates.completed ? new Date() : existing.completedAt
-    };
-    
-    this.coachingProgress.set(id, updated);
-    return updated;
-  }
-
-  // Goal methods
-  async getGoalsByUser(userId: number): Promise<Goal[]> {
-    return Array.from(this.goals.values())
-      .filter(goal => goal.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  async createGoal(insertGoal: InsertGoal): Promise<Goal> {
-    const id = this.currentId++;
-    const goal: Goal = {
-      ...insertGoal,
-      id,
-      completed: insertGoal.completed ?? null,
-      description: insertGoal.description ?? null,
-      targetValue: insertGoal.targetValue ?? null,
-      currentValue: insertGoal.currentValue ?? null,
-      targetDate: insertGoal.targetDate ?? null,
-      createdAt: new Date()
-    };
-    this.goals.set(id, goal);
-    return goal;
-  }
-
-  async updateGoal(id: number, updates: Partial<Goal>): Promise<Goal> {
-    const existing = this.goals.get(id);
-    if (!existing) {
-      throw new Error('Goal not found');
-    }
-    
-    const updated = { ...existing, ...updates };
-    this.goals.set(id, updated);
-    return updated;
-  }
-
-  async deleteGoal(id: number): Promise<void> {
-    this.goals.delete(id);
-  }
-
-  // Habit methods
-  async getHabitsByUser(userId: number): Promise<Habit[]> {
-    return Array.from(this.habits.values())
-      .filter(habit => habit.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  async createHabit(insertHabit: InsertHabit): Promise<Habit> {
-    const id = this.currentId++;
-    const habit: Habit = {
-      ...insertHabit,
-      id,
-      description: insertHabit.description ?? null,
-      streak: insertHabit.streak ?? null,
-      lastCompleted: insertHabit.lastCompleted ?? null,
-      createdAt: new Date()
-    };
-    this.habits.set(id, habit);
-    return habit;
-  }
-
-  async updateHabit(id: number, updates: Partial<Habit>): Promise<Habit> {
-    const existing = this.habits.get(id);
-    if (!existing) {
-      throw new Error('Habit not found');
-    }
-    
-    const updated = { ...existing, ...updates };
-    this.habits.set(id, updated);
-    return updated;
-  }
-
-  async deleteHabit(id: number): Promise<void> {
-    this.habits.delete(id);
-  }
-
-  // Mood Entry methods
-  async getMoodEntriesByUser(userId: number): Promise<MoodEntry[]> {
-    return Array.from(this.moodEntries.values())
-      .filter(entry => entry.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  async createMoodEntry(insertEntry: InsertMoodEntry): Promise<MoodEntry> {
-    const id = this.currentId++;
-    const entry: MoodEntry = {
-      ...insertEntry,
-      id,
-      notes: insertEntry.notes ?? null,
-      createdAt: new Date()
-    };
-    this.moodEntries.set(id, entry);
-    return entry;
-  }
-
-  async getGratitudeEntriesByUser(userId: string): Promise<any[]> {
-    return Array.from(this.gratitudeEntriesMem.values()).filter((e: any) => String(e.userId) === String(userId));
-  }
-
-  async createGratitudeEntry(entry: any): Promise<any> {
-    const id = this.currentId++;
-    const row = { id, ...entry, savedAt: entry.savedAt || new Date() };
-    this.gratitudeEntriesMem.set(id, row);
-    return row;
-  }
+  async getForumCategories(): Promise<any[]> { return []; }
+  async getForumPosts(): Promise<any[]> { return []; }
+  async getForumPostById(): Promise<any> { return null; }
+  async createForumPost(): Promise<any> { return null; }
+  async incrementPostViews(): Promise<void> {}
+  async getForumReplies(): Promise<any[]> { return []; }
+  async createForumReply(): Promise<any> { return null; }
+  async getSupportGroups(): Promise<any[]> { return []; }
+  async createSupportGroup(): Promise<any> { return null; }
+  async joinSupportGroup(): Promise<any> { return null; }
+  async getSupportGroupMembers(): Promise<any[]> { return []; }
+  async createCoachingInquiry(): Promise<any> { return null; }
+  async getCoachingInquiries(): Promise<any[]> { return []; }
+  async getCoachingInquiryById(): Promise<any> { return null; }
+  async updateCoachingInquiryStatus(): Promise<any> { return null; }
 }
 
 import { DatabaseStorage } from "./database-storage";
