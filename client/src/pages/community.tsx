@@ -211,24 +211,44 @@ export default function Community() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white" data-testid="heading-community">
-          Community Support Resources
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mt-4">
-          Connect with thousands of women navigating perimenopause and midlife transitions through these trusted online communities and support organizations. All resources listed below are external platforms where you can find peer support, expert guidance, and shared experiences.
-        </p>
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 max-w-2xl mx-auto">
-          <p className="text-sm text-blue-900 dark:text-blue-300">
-            <strong>Note:</strong> These are external communities maintained by other organizations. Click the links to join discussions, find support groups, and connect with women worldwide.
-          </p>
+      {/* Hero Section */}
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="p-8 md:p-12 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold uppercase tracking-wider mb-6">
+              <Users className="w-3.5 h-3.5" />
+              Inclusive Support Network
+            </div>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+              Wellness <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                Community
+              </span>
+            </h1>
+            <p className="text-gray-600 text-lg mb-6 max-w-lg leading-relaxed">
+              Connect with thousands of women navigating perimenopause and midlife transitions through trusted online communities and support organizations.
+            </p>
+            <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+              <p className="text-sm text-indigo-900 leading-relaxed">
+                <strong>External Resources:</strong> These communities are maintained by trusted partners. Click to join discussions, find groups, and connect globally.
+              </p>
+            </div>
+          </div>
+          <div className="relative min-h-[300px] lg:min-h-full">
+            <img 
+              src="/images/dashboard_hero.png" 
+              alt="Clean wellness workspace - Community Hub" 
+              className="absolute inset-0 w-full h-full object-cover grayscale-[20%]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent lg:block hidden" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent lg:hidden block" />
+          </div>
         </div>
       </div>
 
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
           <TabsTrigger value="forums" className="flex items-center gap-2" data-testid="tab-forums">
             <MessageCircle className="w-4 h-4" />
             Online Forums

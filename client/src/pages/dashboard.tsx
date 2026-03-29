@@ -131,55 +131,52 @@ export default function Dashboard() {
   return (
     <div className="space-y-12">
       {/* Hero Section */}
-      <section className="relative pt-12 pb-16 md:pt-16 md:pb-24 overflow-hidden rounded-3xl bg-gradient-to-br from-primary/5 via-white to-sage/5">
-        {/* Top Pill */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-white text-sm font-medium shadow-md">
-            <Sparkles className="w-4 h-4" />
-            Empowering Midlife Wellness
+      <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch">
+          <div className="p-8 md:p-12 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold uppercase tracking-wider mb-6">
+              <Sparkles className="w-3.5 h-3.5" />
+              Your Personal Wellness Hub
+            </div>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+              Welcome Back to Your <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                Zen Workspace
+              </span>
+            </h1>
+            <p className="text-gray-600 text-lg mb-8 max-w-lg leading-relaxed">
+              Track your energy, log your reflections, and continue your transformation. Everything you need for your midlife wellness journey in one place.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/coaching">
+                <Button className="bg-purple-600 hover:bg-purple-700 h-12 px-8 rounded-full shadow-lg shadow-purple-200 transition-all hover:scale-105">
+                  Continue Program
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+              <Link href="/progress">
+                <Button variant="outline" className="h-12 px-8 rounded-full border-gray-200 hover:bg-gray-50 transition-all">
+                  View Progress
+                </Button>
+              </Link>
+            </div>
+          </div>
+          <div className="relative min-h-[300px] lg:min-h-full overflow-hidden">
+            <img 
+              src="/images/dashboard_hero.png" 
+              alt="Peaceful minimalist home office - Midlife Rebalance Dashboard" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent lg:block hidden" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent lg:hidden block" />
           </div>
         </div>
-
-        {/* Headlines */}
-        <div className="text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
-            Reclaim Your Energy & Focus in <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sage-600">
-              Under 6 Weeks
-            </span>
-          </h1>
-        </div>
-
-        <div className="text-center max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-          <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-4">
-            Women use our evidence-based program to go from exhausted and overwhelmed to energized and balanced in weeks instead of years.
-          </p>
-          <p className="text-sm text-gray-500">
-            Everything you need for hormone balance, physical vitality, and cognitive health — all in one powerful platform.
-          </p>
-        </div>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 mb-16">
-          <Link href="/coaching">
-            <Button className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl bg-primary hover:bg-primary/90 text-white shadow-[0_4px_14px_0_rgba(var(--primary),0.39)] transition-all flex items-center justify-center group">
-              <Sparkles className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
-              Explore Full Program
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="/progress">
-            <Button variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl bg-white hover:bg-gray-50 text-gray-700 shadow-sm border border-gray-200 transition-all flex items-center justify-center group">
-              <Play className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
-              View Your Progress
-            </Button>
-          </Link>
-        </div>
+      </section>
 
         {/* Key Metrics / Features Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 max-w-5xl mx-auto">
           {/* Card 1 */}
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform duration-300">
+          <div className="bg-white rounded-2xl p-3 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform duration-300">
             <div className="text-3xl font-extrabold text-blue-600 mb-2">
               {healthScores.overall > 0 ? `${healthScores.overall}` : '100%'}
             </div>
@@ -224,11 +221,10 @@ export default function Dashboard() {
             <strong>Please note:</strong> This is a self-help coaching program, not medical advice. Consult your healthcare provider for serious medical concerns.
           </p>
         </div>
-      </section>
 
       {/* Health Assessment Dashboard */}
       <section>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <HealthCalculator
             type="mental"
             score={healthScores.mental}
@@ -239,11 +235,13 @@ export default function Dashboard() {
             score={healthScores.physical}
             onScoreUpdate={(score) => handleScoreUpdate('physical', score)}
           />
-          <HealthCalculator
-            type="cognitive"
-            score={healthScores.cognitive}
-            onScoreUpdate={(score) => handleScoreUpdate('cognitive', score)}
-          />
+          <div className="md:col-span-2 lg:col-span-1">
+            <HealthCalculator
+              type="cognitive"
+              score={healthScores.cognitive}
+              onScoreUpdate={(score) => handleScoreUpdate('cognitive', score)}
+            />
+          </div>
         </div>
       </section>
 

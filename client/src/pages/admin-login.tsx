@@ -56,18 +56,9 @@ export default function AdminLogin() {
     } catch (error: any) {
       console.error("[AdminLogin] Login error:", error);
       
-      // Provide more helpful error messages
-      let errorMessage = error.message || "Invalid credentials or insufficient privileges";
-      
-      if (errorMessage.includes("Network error") || errorMessage.includes("Unable to connect")) {
-        errorMessage = "Cannot connect to server. Please ensure the server is running on port 5000.";
-      } else if (errorMessage.includes("401") || errorMessage.includes("403")) {
-        errorMessage = "Invalid credentials or you don't have admin privileges.";
-      }
-      
       toast({
         title: "Admin login failed",
-        description: errorMessage,
+        description: error.message || "Invalid credentials or insufficient privileges",
         variant: "destructive",
       });
     } finally {

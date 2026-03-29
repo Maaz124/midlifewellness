@@ -169,7 +169,7 @@ export function Footer() {
 
             {/* Legal Links */}
             <div className="mt-4 md:mt-0">
-              <ul className="flex flex-wrap space-x-6 text-sm text-gray-400">
+              <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
                 <li>
                   <Link href="/privacy-policy" className="hover:text-purple-400 transition-colors flex items-center space-x-1" data-testid="link-privacy-policy">
                     <Shield className="w-4 h-4" />
